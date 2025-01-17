@@ -1,3 +1,0 @@
-fastapi==0.115.6
-uvicorn[standard]
-fastapi-mqtt

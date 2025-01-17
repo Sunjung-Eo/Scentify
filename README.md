@@ -53,3 +53,4 @@
 <br>
 
 # 📌 API 명세서
+![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=434 height=516}

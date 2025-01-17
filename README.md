@@ -1,3 +1,7 @@
+# 💜 Scentify : 스마트 디퓨저 프로젝트 💜
+
+---
+
 # 📌 브랜치 설명
 - **task** : 과제 수행 및 관련 README.md가 작성되어 있습니다.
     - 과제 1 프로젝트 위치 : S12P11A205/ Sub_PJT/ Sub_PJT1
@@ -55,3 +59,4 @@
 # 📌 API 명세서
 ![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=871 height=516}
 ![image](/uploads/9e8285c8c12bd44908c172cc899e5b29/image.png){width=871 height=461}
+![image](/uploads/afa29cc78f5b4d2309a22e24f365746e/image.png){width=871 height=504}

@@ -54,3 +54,4 @@
 
 # 📌 API 명세서
 ![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=871 height=516}
+![image](/uploads/9e8285c8c12bd44908c172cc899e5b29/image.png){width=871 height=461}

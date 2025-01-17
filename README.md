@@ -84,3 +84,6 @@
 ![image](/uploads/d65367e2033991d5d4e72242b049e265/image.png){width=871 height=51}
 
 ### [EM] API 명세서
+![image](/uploads/e0379c5597eef0e6a6f388f9ba7d312e/image.png){width=871 height=496}
+![image](/uploads/98f19db8cbff61d0fb2b758dd7e3ea64/image.png){width=871 height=444}
+![image](/uploads/6d63f3b437c153b553121de808f229eb/image.png){width=871 height=244}

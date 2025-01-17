@@ -71,7 +71,7 @@
 <br>
 
 ## 📌 API 명세서
-### [BE] API 명세서
+### 1️⃣ [BE] API 명세서
 ![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=871 height=516}
 ![image](/uploads/9e8285c8c12bd44908c172cc899e5b29/image.png){width=871 height=461}
 ![image](/uploads/afa29cc78f5b4d2309a22e24f365746e/image.png){width=871 height=504}
@@ -83,7 +83,7 @@
 ![image](/uploads/b966e56b277b55a7d635fff204e2cf74/image.png){width=871 height=500}
 ![image](/uploads/d65367e2033991d5d4e72242b049e265/image.png){width=871 height=51}
 
-### [EM] API 명세서
+### 2️⃣ [EM] API 명세서
 ![image](/uploads/e0379c5597eef0e6a6f388f9ba7d312e/image.png){width=871 height=496}
 ![image](/uploads/98f19db8cbff61d0fb2b758dd7e3ea64/image.png){width=871 height=444}
 ![image](/uploads/6d63f3b437c153b553121de808f229eb/image.png){width=871 height=244}

@@ -26,7 +26,7 @@
 ![image](/uploads/6583f0713f3e4133c8c43b71d55e08b8/image.png){width=434 height=440}
 
 ### **[비기능 명세서]**
-![image](/uploads/e6fd7fe9172315e295b4398a76faddad/image.png){width=434 height=334}
+![image](/uploads/7ccbe12792813c5f7d43dd69dbcc6cb7/image.png){width=434 height=337}
 
 <br>
 

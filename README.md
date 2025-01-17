@@ -25,7 +25,14 @@
 ![image](/uploads/706bddf2796238e110e9fa15bdf2f22b/image.png){width=434 height=513}
 ![image](/uploads/6583f0713f3e4133c8c43b71d55e08b8/image.png){width=434 height=440}
 
+### **[비기능 명세서]**
+![image](/uploads/e6fd7fe9172315e295b4398a76faddad/image.png){width=434 height=334}
+
 <br>
+
+# 📌 시퀀스 다이어그램
+![플로우차트__1_](/uploads/3b851b6ce0faef01896a6dfe439e99f0/플로우차트__1_.png)
+
 
 # 📌 아키텍처 다이어그램
 

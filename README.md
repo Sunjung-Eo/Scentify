@@ -48,5 +48,8 @@
 <br>
 
 # 📌 ERD 다이어그램
+![Untitled](/uploads/6969039fd2a703988aaabf8f21dac0ec/Untitled.png)
+
+<br>
 
 # 📌 API 명세서

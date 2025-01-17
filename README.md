@@ -14,7 +14,10 @@
 
 # 📌 기획서 및 요구사항 분석
 ## 1️⃣ 기획서
-![image](/uploads/6c83953a8e0fc12d0d145f7576724bc4/image.png){width=433 height=159}
+![image](/uploads/6c83953a8e0fc12d0d145f7576724bc4/image.png){width=434 height=162}
+![image](/uploads/661ca29ea486c53180be1e4e48ca9276/image.png){width=434 height=162}
+![image](/uploads/e7e18582a2f99835c172c14f1284b7e7/image.png){width=434 height=162}
+
 
 <br>
 # 📌 아키텍처 다이어그램

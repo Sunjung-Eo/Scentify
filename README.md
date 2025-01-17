@@ -2,15 +2,15 @@
 
 ## 📌 프로젝트 기획 요약
 
-1. 주변 환경 또는 사용자 행동 기반 자동화 모드을 제공합니다.
+1. **주변 환경 또는 사용자 행동 기반 자동화 모드을 제공합니다.**
     - 악취 탐지될 시, 사용자 설정 간격으로 기본 조합을 분사합니다.
    - 카메라 센서를 통해 인식된 사용자 행동을 분석하여 운동, 집중 모드에 해당할 경우 추천 조합을 분사합니다.
    - 카메라 센서에 사용자 감지 시, 기본 조합을 분사합니다.
  
-2. 예약 시간을 설정할 수 있는 스케줄 모드를 제공합니다.
+2. **예약 시간을 설정할 수 있는 스케줄 모드를 제공합니다.**
     - 사용자가 시작/ 종료시간, 분사 간격, 향 조합을 설정하면 해당 시간에 분사합니다.
 
-3. 찜한 향기 조합 페이지 저장 및 공유 기능합니다.
+3. **찜한 향기 조합 페이지 저장 및 공유 기능합니다.**
     - 찜한 향기 조합에 대한 설명 페이지를 이미지로 저장 가능합니다.
     - 또한 향기 조합을 링크로 공유 및 링크를 받은 사용자가 향기 조합 등록 가능합니다.
 
@@ -71,7 +71,16 @@
 <br>
 
 ## 📌 API 명세서
+### [BE] API 명세서
 ![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=871 height=516}
 ![image](/uploads/9e8285c8c12bd44908c172cc899e5b29/image.png){width=871 height=461}
 ![image](/uploads/afa29cc78f5b4d2309a22e24f365746e/image.png){width=871 height=504}
 ![image](/uploads/9e87ca1ec81f7841f5fe248ea7e36e0d/image.png){width=871 height=473}
+![image](/uploads/aba6ed9ed7fbf69a96947d8ddd10cc77/image.png){width=871 height=409}
+![image](/uploads/105ceebbb5038f1effef40638fb3253d/image.png){width=871 height=518}
+![image](/uploads/d7f7bab0ce1abaa9cf23b70c24f99906/image.png){width=871 height=517}
+![image](/uploads/f5e0d2a4e7d6639cd93a33b7bb519736/image.png){width=871 height=387}
+![image](/uploads/b966e56b277b55a7d635fff204e2cf74/image.png){width=871 height=500}
+![image](/uploads/d65367e2033991d5d4e72242b049e265/image.png){width=871 height=51}
+
+### [EM] API 명세서

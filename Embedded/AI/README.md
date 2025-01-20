@@ -13,3 +13,9 @@ Jetson Nano의 카메라 프레임을 기반으로 사용자를 감지하거나 
 - 요약 : 고속 프레임의 CNN + 저속 프레임의 CNN 
 - 하나의 모델로 사용자의 행동을 분석할 수 있습니다.
 - Directory **SlowFast**
+
+## requirements.txt
+### 개발 환경
+- Windows 11
+- Python : 3.8 
+- GPU : RTX 3050 TI

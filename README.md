@@ -1,116 +1,89 @@
-## **Code Commit Convention**
+# 💜 Scentify : 스마트 디퓨저 프로젝트 💜
 
-### **📌 Git 관련 사항**
+## 📌 프로젝트 기획 요약
 
-- 민감 정보의 경우 .env를 설정하여 사용해주세요 (.gitignore에 설정되어 있음)
+1. **주변 환경 또는 사용자 행동 기반 자동화 모드을 제공합니다.**
+    - 악취 탐지될 시, 사용자 설정 간격으로 기본 조합을 분사합니다.
+   - 카메라 센서를 통해 인식된 사용자 행동을 분석하여 운동, 집중 모드에 해당할 경우 추천 조합을 분사합니다.
+   - 카메라 센서에 사용자 감지 시, 기본 조합을 분사합니다.
+ 
+2. **예약 시간을 설정할 수 있는 스케줄 모드를 제공합니다.**
+    - 사용자가 시작/ 종료시간, 분사 간격, 향 조합을 설정하면 해당 시간에 분사합니다.
 
----
+3. **찜한 향기 조합 페이지 저장 및 공유 기능합니다.**
+    - 찜한 향기 조합에 대한 설명 페이지를 이미지로 저장 가능합니다.
+    - 또한 향기 조합을 링크로 공유 및 링크를 받은 사용자가 향기 조합 등록 가능합니다.
 
-### **✉️ Commit Messge Rules**
+<br>
 
-- 반영사항을 바로 확인할 수 있도록 작은 기능 하나라도 구현되면 커밋을 권장합니다.
-- 기능 구현이 완벽하지 않을 땐, 각자 브랜치에 커밋을 해주세요.
+## 📌 브랜치 설명
+- **task** : 과제 수행 및 관련 README.md가 작성되어 있습니다.
+    - 과제 1 프로젝트 위치 : S12P11A205/ Sub_PJT/ Sub_PJT1
 
----
+- **master** : Scentify 프로젝트 관련 README.md가 작성되어 있습니다.
+    - **FE/ Develop** : FrontEnd 개발 브랜치 입니다.
+        - 프로젝트 위치 : S12P11A205/ FrontEnd
+    - **BE/ Develop** : BackEnd 개발 브랜치 입니다.
+        - 프로젝트 위치 : S12P11A205/ BackEnd
+    - **EM / Develop** : Embedded 개발 브랜치 입니다.
+        - 프로젝트 위치 : S12P11A205/ Embedded
 
-### **📌 Commit Convention**
+<br>
 
-**[태그] 제목의 형태**
-
-| 태그 이름 | 설명 |
-| --- | --- |
-| FEAT | 새로운 기능을 추가할 경우 |
-| FIX | 버그를 고친 경우 |
-| CHORE | 간단한 수정 (EX) 변수 대소문자, 철자 오류) |
-| DOCS | 문서 수정 |
-| INIT | 초기 설정 |
-| TEST | 테스트 코드, 리펙토링 테스트 코드 추가 |
-| RENAME | 파일 혹은 폴더명을 수정하거나 옮기는 작업인 경우 |
-| STYLE | 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우 |
-| REFACTOR | 코드 리팩토링 |
-| TEMP | 나중에 삭제 혹은 수정될 가능성이 높은 코드 |
-| BUILD | 의존성 추가 |
-
----
-
-### 📌 **커밋 타입**
-
-- `[태그] 설명` 형식으로 커밋 메시지를 작성합니다.
-- 태그는 영어를 쓰고 대문자로 작성합니다.
-
-예시 >
-
-```
-  [FEAT] 검색 api 추가
-
-```
+## 📌 기획서 및 요구사항 분석
+### 1️⃣ 기획서
+![image](/uploads/6c83953a8e0fc12d0d145f7576724bc4/image.png){width=434 height=162}
+![image](/uploads/661ca29ea486c53180be1e4e48ca9276/image.png){width=434 height=162}
+![image](/uploads/e7e18582a2f99835c172c14f1284b7e7/image.png){width=434 height=162}
 
 ---
 
-### **💻 Github mangement**
+### 2️⃣ 요구사항 분석
+### **[기능 명세서]**
+![image](/uploads/706bddf2796238e110e9fa15bdf2f22b/image.png){width=434 height=513}
+![image](/uploads/6583f0713f3e4133c8c43b71d55e08b8/image.png){width=434 height=440}
 
-- Develop, Feature, Hotfix 브랜치
-- 개발(develop): 기능들의 통합 브랜치
-- 기능 단위 개발(feature): 기능 단위 브랜치
-- 버그 수정 및 갑작스런 수정(hotfix): 수정 사항 발생 시 브랜치
-- 개발 브랜치 아래 기능별/ 세부기능별 브랜치를 만들어서 작업합니다.
-- 트러블 슈팅 내용은 해결 이후 issue에 기록합니다.
+### **[비기능 명세서]**
+![image](/uploads/1d4daef782b7037dc4d44817a698de3f/image.png){width=434 height=449}
 
----
+<br>
 
-### **✍🏻 Code Convention**
+## 📌 시퀀스 다이어그램
+![플로우차트__1_](/uploads/3b851b6ce0faef01896a6dfe439e99f0/플로우차트__1_.png)
 
-**Code**
+<br>
 
-하나의 메서드(method) 길이 12줄, 깊이(depth) 3 이내로 작성합니다.
+## 📌 아키텍처 다이어그램
+![제목을-입력해주세요_-002](/uploads/77893ad96877a18c95373934d64eb897/제목을-입력해주세요_-002.png){width=1440 height=810}
 
-**네이밍은 아래와 같이 정의합니다.**
+<br>
 
-Controller DTO: ${Entity명}${복수형일 경우 List 추가}${행위 또는 상태}${Request/Response}
+## 📌 UI 기획
+![1__1_](/uploads/9e62a0fdb450fdd06c0943cc12b2662b/1__1_.png)
+![2__1_](/uploads/e29f79ab3518faab66d5e7b66c0ba148/2__1_.png)
+![3__1_](/uploads/f932b93a63f39811609a3ea44cd901f5/3__1_.png)
 
-Service DTO: ${Entity명}${복수형일 경우 List 추가}${행위 또는 상태}Service${Request/Response}
+<br>
 
-**Response**
+## 📌 ERD 다이어그램
+![Untitled](/uploads/6969039fd2a703988aaabf8f21dac0ec/Untitled.png)
 
-요청 성공 시, BaseResponse와 SuccessCode(인터페이스)의 구현체를 사용합니다. 예외 발생 시, Exception과 FailureCode(인터페이스)의 구현체를 사용합니다.00000
+<br>
 
-**Service, Repository**
+## 📌 API 명세서
+### 1️⃣ [BE] API 명세서
+![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=871 height=516}
+![image](/uploads/9e8285c8c12bd44908c172cc899e5b29/image.png){width=871 height=461}
+![image](/uploads/afa29cc78f5b4d2309a22e24f365746e/image.png){width=871 height=504}
+![image](/uploads/9e87ca1ec81f7841f5fe248ea7e36e0d/image.png){width=871 height=473}
+![image](/uploads/aba6ed9ed7fbf69a96947d8ddd10cc77/image.png){width=871 height=409}
+![image](/uploads/105ceebbb5038f1effef40638fb3253d/image.png){width=871 height=518}
+![image](/uploads/d7f7bab0ce1abaa9cf23b70c24f99906/image.png){width=871 height=517}
+![image](/uploads/f5e0d2a4e7d6639cd93a33b7bb519736/image.png){width=871 height=387}
+![image](/uploads/b966e56b277b55a7d635fff204e2cf74/image.png){width=871 height=500}
+![image](/uploads/d65367e2033991d5d4e72242b049e265/image.png){width=871 height=51}
 
-DB를 호출하는 경우 메서드명에 save, find, update, delete 용어를 사용합니다. 비즈니스 로직일 경우 메서드명에 create, get, update, delete, 그 외 용어를 사용합니다. 복수형은 ${Entity명}s로 표현합니다.
-
----
-
-### **📍 Gitflow 규칙**
-
-- Develop에 직접적인 commit, push는 금지합니다.
-- 커밋 메세지는 다른 사람들이 봐도 이해할 수 있게 써주세요.
-- 작업 이전에 issue 작성 후 pullrequest 와 issue를 연동해 주세요.
-- 풀리퀘스트를 통해 코드 리뷰를 전원이 코드리뷰를 진행합니다.
-- 기능 개발 시 개발 브랜치에서 feature/기능 으로 브랜치를 파서 관리합니다.
-- feature 자세한 기능 한 가지를 담당하며, 기능 개발이 완료되면 각자의 브랜치로 Pull Request를 보냅니다.
-- 각자가 기간 동안 맡은 역할을 전부 수행하면, 각자 브랜치에서 develop브랜치로 Pull Request를 보냅니다.**develop 브랜치로의 Pull Request는 상대방의 코드리뷰 후에 merge할 수 있습니다.**
-
----
-
-### **❗️ branch naming convention**
-
-- develop
-- feature/feature_name/feature_detail
-- fix/feature_detail
-- hotfix/feature_name
-
-예시 >
-
-```
-  feature/ login/ social_login
-```
-
----
-
-### **📋 Code Review Convention**
-
-- P1: 꼭 반영해주세요 (Request changes)
-- P2: 적극적으로 고려해주세요 (Request changes)
-- P3: 웬만하면 반영해 주세요 (Comment)
-- P4: 반영해도 좋고 넘어가도 좋습니다 (Approve)
-- P5: 그냥 사소한 의견입니다 (Approve)
+### 2️⃣ [EM] API 명세서
+![image](/uploads/e0379c5597eef0e6a6f388f9ba7d312e/image.png){width=871 height=496}
+![image](/uploads/98f19db8cbff61d0fb2b758dd7e3ea64/image.png){width=871 height=444}
+![image](/uploads/6d63f3b437c153b553121de808f229eb/image.png){width=871 height=244}

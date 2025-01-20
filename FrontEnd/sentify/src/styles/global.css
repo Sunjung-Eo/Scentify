@@ -1,0 +1,12 @@
+/* Tailwind 기본 적용 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 전체 페이지 기본 스타일 */
+html, body {
+    @apply bg-gray-50 text-gray-900 font-sans;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}

@@ -16,6 +16,7 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'tailwindcss': tailwindcss,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -24,6 +25,8 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       'indent': ['error', 2],  // 추가: 들여쓰기 2 스페이스 적용
+      'tailwindcss/classnames-order': 'warn',  // Tailwind 클래스 정렬 경고
+      'tailwindcss/no-custom-classname': 'off'  // 사용자 정의 클래스 허용
     },
   },
 )

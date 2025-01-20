@@ -13,7 +13,7 @@ CREATE TABLE user (
     social_type INT NOT NULL,
     gender INT NOT NULL,
     birth DATE NOT NULL,
-    main_device_id VARCHAR(255) DEFAULT NULL
+    main_device_id INT DEFAULT NULL
 );
 
 -- 유저 보안 정보 테이블 생성
@@ -26,12 +26,17 @@ CREATE TABLE userSecuinfo (
 -- 그룹 테이블 생성
 CREATE TABLE `group` (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    device_id VARCHAR(255) NOT NULL,
+    device_id INT NOT NULL,
     admin_id VARCHAR(255) NOT NULL,
-    member1 VARCHAR(255),
-    member2 VARCHAR(255),
-    member3 VARCHAR(255),
-    member4 VARCHAR(255),
+    admin_nickname VARCHAR(255) NOT NULL,
+    member_1_id VARCHAR(255),
+    member_1_nickname VARCHAR(255),
+    member_2 VARCHAR(255),
+    member_2_nickname VARCHAR(255),
+    member_3 VARCHAR(255),
+    member_3_nickname VARCHAR(255),
+    member_4 VARCHAR(255),
+    member_4_nickname VARCHAR(255),
     FOREIGN KEY (admin_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
@@ -114,6 +119,7 @@ CREATE TABLE customSchedule (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     `interval` INT NOT NULL,
+    mode_on BOOLEAN  NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (device_id) REFERENCES device(id) ON DELETE CASCADE,

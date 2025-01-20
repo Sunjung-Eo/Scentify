@@ -16,6 +16,7 @@ java {
 repositories {
 	mavenCentral()
 	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 ext {
@@ -37,7 +38,7 @@ dependencies {
 	
 	//S3 관련 의존성
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'io.github.cdimascio:dotenv-java:5.2.2'
+    implementation group: 'io.github.cdimascio', name: 'java-dotenv', version: '5.2.2'
 
     //Mybatis 관련 의존성
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'

@@ -1,0 +1,9 @@
+package com.ssafy.scentify.controller;
+
+public class UserController {
+
+	public UserController() {
+		
+	}
+
+}

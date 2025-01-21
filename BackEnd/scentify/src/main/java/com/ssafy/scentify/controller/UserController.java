@@ -2,27 +2,40 @@ package com.ssafy.scentify.controller;
 
 import jakarta.servlet.http.*;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.ssafy.scentify.service.*;
+import com.ssafy.scentify.util.CodeProvider;
 import com.ssafy.scentify.model.entity.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@Log4j2
+@Slf4j
 @RequestMapping("/v1/user")
 @RestController
 public class UserController {
 	
 	private final UserService userService;
-
-	public UserController(UserService userService) {
+	private final EmailService emailService;
+	private final CodeProvider codeProvider;
+	static final String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"; // 영어 및 숫자 (메일에 허용되는 특수기호) + @ + 영어 및 숫자 + . + 영어 허용
+    static final Pattern emailpattern = Pattern.compile(emailRegex);
+	
+	public UserController(UserService userService, EmailService emailService, CodeProvider codeProvider) {
 		this.userService = userService;
+		this.emailService = emailService;
+		this.codeProvider = codeProvider;
 	}
 	
 	// API 1번 : id 중복 검사
 	@PostMapping("/check-id")
-	public ResponseEntity<Void> checkDuplicateId(@RequestBody Map<String, String> idMap, HttpServletRequest request) {
+	public ResponseEntity<?> checkDuplicateId(@RequestBody Map<String, String> idMap, HttpServletRequest request) {
 	    try {
 	        // 입력값에서 id 추출
 	        String id = idMap.get("id");
@@ -31,8 +44,7 @@ public class UserController {
 	        }
 
 	        // id 중복 여부 확인
-	        User registedUser = userService.selectUserById(id);
-	        if (registedUser != null) {
+	        if (userService.selectUserById(id)) {
 	            return new ResponseEntity<>(HttpStatus.CONFLICT); // 중복된 id
 	        }
 
@@ -46,5 +58,39 @@ public class UserController {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
+	
+	// API 2번 : email 중복확인 후 인증 코드 전송
+	@PostMapping("/email/send-code")
+	public ResponseEntity<?> sendEmailCode(@RequestBody Map<String, String> emailMap, HttpServletRequest request) {
+		try {
+			// 입력값에서 이메일 추출
+			String email = emailMap.get("email");
+			if (email == null || email.isEmpty() || !emailpattern.matcher(email).matches() || email.contains(" ")) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // email가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			// email 중복 여부 확인
+			if (userService.selectUserByEmail(email)) {
+	            return new ResponseEntity<>(HttpStatus.CONFLICT); // 중복된 email
+	        }
+	        
+	        // 8자리 인증 코드 생성
+	        String verifyCode = codeProvider.generateVerificationCode();
+	        emailService.sendVerificationEmail(email, verifyCode);
+	        
+	        // 세션에 email과 발송 인증코드 저장
+	        HttpSession session = request.getSession(false);
+			session.setAttribute("email", email);
+			session.setAttribute("verifyCode", verifyCode);
+	        
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			// 예기치 않은 에러 처리
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 
 }

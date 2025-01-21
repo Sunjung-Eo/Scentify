@@ -3,6 +3,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Pretendard-Bold';
+  src: url('/src/assets/fonts/Pretendard-Bold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard-Medium';
+  src: url('/src/assets/fonts/Pretendard-Medium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Pretendard-Light';
+  src: url('/src/assets/fonts/Pretendard-Light.woff') format('woff');
+}
+
 /* 모바일에서 실제 높이를 계산한 값 적용 */
 :root {
     --vh: 100%;
@@ -39,7 +54,6 @@ html, body {
   width: 100%;
   max-width: 360px;
   height: 60px;
-  background-color: #333;
   color: white;
   display: flex;
   align-items: center;

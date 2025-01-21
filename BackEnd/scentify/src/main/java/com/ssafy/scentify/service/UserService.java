@@ -15,9 +15,12 @@ public class UserService {
 		this.userRepository = userRepository;
 	}
 
-	public User selectUserById(String id) {
-	    User user = userRepository.selectUserById(id);
-		return user != null ? user : null;
+	public boolean selectUserById(String id) {
+		return userRepository.existsById(id) ? true : false;
+	}
+
+	public boolean selectUserByEmail(String email) {
+		return userRepository.existsByEmail(email) ? true : false;
 	}
 
 }

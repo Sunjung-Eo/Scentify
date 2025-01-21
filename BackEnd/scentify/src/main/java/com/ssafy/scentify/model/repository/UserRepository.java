@@ -6,9 +6,11 @@ import com.ssafy.scentify.model.entity.User;
 @Mapper
 public interface UserRepository {
 
-	 @Select("SELECT id FROM user WHERE id = #{id}")
-	    @Results({
-	        @Result(property = "id", column = "id")
-	    })
-	 User selectUserById(String id);
+    // ID 존재 여부 확인
+    @Select("SELECT COUNT(*) > 0 FROM user WHERE id = #{id}")
+    boolean existsById(String id);
+
+    // 이메일 존재 여부 확인
+    @Select("SELECT COUNT(*) > 0 FROM user WHERE email = #{email}")
+    boolean existsByEmail(String email);
 }

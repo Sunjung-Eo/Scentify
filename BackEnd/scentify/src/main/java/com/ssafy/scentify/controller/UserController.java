@@ -39,7 +39,7 @@ public class UserController {
 	    try {
 	        // 입력값에서 id 추출
 	        String id = idMap.get("id");
-	        if (id == null || id.isEmpty()) {
+	        if (id == null || id.equals("") || id.contains(" ")) {
 	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // id가 없거나 빈 값일 경우
 	        }
 
@@ -65,7 +65,7 @@ public class UserController {
 		try {
 			// 입력값에서 이메일 추출
 			String email = emailMap.get("email");
-			if (email == null || email.isEmpty() || !emailpattern.matcher(email).matches() || email.contains(" ")) {
+			if (email == null || email.equals("") || !emailpattern.matcher(email).matches() || email.contains(" ")) {
 	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // email가 없거나 빈 값/ 형식에 맞지 않을 경우
 	        }
 			
@@ -80,6 +80,7 @@ public class UserController {
 	        
 	        // 세션에 email과 발송 인증코드 저장
 	        HttpSession session = request.getSession(false);
+	        if (session == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			session.setAttribute("email", email);
 			session.setAttribute("verifyCode", verifyCode);
 	        
@@ -92,5 +93,27 @@ public class UserController {
 		}
 	}
 	
-
+	// API 3번 : 인증 코드 검증
+	@PostMapping("/email/verify-code")
+	public ResponseEntity<?> verifyEmailCode(@RequestBody Map<String, String> inputCodeMap, HttpServletRequest request) {
+		try {
+			// 입력값에서 코드 추출
+			String inputCode = inputCodeMap.get("code");
+			if (inputCode == null || inputCode.equals("") || inputCode.length() != 8 || inputCode.contains(" ") ){
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // code가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			// 세션에 저장된 인증코드와 비교
+			HttpSession session = request.getSession(false);
+			if (session == null || session.getAttribute("verifyCode") == null || session.getAttribute("verifyCode").equals("")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			String verifyCode = (String) session.getAttribute("verifyCode");
+			if (!inputCode.equals(verifyCode)) new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증코드와 일치하지 않음
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }

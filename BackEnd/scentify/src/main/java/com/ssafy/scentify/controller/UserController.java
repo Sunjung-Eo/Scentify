@@ -152,8 +152,7 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto) {
 		try {
-			userService.login(loginDto);
-			
+			userService.login(loginDto);	
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		

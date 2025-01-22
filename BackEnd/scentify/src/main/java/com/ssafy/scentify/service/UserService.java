@@ -3,6 +3,8 @@ package com.ssafy.scentify.service;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.model.dto.UserDto.LoginDto;
 import com.ssafy.scentify.model.entity.*;
 import com.ssafy.scentify.model.repository.UserRepository;
 import com.ssafy.scentify.model.repository.UserSecuInfoRepository;
@@ -40,6 +42,17 @@ public class UserService {
 		user.setPassword(secuPassword);
 		if (!userRepository.createUser(user)) return false;
 		if (!secuinfoRepository.createSecuInfo(secuInfo)) return false;
+		return true;
+	}
+
+	public boolean login(LoginDto loginDto) {
+		if (secuinfoRepository.getSecuInfoById(loginDto.getId()) == null) return false;
+		UserSecuInfo secuInfo = secuinfoRepository.getSecuInfoById(loginDto.getId());
+		String salt = secuInfo.getSalt();
+		
+		String secuPassword = openCrypt.byteArrayToHex(openCrypt.getSHA256(loginDto.getPassword(), salt));
+		String userPassword = userRepository.getUserById(loginDto.getId());
+		if (!secuPassword.equals(userPassword)) return false;	
 		return true;
 	}
 

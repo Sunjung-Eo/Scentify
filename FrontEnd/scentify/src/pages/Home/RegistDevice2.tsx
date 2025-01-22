@@ -58,7 +58,7 @@ function RegistDevice2() {
 
       {/* Submit Button */}
       <div className="w-full px-4 mb-4">
-        <Link to="/RegistConnecting">
+        <Link to="/home/registconnecting">
           <button className="w-full h-12 px-6 rounded-lg text-gray font-pre-bold border border-gray">
             저장
           </button>
@@ -67,5 +67,4 @@ function RegistDevice2() {
     </>
   );
 }
-
 export default RegistDevice2;

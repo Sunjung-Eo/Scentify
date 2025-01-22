@@ -7,11 +7,6 @@ import Scent from "./pages/Scent/Scent.tsx";
 import My from "./pages/My/My.tsx";
 import "./styles/global.css";
 
-import RegistDevice1 from "./pages/Home/ReigistDevice1.tsx";
-import RegistDevice2 from "./pages/Home/RegistDevice2.tsx";
-import RegistConnecting from "./pages/Home/RegistConnecting.tsx";
-import ConnectSuccess from "./pages/Home/ConnectSuccess.tsx";
-
 const setScreenSize = () => {
   // 실제 뷰포트 높이를 기준으로 CSS 변수 설정
   let vh = window.innerHeight * 0.01;
@@ -31,14 +26,10 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/control" element={<Control />} />
-          <Route path="/scent" element={<Scent />} />
-          <Route path="/my" element={<My />} />
-          <Route path="/registdevice1" element={<RegistDevice1 />} />
-          <Route path="/registdevice2" element={<RegistDevice2 />} />
-          <Route path="/registconnecting" element={<RegistConnecting />} />
-          <Route path="/connectsuccess" element={<ConnectSuccess />} />
+          <Route path="/home/*" element={<Home />} />
+          <Route path="/control/*" element={<Control />} />
+          <Route path="/scent/*" element={<Scent />} />
+          <Route path="/my/*" element={<My />} />
         </Routes>
       </Layout>
     </Router>

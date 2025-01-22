@@ -1,8 +1,13 @@
 package com.ssafy.scentify.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import com.ssafy.scentify.model.entity.*;
 import com.ssafy.scentify.model.repository.UserRepository;
+import com.ssafy.scentify.model.repository.UserSecuInfoRepository;
+import com.ssafy.scentify.util.OpenCrypt;
+
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -10,9 +15,13 @@ import lombok.extern.log4j.Log4j2;
 public class UserService {
 	
 	private final UserRepository userRepository;
+	private final UserSecuInfoRepository secuinfoRepository;
+	private final OpenCrypt openCrypt;
 	
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, UserSecuInfoRepository secuinfoRepository, OpenCrypt openCrypt) {
 		this.userRepository = userRepository;
+		this.secuinfoRepository = secuinfoRepository;
+		this.openCrypt = openCrypt;
 	}
 
 	public boolean selectUserById(String id) {
@@ -21,6 +30,18 @@ public class UserService {
 
 	public boolean selectUserByEmail(String email) {
 		return userRepository.existsByEmail(email) ? true : false;
+	}
+
+	public boolean createUser(User user) {
+		String salt = UUID.randomUUID().toString();
+		UserSecuInfo secuInfo = new UserSecuInfo(user.getId(), salt);
+		
+		String secuPassword = openCrypt.byteArrayToHex(openCrypt.getSHA256(user.getPassword(), salt));
+		user.setPassword(secuPassword);
+		System.out.println("*");
+		if (!userRepository.createUser(user)) return false;
+		if (!secuinfoRepository.createSecuInfo(secuInfo)) return false;
+		return true;
 	}
 
 }

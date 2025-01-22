@@ -24,8 +24,14 @@ public class UserController {
 	private final UserService userService;
 	private final EmailService emailService;
 	private final CodeProvider codeProvider;
-	static final String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"; // 영어 및 숫자 (메일에 허용되는 특수기호) + @ + 영어 및 숫자 + . + 영어 허용
+	
+	// 영어 및 숫자 (메일에 허용되는 특수기호) + @ + 영어 및 숫자 + . + 영어 허용
+	static final String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"; 
     static final Pattern emailpattern = Pattern.compile(emailRegex);
+    
+    // 영어 대소문자 중 1개, 숫자 중 1개, 특수문자 중 1개, 9글자 이상
+    static final String passwordRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=:<>?])[A-Za-z0-9!@#$%^&*()_+\\-=:<>?]{9,}$";
+    static final Pattern passwordPattern = Pattern.compile(passwordRegex);
 	
 	public UserController(UserService userService, EmailService emailService, CodeProvider codeProvider) {
 		this.userService = userService;
@@ -113,7 +119,31 @@ public class UserController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			
+			// 예기치 않은 예외 처리
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// API 4번 : 회원가입
+	@PostMapping("/regist")
+	public ResponseEntity<?> registerUser(@RequestBody User user, HttpServletRequest request) {
+		try {
+			HttpSession session = request.getSession(false);
+			if (session == null || session.getAttribute("id").equals("") 
+					|| session.getAttribute("id") == null || !user.getId().equals(session.getAttribute("id"))) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			// if (session.getAttribute("email").equals("") || session.getAttribute("email") == null
+			//		|| !user.getEmail().equals(session.getAttribute("email"))) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			
+			if(!passwordPattern.matcher(user.getPassword()).matches()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			if (!userService.createUser(user)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			session.invalidate();
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

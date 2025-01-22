@@ -1,11 +1,12 @@
 package com.ssafy.scentify.model.repository;
 
+import java.sql.Date;
+
 import org.apache.ibatis.annotations.*;
 import com.ssafy.scentify.model.entity.User;
 
 @Mapper
 public interface UserRepository {
-
     // ID 존재 여부 확인
     @Select("SELECT COUNT(*) > 0 FROM user WHERE id = #{id}")
     boolean existsById(String id);
@@ -13,4 +14,9 @@ public interface UserRepository {
     // 이메일 존재 여부 확인
     @Select("SELECT COUNT(*) > 0 FROM user WHERE email = #{email}")
     boolean existsByEmail(String email);
+    
+    // 유저 생성
+    @Insert("INSERT INTO User (id, password, nickname, email, img_num, social_type, gender, birth)"
+    		+ "VALUES (#{id}, #{password}, #{nickname}, #{email}, #{imgNum}, #{socialType}, #{gender}, #{birth})")
+	boolean createUser(User user);
 }

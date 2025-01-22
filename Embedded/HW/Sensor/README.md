@@ -22,3 +22,24 @@ HW/Sensor 디렉터리의 Readme는 하드웨어 핀 커넥터를 위해서 만�
 | CLK              | 클록 신호 입력            | Pin23 (SPI SCLK)           |
 | DO               | 데이터 출력 (ADC → Jetson)| Pin21 (SPI MISO)           |
 | DI               | 데이터 입력 (Jetson → ADC)| Pin19 (SPI MOSI)           |
+
+
+## LoadCell + HX711
+
+- 꼭 HX711과 Jetson Orin Nano는 3.3V로 공급해주자.
+
+### LoadCell
+| **LoadCell 핀**   | **설명**                  | **HX711 핀**                  |
+|------------------|---------------------------|----------------------------|
+| E+               | (Excitation, VCC)         | E+                         |
+| E-               | (Excitation, GND)         | E-                         |
+| S+               | (Signal+, OUT+)           | A+                         |
+| S-               | (Signal-, OUT-)           | A-                         |
+
+### HX711
+| **HX711 핀**      | **설명**                  | **Jetson Orin Nano핀**           |
+|------------------|---------------------------|----------------------------|
+| VCC               | Vcc                       | Pin 1 (3.3V)               |
+| GND               | Ground                    | Pin 6 (GND)                |
+| DT                | Sensor Data               | Pin 31 (GPIO 11)           |
+| SCK               | Clock                     | Pin 33 (GPIO 13)           |

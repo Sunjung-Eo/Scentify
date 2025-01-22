@@ -1,4 +1,4 @@
 pyyaml
-websockets
+websockets==13.1
 python-dotenv
 aiomqtt

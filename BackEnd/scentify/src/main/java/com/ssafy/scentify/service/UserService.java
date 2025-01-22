@@ -38,7 +38,6 @@ public class UserService {
 		
 		String secuPassword = openCrypt.byteArrayToHex(openCrypt.getSHA256(user.getPassword(), salt));
 		user.setPassword(secuPassword);
-		System.out.println("*");
 		if (!userRepository.createUser(user)) return false;
 		if (!secuinfoRepository.createSecuInfo(secuInfo)) return false;
 		return true;

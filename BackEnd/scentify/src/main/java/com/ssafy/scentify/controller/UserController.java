@@ -1,6 +1,7 @@
 package com.ssafy.scentify.controller;
 
 import jakarta.servlet.http.*;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,6 +13,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.ssafy.scentify.service.*;
 import com.ssafy.scentify.util.CodeProvider;
+import com.ssafy.scentify.model.dto.UserDto;
 import com.ssafy.scentify.model.entity.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -126,7 +128,7 @@ public class UserController {
 	
 	// API 4번 : 회원가입
 	@PostMapping("/regist")
-	public ResponseEntity<?> registerUser(@RequestBody User user, HttpServletRequest request) {
+	public ResponseEntity<?> registerUser(@RequestBody @Valid User user, HttpServletRequest request) {
 		try {
 			HttpSession session = request.getSession(false);
 			if (session == null || session.getAttribute("id").equals("") 
@@ -145,5 +147,22 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// API 11번 : 로그인
+	@PostMapping("/login")
+	public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto) {
+		try {
+			userService.login(loginDto);
+			
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 }

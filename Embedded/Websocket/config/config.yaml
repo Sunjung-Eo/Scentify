@@ -1,3 +1,10 @@
 websocket:
   host: "0.0.0.0"
   port: 8765
+
+mqtt:
+  broker: "localhost" # MQTT 브로커 IP 주소
+  # broker: "test.mosquitto.org" # 테스트용 공용 무료 브로커
+  port: 1883
+  # topic: "smart-diffuser/data"       # MQTT 기본 토픽
+  # reconnect_delay: 5                 # MQTT 재연결 시도 간격 (초 단위)

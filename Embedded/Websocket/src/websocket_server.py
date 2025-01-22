@@ -2,15 +2,17 @@ import asyncio
 import websockets
 import yaml
 from .auth import AuthManager
+from .mqtt_client import AsyncMQTTClient
 
 class WebSocketServer:
     def __init__(self, config_path: str = 'config/config.yaml'):
         # YAML 설정 읽기
-        with open(config_path, 'r') as file:
+        with open(config_path, 'r', encoding='utf-8') as file:
             config = yaml.safe_load(file)
             self.host = config['websocket']['host']
             self.port = config['websocket']['port']
         self.auth_manager = AuthManager()
+        self.mqtt_client = AsyncMQTTClient(config_path)
         self.websocket = None
 
 
@@ -38,14 +40,21 @@ class WebSocketServer:
         # self.mqtt_client = AsyncMQTTClient(config_path)
         # self.active_connections: Set[websockets.WebSocketServerProtocol] = set()  # WebSocket 클라이언트 목록
 
-    # WebSocket 서버 실행
+
     async def start(self):
+        # MQTT 연결
+        await self.mqtt_client.connect()
+        # WebSocket 서버 실행
         server = await websockets.serve(
             self.handle_websocket,
             self.host,
             self.port
-            )
+        )
+        # mqtt_task = asyncio.create_task(
+        # self.mqtt_client.subscribe(self.process_mqtt_message)
+        # )
         # 비동기 작업 실행 및 관리
         await asyncio.gather(
-            await server.wait_closed()  # 웹소켓 계속 연결
+            server.wait_closed(),  # 웹소켓 계속 연결
+            # mqtt_task
         )

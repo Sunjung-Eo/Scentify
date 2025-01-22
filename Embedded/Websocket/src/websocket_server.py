@@ -40,21 +40,15 @@ class WebSocketServer:
         # self.mqtt_client = AsyncMQTTClient(config_path)
         # self.active_connections: Set[websockets.WebSocketServerProtocol] = set()  # WebSocket 클라이언트 목록
 
-
     async def start(self):
-        # MQTT 연결
-        await self.mqtt_client.connect()
         # WebSocket 서버 실행
         server = await websockets.serve(
             self.handle_websocket,
             self.host,
             self.port
         )
-        # mqtt_task = asyncio.create_task(
-        # self.mqtt_client.subscribe(self.process_mqtt_message)
-        # )
-        # 비동기 작업 실행 및 관리
-        await asyncio.gather(
-            server.wait_closed(),  # 웹소켓 계속 연결
-            # mqtt_task
-        )
+
+        mqtt_task = asyncio.create_task(self.mqtt_client.connect())
+        await asyncio.gather(server.wait_closed(), mqtt_task)
+
+        

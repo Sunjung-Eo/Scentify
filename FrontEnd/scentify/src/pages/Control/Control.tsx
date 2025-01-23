@@ -5,22 +5,27 @@ import ReservationManager from "../../feature/control/reservation/ReservationMan
 import AutoManager from "../../feature/control/automation/AutoManager";
 import ModeChangeModal from "../../feature/control/main/ModeChangeModal";
 import "../../styles/global.css";
+import RemoteIcon from "../../assets/icons/remote-icon.svg";
 
 const Control = () => {
+  // mode - 어떤 모드인지 백엔드에 전달할 것
   const [mode, setMode] = useState<Mode>(false);
   const [isModal, setIsModal] = useState<boolean>(false);
   const [nextMode, setNextMode] = useState<Mode>(false);
+  const [isFirstRender, setIsFirstRender] = useState<boolean>(true);
   // 다른 모드 클릭 시 모달 표시
-  const handleModeChangeRequest = (newMode: Mode) => {
+  const handleModeChange = (newMode: Mode) => {
     if (mode !== newMode) {
       setNextMode(newMode);
       setIsModal(true);
     }
   };
   // 모달 창 확인 버튼
+  // 확인 눌렀을 때 백엔드에 전달하는 추가 로직 필요
   const handleConfirm = () => {
     setMode(nextMode);
     setIsModal(false);
+    setIsFirstRender(false);
   };
   // 모달 창 취소 버튼
   const handleCancel = () => {
@@ -28,17 +33,23 @@ const Control = () => {
   };
 
   return (
-    <div className="content">
+    <div className="content pt-5">
       <div className="flex flex-col w-full px-4">
         <div>
-          <h2 className="font-pre-medium text-xl mb-4">모드 설정</h2>
-          <ModeToggle
-            currentMode={mode}
-            onModeChange={handleModeChangeRequest}
-          />
+          <div className="flex mb-4 items-center gap-1">
+            <img src={RemoteIcon} alt="리모컨 이미지" />
+            <h2 className="mt-0.5 font-pre-medium text-xl">모드 설정</h2>
+          </div>
+          <ModeToggle currentMode={mode} onModeChange={handleModeChange} />
         </div>
-        <div className="mt-16 font-pre-medium text-xl">
-          {mode === false ? <ReservationManager /> : <AutoManager />}
+        <div className="mt-14 font-pre-medium text-xl">
+          {isFirstRender ? (
+            <ReservationManager />
+          ) : mode === false ? (
+            <ReservationManager />
+          ) : (
+            <AutoManager />
+          )}
           {isModal && (
             <ModeChangeModal
               nextMode={nextMode}

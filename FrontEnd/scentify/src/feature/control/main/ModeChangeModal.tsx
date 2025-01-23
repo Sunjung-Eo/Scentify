@@ -12,20 +12,20 @@ export default function ModeChangeModal({
 
   return (
     <div className="justify-center items-center z-50 p-6">
-      <div className="flex flex-col bg-component rounded-lg font-pre-light text-sm w-full p-10 h-[200px]">
+      <div className="flex flex-col w-full h-[200px] p-10 bg-component font-pre-light text-sm rounded-lg">
         <p className="text-center mb-6">
           {getModeName()}모드로 변경하시겠습니까?
         </p>
-        <div className="flex justify-center space-x-20 mt-auto">
+        <div className="flex mt-auto justify-between">
           <button
             onClick={onConfirm}
-            className="px-4 py-2 border border-lightgray rounded-lg"
+            className="w-[65px] h-[30px] border border-lightgray text-xs rounded-lg"
           >
             확인
           </button>
           <button
             onClick={onCancel}
-            className="px-4 py-2 border border-lightgray rounded-lg"
+            className="w-[65px] h-[30px] border border-lightgray text-xs rounded-lg"
           >
             취소
           </button>

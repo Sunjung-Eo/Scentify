@@ -6,14 +6,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.ssafy.scentify.util.TokenFilter;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,26 +21,24 @@ public class SecurityConfig {
 
     private final TokenFilter tokenFilter;
 
-    public SecurityConfig(TokenFilter jwtFilter) {
-        this.tokenFilter = jwtFilter;
+    public SecurityConfig(TokenFilter tokenFilter) {
+        this.tokenFilter = tokenFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .requestMatchers("/v1/user/login").permitAll()
-                .requestMatchers("/v1/user/check-id").permitAll()
-                .requestMatchers("/v1/user/email/send-code").permitAll()
-                .requestMatchers("/v1/user/email/verify-code").permitAll()
-                .requestMatchers("/v1/user/regist").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+        http.csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/v1/user/login", "/v1/user/check-id", 
+                                 "/v1/user/email/send-code", "/v1/user/email/verify-code",
+                                 "/v1/user/regist", "/error", 
+                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
+                .permitAll()
                 .anyRequest().authenticated()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
-
+            )
+            .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        log.info("SecurityContextHolder Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
         return http.build();
     }
 
@@ -56,4 +52,3 @@ public class SecurityConfig {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 }
-

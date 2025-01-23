@@ -19,4 +19,8 @@ public interface UserRepository {
     @Insert("INSERT INTO User (id, password, nickname, email, img_num, social_type, gender, birth)"
     		+ "VALUES (#{id}, #{password}, #{nickname}, #{email}, #{imgNum}, #{socialType}, #{gender}, #{birth})")
 	boolean createUser(User user);
+    
+    // id로 유저 비밀번호 찾기
+    @Select("SELECT password FROM user WHERE id = #{id}")
+	String getUserById(String id);
 }

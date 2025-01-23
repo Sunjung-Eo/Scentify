@@ -1,17 +1,26 @@
 import React from "react";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useHeaderStore } from "../stores/useHeaderStore";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+
+const Layout = ({ children }: LayoutProps) => {
+    
+  const { isFinish, isCancel } = useHeaderStore();
+
   return (
-    <div className="app">
-      <Header />
-      <main className="flex flex-col justify-between content pt-[60px] pb-[40px] flex-grow">
-        {children}
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default Layout;
+      <div className="app">
+        <Header isFinish={isFinish} isCancel={isCancel} />
+        <main className="content flex flex-grow justify-center">
+          {children}
+        </main>
+        <Footer />
+      </div>
+    );
+  };
+  
+  export default Layout;

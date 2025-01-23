@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import HomeIcon from '../assets/icons/home-icon.svg?react';
 import ControlIcon from '../assets/icons/control-icon.svg?react';
-import ScentIcon from '../assets/icons/home-icon.svg?react';
+import ScentIcon from '../assets/icons/scent-icon.svg?react';
 import MyIcon from '../assets/icons/my-icon.svg?react';
 import '../styles/footer.css';
 
@@ -10,7 +10,7 @@ const Footer = () => {
   const location = useLocation();
 
   const tabs = [
-    { id: 'home', icon: HomeIcon, path: '/' },
+    { id: 'home', icon: HomeIcon, path: '/home' },
     { id: 'control', icon: ControlIcon, path: '/control' },
     { id: 'scent', icon: ScentIcon, path: '/scent' },
     { id: 'my', icon: MyIcon, path: '/my' },

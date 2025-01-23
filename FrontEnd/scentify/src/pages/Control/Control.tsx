@@ -6,5 +6,5 @@ const Control = () => {
     );
   };
   
-  export default Control;
+export default Control;
   

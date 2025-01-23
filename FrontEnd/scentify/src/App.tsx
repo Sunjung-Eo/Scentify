@@ -1,10 +1,14 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from './stores/useAuthStore.ts';
 import Layout from './layout/Layout.tsx';
-import Home from './pages/Home/Home.tsx';
-import Control from './pages/Control/Control.tsx';
-import Scent from './pages/Scent/Scent.tsx';
-import My from './pages/My/My.tsx';
+import Home from './pages/Home/home.tsx';
+import Control from './pages/Control/control.tsx';
+import Scent from './pages/Scent/scent.tsx';
+import My from './pages/My/my.tsx';
+import Start from './pages/Start/start.tsx';
+import Login from './pages/Login/login.tsx';
+
 import './styles/global.css';
 
 
@@ -14,6 +18,8 @@ const setScreenSize = () => {
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 };
 function App() {
+  const { isAuthenticated } = useAuthStore();
+
   useEffect(() => {
     setScreenSize(); // 초기 로드 시 실행
     window.addEventListener('resize', setScreenSize); // 창 크기 변경 시 업데이트
@@ -25,14 +31,27 @@ function App() {
 
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/control" element={<Control />} />
-          <Route path="/scent" element={<Scent />} />
-          <Route path="/my" element={<My />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/" element={<Start />} />
+        <Route path="/auth" element={<Login />} />
+        {isAuthenticated ? (
+          <Route
+            path="/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/control" element={<Control />} />
+                  <Route path="/scent" element={<Scent />} />
+                  <Route path="/my" element={<My />} />
+                </Routes>
+              </Layout>
+            }
+          />
+        ) : (
+          <Route path="/*" element={<Navigate to="/auth" replace />} />
+        )}
+      </Routes>
     </Router>
   );
 }

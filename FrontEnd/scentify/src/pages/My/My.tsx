@@ -6,5 +6,5 @@ const My = () => {
     );
   };
   
-  export default My;
+export default My;
   

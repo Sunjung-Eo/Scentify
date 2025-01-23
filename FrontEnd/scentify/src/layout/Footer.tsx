@@ -10,7 +10,7 @@ const Footer = () => {
   const location = useLocation();
 
   const tabs = [
-    { id: 'home', icon: HomeIcon, path: '/' },
+    { id: 'home', icon: HomeIcon, path: '/home' },
     { id: 'control', icon: ControlIcon, path: '/control' },
     { id: 'scent', icon: ScentIcon, path: '/scent' },
     { id: 'my', icon: MyIcon, path: '/my' },

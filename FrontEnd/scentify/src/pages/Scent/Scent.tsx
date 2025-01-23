@@ -6,5 +6,5 @@ const Scent = () => {
     );
   };
   
-  export default Scent;
+export default Scent;
   

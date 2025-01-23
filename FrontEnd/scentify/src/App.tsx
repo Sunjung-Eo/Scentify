@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/useAuthStore.ts';
 import Layout from './layout/Layout.tsx';
-import Home from './pages/Home/home.tsx';
-import Control from './pages/Control/control.tsx';
-import Scent from './pages/Scent/scent.tsx';
-import My from './pages/My/my.tsx';
+import Home from './pages/Home/Home.tsx';
+import Control from './pages/Control/Control.tsx';
+import Scent from './pages/Scent/Scent.tsx';
+import My from './pages/My/My.tsx';
 import Start from './pages/Start/start.tsx';
-import Login from './pages/Login/login.tsx';
+import Login from './pages/Login/Login.tsx';
 
 import './styles/global.css';
 
@@ -33,7 +33,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Start />} />
-        <Route path="/auth" element={<Login />} />
+        <Route path="/user" element={<Login />} />
         {isAuthenticated ? (
           <Route
             path="/*"
@@ -49,7 +49,7 @@ function App() {
             }
           />
         ) : (
-          <Route path="/*" element={<Navigate to="/auth" replace />} />
+          <Route path="/*" element={<Navigate to="/user" replace />} />
         )}
       </Routes>
     </Router>

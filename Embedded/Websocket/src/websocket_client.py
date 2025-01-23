@@ -1,8 +1,9 @@
 import asyncio
 import websockets
 import hashlib
-import subprocess
-import base64
+import json
+
+from utils import get_serial_number, get_access_token
 
 class WebSocketClient:
     def __init__(self, uri, serial_number):
@@ -14,6 +15,8 @@ class WebSocketClient:
         # self.serial_number = "f5tH8jW9qA2D1Z7n"
         self.__serial_number = serial_number
 
+    
+
     # 연결 테스트 코드
     async def test_websocket_connection(self, ):
         
@@ -24,7 +27,11 @@ class WebSocketClient:
         }
 
         async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
-            print("웹소켓 연결 성공!")
+            data = {"token" : get_access_token(self.__serial_number), "type" : "DeviceStatus/Camera/SimpleDetection"}
+            json_data = json.dumps(data)
+            await websocket.send(json_data)
+            print(json_data)
+
             while True:
                 response = await websocket.recv()
                 print(f"서버로부터 받은 메시지: {response}")
@@ -32,12 +39,7 @@ class WebSocketClient:
 
 if __name__ == '__main__':
     # 라즈베리파이 시리얼 넘버 파싱
-    serial_number = subprocess.run(
-        "cat /proc/cpuinfo | grep Serial | awk '{print $3}'",
-        shell=True,
-        capture_output=True,
-        text=True
-    ).stdout.strip()
+    serial_number = get_serial_number()
 
     # 웹 소켓 객체 생성
     websocket_client = WebSocketClient("ws://0.0.0.0:8765", serial_number)

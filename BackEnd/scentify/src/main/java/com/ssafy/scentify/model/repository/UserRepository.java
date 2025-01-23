@@ -21,6 +21,6 @@ public interface UserRepository {
 	boolean createUser(User user);
     
     // id로 유저 비밀번호 찾기
-    @Select("SELECT password FROM user WEHRE id = #{id}")
+    @Select("SELECT password FROM user WHERE id = #{id}")
 	String getUserById(String id);
 }

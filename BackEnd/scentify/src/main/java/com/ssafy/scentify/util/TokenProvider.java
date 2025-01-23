@@ -7,6 +7,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.ssafy.scentify.model.dto.TokenDto;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -18,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 public class TokenProvider implements InitializingBean {
 	@Value("${JWT_SECRET_KEY}")
 	private String secretKeyPlain;
+	private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 30; // 30분
+	private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24; // 1일
 	
 	private static SecretKey secretKey;
 	private final OpenCrypt openCrypt;
@@ -32,28 +36,28 @@ public class TokenProvider implements InitializingBean {
 		this.openCrypt = openCrypt;
 	}
 	
-	// access 토큰을 만드는 메서드 (유효시간 : 30분)
-	public String createJwtToken(String id) {
+	// 토큰 DTO를 만드는 메서드 
+	public TokenDto createJwtToken(String id) {
 		Date now = new Date();
-		return Jwts.builder()
-					.claim("id", id)
-					.setIssuedAt(new Date())
-					.setExpiration(new Date(now.getTime() + 1000 * 60 * 30))
-					.signWith(secretKey, SignatureAlgorithm.HS256)
-					.compact();
-	}
-	
-	// refresh 토큰을 만드는 메서드
-	public String createRefreshToken() {
-		Date now = new Date();
-		Date validity = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+		String accessToken =  Jwts.builder()
+									.claim("id", id)
+									.setIssuedAt(now)
+									.setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION))
+									.signWith(SignatureAlgorithm.HS256, secretKey)
+									.compact();
+		
 		String refreshToken = Jwts.builder()
-								  .setIssuedAt(now)
-								  .setExpiration(validity)
-								  .signWith(secretKey, SignatureAlgorithm.HS256)
-								  .compact();
-		return refreshToken;
+				  					.setIssuedAt(now)
+				  					.setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION))
+				  					.signWith(SignatureAlgorithm.HS256, secretKey)
+				  					.compact();
+		return TokenDto.builder()
+                		.grantType("Bearer")
+                		.accessToken(accessToken)
+                		.refreshToken(refreshToken)
+                		.build();
 	}
+
 	
 	// 토큰을 검증하는 메서드 
 	public boolean vaildateJwtToken(String token) {
@@ -70,12 +74,12 @@ public class TokenProvider implements InitializingBean {
 	
 	// 토큰에 있는 사용자 id 정보를 가져오는 메서드
 	public String getInfo(String token) {
-		String encryptedClientIp = Jwts.parserBuilder()
-										.setSigningKey(secretKey)
-										.build()
-										.parseClaimsJws(token)
-										.getBody()
-										.get("id", String.class);
-		return encryptedClientIp;
+		String useId = Jwts.parserBuilder()
+							.setSigningKey(secretKey)
+							.build()
+							.parseClaimsJws(token)
+							.getBody()
+							.get("id", String.class);
+		return useId;
 	}
 }

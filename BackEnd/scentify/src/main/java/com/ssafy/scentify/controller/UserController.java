@@ -13,6 +13,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.ssafy.scentify.service.*;
 import com.ssafy.scentify.util.CodeProvider;
+import com.ssafy.scentify.util.TokenProvider;
+import com.ssafy.scentify.model.dto.TokenDto;
 import com.ssafy.scentify.model.dto.UserDto;
 import com.ssafy.scentify.model.entity.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +27,9 @@ public class UserController {
 	
 	private final UserService userService;
 	private final EmailService emailService;
+	private final TokenService tokenService;
 	private final CodeProvider codeProvider;
+	private final TokenProvider tokenProvider;
 	
 	// 영어 및 숫자 (메일에 허용되는 특수기호) + @ + 영어 및 숫자 + . + 영어 허용
 	static final String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"; 
@@ -35,10 +39,12 @@ public class UserController {
     static final String passwordRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=:<>?])[A-Za-z0-9!@#$%^&*()_+\\-=:<>?]{9,}$";
     static final Pattern passwordPattern = Pattern.compile(passwordRegex);
 	
-	public UserController(UserService userService, EmailService emailService, CodeProvider codeProvider) {
+	public UserController(UserService userService, EmailService emailService, TokenService tokenService, CodeProvider codeProvider, TokenProvider tokenProvider) {
 		this.userService = userService;
 		this.emailService = emailService;
+		this.tokenService = tokenService;
 		this.codeProvider = codeProvider;
+		this.tokenProvider = tokenProvider;
 	}
 	
 	// API 1번 : id 중복 검사
@@ -150,18 +156,43 @@ public class UserController {
 	
 	// API 11번 : 로그인
 	@PostMapping("/login")
-	public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto) {
-		try {
-			userService.login(loginDto);	
-			
-			return new ResponseEntity<>(HttpStatus.OK);
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-			
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+    public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto) {
+        try {
+        	int status = userService.login(loginDto);
+
+        	if (status == 403) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        	
+            if (status == 401) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+            
+            TokenDto tokenDto = tokenProvider.createJwtToken(loginDto.getId());
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", tokenDto.getGrantType() + " " + tokenDto.getAccessToken());
+            headers.add("Refresh-Token", tokenDto.getRefreshToken());
+            
+            return ResponseEntity.ok().headers(headers).build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 	
-	
+	@PostMapping("/logout")
+	 public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.substring(7);
+
+        if (tokenProvider.vaildateJwtToken(accessToken)) {
+            long expirationTime = tokenProvider.getInfo(accessToken).length();
+            tokenService.addToBlacklist(accessToken, expirationTime);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 }

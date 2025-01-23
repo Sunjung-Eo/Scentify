@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.ssafy.scentify.service.TokenService;
+
 import java.io.IOException;
 
 @Slf4j
@@ -23,28 +25,27 @@ public class TokenFilter extends OncePerRequestFilter {
     @Autowired
     private TokenProvider tokenProvider;
     @Autowired
-    private UserDetailsService userDetailsService;
+    private TokenService tokenService;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
-        String token = null;
-        String userId = null;
-
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7);
-            userId = tokenProvider.getInfo(token);
-        }
+            String accessToken = authorizationHeader.substring(7);
 
-        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+            // 블랙리스트 확인
+            if (tokenService.isBlacklisted(accessToken)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
 
-            if (tokenProvider.vaildateJwtToken(token)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            // 토큰 검증
+            if (tokenProvider.vaildateJwtToken(accessToken)) {
+                String userId = tokenProvider.getInfo(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(
+                        new UsernamePasswordAuthenticationToken(userId, null, null));
             }
         }
         chain.doFilter(request, response);

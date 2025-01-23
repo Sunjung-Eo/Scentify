@@ -45,15 +45,15 @@ public class UserService {
 		return true;
 	}
 
-	public boolean login(LoginDto loginDto) {
-		if (secuinfoRepository.getSecuInfoById(loginDto.getId()) == null) return false;
+	public int login(LoginDto loginDto) {
+		if (secuinfoRepository.getSecuInfoById(loginDto.getId()) == null) return 403;
 		UserSecuInfo secuInfo = secuinfoRepository.getSecuInfoById(loginDto.getId());
 		String salt = secuInfo.getSalt();
 		
 		String secuPassword = openCrypt.byteArrayToHex(openCrypt.getSHA256(loginDto.getPassword(), salt));
 		String userPassword = userRepository.getUserById(loginDto.getId());
-		if (!secuPassword.equals(userPassword)) return false;	
-		return true;
+		if (!secuPassword.equals(userPassword)) return 401;	
+		return 200;
 	}
 
 }

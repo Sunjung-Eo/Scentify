@@ -22,18 +22,21 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
     private final TokenFilter tokenFilter;
-    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(TokenFilter jwtFilter, UserDetailsService userDetailsService) {
+    public SecurityConfig(TokenFilter jwtFilter) {
         this.tokenFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/v1/user/login").permitAll()
+                .requestMatchers("/v1/user/check-id").permitAll()
+                .requestMatchers("/v1/user/email/send-code").permitAll()
+                .requestMatchers("/v1/user/email/verify-code").permitAll()
+                .requestMatchers("/v1/user/regist").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -50,11 +53,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder())
-                .and()
-                .build();
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 }
 

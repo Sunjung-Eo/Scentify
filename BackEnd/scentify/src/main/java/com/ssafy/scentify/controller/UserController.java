@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.ssafy.scentify.service.*;
 import com.ssafy.scentify.util.CodeProvider;
 import com.ssafy.scentify.util.TokenProvider;
+import com.amazonaws.http.HttpResponse;
 import com.ssafy.scentify.model.dto.TokenDto;
 import com.ssafy.scentify.model.dto.UserDto;
 import com.ssafy.scentify.model.entity.*;
@@ -169,13 +170,22 @@ public class UserController {
             }
             
             TokenDto tokenDto = tokenProvider.createJwtToken(loginDto.getId());
+            tokenService.saveRefreshToken(loginDto.getId(), tokenDto.getRefreshToken());
             
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", tokenDto.getGrantType() + " " + tokenDto.getAccessToken());
-            headers.add("Refresh-Token", tokenDto.getRefreshToken());
+            Cookie refreshTokenCookie = tokenProvider.createCookie(tokenDto.getRefreshToken());
+            String cookieHeader = String.format("%s=%s; HttpOnly; Secure; Path=%s; Max-Age=%d",
+                refreshTokenCookie.getName(),
+                refreshTokenCookie.getValue(),
+                refreshTokenCookie.getPath(),
+                refreshTokenCookie.getMaxAge()
+            );
+
+            headers.add("Set-Cookie", cookieHeader);
             
             return ResponseEntity.ok().headers(headers).build();
-
+            		
         } catch (Exception e) {
             e.printStackTrace();
             
@@ -186,10 +196,11 @@ public class UserController {
 	@PostMapping("/logout")
 	 public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
         String accessToken = authorizationHeader.substring(7);
-
+        
         if (tokenProvider.vaildateJwtToken(accessToken)) {
-            long expirationTime = tokenProvider.getInfo(accessToken).length();
-            tokenService.addToBlacklist(accessToken, expirationTime);
+            long expiration = tokenProvider.getExpiration(accessToken).getTime();
+            tokenService.addToBlacklist(accessToken, expiration);
+            
             return new ResponseEntity<>(HttpStatus.OK);
         }
         

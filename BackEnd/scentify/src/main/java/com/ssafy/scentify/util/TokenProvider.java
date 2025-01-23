@@ -13,6 +13,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,13 +41,14 @@ public class TokenProvider implements InitializingBean {
 	public TokenDto createJwtToken(String id) {
 		Date now = new Date();
 		String accessToken =  Jwts.builder()
-									.claim("id", id)
+									.setSubject(id)
 									.setIssuedAt(now)
 									.setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION))
 									.signWith(SignatureAlgorithm.HS256, secretKey)
 									.compact();
 		
 		String refreshToken = Jwts.builder()
+									.setSubject(id)
 				  					.setIssuedAt(now)
 				  					.setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION))
 				  					.signWith(SignatureAlgorithm.HS256, secretKey)
@@ -57,7 +59,21 @@ public class TokenProvider implements InitializingBean {
                 		.refreshToken(refreshToken)
                 		.build();
 	}
-
+	
+	
+	// 쿠키를 만드는 메서드
+	public Cookie createCookie(String refreshToken) {
+        String cookieName = "refreshtoken";
+        String cookieValue = refreshToken;
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+       
+        // 쿠키 속성 설정
+        cookie.setHttpOnly(true);  
+        cookie.setSecure(true); 
+        cookie.setPath("/"); 
+        cookie.setMaxAge(60 * 60 * 24);
+        return cookie;
+	}
 	
 	// 토큰을 검증하는 메서드 
 	public boolean vaildateJwtToken(String token) {
@@ -66,6 +82,7 @@ public class TokenProvider implements InitializingBean {
 				.setSigningKey(secretKey)
 				.build()
 				.parseClaimsJws(token);
+			
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -73,13 +90,25 @@ public class TokenProvider implements InitializingBean {
 	}
 	
 	// 토큰에 있는 사용자 id 정보를 가져오는 메서드
-	public String getInfo(String token) {
-		String useId = Jwts.parserBuilder()
+	public String getId(String token) {
+		String userId = Jwts.parserBuilder()
 							.setSigningKey(secretKey)
 							.build()
 							.parseClaimsJws(token)
 							.getBody()
-							.get("id", String.class);
-		return useId;
+							.getSubject();
+		log.info("Extracted User ID: {}", userId);
+		return userId;
+	}
+	
+	// 토큰의 만료 시간 정보를 가져오는 메서드
+	public Date getExpiration(String token) {
+		Date expiration = Jwts.parserBuilder()
+                				.setSigningKey(secretKey)
+                				.build()
+                				.parseClaimsJws(token)
+                				.getBody()
+                				.getExpiration();
+		return expiration;
 	}
 }

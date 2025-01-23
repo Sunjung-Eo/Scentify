@@ -19,7 +19,6 @@ class WebSocketClient:
 
     # 연결 테스트 코드
     async def test_websocket_connection(self, ):
-        
         token = hashlib.sha256(self.__serial_number.encode()).hexdigest()
 
         headers = {
@@ -27,14 +26,22 @@ class WebSocketClient:
         }
 
         async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
-            data = {"token" : get_access_token(self.__serial_number), "type" : "DeviceStatus/Camera/SimpleDetection"}
-            json_data = json.dumps(data)
+            msg = self.make_message(dict_data = {"type" : "DeviceStatus/Camera/SimpleDetection"})
+            json_data = json.dumps(msg)
             await websocket.send(json_data)
             print(json_data)
 
             while True:
                 response = await websocket.recv()
                 print(f"서버로부터 받은 메시지: {response}")
+
+    def make_message(self, dict_data):
+        merge_dict = dict_data.copy()
+        dict_token = {"token" : get_access_token(self.__serial_number)}
+        merge_dict.update(dict_token)
+
+        return merge_dict
+
 
 
 if __name__ == '__main__':

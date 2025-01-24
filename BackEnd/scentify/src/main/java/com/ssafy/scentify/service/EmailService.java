@@ -15,7 +15,7 @@ import javax.mail.*;
 @Slf4j
 @Service
 public class EmailService {
-	@Value("${GOOGLE_EMAIL}") private String fromEmail;
+	@Value("${NAVER_USERNAME}") private String fromEmail;
 	private final JavaMailSender mailSender;
 	private final TemplateEngine templateEngine;
 	

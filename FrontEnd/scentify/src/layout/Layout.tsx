@@ -13,7 +13,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   const showHeaderPaths = ["/home", "/scent", "/control", "/my", "/user"];
   const showHeader = showHeaderPaths.some((path) =>
-    location.pathname.startsWith(path)
+    location.pathname.startsWith(path),
   );
 
   const showBack =

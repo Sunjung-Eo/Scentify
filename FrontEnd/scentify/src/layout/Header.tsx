@@ -1,7 +1,6 @@
 import React from "react";
 import Logo from "../assets/icons/scentify-green-logo.svg?react";
 import FinishButton from "../components/Button/Button";
-import CancelBtn from "../assets/icons/cancel-btn.svg";
 import BackBtn from "../assets/icons/back-arrow-btn.svg?react";
 import AddBtn from "../assets/icons/add-btn.svg?react";
 
@@ -19,21 +18,21 @@ const Header = ({
   showAdd,
 }: HeaderProps) => {
   return (
-    <header className="header w-full flex flex-row justify-between items-center px-5">
+    <header className="header flex w-full flex-row items-center justify-between px-5">
       {showBack ? (
         <button onClick={() => window.history.back()}>
           <BackBtn />
         </button>
       ) : (
-        <div className="w-[65px] h-[30px]" />
+        <div className="h-[30px] w-[65px]" />
       )}
-      <div className="absolute left-1/2 transform -translate-x-1/2">
+      <div className="absolute left-1/2 -translate-x-1/2 transform">
         <Logo />
       </div>
       {showFinish ? (
         <FinishButton />
       ) : showDeviceManage ? (
-        <button className="text-14 text-black font-pre-light tracking-[-1px]">
+        <button className="font-pre-light text-14 tracking-[-1px] text-black">
           기기 관리/추가
         </button>
       ) : showAdd ? (
@@ -41,7 +40,7 @@ const Header = ({
           <AddBtn />
         </button>
       ) : (
-        <div className="w-[65px] h-[30px]" />
+        <div className="h-[30px] w-[65px]" />
       )}
     </header>
   );

@@ -1,5 +1,3 @@
-
-
 ```
 sentify
 ├─ .gitignore

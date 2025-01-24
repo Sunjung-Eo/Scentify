@@ -24,7 +24,7 @@ export default function ReservationManager() {
   // 삭제 모달
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [reservationDelete, setReservationDelete] = useState<string | null>(
-    null
+    null,
   );
   const handleDeleteClick = (reservation: string) => {
     setReservationDelete(reservation);
@@ -33,6 +33,7 @@ export default function ReservationManager() {
   const handleDeleteConfirm = () => {
     // 삭제 API 호출 추가
     if (reservationDelete) {
+      // TODO: 추후 로직 추가 예정
     }
     setDeleteModalOpen(false);
     setReservationDelete(null);
@@ -49,7 +50,7 @@ export default function ReservationManager() {
           <img src={AlarmIcon} alt="알람 이미지" />
           <h2>예약 관리</h2>
         </div>
-        <div className="absolute top-[-4px] left-[209px] z-40">
+        <div className="absolute left-[209px] top-[-4px] z-40">
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
@@ -62,11 +63,11 @@ export default function ReservationManager() {
           {reservations[selectedDevice].map((reservation, index) => (
             <div
               key={index}
-              className="flex p-3 border-b border-lightgray justify-between"
+              className="border-b flex justify-between border-lightgray p-3"
             >
-              <div className="font-pre-medium text-base">{reservation}</div>
+              <div className="text-base font-pre-medium">{reservation}</div>
               <div className="flex flex-col justify-between gap-3">
-                <div className="flex gap-2 justify-between">
+                <div className="flex justify-between gap-2">
                   {/* 찜하기 버튼 상태는 Scent탭 눌렀을 때 적용 */}
                   <HeartButton
                     isLiked={heartStatus[reservation]}
@@ -83,7 +84,7 @@ export default function ReservationManager() {
                 </div>
                 <button
                   onClick={() => handleDeleteClick(reservation)}
-                  className="w-[65px] h-[30px] border border-lightgray font-pre-light text-xs rounded-lg"
+                  className="border text-xs h-[30px] w-[65px] rounded-lg border-lightgray font-pre-light"
                 >
                   삭제
                 </button>
@@ -98,7 +99,7 @@ export default function ReservationManager() {
           )}
         </div>
       ) : (
-        <p className="mt-40 font-pre-light text-sm text-gray text-center">
+        <p className="text-sm mt-40 text-center font-pre-light text-gray">
           + 버튼을 눌러 예약을 설정해주세요.
         </p>
       )}

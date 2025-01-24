@@ -19,7 +19,7 @@ import "./styles/global.css";
 
 const setScreenSize = () => {
   // 실제 뷰포트 높이를 기준으로 CSS 변수 설정
-  let vh = window.innerHeight * 0.01;
+  const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 };
 function App() {

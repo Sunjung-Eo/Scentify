@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import Login from "../../pages/Login/Login";
 import Regist from "./register/Regist";
 
 const UserRoutes = () => {

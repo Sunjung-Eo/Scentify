@@ -21,7 +21,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -45,7 +45,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-[360px] flex flex-col gap-2.5"
+      className="flex w-full max-w-[360px] flex-col gap-2.5"
     >
       {/* 아이디 */}
       <div className="flex gap-2">
@@ -55,13 +55,13 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           value={formData.id}
           onChange={handleChange}
           placeholder="아이디"
-          className="flex-1 h-[44px] px-4 border bg-component rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border h-[44px] flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <button type="button" className="h-[44px] px-4 bg-lightgray rounded-lg">
+        <button type="button" className="h-[44px] rounded-lg bg-lightgray px-4">
           중복 확인
         </button>
       </div>
-      {errors.id && <p className="text-red-500 text-[12px]">{errors.id}</p>}
+      {errors.id && <p className="text-[12px] text-red-500">{errors.id}</p>}
 
       {/* 닉네임 */}
       <input
@@ -70,7 +70,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
         value={formData.nickname}
         onChange={handleChange}
         placeholder="닉네임"
-        className="h-[44px] px-4 border bg-component rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border h-[44px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
       {/* 비밀번호 */}
@@ -80,7 +80,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
         value={formData.password}
         onChange={handleChange}
         placeholder="비밀번호"
-        className="h-[44px] px-4 border bg-component rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border h-[44px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
       {/* 비밀번호 확인 */}
@@ -90,10 +90,10 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
         value={formData.confirmPassword}
         onChange={handleChange}
         placeholder="비밀번호 확인"
-        className="h-[44px] px-4 border bg-component rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border h-[44px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       {errors.confirmPassword && (
-        <p className="text-red-500 text-[12px]">{errors.confirmPassword}</p>
+        <p className="text-[12px] text-red-500">{errors.confirmPassword}</p>
       )}
 
       {/* 생년월일 */}
@@ -104,13 +104,13 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           placeholder="년(4자)"
           value={formData.birthYear}
           onChange={handleChange}
-          className="w-[120px] h-[44px] px-4 border bg-component rounded-lg"
+          className="border h-[44px] w-[120px] rounded-lg bg-component px-4"
         />
         <select
           name="birthMonth"
           value={formData.birthMonth}
           onChange={handleChange}
-          className="w-[80px] h-[44px] border bg-component rounded-lg"
+          className="border h-[44px] w-[80px] rounded-lg bg-component"
         >
           <option value="">월</option>
           {Array.from({ length: 12 }, (_, i) => (
@@ -125,7 +125,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           placeholder="일"
           value={formData.birthDay}
           onChange={handleChange}
-          className="w-[80px] h-[44px] px-4 border bg-component rounded-lg"
+          className="border h-[44px] w-[80px] rounded-lg bg-component px-4"
         />
       </div>
 
@@ -133,14 +133,14 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
       <div className="flex gap-2">
         <button
           type="button"
-          className="h-[44px] px-4 bg-sub text-white rounded-lg"
+          className="h-[44px] rounded-lg bg-sub px-4 text-white"
         >
           여성
         </button>
-        <button type="button" className="h-[44px] px-4 bg-component rounded-lg">
+        <button type="button" className="h-[44px] rounded-lg bg-component px-4">
           남성
         </button>
-        <button type="button" className="h-[44px] px-4 bg-component rounded-lg">
+        <button type="button" className="h-[44px] rounded-lg bg-component px-4">
           선택하지 않음
         </button>
       </div>
@@ -153,9 +153,9 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           placeholder="이메일"
           value={formData.email}
           onChange={handleChange}
-          className="flex-1 h-[44px] px-4 border bg-component rounded-lg"
+          className="border h-[44px] flex-1 rounded-lg bg-component px-4"
         />
-        <button type="button" className="h-[44px] px-4 bg-lightgray rounded-lg">
+        <button type="button" className="h-[44px] rounded-lg bg-lightgray px-4">
           인증하기
         </button>
       </div>
@@ -168,9 +168,9 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           placeholder="인증 번호"
           value={formData.verificationCode}
           onChange={handleChange}
-          className="flex-1 h-[44px] px-4 border bg-component rounded-lg"
+          className="border h-[44px] flex-1 rounded-lg bg-component px-4"
         />
-        <button type="button" className="h-[44px] px-4 bg-lightgray rounded-lg">
+        <button type="button" className="h-[44px] rounded-lg bg-lightgray px-4">
           확인
         </button>
       </div>
@@ -178,7 +178,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
       {/* 회원가입 버튼 */}
       <button
         type="submit"
-        className="w-full h-[52px] bg-brand text-white rounded-lg mt-4"
+        className="mt-4 h-[52px] w-full rounded-lg bg-brand text-white"
       >
         Scentify 시작하기
       </button>

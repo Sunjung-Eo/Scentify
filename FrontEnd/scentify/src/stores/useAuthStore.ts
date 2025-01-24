@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { AuthState } from "../types/AuthState";
-import { loginUser, refreshAccessToken } from '../apis/user/login'
+import { loginUser, refreshAccessToken } from "../apis/user/login";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  accessToken: '',
+  accessToken: "",
   isAuthenticated: false,
 
   login: async (id, password) => {
@@ -23,20 +23,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: () => {
-    set({ accessToken: '', isAuthenticated: false });
+    set({ accessToken: "", isAuthenticated: false });
   },
 
   getAccessToken: () => {
     return get().accessToken;
   },
-  
+
   reissueAccessToken: async () => {
     try {
       const data = await refreshAccessToken();
       set({ accessToken: data.accessToken, isAuthenticated: true });
     } catch (error) {
       console.error("토큰 갱신 실패:", error);
-      set({ accessToken: '', isAuthenticated: false });
+      set({ accessToken: "", isAuthenticated: false });
     }
   },
 }));

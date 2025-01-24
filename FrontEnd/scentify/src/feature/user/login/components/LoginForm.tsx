@@ -48,7 +48,7 @@ const LoginForm = ({
     <>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-[320px] flex flex-col gap-2.5 items-center font-pre-light"
+        className="flex w-full max-w-[320px] flex-col items-center gap-2.5 font-pre-light"
       >
         {/* 이메일 입력 칸 */}
         <input
@@ -58,10 +58,10 @@ const LoginForm = ({
             setId(e.target.value)
           }
           placeholder="아이디를 입력하세요"
-          className="w-[320px] h-[44px] px-4 border-0.2 bg-component rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+          className="h-[44px] w-[320px] rounded-lg border-0.2 bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
-        <div className="w-full flex flex-col justify-start-item">
-          {errors.id && <p className="text-red-500 text-[12px]">{errors.id}</p>}
+        <div className="justify-start-item flex w-full flex-col">
+          {errors.id && <p className="text-[12px] text-red-500">{errors.id}</p>}
         </div>
 
         {/* 비밀번호 입력 칸 */}
@@ -70,18 +70,18 @@ const LoginForm = ({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="비밀번호를 입력하세요"
-          className="w-[320px] h-[44px] px-4 border-0.5 bg-component rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+          className="h-[44px] w-[320px] rounded-lg border-0.5 bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
-        <div className="w-full flex flex-col justify-start-item">
+        <div className="justify-start-item flex w-full flex-col">
           {errors.password && (
-            <p className="text-red-500 text-[12px]">{errors.password}</p>
+            <p className="text-[12px] text-red-500">{errors.password}</p>
           )}
         </div>
 
         {/* 로그인 버튼 */}
         <button
           type="submit"
-          className="w-[320px] h-[44px] bg-brand text-white rounded-lg hover:bg-sub focus:outline-none"
+          className="h-[44px] w-[320px] rounded-lg bg-brand text-white hover:bg-sub focus:outline-none"
         >
           로그인하기
         </button>

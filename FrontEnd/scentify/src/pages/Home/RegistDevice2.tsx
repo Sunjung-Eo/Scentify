@@ -10,56 +10,56 @@ function RegistDevice2() {
       {/* 시리얼 번호와 IP 주소를 묶은 그룹 */}
       <div className="NotButtonGroup flex flex-col px-4">
         {/* S/N Input */}
-        <div className="S/N Input mt-4 mb-4">
-          <label className="text-sm font-pre-regular mb-2 block">
+        <div className="S/N Input mb-4 mt-4">
+          <label className="text-sm mb-2 block font-pre-regular">
             시리얼 번호 (S/N)
           </label>
           <input
             type="text"
             placeholder="시리얼 번호 입력"
-            className="w-full px-4 py-3 rounded-lg bg-component font-pre-regular"
+            className="w-full rounded-lg bg-component px-4 py-3 font-pre-regular"
           />
         </div>
 
         {/* IP Input */}
         <div className="ID Input">
-          <label className="text-sm font-pre-regular mb-2 block">IP 주소</label>
+          <label className="text-sm mb-2 block font-pre-regular">IP 주소</label>
           <div className="flex items-center gap-2">
             <input
               type="text" //number로 하면 화살표가 생김.. 일단 text로 받기
               min="0"
               max="255"
-              className="w-16 px-2 py-2 rounded-lg text-center bg-component"
+              className="w-16 rounded-lg bg-component px-2 py-2 text-center"
             />
             <span className="text-gray-500">.</span>
             <input
               type="text"
               min="0"
               max="255"
-              className="w-16 px-2 py-2 rounded-lg text-center bg-component"
+              className="w-16 rounded-lg bg-component px-2 py-2 text-center"
             />
             <span className="text-gray-500">.</span>
             <input
               type="text"
               min="0"
               max="255"
-              className="w-16 px-2 py-2 rounded-lg text-center bg-component"
+              className="w-16 rounded-lg bg-component px-2 py-2 text-center"
             />
             <span className="text-gray-500">.</span>
             <input
               type="text"
               min="0"
               max="255"
-              className="w-16 px-2 py-2 rounded-lg text-center bg-component"
+              className="w-16 rounded-lg bg-component px-2 py-2 text-center"
             />
           </div>
         </div>
       </div>
 
       {/* Submit Button */}
-      <div className="w-full px-4 mb-4">
+      <div className="mb-4 w-full px-4">
         <Link to="/home/registconnecting">
-          <button className="w-full h-12 px-6 rounded-lg text-gray font-pre-bold border border-gray">
+          <button className="border h-12 w-full rounded-lg border-gray px-6 font-pre-bold text-gray">
             저장
           </button>
         </Link>

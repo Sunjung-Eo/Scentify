@@ -1,4 +1,5 @@
 import os
+import json
 import jwt
 import datetime
 import subprocess
@@ -22,3 +23,10 @@ def get_access_token(token, private_key=os.getenv("JWT_SECRET_KEY")):
     }
 
     return jwt.encode(payload, private_key, algorithm="HS256")
+
+def get_temp_and_hum():
+    script_path = os.path.expanduser("~/work/sample/dht11_by_lib.py")
+    result = subprocess.run(["python3", script_path], capture_output=True, text=True)
+    lines = result.stdout.splitlines()  # 출력의 각 줄을 분리
+    
+    return lines[0], lines[1]

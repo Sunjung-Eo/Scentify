@@ -2,8 +2,11 @@ import asyncio
 import websockets
 import hashlib
 import json
+import stomper
 
-from utils import get_serial_number, get_access_token
+from stomp import *
+from utils import*
+
 
 class WebSocketClient:
     def __init__(self, uri, serial_number):
@@ -25,11 +28,30 @@ class WebSocketClient:
             "Authorization": f"Bearer {token}"
         }
 
-        async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
-            msg = self.make_message(dict_data = {"type" : "DeviceStatus/Camera/SimpleDetection"})
-            json_data = json.dumps(msg)
-            await websocket.send(json_data)
-            print(json_data)
+        # async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
+        async with websockets.connect(self.__uri) as websocket:
+            
+            temp, hum = get_temp_and_hum()
+
+            msg = self.make_message(dict_data = {
+                "temperature" : temp,
+                "humidity" : hum
+            })
+
+            connect_frame = get_connect_frame(self.__uri)
+            print(connect_frame)
+            await websocket.send(connect_frame)
+
+            subscribe_frame = get_subscribe_frame(1, "/topic/DeviceStatus/Sensor/TempHum")
+            print(subscribe_frame)
+            await websocket.send(subscribe_frame)
+
+            json_msg = json.dumps(msg)
+            # send_frame = get_send_frame("app/DeviceStatus/Sensor/TempHum", json_msg)
+            # print(send_frame)
+            send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg)
+            await websocket.send(send_frame)
+
 
             while True:
                 response = await websocket.recv()
@@ -49,7 +71,8 @@ if __name__ == '__main__':
     serial_number = get_serial_number()
 
     # 웹 소켓 객체 생성
-    websocket_client = WebSocketClient("ws://0.0.0.0:8765", serial_number)
+    websocket_client = WebSocketClient("ws://70.12.246.113:8080/v1/ws/device", serial_number)
+    # websocket_client = WebSocketClient("ws://0.0.0.0:8765", serial_number)
 
     # 비동기 이벤트 루프 실행
     asyncio.run(websocket_client.test_websocket_connection())

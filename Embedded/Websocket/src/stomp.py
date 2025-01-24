@@ -18,10 +18,11 @@ def get_subscribe_frame(id, destination):
         "\n\x00"
     )
  
-def get_send_frame(destination, msg):
-    return (
-        "SEND\n"
-        f"destination:{destination}\n"
-        "content-type:text/plain\n"
-        f'{msg}\x00'
-    )
+# TODO: Send에 Error 있음
+# def get_send_frame(destination, msg):
+#     return (
+#         "SEND\n"
+#         f"destination:{destination}\n"
+#         "content-type:text/plain\n"
+#         f'{msg}\x00'
+#     )

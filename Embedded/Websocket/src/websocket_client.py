@@ -47,11 +47,8 @@ class WebSocketClient:
             await websocket.send(subscribe_frame)
 
             json_msg = json.dumps(msg)
-            # send_frame = get_send_frame("app/DeviceStatus/Sensor/TempHum", json_msg)
-            # print(send_frame)
-            send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg)
+            send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg, content_type='application/json')
             await websocket.send(send_frame)
-
 
             while True:
                 response = await websocket.recv()

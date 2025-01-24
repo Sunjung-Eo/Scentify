@@ -1,8 +1,8 @@
 import { useState } from "react";
 import ArrowDownIcon from "../assets/icons/arrow-down-icon.svg";
 
-// 기기 선택 타입입
-interface DeviceSelectProps {
+// 기기 선택 타입
+export interface DeviceSelectProps {
   devices: string[];
   selectedDevice: string;
   onDeviceChange: (device: string) => void;

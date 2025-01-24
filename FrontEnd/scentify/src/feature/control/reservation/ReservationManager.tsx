@@ -4,11 +4,17 @@ import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import DeviceSelect from "../../../components/DeviceSelect";
 import HeartButton from "../../../components/Button/HeartButton";
 import DeleteConfirmModal from "./DeleteReservationModal";
-import { Reservations, HeartStatus } from "./ReservationType";
+import {
+  Reservations,
+  HeartStatus,
+  ReservationManagerProps,
+} from "./ReservationType";
 
-export default function ReservationManager() {
+export default function ReservationManager({
+  selectedDevice,
+  onDeviceChange,
+}: ReservationManagerProps) {
   // 대표기기, 기기 명, 각 기기 별 예약 목록 - api나 저장소, 상위 컴포넌트에서 가져오기
-  const [selectedDevice, setSelectedDevice] = useState("기기A");
   const [heartStatus, setHeartStatus] = useState<HeartStatus>({});
   const reservations: Reservations = {
     기기A: [],
@@ -16,10 +22,6 @@ export default function ReservationManager() {
     기기C: ["예약 3"],
   };
   const devices = Object.keys(reservations);
-  // 기기 선택
-  const handleDeviceChange = (device: string) => {
-    setSelectedDevice(device);
-  };
 
   // 삭제 모달
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -53,7 +55,7 @@ export default function ReservationManager() {
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
-            onDeviceChange={handleDeviceChange}
+            onDeviceChange={onDeviceChange}
           />
         </div>
       </div>
@@ -62,7 +64,7 @@ export default function ReservationManager() {
           {reservations[selectedDevice].map((reservation, index) => (
             <div
               key={index}
-              className="flex p-3 border-b border-lightgray justify-between"
+              className="flex p-3 border-b-0.2 border-lightgray justify-between"
             >
               <div className="font-pre-medium text-base">{reservation}</div>
               <div className="flex flex-col justify-between gap-3">

@@ -13,6 +13,8 @@ const Control = () => {
   const [isModal, setIsModal] = useState<boolean>(false); // 모달 활성화
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
   const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 처음 디폴트 모드 (예약 모드)
+  const [selectedDevice, setSelectedDevice] = useState("기기A"); // 선택한 기기
+
   // 다른 모드 클릭 시 모달 표시
   const handleModeChange = (newMode: Mode) => {
     if (mode !== newMode) {
@@ -32,6 +34,11 @@ const Control = () => {
     setIsModal(false);
   };
 
+  // 기기 선택
+  const handleDeviceChange = (device: string) => {
+    setSelectedDevice(device);
+  };
+
   return (
     <div className="content pt-5">
       <div className="flex flex-col w-full px-4">
@@ -42,13 +49,29 @@ const Control = () => {
           </div>
           <ModeToggle currentMode={mode} onModeChange={handleModeChange} />
         </div>
-        <div className="mt-14 font-pre-medium text-20">
+        <div
+          className={`font-pre-medium text-20 ${isFirstRender || !mode ? "mt-14" : "mt-0"}`}
+        >
           {isFirstRender ? (
-            <ReservationManager />
+            <ReservationManager
+              selectedDevice={selectedDevice}
+              onDeviceChange={handleDeviceChange}
+            />
           ) : mode === false ? (
-            <ReservationManager />
+            <ReservationManager
+              selectedDevice={selectedDevice}
+              onDeviceChange={handleDeviceChange}
+            />
           ) : (
-            <AutoManager />
+            <div>
+              <div className="h-[130px] mt-5 mb-10 p-4 bg-component rounded-lg">
+                <p>자동화 모드 설명 ~~~</p>
+              </div>
+              <AutoManager
+                selectedDevice={selectedDevice}
+                onDeviceChange={handleDeviceChange}
+              />
+            </div>
           )}
           {isModal && (
             <ModeChangeModal

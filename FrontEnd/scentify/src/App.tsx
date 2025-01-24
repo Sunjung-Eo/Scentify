@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from './stores/useAuthStore.ts';
-import Layout from './layout/Layout.tsx';
-import Home from './pages/Home/Home.tsx';
-import Control from './pages/Control/Control.tsx';
-import Scent from './pages/Scent/Scent.tsx';
-import My from './pages/My/My.tsx';
-import Start from './pages/Start/start.tsx';
-import Login from './pages/Login/Login.tsx';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { useAuthStore } from "./stores/useAuthStore.ts";
+import Layout from "./layout/Layout.tsx";
+import Home from "./pages/Home/Home.tsx";
+import Control from "./pages/Control/Control.tsx";
+import Scent from "./pages/Scent/Scent.tsx";
+import My from "./pages/My/My.tsx";
+import Start from "./pages/Start/start.tsx";
+import Login from "./pages/Login/Login.tsx";
 
-import './styles/global.css';
-
+import UserRoutes from "./feature/user/UserRoutes.tsx";
+import "./styles/global.css";
 
 const setScreenSize = () => {
   // 실제 뷰포트 높이를 기준으로 CSS 변수 설정
@@ -33,7 +38,19 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Start />} />
-        <Route path="/user" element={<Login />} />
+        <Route path="/auth/login" element={<Login />} />
+
+        <Route
+          path="/user/*"
+          element={
+            <Layout>
+              <UserRoutes />
+            </Layout>
+          }
+        />
+        {/* <Route path="/user/:id" element={<UserDetail />} /> */}
+
+        {/* 인증 여부에 따른 라우팅 처리 */}
         {isAuthenticated ? (
           <Route
             path="/*"
@@ -49,7 +66,7 @@ function App() {
             }
           />
         ) : (
-          <Route path="/*" element={<Navigate to="/user" replace />} />
+          <Route path="/*" element={<Navigate to="/auth/login" replace />} />
         )}
       </Routes>
     </Router>

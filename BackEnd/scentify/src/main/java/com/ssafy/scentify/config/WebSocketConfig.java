@@ -32,8 +32,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/v1/ws")
 				.addInterceptors(socketInterceptor)
-				.setAllowedOriginPatterns("*")
-				.withSockJS();
+				.setAllowedOrigins("*")
+				.setAllowedOriginPatterns("*");
 	}
 	
 	// 메시지 브로커 구성

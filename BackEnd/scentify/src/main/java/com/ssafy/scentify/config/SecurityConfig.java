@@ -6,6 +6,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,18 +26,24 @@ public class SecurityConfig {
     public SecurityConfig(TokenFilter tokenFilter) {
         this.tokenFilter = tokenFilter;
     }
-
+    
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+    	return (web) -> web.ignoring().requestMatchers("/v1/ws");
+    }
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
+                .permitAll()
                 .requestMatchers("/v1/user/login", "/v1/user/check-id", 
                                  "/v1/user/email/send-code", "/v1/user/email/verify-code",
-                                 "/v1/user/regist", "/error", "/v1/ws",
-                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
-                .permitAll()
+                                 "/v1/user/regist").permitAll()
                 .anyRequest().authenticated()
             )
+            .headers(headers -> headers.frameOptions().disable())
             .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         
         log.info("SecurityContextHolder Authentication: {}", SecurityContextHolder.getContext().getAuthentication());

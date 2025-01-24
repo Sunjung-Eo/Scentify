@@ -30,6 +30,12 @@ public class TokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
     	log.info("Request URI: {}", request.getRequestURI());
+    	
+    	if (request.getRequestURI().startsWith("/v1/ws")) {
+    		chain.doFilter(request, response);
+    		return;
+    	}
+    	
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

@@ -4,11 +4,14 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import com.google.api.client.json.webtoken.JsonWebSignature.Header;
 import com.ssafy.scentify.config.WebSocketConfig;
+import com.ssafy.scentify.model.dto.TokenDto;
 import com.ssafy.scentify.service.DeviceService;
 import com.ssafy.scentify.util.TokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -38,25 +41,28 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             HttpServletRequest httpRequest = servletRequest.getServletRequest();
             String authHeader = httpRequest.getHeader("Authorization");
 
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7); // "Bearer " 이후의 토큰 값 추출
-                log.info("token : {}" + token);
-                
-                // 토큰 검증 로직
-                if (tokenProvider.vaildateJwtToken(token)) {
-                	String serial = tokenProvider.getSerial(token);
-                	log.info("serial : {}" + serial);
-                	
-                	if (deviceService.selectDeviceBySerial(serial)) {
-                		attributes.put("serial", serial);
-                		return true; // 핸드쉐이크 진행
-                	}
-                }		
-                
-            } else {
-                response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                return false; // 핸드쉐이크 중단
+            if (authHeader == null && !authHeader.startsWith("Bearer ")) {
+            	return false;
             }
+            
+            String token = authHeader.substring(7); // "Bearer " 이후의 토큰 값 추출
+            log.info("token : {}" + token);
+                
+            // 토큰 검증 로직
+            if (!tokenProvider.vaildateJwtToken(token)) {
+            	return false;
+            }
+            
+            String serial = tokenProvider.getSerial(token);
+            log.info("serial : {}" + serial);
+            
+            if (!deviceService.selectDeviceBySerial(serial)) {
+            	response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return false;
+            }
+            
+            attributes.put("serial", serial);
+    		return true; // 핸드쉐이크 진행		
         }
         return false; // ServletServerHttpRequest가 아닌 경우
     }

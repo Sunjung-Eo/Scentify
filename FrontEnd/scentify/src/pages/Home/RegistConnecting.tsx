@@ -1,9 +1,10 @@
 import Spinner from "../../feature/Home/Loading/Spinner";
-
+import { Link } from "react-router-dom";
+//나중에 눌러라 버튼 지우기
 function RegistConnecting() {
   return (
-    <>
-      <div className="mt-4 flex flex-col items-center text-center">
+    <div className="content px-4 pt-6">
+      <div className="flex flex-col items-center text-center">
         <div className="Spinner mt-20">
           <Spinner></Spinner>
         </div>
@@ -15,8 +16,11 @@ function RegistConnecting() {
           <br />
           잠시 기다려 주세요.
         </p>
+        <Link to="/home/connectsuccess">
+          <button>눌러라</button>
+        </Link>
       </div>
-    </>
+    </div>
   );
 }
 export default RegistConnecting;

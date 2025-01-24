@@ -28,8 +28,8 @@ public class WebSocketController {
         String token = request.getToken();
         System.out.println(token);
         
-        if (!tokenProvider.vaildateJwtToken(token)) return;
-        String serial = tokenProvider.getSerial(token);
+//        if (!tokenProvider.vaildateJwtToken(token)) return;
+//        String serial = tokenProvider.getSerial(token);
         
         // deviceService.addInfo(request);
         template.convertAndSend("/topic/DeviceStatus/Sensor/TempHum", "안녕");

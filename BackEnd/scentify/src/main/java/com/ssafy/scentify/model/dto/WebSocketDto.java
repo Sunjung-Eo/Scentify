@@ -13,4 +13,12 @@ public class WebSocketDto {
 	    private boolean restModeOn;
 	    private boolean simpleDetectionModeOn;
 	}
+	
+	@Data
+	public class TempHumRequest {
+	    private String token;        
+	    private String type;         
+	    private Float temperature;   
+	    private Integer humidity;    
+	}
 }

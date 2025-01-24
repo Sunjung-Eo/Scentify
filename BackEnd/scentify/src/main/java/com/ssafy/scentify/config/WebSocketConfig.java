@@ -30,17 +30,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/v1/ws")
+		registry.addEndpoint("/v1/ws/device")
 				.addInterceptors(socketInterceptor)
 				.setAllowedOrigins("*")
 				.setAllowedOriginPatterns("*");
 	}
-	
-	// 메시지 브로커 구성
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic"); // 클라이언트 구독 경로
-        registry.setApplicationDestinationPrefixes("/app"); // 클라이언트 전송 경로
-    }
-
 }

@@ -101,6 +101,18 @@ public class TokenProvider implements InitializingBean {
 		return userId;
 	}
 	
+	// 토큰에 있는 시리얼 정보를 가져오는 메서드
+	public String getSerial(String token) {
+		String serial = (String) Jwts.parserBuilder()
+									  .setSigningKey(secretKey)
+									  .build()
+									  .parseClaimsJws(token)
+									  .getBody()
+									  .get("token");
+		log.info("Extracted Serial: {}", serial);
+		return serial;
+	}
+	
 	// 토큰의 만료 시간 정보를 가져오는 메서드
 	public Date getExpiration(String token) {
 		Date expiration = Jwts.parserBuilder()

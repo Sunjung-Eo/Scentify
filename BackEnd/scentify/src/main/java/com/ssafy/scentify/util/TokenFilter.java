@@ -31,7 +31,7 @@ public class TokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
     	log.info("Request URI: {}", request.getRequestURI());
     	
-    	if (request.getRequestURI().startsWith("/v1/ws")) {
+    	if (request.getRequestURI().startsWith("/v1/ws/device")) {
     		chain.doFilter(request, response);
     		return;
     	}

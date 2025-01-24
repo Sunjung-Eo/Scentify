@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
 import com.ssafy.scentify.util.TokenFilter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,29 +29,44 @@ public class SecurityConfig {
         this.tokenFilter = tokenFilter;
     }
     
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-    	return (web) -> web.ignoring().requestMatchers("/v1/ws");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//    	return (web) -> web.ignoring().requestMatchers("/v1/ws/device");
+//    }
     
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(csrf -> csrf.disable())
+//            .authorizeHttpRequests(authorize -> authorize
+//                .requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
+//                .permitAll()
+//                .requestMatchers("/v1/user/login", "/v1/user/check-id", 
+//                                 "/v1/user/email/send-code", "/v1/user/email/verify-code",
+//                                 "/v1/user/regist").permitAll()
+//                .requestMatchers("/v1/ws").permitAll()
+//                .anyRequest().authenticated()
+//            )
+//            .headers(headers -> headers.frameOptions().disable())
+//            .httpBasic().disable()
+//            .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+//        
+//        log.info("SecurityContextHolder Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
-                .permitAll()
-                .requestMatchers("/v1/user/login", "/v1/user/check-id", 
-                                 "/v1/user/email/send-code", "/v1/user/email/verify-code",
-                                 "/v1/user/regist").permitAll()
-                .anyRequest().authenticated()
-            )
-            .headers(headers -> headers.frameOptions().disable())
+        http
+            .authorizeHttpRequests(auth -> auth
+            		.requestMatchers("/v1/ws/device").permitAll()
+            		.requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+            		.requestMatchers("/v1/user/login", "/v1/user/check-id", "/v1/user/email/send-code", "/v1/user/email/verify-code","/v1/user/regist").permitAll()
+            		.anyRequest().authenticated())
+            .csrf(csrf -> csrf.disable())
             .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
-        
-        log.info("SecurityContextHolder Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
         return http.build();
     }
-
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

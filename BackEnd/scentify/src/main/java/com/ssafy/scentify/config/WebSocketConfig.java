@@ -1,6 +1,10 @@
 package com.ssafy.scentify.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -30,17 +34,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/v1/ws")
+		registry.addEndpoint("/v1/ws/device")
 				.addInterceptors(socketInterceptor)
 				.setAllowedOrigins("*")
 				.setAllowedOriginPatterns("*");
 	}
 	
-	// 메시지 브로커 구성
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic"); // 클라이언트 구독 경로
-        registry.setApplicationDestinationPrefixes("/app"); // 클라이언트 전송 경로
+	@Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic", "/queue"); // 구독 엔드포인트
+        config.setApplicationDestinationPrefixes("/app"); // 클라이언트 요청 prefix
     }
-
+	
+	@Override
+    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+        messageConverters.add(new MappingJackson2MessageConverter());
+        return false; // true일 경우 기본 컨버터 사용 안 함
+    }
 }

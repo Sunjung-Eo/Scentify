@@ -20,14 +20,14 @@ export default function DeviceSelect({
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[120px] h-[36px] p-3 border border-lightgray font-pre-light text-sm items-center justify-between rounded-lg"
+        className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 items-center justify-between rounded-lg"
       >
         {selectedDevice}
         <img src={ArrowDownIcon} alt="아래 화살표 이미지" />
       </button>
       {isOpen && (
-        <div className="w-[120px] h-[36px] font-pre-light text-sm">
-          <div className="border border-lightgray bg-white rounded-lg">
+        <div className="w-[120px] h-[36px] font-pre-light text-12">
+          <div className="border-0.2 border-lightgray bg-white rounded-lg">
             {devices.map((device) => (
               <div
                 key={device}

@@ -9,10 +9,10 @@ import RemoteIcon from "../../assets/icons/remote-icon.svg";
 
 const Control = () => {
   // mode - 어떤 모드인지 백엔드에 전달할 것
-  const [mode, setMode] = useState<Mode>(false);                        // 백엔드에 전달한 현재 모드 상태
-  const [isModal, setIsModal] = useState<boolean>(false);               // 모달 활성화 
-  const [nextMode, setNextMode] = useState<Mode>(false);                // 모달창 확인 버튼 
-  const [isFirstRender, setIsFirstRender] = useState<boolean>(true);    // 처음 디폴트 모드 (예약 모드)
+  const [mode, setMode] = useState<Mode>(false); // 백엔드에 전달한 현재 모드 상태
+  const [isModal, setIsModal] = useState<boolean>(false); // 모달 활성화
+  const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
+  const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 처음 디폴트 모드 (예약 모드)
   // 다른 모드 클릭 시 모달 표시
   const handleModeChange = (newMode: Mode) => {
     if (mode !== newMode) {
@@ -38,11 +38,11 @@ const Control = () => {
         <div>
           <div className="flex mb-4 items-center gap-1">
             <img src={RemoteIcon} alt="리모컨 이미지" />
-            <h2 className="mt-0.5 font-pre-medium text-xl">모드 설정</h2>
+            <h2 className="mt-0.5 font-pre-medium text-20">모드 설정</h2>
           </div>
           <ModeToggle currentMode={mode} onModeChange={handleModeChange} />
         </div>
-        <div className="mt-14 font-pre-medium text-xl">
+        <div className="mt-14 font-pre-medium text-20">
           {isFirstRender ? (
             <ReservationManager />
           ) : mode === false ? (

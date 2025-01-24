@@ -16,7 +16,7 @@ export default function ReservationManager() {
     기기C: ["예약 3"],
   };
   const devices = Object.keys(reservations);
-  // 디바이스 선택
+  // 기기 선택
   const handleDeviceChange = (device: string) => {
     setSelectedDevice(device);
   };
@@ -83,7 +83,7 @@ export default function ReservationManager() {
                 </div>
                 <button
                   onClick={() => handleDeleteClick(reservation)}
-                  className="w-[65px] h-[30px] border border-lightgray font-pre-light text-xs rounded-lg"
+                  className="w-[65px] h-[30px] border-0.2 border-lightgray font-pre-light text-12 rounded-lg"
                 >
                   삭제
                 </button>
@@ -98,7 +98,7 @@ export default function ReservationManager() {
           )}
         </div>
       ) : (
-        <p className="mt-40 font-pre-light text-sm text-gray text-center">
+        <p className="mt-40 font-pre-light text-14 text-gray text-center">
           + 버튼을 눌러 예약을 설정해주세요.
         </p>
       )}

@@ -8,7 +8,7 @@ export default function ModeToggle({
 }: ModeToggleProps) {
   return (
     <div>
-      <div className="flex bg-white border border-brand font-pre-light text-xs rounded-lg">
+      <div className="flex bg-white border-0.2 border-brand font-pre-light text-12 rounded-lg">
         <div
           onClick={() => onModeChange(false)}
           className={`flex-1 py-2 text-center transition-all rounded-lg ${currentMode === true ? "text-black" : "bg-brand text-white"}`}

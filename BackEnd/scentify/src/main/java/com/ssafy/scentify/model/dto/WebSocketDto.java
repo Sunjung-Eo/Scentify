@@ -5,7 +5,7 @@ import lombok.Data;
 public class WebSocketDto {
 	
 	@Data
-	public class ModeChangeRequest {
+	public static class ModeChangeRequest {
 	    private String type;  
 	    private int mode;     
 	    private boolean stinkModeOn;
@@ -15,9 +15,8 @@ public class WebSocketDto {
 	}
 	
 	@Data
-	public class TempHumRequest {
-	    private String token;        
-	    private String type;         
+	public static class TempHumRequest {
+	    private String token;               
 	    private Float temperature;   
 	    private Integer humidity;    
 	}

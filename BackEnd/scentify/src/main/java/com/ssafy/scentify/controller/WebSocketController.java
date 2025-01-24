@@ -3,28 +3,36 @@ package com.ssafy.scentify.controller;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import com.ssafy.scentify.model.dto.WebSocketDto.ModeChangeRequest;
 import com.ssafy.scentify.model.dto.WebSocketDto.TempHumRequest;
+import com.ssafy.scentify.service.DeviceService;
+import com.ssafy.scentify.util.TokenProvider;
 
 @Controller
 public class WebSocketController {
 	
-	@MessageMapping("/mode/change")
-    public void handleModeChange(@Payload ModeChangeRequest request) {
-        switch (request.getType()) {
-            case "ModeChange":
-                System.out.println("*");
-                break;
-            default:
-                
-                break;
-        }
+	private final DeviceService deviceService;
+	private final TokenProvider tokenProvider;
+	private final SimpMessagingTemplate template;
+	
+	public WebSocketController(DeviceService deviceService, TokenProvider tokenProvider, SimpMessagingTemplate template) {
+		this.deviceService = deviceService;
+		this.tokenProvider = tokenProvider;
+		this.template = template;
+	}
+	
+	@MessageMapping("/DeviceStatus/Sensor/TempHum")
+    public void handleSensorData(@Payload TempHumRequest request) {
+        String token = request.getToken();
+        System.out.println(token);
+        
+        if (!tokenProvider.vaildateJwtToken(token)) return;
+        String serial = tokenProvider.getSerial(token);
+        
+        // deviceService.addInfo(request);
+        template.convertAndSend("/topic/DeviceStatus/Sensor/TempHum", "안녕");
     }
-//	
-//	@MessageMapping("/DeviceStatus/Sensor/TempHum")
-//    public Response handleDeviceStatus(@Payload TempHumRequest request) {
-//        System.out.println("수신된 데이터: " + request);
-//        return new ResponseMessage(200);
-//    }
+	
 }

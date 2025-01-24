@@ -9,10 +9,10 @@ import RemoteIcon from "../../assets/icons/remote-icon.svg";
 
 const Control = () => {
   // mode - 어떤 모드인지 백엔드에 전달할 것
-  const [mode, setMode] = useState<Mode>(false);
-  const [isModal, setIsModal] = useState<boolean>(false);
-  const [nextMode, setNextMode] = useState<Mode>(false);
-  const [isFirstRender, setIsFirstRender] = useState<boolean>(true);
+  const [mode, setMode] = useState<Mode>(false);                        // 백엔드에 전달한 현재 모드 상태
+  const [isModal, setIsModal] = useState<boolean>(false);               // 모달 활성화 
+  const [nextMode, setNextMode] = useState<Mode>(false);                // 모달창 확인 버튼 
+  const [isFirstRender, setIsFirstRender] = useState<boolean>(true);    // 처음 디폴트 모드 (예약 모드)
   // 다른 모드 클릭 시 모달 표시
   const handleModeChange = (newMode: Mode) => {
     if (mode !== newMode) {

@@ -4,18 +4,18 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Pretendard-Bold";
-  src: url("../assets//fonts/Pretendard-Bold.woff") format("woff");
+  font-family: 'Pretendard-Bold';
+  src: url('../assets//fonts/Pretendard-Bold.woff') format('woff');
 }
 
 @font-face {
-  font-family: "Pretendard-Medium";
-  src: url("../assets/fonts/Pretendard-Medium.woff") format("woff");
+  font-family: 'Pretendard-Medium';
+  src: url('../assets/fonts/Pretendard-Medium.woff') format('woff');
 }
 
 @font-face {
-  font-family: "Pretendard-Light";
-  src: url("../assets/fonts/Pretendard-Light.woff") format("woff");
+  font-family: 'Pretendard-Light';
+  src: url('../assets/fonts/Pretendard-Light.woff') format('woff');
 }
 
 /* 모바일에서 실제 높이를 계산한 값 적용 */
@@ -61,9 +61,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
+  /* position: fixed;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); */
+  position: absolute;
 }
 
 .header {
@@ -81,5 +82,6 @@ body {
   padding-bottom: 60px; /* 푸터 높이만큼 */
   width: 100%;
   max-width: 360px;
+  overflow: hidden; /* 넘치는 콘텐츠 방지 */
   box-sizing: border-box; /* 패딩 및 보더를 포함한 크기 계산 */
 }

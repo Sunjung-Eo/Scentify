@@ -42,4 +42,8 @@ public interface UserRepository {
 	// id에 해당하는 유저의 성별과 생년월일 업데이트
 	@Update("UPDATE user SET gender = #{gender}, birth = #{birth} WHERE id = #{id}")
 	boolean updateUserInfo(String id, Integer gender, Date birth);
+
+	// id에 해당하는 유저의 사진 번호 업데이트
+	@Update("UPDATE user SET img_num = #{imgNum} WHERE id = #{id}")
+	boolean updateUserImgNum(String id, Integer imgNum);
 }

@@ -13,10 +13,11 @@ export default function AutoManager({
   const location = useLocation();
 
   // 대표기기, 기기 명, 각 기기 별 자동화 세팅 - api나 저장소, 상위 컴포넌트에서 가져오기
-  const { deodorize, focus, rest } = location.state || {
+  const { deodorize, focus, rest, detect } = location.state || {
     deodorize: true,
     focus: true,
     rest: true,
+    detect: true,
   };
   const [autos, setAutos] = useState<Record<string, AutoMode>>({
     기기A: {
@@ -25,7 +26,7 @@ export default function AutoManager({
         집중: focus,
         휴식: rest,
       },
-      탐지: true,
+      탐지: detect,
     },
     기기B: {
       탈취: deodorize,
@@ -33,7 +34,7 @@ export default function AutoManager({
         집중: focus,
         휴식: rest,
       },
-      탐지: false,
+      탐지: detect,
     },
     기기C: {
       탈취: deodorize,
@@ -41,7 +42,7 @@ export default function AutoManager({
         집중: focus,
         휴식: rest,
       },
-      탐지: false,
+      탐지: detect,
     },
   });
   const devices = Object.keys(autos);
@@ -51,9 +52,13 @@ export default function AutoManager({
       navigate(`/control/auto/behavior`, {
         state: { focus, rest },
       });
-    } else if (autoType == "탈취") {
+    } else if (autoType === "탈취") {
       navigate(`/control/auto/deodorize`, {
         state: { deodorize },
+      });
+    } else {
+      navigate(`/control/auto/detect`, {
+        state: { detect },
       });
     }
   };

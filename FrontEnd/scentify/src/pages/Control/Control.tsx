@@ -7,6 +7,7 @@ import AutoManager from "../../feature/control/automation/AutoManager";
 import ModeChangeModal from "../../feature/control/main/ModeChangeModal";
 import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
 import DeodorizationSetting from "../../feature/control/automation/DeodorizationSetting";
+import DetectionSetting from "../../feature/control/automation/DetectionSetting";
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
 
@@ -95,6 +96,7 @@ const Control = () => {
         <Route index element={<AutoManager />} />
         <Route path="auto/behavior" element={<BehaviorSetting />} />
         <Route path="auto/deodorize" element={<DeodorizationSetting />} />
+        <Route path="auto/detect" element={<DetectionSetting />} />
       </Routes>
     </div>
   );

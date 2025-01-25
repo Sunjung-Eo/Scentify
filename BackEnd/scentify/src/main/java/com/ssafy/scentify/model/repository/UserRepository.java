@@ -38,4 +38,8 @@ public interface UserRepository {
 	// id에 해당하는 유저의 nickName 업데이트
 	@Update("UPDATE user SET nickname = #{nickname} WHERE id = #{id}")
 	boolean updateUserNickName(String id, String nickname);
+	
+	// id에 해당하는 유저의 성별과 생년월일 업데이트
+	@Update("UPDATE user SET gender = #{gender}, birth = #{birth} WHERE id = #{id}")
+	boolean updateUserInfo(String id, Integer gender, Date birth);
 }

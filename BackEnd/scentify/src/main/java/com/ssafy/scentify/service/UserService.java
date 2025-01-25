@@ -1,5 +1,6 @@
 package com.ssafy.scentify.service;
 
+import java.sql.Date;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -68,5 +69,10 @@ public class UserService {
 
 	public boolean updateUserNickname(String userId, String nickname) {
 		return userRepository.updateUserNickName(userId, nickname) ? true : false;
+	}
+
+	public boolean updateUserInfo(String userId, UserInfoDto userInfoDto) {
+		Date birth = Date.valueOf(userInfoDto.getBirth());
+		return userRepository.updateUserInfo(userId, userInfoDto.getGender(), birth) ? true : false;
 	}
 }

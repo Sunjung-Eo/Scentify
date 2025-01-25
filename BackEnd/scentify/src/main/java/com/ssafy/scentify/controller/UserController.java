@@ -4,6 +4,8 @@ import jakarta.servlet.http.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -270,6 +272,36 @@ public class UserController {
 	        
 	        // DB에서 정보 수정 (정보 수정이 이루어지지 않은 경우 400 반환)
 	        if (!userService.updateUserNickname(userId, nickname)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 61번 : 유저 정보 수정 (성별, 생년월일 수정)
+	@PostMapping("/info/update")
+	public ResponseEntity<?> updateUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoDto userInfoDto) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        Integer gender = userInfoDto.getGender();
+	        LocalDate birth = userInfoDto.getBirth();
+	        
+	        // 데이터 유효성 검사
+	        if (gender < 0 || gender > 2 || birth.isAfter(LocalDate.now())) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // DB에서 정보 수정 (정보 수정이 이루어지지 않은 경우 400 반환)
+	        if (!userService.updateUserInfo(userId, userInfoDto)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {

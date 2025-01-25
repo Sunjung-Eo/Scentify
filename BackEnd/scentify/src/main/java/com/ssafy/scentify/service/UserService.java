@@ -65,4 +65,8 @@ public class UserService {
 	public UserInfoDto getUserInfoById(String id) {
 		return userRepository.getUserInfoById(id);
 	}
+
+	public boolean updateUserNickname(String userId, String nickname) {
+		return userRepository.updateUserNickName(userId, nickname) ? true : false;
+	}
 }

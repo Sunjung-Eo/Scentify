@@ -244,7 +244,34 @@ public class UserController {
 	        // DB에서 정보 조회 후 반환
 			UserInfoDto infoDto = userService.getUserInfoById(userId);
 
-			return ResponseEntity.ok(infoDto);
+			return ResponseEntity.ok(infoDto);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 60번 : 유저 닉네임 수정
+	@PostMapping("/nickname/update")
+	public ResponseEntity<?> updateUserNickname(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> nicknameMap) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	        }
+	        String token = authorizationHeader.substring(7);
+
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // 사용자가 수정하고 싶은 닉네임 
+	        String nickname = nicknameMap.get("nickName");
+	        
+	        // DB에서 정보 수정 (정보 수정이 이루어지지 않은 경우 400 반환)
+	        if (!userService.updateUserNickname(userId, nickname)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리
 			log.error("Exception: ", e);

@@ -5,6 +5,7 @@ import java.sql.Date;
 import org.apache.ibatis.annotations.*;
 
 import com.ssafy.scentify.model.dto.UserDto.SocialLoginDto;
+import com.ssafy.scentify.model.dto.UserDto.UserInfoDto;
 import com.ssafy.scentify.model.entity.User;
 
 @Mapper
@@ -29,4 +30,8 @@ public interface UserRepository {
     // email로 유저 id 가져오기
     @Select("SELECT id, social_type FROM user WHERE email = #{email}")
     SocialLoginDto getSocialUserInfoByEmail(String email);
+    
+    // id로 유저 성별과 생년월일 가져오기
+	@Select("SELECT gender, birth FROM user WHERE id = #{id}")
+    UserInfoDto getUserInfoById(String id);
 }

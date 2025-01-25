@@ -17,6 +17,7 @@ import com.ssafy.scentify.util.TokenProvider;
 import com.amazonaws.http.HttpResponse;
 import com.ssafy.scentify.model.dto.TokenDto;
 import com.ssafy.scentify.model.dto.UserDto;
+import com.ssafy.scentify.model.dto.UserDto.UserInfoDto;
 import com.ssafy.scentify.model.entity.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,7 +70,8 @@ public class UserController {
 
 	        return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 	    } catch (Exception e) {
-	        // 예기치 않은 에러 처리
+	    	 // 예기치 않은 에러 처리
+	    	log.error("Exception: ", e);
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
@@ -101,9 +103,8 @@ public class UserController {
 	        
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
-			e.printStackTrace();
-			
 			// 예기치 않은 에러 처리
+			log.error("Exception: ", e);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -126,9 +127,8 @@ public class UserController {
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
-			
 			// 예기치 않은 예외 처리
+			log.error("Exception: ", e);			
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -150,8 +150,7 @@ public class UserController {
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
-			
+			e.printStackTrace();			
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -184,12 +183,12 @@ public class UserController {
             return ResponseEntity.ok().headers(headers).build();
             		
         } catch (Exception e) {
-            e.printStackTrace();
-            
+        	log.error("Exception: ", e);     
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 	
+	// API 12번 : 로그아웃
 	@PostMapping("/logout")
 	 public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
         String accessToken = authorizationHeader.substring(7);
@@ -203,4 +202,29 @@ public class UserController {
         
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+	
+	// API 59번 : 회원 정보 조회 (성별, 생년월일 조회)
+	@PostMapping("/info/get")
+	public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+		try {
+			 // "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	        }
+	        String token = authorizationHeader.substring(7);
+
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // DB에서 정보 조회 후 반환
+			UserInfoDto infoDto = userService.getUserInfoById(userId);
+
+			return ResponseEntity.ok(infoDto);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

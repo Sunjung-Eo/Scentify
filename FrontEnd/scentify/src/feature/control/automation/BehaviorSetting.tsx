@@ -7,8 +7,8 @@ export default function BehaviorSetting() {
   const location = useLocation();
 
   // API통해 모드 활성화 여부 결정
-  const [focus, setFocus] = useState(location.state?.focus || false);
-  const [rest, setRest] = useState(location.state?.rest || false);
+  const [focus, setFocus] = useState(location.state.focus);
+  const [rest, setRest] = useState(location.state.rest);
   // 모드 변했으면 1, 그대로면 0
   const [focusModeOn, setFocusModeOn] = useState<boolean>(false);
   const [restModeOn, setRestModeOn] = useState<boolean>(false);
@@ -39,11 +39,11 @@ export default function BehaviorSetting() {
   // 뒤로가기
   const handleBack = () => {
     navigate("/control", {
-      state: { focus, rest },
+      state: { focus: location.state.focus, rest: location.state.rest },
     });
   };
 
-  // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달달
+  // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
   const handleComplete = () => {
     navigate("/control", {
       state: { focus, rest },

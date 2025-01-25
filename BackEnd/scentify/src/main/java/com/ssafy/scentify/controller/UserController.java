@@ -149,7 +149,7 @@ public class UserController {
 	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 
-	        // 비밀번호가 지정된 패턴을 따르지 않으면 400 반환
+	        // 비밀번호가 지정된 패턴을 따르지 않은 경우
 	        if (!passwordPattern.matcher(user.getPassword()).matches()) {
 	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
@@ -173,15 +173,20 @@ public class UserController {
 	@PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto) {
         try {
+        	// 로그인 서비스 호출하여 아이디, 비밀번호 검중
         	int status = userService.login(loginDto);
-
+        	
+        	// 가입된 계정이 없음
         	if (status == 403) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
         	
+        	// 입력한 비밀번호가 DB 정보와 다름
             if (status == 401) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
             
+            // 토큰 생성
             TokenDto tokenDto = tokenProvider.createJwtToken(loginDto.getId());
             tokenService.saveRefreshToken(loginDto.getId(), tokenDto.getRefreshToken());
             
+            // 헤더에 access 토큰 및 refresh 토큰 쿠키 삽입 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", tokenDto.getGrantType() + " " + tokenDto.getAccessToken());
             Cookie refreshTokenCookie = tokenProvider.createCookie(tokenDto.getRefreshToken());
@@ -191,7 +196,6 @@ public class UserController {
                 refreshTokenCookie.getPath(),
                 refreshTokenCookie.getMaxAge()
             );
-
             headers.add("Set-Cookie", cookieHeader);
             
             return ResponseEntity.ok().headers(headers).build();  // 성공적으로 처리됨
@@ -207,9 +211,12 @@ public class UserController {
 	@PostMapping("/logout")
 	 public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
         try {
+        	// access 토큰 검증
         	String accessToken = authorizationHeader.substring(7);
         	if (!tokenProvider.vaildateJwtToken(accessToken)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
             long expiration = tokenProvider.getExpiration(accessToken).getTime();
+            
+            // 블랙리스트로 등록
             tokenService.addToBlacklist(accessToken, expiration);
             
             return new ResponseEntity<>(HttpStatus.OK);  // 성공적으로 처리됨
@@ -225,7 +232,7 @@ public class UserController {
 	@PostMapping("/info/get")
 	public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
 		try {
-			 // "Bearer " 제거
+			// "Bearer " 제거
 	        if (!authorizationHeader.startsWith("Bearer ")) {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
 	        }

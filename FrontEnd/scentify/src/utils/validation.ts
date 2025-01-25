@@ -1,5 +1,6 @@
-export const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{3,19}$/; 
-export const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+export const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]{3,19}$/;
+export const passwordRegex =
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
 export const validateUsername = (id: string): string | null => {
   if (!usernameRegex.test(id)) {

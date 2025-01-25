@@ -14,10 +14,9 @@ export const loginUser = async (id: string, password: string) => {
       throw new Error("로그인 실패");
     }
 
-    // json payload 
-    const data = await response.json(); 
+    // json payload
+    const data = await response.json();
     return data; // { accessToken: string }
-                  
   } catch (error) {
     console.error("로그인 요청 중 오류 발생:", error);
     throw error; // 에러를 호출한 쪽으로 전달
@@ -36,9 +35,8 @@ export const refreshAccessToken = async () => {
       throw new Error("토큰 갱신 실패");
     }
 
-    const data = await response.json(); 
+    const data = await response.json();
     return data; // { accessToken: string }
-
   } catch (error) {
     console.error("토큰 갱신 요청 중 오류 발생:", error);
     throw error; // 에러를 호출한 쪽으로 전달

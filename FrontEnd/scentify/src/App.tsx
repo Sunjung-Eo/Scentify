@@ -13,15 +13,17 @@ import Scent from "./pages/Scent/Scent.tsx";
 import My from "./pages/My/My.tsx";
 import Start from "./pages/Start/start.tsx";
 import Login from "./pages/Login/Login.tsx";
+import Regist from "./feature/user/register/Regist.tsx";
 
 import UserRoutes from "./feature/user/UserRoutes.tsx";
 import "./styles/global.css";
 
+// 실제 뷰포트 높이를 기준으로 CSS 변수 설정
 const setScreenSize = () => {
-  // 실제 뷰포트 높이를 기준으로 CSS 변수 설정
-  let vh = window.innerHeight * 0.01;
+  const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 };
+
 function App() {
   const { isAuthenticated } = useAuthStore();
 
@@ -37,8 +39,12 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* 시작 페이지, 로그인 페이지지 */}
         <Route path="/" element={<Start />} />
         <Route path="/auth/login" element={<Login />} />
+
+        {/* 회원가입 페이지 - 독립적인 페이지로 처리 */}
+        <Route path="/user/regist" element={<Regist />} />
 
         <Route
           path="/user/*"
@@ -48,7 +54,6 @@ function App() {
             </Layout>
           }
         />
-        {/* <Route path="/user/:id" element={<UserDetail />} /> */}
 
         {/* 인증 여부에 따른 라우팅 처리 */}
         {isAuthenticated ? (
@@ -57,7 +62,7 @@ function App() {
             element={
               <Layout>
                 <Routes>
-                  <Route path="/home" element={<Home />} />
+                  <Route path="/home/*" element={<Home />} />
                   <Route path="/control/*" element={<Control />} />
                   <Route path="/scent" element={<Scent />} />
                   <Route path="/my" element={<My />} />

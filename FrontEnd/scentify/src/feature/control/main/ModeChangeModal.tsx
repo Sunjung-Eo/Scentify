@@ -16,7 +16,7 @@ export default function ModeChangeModal({
         <p className="text-center mb-6">
           {getModeName()}모드로 변경하시겠습니까?
         </p>
-        <div className="flex mt-auto justify-between">
+        <div className="mt-auto flex justify-between">
           <button
             onClick={onConfirm}
             className="w-[65px] h-[30px] border-0.2 border-lightgray text-12 rounded-lg"

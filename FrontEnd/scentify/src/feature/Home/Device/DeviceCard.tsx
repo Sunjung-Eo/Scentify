@@ -40,8 +40,8 @@ const DeviceCard = () => {
     <div className="cards space-y-4">
       {dummyDevices.map((device) => (
         // 오른쪽으로 정렬하기 위해 초록색박스와 기기img묶어둠
-        <div key={device.deviceId} className="relative flex justify-end mt-4">
-          <div className="card relative bg-sub rounded-3xl w-[290px] h-[120px] px-4 py-2 shadow-md flex flex-col">
+        <div key={device.deviceId} className="relative mt-4 flex justify-end">
+          <div className="card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md">
             {/* 디바이스사진 */}
             <img
               src={cuttingdeviceImg}
@@ -52,19 +52,19 @@ const DeviceCard = () => {
             {/* Text and Content묶기*/}
             <div className="ml-12 flex flex-col gap-1">
               {/* 디바이스 이름과 왕관 */}
-              <div className="flex items-center gap-1 text-pre-bold text-white text-sm">
+              <div className="text-pre-bold text-sm flex items-center gap-1 text-white">
                 {device.name}{" "}
                 {device.isRepresentative && (
                   <img
                     src={crownIcon}
                     alt="Crown Icon"
-                    className="ml-1 w-4 h-4"
+                    className="ml-1 h-4 w-4"
                   />
                 )}
               </div>
 
               {/* 디바이스 장착 향 */}
-              <div className="text-pre-regular text-gray text-[9px]">
+              <div className="text-pre-regular text-[9px] text-gray">
                 <p>
                   {device.slot1}, {device.slot2}, {device.slot3}, {device.slot4}
                 </p>
@@ -72,25 +72,25 @@ const DeviceCard = () => {
 
               {/* 예약모드 */}
               <div className="flex items-center">
-                <div className="flex items-center px-3 py-0.5 border border-component rounded-full text-component text-[8px]">
+                <div className="border flex items-center rounded-full border-component px-3 py-0.5 text-[8px] text-component">
                   예약 모드
-                  <span className="ml-1 w-1 h-1 bg-green-500 rounded-full"></span>
+                  <span className="ml-1 h-1 w-1 rounded-full bg-green-500"></span>
                 </div>
               </div>
             </div>
 
             {/* 버튼들 */}
-            <div className="flex justify-end gap-2 mt-auto">
+            <div className="mt-auto flex justify-end gap-2">
               <button
-                className={`px-2 py-1 rounded-lg text-pre-medium text-[10px] ${
+                className={`text-pre-medium rounded-lg px-2 py-1 text-[10px] ${
                   device.isRepresentative
                     ? "bg-brand text-white"
-                    : "bg-component text-sub border border-brand"
+                    : "border border-brand bg-component text-sub"
                 }`}
               >
                 대표기기로 설정
               </button>
-              <button className="px-2 py-1 bg-component text-sub rounded-lg text-pre-medium text-[10px]">
+              <button className="text-pre-medium rounded-lg bg-component px-2 py-1 text-[10px] text-sub">
                 삭제
               </button>
             </div>

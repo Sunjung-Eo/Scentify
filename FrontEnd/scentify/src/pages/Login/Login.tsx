@@ -28,13 +28,13 @@ const Login = () => {
 
   return (
     <div className="app">
-      <main className="content flex flex-col items-center justify-center w-full">
+      <main className="content flex w-full flex-col items-center justify-center">
         <img
           src={Logo}
           alt="Scentify Logo"
-          className="w-[110px] h-[32px] mb-6"
+          className="mb-6 h-[32px] w-[110px]"
         />
-        <div className="auth-container flex justify-center items-center">
+        <div className="auth-container flex items-center justify-center">
           <LoginForm
             id={id}
             password={password}
@@ -43,12 +43,12 @@ const Login = () => {
             onLogin={handleLogin}
           />
         </div>
-        <div className="flex font-pre-medium text-14 py-6">
+        <div className="flex py-6 font-pre-medium text-14">
           <Link to="/user/regist">회원가입 하기</Link>
           <span className="w-[56px]"></span>
           <Link to="/user/forgot-password">비밀번호 찾기</Link>
         </div>
-        <span className="font-pre-light text-12 text-gray py-1">
+        <span className="py-1 font-pre-light text-12 text-gray">
           SNS 계정으로 로그인
         </span>
         <SocialLogoBtn />

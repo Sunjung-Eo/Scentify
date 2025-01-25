@@ -35,6 +35,7 @@ export default function ReservationManager({
   const handleDeleteConfirm = () => {
     // 삭제 API 호출 추가
     if (reservationDelete) {
+      // TODO: 추후 로직 추가 예정
     }
     setDeleteModalOpen(false);
     setReservationDelete(null);
@@ -51,7 +52,7 @@ export default function ReservationManager({
           <img src={AlarmIcon} alt="알람 이미지" />
           <h2>예약 관리</h2>
         </div>
-        <div className="absolute top-[-4px] left-[209px] z-40">
+        <div className="absolute left-[209px] top-[-4px] z-40">
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
@@ -66,9 +67,9 @@ export default function ReservationManager({
               key={index}
               className="flex p-3 border-b-0.2 border-lightgray justify-between"
             >
-              <div className="font-pre-medium text-base">{reservation}</div>
+              <div className="text-base font-pre-medium">{reservation}</div>
               <div className="flex flex-col justify-between gap-3">
-                <div className="flex gap-2 justify-between">
+                <div className="flex justify-between gap-2">
                   {/* 찜하기 버튼 상태는 Scent탭 눌렀을 때 적용 */}
                   <HeartButton
                     isLiked={heartStatus[reservation]}

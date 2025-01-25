@@ -20,37 +20,40 @@
 
 /* 모바일에서 실제 높이를 계산한 값 적용 */
 :root {
-    --vh: 100%;
+  --vh: 100%;
 }
 
 /* 전역 스타일 */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 /* 전체 페이지 기본 스타일 */
-html, body {
-    margin: 0;
-    padding: 0;
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
 .app {
-    max-width: 360px;
-    width: 100%;
-    height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
-    margin: 0 auto;
-    background-color: #FAFAFA;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-height: 600px;
+  max-width: 360px;
+  width: 100%;
+  height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
+  margin: 0 auto;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 600px;
 }
 
-
 /* 헤더 고정 및 중앙 정렬 */
-.header, .footer {
+.header,
+.footer {
   width: 100%;
   max-width: 360px;
   height: 60px;
@@ -58,9 +61,10 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
+  /* position: fixed;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); */
+  position: absolute;
 }
 
 .header {
@@ -71,12 +75,13 @@ html, body {
   bottom: 0;
   min-height: 60px;
 }
-  /* 메인 콘텐츠 패딩 설정 (헤더, 푸터 고려) */
+/* 메인 콘텐츠 패딩 설정 (헤더, 푸터 고려) */
 .content {
   flex-grow: 1;
-  padding-top: 60px;  /* 헤더 높이만큼 */
-  padding-bottom: 60px;  /* 푸터 높이만큼 */
+  padding-top: 60px; /* 헤더 높이만큼 */
+  padding-bottom: 60px; /* 푸터 높이만큼 */
   width: 100%;
   max-width: 360px;
+  overflow: hidden; /* 넘치는 콘텐츠 방지 */
   box-sizing: border-box; /* 패딩 및 보더를 포함한 크기 계산 */
 }

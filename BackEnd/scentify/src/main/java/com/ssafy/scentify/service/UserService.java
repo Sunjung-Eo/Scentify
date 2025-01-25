@@ -75,4 +75,8 @@ public class UserService {
 		Date birth = Date.valueOf(userInfoDto.getBirth());
 		return userRepository.updateUserInfo(userId, userInfoDto.getGender(), birth) ? true : false;
 	}
+
+	public boolean updateUserImg(String userId, Integer imgNum) {
+		return userRepository.updateUserImgNum(userId, imgNum) ? true : false;
+	}
 }

@@ -311,4 +311,33 @@ public class UserController {
 		}
 	}
 	
+	// API 62번 : 유저 사진 수정 
+	@PostMapping("/img/update")
+	public ResponseEntity<?> updateUserImg(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> imgMap) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        Integer imgNum = imgMap.get("imgNum");
+	        
+	        // 데이터 유효성 검사
+	        if (0 > imgNum || imgNum > 8) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // DB에서 정보 수정 (정보 수정이 이루어지지 않은 경우 400 반환)
+	        if (!userService.updateUserImg(userId, imgNum)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

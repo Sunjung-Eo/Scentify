@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DeviceSelect from "../../../components/DeviceSelect";
 import { AutoMode, AutoManagerProps } from "./AutoModeType";
 import AutoIcon from "../../../assets/icons/auto-icon.svg";
@@ -10,29 +10,32 @@ export default function AutoManager({
   onDeviceChange,
 }: AutoManagerProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+
   // 대표기기, 기기 명, 각 기기 별 자동화 세팅 - api나 저장소, 상위 컴포넌트에서 가져오기
+  const { focus, rest } = location.state || { focus: false, rest: false };
   const [autos, setAutos] = useState<Record<string, AutoMode>>({
     기기A: {
       탈취: true,
       동작: {
-        집중: true,
-        휴식: true,
+        집중: focus,
+        휴식: rest,
       },
       탐지: true,
     },
     기기B: {
       탈취: false,
       동작: {
-        집중: true,
-        휴식: false,
+        집중: focus,
+        휴식: rest,
       },
       탐지: false,
     },
     기기C: {
       탈취: true,
       동작: {
-        집중: false,
-        휴식: true,
+        집중: focus,
+        휴식: rest,
       },
       탐지: false,
     },
@@ -40,7 +43,11 @@ export default function AutoManager({
   const devices = Object.keys(autos);
   // 자동화 모드 세부 설정 버튼 클릭
   const handleSettingClick = (autoType: string) => {
-    navigate(`/control/auto/${autoType}`);
+    if (autoType === "동작") {
+      navigate(`/control/auto/behavior`, {
+        state: { focus, rest },
+      });
+    }
   };
 
   return (
@@ -83,7 +90,7 @@ export default function AutoManager({
                         )
                       )}
                     </div>
-                    <button onClick={() => handleSettingClick("동작")}>
+                    <button onClick={() => handleSettingClick(autoType)}>
                       <img src={SettingIcon} alt="세팅 이미지" />
                     </button>
                   </div>

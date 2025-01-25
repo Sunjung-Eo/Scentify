@@ -58,7 +58,7 @@ function App() {
               <Layout>
                 <Routes>
                   <Route path="/home" element={<Home />} />
-                  <Route path="/control" element={<Control />} />
+                  <Route path="/control/*" element={<Control />} />
                   <Route path="/scent" element={<Scent />} />
                   <Route path="/my" element={<My />} />
                 </Routes>

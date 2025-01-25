@@ -82,7 +82,7 @@ export default function AutoManager({
         {Object.entries(autos[selectedDevice]).map(([autoType, value]) => (
           <div
             key={autoType}
-            className="w-[320px] h-[40px] px-4 bg-component text-16 flex justify-between items-center rounded-lg"
+            className="w-[328px] h-[40px] px-4 bg-component text-16 flex justify-between items-center rounded-lg"
           >
             {autoType === "동작" ? (
               <div className="flex justify-between items-center w-full">

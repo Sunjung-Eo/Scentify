@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useControlStore } from "../../../stores/useControlStore";
 import SprayIntervalSelector from "../../../components/SprayIntervalSelector";
 
 export default function BehaviorSetting() {
@@ -36,25 +37,21 @@ export default function BehaviorSetting() {
     setSelectedTime(time);
   };
 
-  // 뒤로가기
-  const handleBack = () => {
-    navigate("/control", {
-      state: { focus: location.state.focus, rest: location.state.rest },
-    });
-  };
-
   // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
+  const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
     navigate("/control", {
       state: { focus, rest },
     });
   };
+  useEffect(() => {
+    setCompleteHandler(handleComplete);
+    return () => setCompleteHandler(null);
+  }, [focus, rest]);
 
   return (
-    <div className="content">
-      <button onClick={handleBack}>뒤로가기</button>
-      <h2>동작모드</h2>
-      <button onClick={handleComplete}>완료</button>
+    <div className="content p-0">
+      {/* <button onClick={handleComplete}>완료</button> */}
       <div className="relative">
         <div className="flex flex-col w-[320px] h-[130px] p-5 ml-5 bg-sub text-white rounded-xl">
           <div className="flex justify-between">

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useControlStore } from "../../../stores/useControlStore";
 import ScentSetting from "../../../components/ScentSetting";
 
 export default function DetectionSetting() {
@@ -19,25 +20,21 @@ export default function DetectionSetting() {
     });
   };
 
-  // 뒤로가기
-  const handleBack = () => {
-    navigate("/control", {
-      state: { detect: location.state.detect },
-    });
-  };
-
   // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
+  const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
     navigate("/control", {
       state: { detect },
     });
   };
+  useEffect(() => {
+    setCompleteHandler(handleComplete);
+    return () => setCompleteHandler(null);
+  }, [detect]);
 
   return (
-    <div className="content">
-      <button onClick={handleBack}>뒤로가기</button>
-      <h2>탐지모드</h2>
-      <button onClick={handleComplete}>완료</button>
+    <div className="content p-0">
+      {/* <button onClick={handleComplete}>완료</button> */}
       <div className="font-pre-medium text-16 ml-5 mr-5">
         <div className="flex relative justify-between mb-6">
           <h3>향 설정</h3>

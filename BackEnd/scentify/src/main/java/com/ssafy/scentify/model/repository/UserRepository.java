@@ -34,4 +34,8 @@ public interface UserRepository {
     // id로 유저 성별과 생년월일 가져오기
 	@Select("SELECT gender, birth FROM user WHERE id = #{id}")
     UserInfoDto getUserInfoById(String id);
+	
+	// id에 해당하는 유저의 nickName 업데이트
+	@Update("UPDATE user SET nickname = #{nickname} WHERE id = #{id}")
+	boolean updateUserNickName(String id, String nickname);
 }

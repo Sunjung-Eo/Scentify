@@ -1,5 +1,9 @@
 package com.ssafy.scentify.model.dto;
 
+import java.sql.Date;
+
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +17,33 @@ public class UserDto {
 	    private String id;
 		@NotBlank
 	    private String password;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class SocialLoginDto {
+		@NotBlank 
+	    private String id;
+		@NotBlank
+	    private Integer socialType;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class SocialRegisterDto {
+		@NotBlank
+	    private String password;
+	    @NotBlank
+	    private String nickname;   
+	    @Email @NotBlank
+	    private String email;   
+	    @NotNull
+	    private Integer imgNum;
+	    @NotNull
+	    private Integer socialType;
+	    @NotNull
+	    private Integer gender;
+	    @NotNull
+	    private Date birth;
 	}
 }

@@ -3,6 +3,8 @@ package com.ssafy.scentify.model.repository;
 import java.sql.Date;
 
 import org.apache.ibatis.annotations.*;
+
+import com.ssafy.scentify.model.dto.UserDto.SocialLoginDto;
 import com.ssafy.scentify.model.entity.User;
 
 @Mapper
@@ -22,5 +24,9 @@ public interface UserRepository {
     
     // id로 유저 비밀번호 찾기
     @Select("SELECT password FROM user WHERE id = #{id}")
-	String getUserById(String id);
+	String getUserPasswordById(String id);
+    
+    // email로 유저 id 가져오기
+    @Select("SELECT id, social_type FROM user WHERE email = #{email}")
+    SocialLoginDto getSocialUserInfoByEmail(String email);
 }

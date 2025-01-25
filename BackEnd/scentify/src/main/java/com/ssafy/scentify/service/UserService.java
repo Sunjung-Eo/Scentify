@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.model.dto.UserDto.LoginDto;
+import com.ssafy.scentify.model.dto.UserDto.SocialLoginDto;
 import com.ssafy.scentify.model.entity.*;
 import com.ssafy.scentify.model.repository.UserRepository;
 import com.ssafy.scentify.model.repository.UserSecuInfoRepository;
@@ -51,9 +52,12 @@ public class UserService {
 		String salt = secuInfo.getSalt();
 		
 		String secuPassword = openCrypt.byteArrayToHex(openCrypt.getSHA256(loginDto.getPassword(), salt));
-		String userPassword = userRepository.getUserById(loginDto.getId());
+		String userPassword = userRepository.getUserPasswordById(loginDto.getId());
 		if (!secuPassword.equals(userPassword)) return 401;	
 		return 200;
 	}
-
+	
+	public SocialLoginDto getUserIdByEmail(String email) {
+		return userRepository.getSocialUserInfoByEmail(email);
+	}
 }

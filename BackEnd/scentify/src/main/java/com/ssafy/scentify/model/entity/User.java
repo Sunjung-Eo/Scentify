@@ -35,7 +35,6 @@ public class User {
     private Integer gender;
     @NotNull
     private Date birth;
-    @NotBlank
     private Integer mainDeviceId;
 
     public void setId(String id) {
@@ -97,4 +96,5 @@ public class User {
     public void setMainDeviceId(Integer mainDeviceId) {
         this.mainDeviceId = mainDeviceId;
     }
+
 }

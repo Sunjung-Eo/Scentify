@@ -140,8 +140,9 @@ public class UserController {
 			HttpSession session = request.getSession(false);
 			if (session == null || session.getAttribute("id").equals("") 
 					|| session.getAttribute("id") == null || !user.getId().equals(session.getAttribute("id"))) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-			// if (session.getAttribute("email").equals("") || session.getAttribute("email") == null
-			//		|| !user.getEmail().equals(session.getAttribute("email"))) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			
+			if (session.getAttribute("email").equals("") || session.getAttribute("email") == null
+					|| !user.getEmail().equals(session.getAttribute("email"))) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			
 			if(!passwordPattern.matcher(user.getPassword()).matches()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			if (!userService.createUser(user)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -161,13 +162,9 @@ public class UserController {
         try {
         	int status = userService.login(loginDto);
 
-        	if (status == 403) {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
+        	if (status == 403) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
         	
-            if (status == 401) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+            if (status == 401) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
             
             TokenDto tokenDto = tokenProvider.createJwtToken(loginDto.getId());
             tokenService.saveRefreshToken(loginDto.getId(), tokenDto.getRefreshToken());

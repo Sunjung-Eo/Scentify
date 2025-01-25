@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.model.dto.UserDto.LoginDto;
 import com.ssafy.scentify.model.dto.UserDto.SocialLoginDto;
+import com.ssafy.scentify.model.dto.UserDto.UserInfoDto;
 import com.ssafy.scentify.model.entity.*;
 import com.ssafy.scentify.model.repository.UserRepository;
 import com.ssafy.scentify.model.repository.UserSecuInfoRepository;
@@ -59,5 +60,9 @@ public class UserService {
 	
 	public SocialLoginDto getUserIdByEmail(String email) {
 		return userRepository.getSocialUserInfoByEmail(email);
+	}
+
+	public UserInfoDto getUserInfoById(String id) {
+		return userRepository.getUserInfoById(id);
 	}
 }

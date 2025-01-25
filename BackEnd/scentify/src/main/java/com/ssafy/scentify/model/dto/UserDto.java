@@ -1,6 +1,9 @@
 package com.ssafy.scentify.model.dto;
 
 import java.sql.Date;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.validation.constraints.Email;
@@ -45,5 +48,15 @@ public class UserDto {
 	    private Integer gender;
 	    @NotNull
 	    private Date birth;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class UserInfoDto {
+		@NotNull
+	    private Integer gender;
+		@NotNull
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	    private LocalDate birth;
 	}
 }

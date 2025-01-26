@@ -14,7 +14,7 @@ public class TokenService {
 
     // Refresh Token 저장
     public void saveRefreshToken(String userId, String refreshToken) {
-        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken, Duration.ofDays(7));
+        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken, Duration.ofDays(1));
     }
 
     // Refresh Token 검증

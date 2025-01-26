@@ -10,7 +10,7 @@ export interface Device {
   slot3RemainingRatio: number | null;
   slot4: number | null;
   slot4RemainingRatio: number | null;
-  mode: boolean; // 수정: 0 또는 1로 정의된 boolean
+  mode: 0 | 1;
   temperature: number | null;
   humidity: number | null;
   defaultCombination: number | null;
@@ -18,6 +18,7 @@ export interface Device {
 
 export interface AutoSchedule {
   id: number;
+  device_id: string;
   combinationId: number;
   subMode: number;
   type: number | null;
@@ -27,6 +28,7 @@ export interface AutoSchedule {
 
 export interface CustomSchedule {
   id: number;
+  deviceId: string;
   name: string;
   combinationId: number;
   combinationName: string;

@@ -1,29 +1,26 @@
-import { create } from "zustand";
-import { AuthState } from "../types/AuthState";
-import { loginUser, refreshAccessToken } from "../apis/user/login";
+import { create } from 'zustand';
+import { AuthState } from '../types/AuthState';
+import { loginUser, refreshAccessToken } from '../apis/user/login';
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  accessToken: "",
+  accessToken: '',
   isAuthenticated: false,
 
   login: async (id, password) => {
-    /*
-    try{
+    try {
       const data = await loginUser(id, password);
-      set({accessToken: data.accessToken, isAuthenticated: true});
-
+      set({ accessToken: data.accessToken, isAuthenticated: true });
     } catch (error) {
-      console.log("로그인 실패: ", error);
+      console.log('로그인 실패: ', error);
       throw error;
     }
-    */
 
     // 임시로 유효성 검사를 통과한 경우 로그인 성공 처리
-    set({ accessToken: `mock-token-${id}`, isAuthenticated: true });
+    // set({ accessToken: `mock-token-${id}`, isAuthenticated: true });
   },
 
   logout: () => {
-    set({ accessToken: "", isAuthenticated: false });
+    set({ accessToken: '', isAuthenticated: false });
   },
 
   getAccessToken: () => {
@@ -35,8 +32,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const data = await refreshAccessToken();
       set({ accessToken: data.accessToken, isAuthenticated: true });
     } catch (error) {
-      console.error("토큰 갱신 실패:", error);
-      set({ accessToken: "", isAuthenticated: false });
+      console.error('토큰 갱신 실패:', error);
+      set({ accessToken: '', isAuthenticated: false });
     }
   },
 }));

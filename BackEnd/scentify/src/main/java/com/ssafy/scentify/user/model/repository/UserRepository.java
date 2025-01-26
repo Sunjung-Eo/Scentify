@@ -50,4 +50,8 @@ public interface UserRepository {
 	// id에 해당하는 유저의 비밀번호 업데이트
 	@Update("UPDATE user SET password = #{password} WHERE id = #{id}")
 	boolean updatePassword(String id, String password);
+	
+	// id에 해당하는 유저의 계정 삭제
+	@Delete("DELETE FROM user WHERE id = #{id}")
+	boolean deleteUser(String id);
 }

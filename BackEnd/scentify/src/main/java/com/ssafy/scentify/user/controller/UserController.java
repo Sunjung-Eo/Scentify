@@ -423,5 +423,38 @@ public class UserController {
 		}
 	}
 	
+	// API 65변 : 회원 탈퇴
+	@PostMapping("/delete")
+	public ResponseEntity<?> deleteUserAccount(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        // 비밀번호 검증을 이전에 수행했는지 확인
+	        HttpSession session = request.getSession(false);
+	        if (session == null || !(Boolean.TRUE.equals(session.getAttribute("validatePassword")))) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // DB에서 정보 확인 (유저 삭제가 이루어지지 않은 경우 400)
+	        if (!userService.deleteUser(userId)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // 로직 수행 후 세션 만료
+	        session.invalidate();
+
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 }

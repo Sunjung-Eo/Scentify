@@ -90,4 +90,8 @@ public class UserService {
 		if (!secuinfoRepository.updateSalt(userId, salt)) return false;
 		return true;
 	}
+
+	public boolean deleteUser(String userId) {
+		return userRepository.deleteUser(userId) ? true : false;
+	}
 }

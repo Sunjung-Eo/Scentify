@@ -79,4 +79,13 @@ public class UserService {
 	public boolean updateUserImg(String userId, Integer imgNum) {
 		return userRepository.updateUserImgNum(userId, imgNum) ? true : false;
 	}
+
+	public boolean updatePassword(String userId, String password) {
+		String salt = UUID.randomUUID().toString();
+		String secuPassword = openCrypt.byteArrayToHex(openCrypt.getSHA256(password, salt));
+		
+		if (!userRepository.updatePassword(userId, secuPassword)) return false; 
+		if (!secuinfoRepository.updateSalt(userId, salt)) return false;
+		return true;
+	}
 }

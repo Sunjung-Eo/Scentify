@@ -341,8 +341,47 @@ public class UserController {
 		}
 	}
 	
+	// API 63변 : 비밀번호 수정
+	@PostMapping("/password/update")
+	public ResponseEntity<?> updateUserPassword(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> passwordMap, HttpServletRequest request) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        String password = passwordMap.get("password");
+	        
+	        // 비밀번호가 지정된 패턴을 따르지 않은 경우
+	        if (!passwordPattern.matcher(password).matches()) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // 비밀번호 검증을 이전에 수행했는지 확인
+	        HttpSession session = request.getSession(false);
+	        if (session == null || !(Boolean.TRUE.equals(session.getAttribute("validatePassword")))) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        
+	        // 비밀번호 재설정
+	        if (!userService.updatePassword(userId, password)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // 로직 수행 후 세션 만료
+	        session.invalidate();
+	        
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	// API 64변 : 비밀번호 검증
-	@PostMapping("/verify-password")
+	@PostMapping("/password/verify")
 	public ResponseEntity<?> validatePassword(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> passwordMap, HttpServletRequest request) {
 		try {
 			// "Bearer " 제거

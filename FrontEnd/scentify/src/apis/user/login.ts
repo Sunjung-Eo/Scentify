@@ -1,7 +1,12 @@
-// const BASE_URL = 'http://localhost:8080';
+interface AuthResponse {
+  accessToken: string;
+}
 
 // 로그인 API 호출
-export const loginUser = async (id: string, password: string) => {
+export const loginUser = async (
+  id: string,
+  password: string
+): Promise<AuthResponse> => {
   try {
     const response = await fetch('/v1/user/login', {
       method: 'POST',
@@ -23,7 +28,7 @@ export const loginUser = async (id: string, password: string) => {
 
     const accessToken = authHeader.split(' ')[1];
     console.log('Access Token:', accessToken);
-    return accessToken;
+    return { accessToken };
   } catch (error) {
     console.error('로그인 요청 중 오류 발생:', error);
     throw error; // 에러를 호출한 쪽으로 전달

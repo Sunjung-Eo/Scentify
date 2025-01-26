@@ -22,6 +22,11 @@ public class TokenService {
         String storedToken = redisTemplate.opsForValue().get("refreshToken:" + userId);
         return storedToken != null && storedToken.equals(refreshToken);
     }
+    
+    // Refresh Token 삭제 
+    public void deleteRefreshToken(String userId) {
+        redisTemplate.delete("refreshToken:" + userId);
+    }
 
     // 블랙리스트 추가
     public void addToBlacklist(String accessToken, long expirationTimeInMillis) {

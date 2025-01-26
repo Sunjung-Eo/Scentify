@@ -95,6 +95,8 @@ public class KakaoController {
 		    if (existingUserInfo != null && existingUserInfo.getId().equals(id) ) { 
 		    	// 토큰 발급
 		    	TokenDto tokenDto = tokenProvider.createJwtToken(existingUserInfo.getId());
+		    	
+		    	// 리프레시 토큰 레디스 저장
 	            tokenService.saveRefreshToken(existingUserInfo.getId(), tokenDto.getRefreshToken());
 	            
 	            // 발급한 토큰을 쿠키로 삽입

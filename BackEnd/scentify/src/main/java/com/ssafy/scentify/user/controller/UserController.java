@@ -189,6 +189,8 @@ public class UserController {
             
             // 토큰 생성
             TokenDto tokenDto = tokenProvider.createJwtToken(loginDto.getId());
+            
+            // 리프레시 토큰 레디스 저장
             tokenService.saveRefreshToken(loginDto.getId(), tokenDto.getRefreshToken());
             
             // 헤더에 access 토큰 및 refresh 토큰 쿠키 삽입 
@@ -220,9 +222,13 @@ public class UserController {
         	String accessToken = authorizationHeader.substring(7);
         	if (!tokenProvider.vaildateJwtToken(accessToken)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
             long expiration = tokenProvider.getExpiration(accessToken).getTime();
+            String userId = tokenProvider.getId(accessToken);
             
             // 블랙리스트로 등록
             tokenService.addToBlacklist(accessToken, expiration);
+            
+            // 리프레시 토큰 삭제
+            tokenService.deleteRefreshToken(userId);
             
             return new ResponseEntity<>(HttpStatus.OK);  // 성공적으로 처리됨
             

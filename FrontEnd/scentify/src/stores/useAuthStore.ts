@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { AuthState } from '../types/AuthState';
 import { loginUser, refreshAccessToken } from '../apis/user/login';
+import { logoutUser } from '../apis/user/logout';
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: '',
@@ -19,8 +20,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // set({ accessToken: `mock-token-${id}`, isAuthenticated: true });
   },
 
-  logout: () => {
-    set({ accessToken: '', isAuthenticated: false });
+  logout: async () => {
+    try {
+      await logoutUser();
+      set({ accessToken: '', isAuthenticated: false });
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+      throw error;
+    }
   },
 
   getAccessToken: () => {

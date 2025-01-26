@@ -218,9 +218,8 @@ public class UserController {
 	@PostMapping("/logout")
 	 public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-        	// access 토큰 검증
+        	// access 토큰에서 id 정보, 만료시간 추출
         	String accessToken = authorizationHeader.substring(7);
-        	if (!tokenProvider.vaildateJwtToken(accessToken)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
             long expiration = tokenProvider.getExpiration(accessToken).getTime();
             String userId = tokenProvider.getId(accessToken);
             

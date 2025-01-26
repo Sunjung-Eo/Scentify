@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.ssafy.scentify.auth.model.dto.TokenDto;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -60,10 +62,20 @@ public class TokenProvider implements InitializingBean {
                 		.build();
 	}
 	
+	// access token을 만드는 메서드
+	public String createAccessToken(String id) {
+		Date now = new Date();
+		return Jwts.builder()
+					.setSubject(id)
+					.setIssuedAt(now)
+					.setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION))
+					.signWith(SignatureAlgorithm.HS256, secretKey)
+					.compact();
+	}
 	
 	// 쿠키를 만드는 메서드
 	public Cookie createCookie(String refreshToken) {
-        String cookieName = "refreshtoken";
+        String cookieName = "refreshToken";
         String cookieValue = refreshToken;
         Cookie cookie = new Cookie(cookieName, cookieValue);
        
@@ -76,30 +88,28 @@ public class TokenProvider implements InitializingBean {
 	}
 	
 	// 토큰을 검증하는 메서드 
-	public boolean vaildateJwtToken(String token) {
-		try {
-			Jwts.parserBuilder()
-				.setSigningKey(secretKey)
-				.build()
-				.parseClaimsJws(token);
-			
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+	public void validateJwtToken(String token) throws JwtException {
+	    Jwts.parserBuilder()
+	        .setSigningKey(secretKey)
+	        .build()
+	        .parseClaimsJws(token);
 	}
 	
 	// 토큰에 있는 사용자 id 정보를 가져오는 메서드
 	public String getId(String token) {
-		String userId = Jwts.parserBuilder()
-							.setSigningKey(secretKey)
-							.build()
-							.parseClaimsJws(token)
-							.getBody()
-							.getSubject();
-		log.info("Extracted User ID: {}", userId);
-		return userId;
-	}
+		try {
+			String userId = Jwts.parserBuilder()
+								.setSigningKey(secretKey)
+								.build()
+								.parseClaimsJws(token)
+								.getBody()
+								.getSubject();
+			log.info("Extracted User ID: {}", userId);
+			return userId;
+		} catch (ExpiredJwtException e) {
+	        return e.getClaims().getSubject();
+		}
+	} 
 	
 	// 토큰에 있는 시리얼 정보를 가져오는 메서드
 	public String getSerial(String token) {
@@ -115,12 +125,16 @@ public class TokenProvider implements InitializingBean {
 	
 	// 토큰의 만료 시간 정보를 가져오는 메서드
 	public Date getExpiration(String token) {
-		Date expiration = Jwts.parserBuilder()
-                				.setSigningKey(secretKey)
-                				.build()
-                				.parseClaimsJws(token)
-                				.getBody()
-                				.getExpiration();
-		return expiration;
+		try {
+			Date expiration = Jwts.parserBuilder()
+	                				.setSigningKey(secretKey)
+	                				.build()
+	                				.parseClaimsJws(token)
+	                				.getBody()
+	                				.getExpiration();
+			return expiration;
+		} catch (ExpiredJwtException e) {
+	        return e.getClaims().getExpiration();
+		}
 	}
 }

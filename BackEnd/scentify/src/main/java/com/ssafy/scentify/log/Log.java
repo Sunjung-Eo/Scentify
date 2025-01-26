@@ -1,4 +1,4 @@
-package com.ssafy.scentify.log.model.entity;
+package com.ssafy.scentify.log;
 
 import java.sql.*;
 import lombok.*;

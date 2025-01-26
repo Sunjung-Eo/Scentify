@@ -46,4 +46,8 @@ public interface UserRepository {
 	// id에 해당하는 유저의 사진 번호 업데이트
 	@Update("UPDATE user SET img_num = #{imgNum} WHERE id = #{id}")
 	boolean updateUserImgNum(String id, Integer imgNum);
+	
+	// id에 해당하는 유저의 비밀번호 업데이트
+	@Update("UPDATE user SET password = #{password} WHERE id = #{id}")
+	boolean updatePassword(String id, String password);
 }

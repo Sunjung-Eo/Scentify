@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 import { APIResponse } from "../../feature/Home/Device/DeviceTypes";
 
 const exampleData: APIResponse = {
-  main_device_id: ["145", "221", "332"],
+  main_device_id: ["145", "221", "332"], // 연결된 기기의 ID
   devices: [
     {
-      id: "145",
+      id: "145", // 예약 모드: 가까운 예약이 있는 경우
       name: "우리 방",
       groupId: 1,
       slot1: 0,
@@ -18,13 +18,13 @@ const exampleData: APIResponse = {
       slot3RemainingRatio: 70,
       slot4: 8,
       slot4RemainingRatio: 60,
-      mode: true,
+      mode: 0,
       temperature: 25,
       humidity: 51,
       defaultCombination: 1,
     },
     {
-      id: "221",
+      id: "221", // 예약 모드: 예약이 없는 경우
       name: "거실",
       groupId: 1,
       slot1: 2,
@@ -35,24 +35,24 @@ const exampleData: APIResponse = {
       slot3RemainingRatio: 1,
       slot4: 4,
       slot4RemainingRatio: 55,
-      mode: false,
+      mode: 0,
       temperature: 24,
       humidity: 50,
       defaultCombination: 2,
     },
     {
-      id: "332",
+      id: "332", // 자동화 모드
       name: "서재",
       groupId: null,
-      slot1: null,
-      slot1RemainingRatio: null,
-      slot2: null,
-      slot2RemainingRatio: null,
-      slot3: null,
-      slot3RemainingRatio: null,
-      slot4: null,
-      slot4RemainingRatio: null,
-      mode: true,
+      slot1: 2,
+      slot1RemainingRatio: 20,
+      slot2: 0,
+      slot2RemainingRatio: 50,
+      slot3: 3,
+      slot3RemainingRatio: 99,
+      slot4: 5,
+      slot4RemainingRatio: 25,
+      mode: 1,
       temperature: 23,
       humidity: 49,
       defaultCombination: 3,
@@ -60,28 +60,40 @@ const exampleData: APIResponse = {
   ],
   autoSchedules: [
     {
-      id: 2,
+      id: 1,
+      device_id: "332",
       combinationId: 1,
       subMode: 0,
       type: null,
-      modeOn: false,
+      modeOn: true,
       interval: 15,
+    },
+    {
+      id: 2,
+      device_id: "332",
+      combinationId: 1,
+      subMode: 1,
+      type: null,
+      modeOn: true,
+      interval: 30,
     },
   ],
   customSchedules: [
     {
-      id: 3,
-      name: "출근 전에",
-      combinationId: 2,
-      combinationName: "상쾌",
-      isFavorite: false,
-      day: 64,
-      startTime: "09:00:00",
-      endTime: "10:00:00",
-      interval: 15,
+      id: 1, // 가까운 예약 스케줄
+      deviceId: "145", // 예약이 연결된 기기 ID
+      name: "아침에 뿌리는 향",
+      combinationId: 1,
+      combinationName: "상쾌한 향",
+      isFavorite: true,
+      day: 64, // 월요일
+      startTime: "23:59:59", // 현재 시간 이후
+      endTime: "15:00:00",
+      interval: 15, // 분사 주기: 15분
     },
   ],
 };
+
 // const exampleData: APIResponse = {
 //   main_device_id: [], // 연결된 기기가 없는 상태
 //   devices: [], // devices 배열도 비어있음 (기기가 전혀 없는 경우)
@@ -89,7 +101,7 @@ const exampleData: APIResponse = {
 
 function HomeMain() {
   return (
-    <div>
+    <div className="content px-4 pt-6">
       <UserCard />
       <Link to="/home/registdevice1">
         <button className="p-2 bg-blue-500 text-white rounded">눌러라</button>

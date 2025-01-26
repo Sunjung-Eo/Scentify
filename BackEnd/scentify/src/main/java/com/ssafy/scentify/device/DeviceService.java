@@ -1,7 +1,6 @@
 package com.ssafy.scentify.device;
 
 import org.springframework.stereotype.Service;
-
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
 
 @Service

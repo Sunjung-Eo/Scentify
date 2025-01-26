@@ -16,6 +16,7 @@ import com.ssafy.scentify.util.CodeProvider;
 import com.ssafy.scentify.util.TokenProvider;
 import com.ssafy.scentify.model.dto.TokenDto;
 import com.ssafy.scentify.model.dto.UserDto;
+import com.ssafy.scentify.model.dto.UserDto.LoginDto;
 import com.ssafy.scentify.model.dto.UserDto.UserInfoDto;
 import com.ssafy.scentify.model.entity.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -236,7 +237,7 @@ public class UserController {
 		try {
 			// "Bearer " 제거
 	        if (!authorizationHeader.startsWith("Bearer ")) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 	        String token = authorizationHeader.substring(7);
 
@@ -260,7 +261,7 @@ public class UserController {
 		try {
 			// "Bearer " 제거
 	        if (!authorizationHeader.startsWith("Bearer ")) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 	        String token = authorizationHeader.substring(7);
 
@@ -287,7 +288,7 @@ public class UserController {
 		try {
 			// "Bearer " 제거
 	        if (!authorizationHeader.startsWith("Bearer ")) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header format");
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 	        String token = authorizationHeader.substring(7);
 	        
@@ -339,5 +340,42 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// API 64변 : 비밀번호 검증
+	@PostMapping("/verify-password")
+	public ResponseEntity<?> validatePassword(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> passwordMap, HttpServletRequest request) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        String password = passwordMap.get("password");
+	        
+	        // 비밀번호가 지정된 패턴을 따르지 않은 경우
+	        if (!passwordPattern.matcher(password).matches()) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        LoginDto loginDto = new LoginDto(userId, password);
+	        
+	        // DB에서 정보 확인 (입력 비밀번호가 계정에 설정된 값과 다를 경우 401)
+	        if (userService.login(loginDto) == 401) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
+	        
+	        // 세션에 비밀번호 검증한 것을 저장
+	        HttpSession session = request.getSession();
+	        session.setAttribute("validatePassword", true);
+
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 }

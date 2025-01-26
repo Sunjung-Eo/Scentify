@@ -13,3 +13,8 @@ export interface DeleteModalProps {
   onConfirm: () => void;
   onCancel: () => void;
 }
+
+export interface ReservationManagerProps {
+  selectedDevice: string;
+  onDeviceChange: (device: string) => void;
+}

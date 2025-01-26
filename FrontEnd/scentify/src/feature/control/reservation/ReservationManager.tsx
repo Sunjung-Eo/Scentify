@@ -4,11 +4,17 @@ import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import DeviceSelect from "../../../components/DeviceSelect";
 import HeartButton from "../../../components/Button/HeartButton";
 import DeleteConfirmModal from "./DeleteReservationModal";
-import { Reservations, HeartStatus } from "./ReservationType";
+import {
+  Reservations,
+  HeartStatus,
+  ReservationManagerProps,
+} from "./ReservationType";
 
-export default function ReservationManager() {
+export default function ReservationManager({
+  selectedDevice,
+  onDeviceChange,
+}: ReservationManagerProps) {
   // 대표기기, 기기 명, 각 기기 별 예약 목록 - api나 저장소, 상위 컴포넌트에서 가져오기
-  const [selectedDevice, setSelectedDevice] = useState("기기A");
   const [heartStatus, setHeartStatus] = useState<HeartStatus>({});
   const reservations: Reservations = {
     기기A: [],
@@ -16,15 +22,11 @@ export default function ReservationManager() {
     기기C: ["예약 3"],
   };
   const devices = Object.keys(reservations);
-  // 디바이스 선택
-  const handleDeviceChange = (device: string) => {
-    setSelectedDevice(device);
-  };
 
   // 삭제 모달
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [reservationDelete, setReservationDelete] = useState<string | null>(
-    null,
+    null
   );
   const handleDeleteClick = (reservation: string) => {
     setReservationDelete(reservation);
@@ -54,7 +56,7 @@ export default function ReservationManager() {
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
-            onDeviceChange={handleDeviceChange}
+            onDeviceChange={onDeviceChange}
           />
         </div>
       </div>
@@ -63,7 +65,7 @@ export default function ReservationManager() {
           {reservations[selectedDevice].map((reservation, index) => (
             <div
               key={index}
-              className="border-b flex justify-between border-lightgray p-3"
+              className="flex p-3 border-b-0.2 border-lightgray justify-between"
             >
               <div className="text-base font-pre-medium">{reservation}</div>
               <div className="flex flex-col justify-between gap-3">
@@ -84,7 +86,7 @@ export default function ReservationManager() {
                 </div>
                 <button
                   onClick={() => handleDeleteClick(reservation)}
-                  className="border text-xs h-[30px] w-[65px] rounded-lg border-lightgray font-pre-light"
+                  className="w-[65px] h-[30px] border-0.2 border-lightgray font-pre-light text-12 rounded-lg"
                 >
                   삭제
                 </button>
@@ -99,7 +101,7 @@ export default function ReservationManager() {
           )}
         </div>
       ) : (
-        <p className="text-sm mt-40 text-center font-pre-light text-gray">
+        <p className="mt-40 font-pre-light text-14 text-gray text-center">
           + 버튼을 눌러 예약을 설정해주세요.
         </p>
       )}

@@ -29,31 +29,6 @@ public class SecurityConfig {
     public SecurityConfig(TokenFilter tokenFilter) {
         this.tokenFilter = tokenFilter;
     }
-    
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//    	return (web) -> web.ignoring().requestMatchers("/v1/ws/device");
-//    }
-    
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(csrf -> csrf.disable())
-//            .authorizeHttpRequests(authorize -> authorize
-//                .requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
-//                .permitAll()
-//                .requestMatchers("/v1/user/login", "/v1/user/check-id", 
-//                                 "/v1/user/email/send-code", "/v1/user/email/verify-code",
-//                                 "/v1/user/regist").permitAll()
-//                .requestMatchers("/v1/ws").permitAll()
-//                .anyRequest().authenticated()
-//            )
-//            .headers(headers -> headers.frameOptions().disable())
-//            .httpBasic().disable()
-//            .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
-//        
-//        log.info("SecurityContextHolder Authentication: {}", SecurityContextHolder.getContext().getAuthentication());
-//        return http.build();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

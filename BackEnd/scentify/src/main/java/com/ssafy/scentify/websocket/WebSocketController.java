@@ -11,6 +11,10 @@ import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.ModeChangeRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class WebSocketController {
 	
@@ -27,9 +31,13 @@ public class WebSocketController {
 	@MessageMapping("/DeviceStatus/Sensor/TempHum")
     public void handleSensorData(@Payload TempHumRequest request) {
         String token = request.getToken();
-        System.out.println(token);
         
-        if (!tokenProvider.vaildateJwtToken(token)) return;
+        try {
+        	tokenProvider.validateJwtToken(token);
+        } catch (ExpiredJwtException e) {
+        	log.info("Token 만료됨");
+        }
+        
         String serial = tokenProvider.getSerial(token);
         
         //deviceService.addInfo(request);

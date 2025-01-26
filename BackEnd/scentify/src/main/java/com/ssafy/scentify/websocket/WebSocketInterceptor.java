@@ -8,6 +8,7 @@ import com.ssafy.scentify.common.config.WebSocketConfig;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,9 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             log.info("token : {}" + token);
                 
             // 토큰 검증 로직
-            if (!tokenProvider.vaildateJwtToken(token)) {
+            try {
+            	tokenProvider.validateJwtToken(token);
+            } catch (ExpiredJwtException e) {
             	return false;
             }
             

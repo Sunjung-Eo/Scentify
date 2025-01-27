@@ -17,4 +17,8 @@ public class AutoScheduleService {
 		return autoScheduleRepository.createDeodorizationMode(deviceId, combinationId, subMode, interval) ? true : false;
 	}
 
+	public boolean setDetectionMode(Integer deviceId, Integer combinationId, Integer subMode) {
+		return autoScheduleRepository.createDetectionMode(deviceId, combinationId, subMode) ? true : false;
+	}
+
 }

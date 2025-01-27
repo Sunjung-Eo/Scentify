@@ -3,6 +3,14 @@ import RegistForm from './components/RegistForm';
 import Header from '../../../layout/Header';
 
 const Regist = () => {
+  const navigate = useNavigate();
+
+  // 회원가입 완료 후 실행할 함수 정의
+  const handleRegistrationComplete = () => {
+    console.log('회원가입 완료!');
+    navigate('/auth/login');
+  };
+
   return (
     <div className="app">
       <Header
@@ -14,7 +22,7 @@ const Regist = () => {
       <main className="content flex flex-grow justify-center">
         <div className="flex flex-col items-center justify-between">
           <div className="top-4 pt-4 font-pre-bold text-20">회원가입</div>
-          <RegistForm onRegist={() => console.log('회원가입 성공')} />
+          <RegistForm onRegist={handleRegistrationComplete} />
           <button
             type="submit"
             form="registForm"

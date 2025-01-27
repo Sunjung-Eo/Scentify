@@ -1,51 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
+import {
+  handleChange,
+  handleGenderSelect,
+  handleSubmit,
+  handleCheckDuplicate,
+  handleGetEmailCode,
+  handleEmailVerification,
+} from '../../../../utils/register/registFormHandler';
 
-interface RegistFormProps {
-  onRegist: () => void; // 회원가입 성공 시 실행될 함수
-}
-
-const RegistForm = ({ onRegist }: RegistFormProps) => {
-  const [formData, setFormData] = useState({
-    id: '',
-    nickname: '',
-    password: '',
-    confirmPassword: '',
-    birthYear: '',
-    birthMonth: '',
-    birthDay: '',
-    gender: '',
-    email: '',
-    verificationCode: '',
-  });
-
+const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
+  // FormData 객체 생성
+  const [formData, setFormData] = useState(new FormData());
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // 성별 고르는 함수
-  const handleGenderSelect = (gender: string) => {
-    setFormData({ ...formData, gender });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // 간단한 유효성 검사
-    if (!formData.id)
-      setErrors((prev) => ({ ...prev, id: '아이디를 입력하세요' }));
-    if (formData.password !== formData.confirmPassword)
-      setErrors((prev) => ({
-        ...prev,
-        confirmPassword: '비밀번호가 일치하지 않습니다',
-      }));
-
-    if (Object.keys(errors).length === 0) {
-      onRegist();
-    }
-  };
 
   const inputStyles =
     'border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand';
@@ -56,7 +22,10 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
   return (
     <form
       id="registForm"
-      onSubmit={handleSubmit}
+      onSubmit={(e) => {
+        setErrors({}); // 에러 초기화
+        handleSubmit(e, setErrors, onRegist);
+      }}
       className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12"
     >
       {/* 아이디 */}
@@ -66,16 +35,36 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           id="id"
           type="text"
           name="id"
-          value={formData.id}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           placeholder="아이디"
           className={inputStyles}
         />
-        <button type="button" className={miniBtnStyles}>
+        <button
+          type="button"
+          className={miniBtnStyles}
+          onClick={() => {
+            const id = formData.get('id') as string;
+            if (id) {
+              handleCheckDuplicate(id, setErrors);
+            } else {
+              setErrors((prev) => ({ ...prev, id: '아이디를 입력해주세요.' }));
+            }
+          }}
+        >
           중복 확인
         </button>
       </div>
-      {errors.id && <p className="text-[12px] text-red-500">{errors.id}</p>}
+      {errors.id && (
+        <p
+          className={`text-[12px] ${
+            errors.id === '사용 가능한 아이디입니다.'
+              ? 'text-brand'
+              : 'text-red-500'
+          }`}
+        >
+          {errors.id}
+        </p>
+      )}
 
       {/* 닉네임 */}
       <div className="flex items-center gap-2 ">
@@ -84,8 +73,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           id="nickname"
           type="text"
           name="nickname"
-          value={formData.nickname}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           placeholder="닉네임"
           className={inputStyles}
         />
@@ -98,8 +86,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           id="password"
           type="password"
           name="password"
-          value={formData.password}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           placeholder="비밀번호"
           className={inputStyles}
         />
@@ -112,8 +99,7 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           id="confirmPassword"
           type="password"
           name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           placeholder="비밀번호 확인"
           className={inputStyles}
         />
@@ -123,23 +109,22 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
       )}
 
       {/* 생년월일 */}
-      <div className="flex items-center gap-2">
-        <label htmlFor="birth">생년월일</label>
+      <fieldset id="birth" className="flex items-center gap-2">
+        <legend className="flex text-12">생년월일</legend>
+
         <input
-          id="birth"
+          id="birthYear"
           type="text"
           name="birthYear"
           placeholder="년(4자)"
-          value={formData.birthYear}
-          onChange={handleChange}
-          className={
-            'border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand'
-          }
+          maxLength={4}
+          onChange={(e) => handleChange(e, formData, setFormData)}
+          className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
         <select
+          id="birthMonth"
           name="birthMonth"
-          value={formData.birthMonth}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           className="border h-9 w-[80px] rounded-lg bg-component focus:outline-none focus:ring-2 focus:ring-brand"
         >
           <option value="">월</option>
@@ -150,33 +135,42 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           ))}
         </select>
         <input
+          id="birthDay"
           type="text"
           name="birthDay"
           placeholder="일"
-          value={formData.birthDay}
-          onChange={handleChange}
+          maxLength={2}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
-      </div>
+      </fieldset>
 
       {/* 성별 선택 */}
       <div className="flex items-center gap-2">
         <p className="">성별</p>
-        {['여성', '남성', '선택하지 않음'].map((gender) => (
+        {[
+          { label: '남성', value: '0' },
+          { label: '여성', value: '1' },
+          { label: '선택하지 않음', value: '2' },
+        ].map((gender) => (
           <button
-            key={gender}
+            key={gender.value}
             type="button"
-            onClick={() => handleGenderSelect(gender)}
+            onClick={() =>
+              handleGenderSelect(gender.value, formData, setFormData)
+            }
             className={`h-9 rounded-lg px-4 border-brand border-0.5 ${
-              formData.gender === gender ? 'bg-sub text-white' : 'bg-bg'
+              formData.get('gender') === gender.value
+                ? 'bg-sub text-white'
+                : 'bg-bg'
             }`}
           >
-            {gender}
+            {gender.label}
           </button>
         ))}
       </div>
 
-      {/* 이메일 인증 */}
+      {/* 이메일 인증번호 요청 */}
       <div className="flex items-center gap-2">
         <label htmlFor="email">이메일</label>
         <input
@@ -184,16 +178,32 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           type="email"
           name="email"
           placeholder="이메일"
-          value={formData.email}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           className="border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
-        <button type="button" className={miniBtnStyles}>
+        <button
+          type="button"
+          className={miniBtnStyles}
+          onClick={() => {
+            const email = formData.get('email') as string;
+            if (email) {
+              handleGetEmailCode(email, setErrors);
+            } else {
+              setErrors((prev) => ({
+                ...prev,
+                email: '이메일을 입력해주세요.',
+              }));
+            }
+          }}
+        >
           인증하기
         </button>
       </div>
+      {errors.email && (
+        <p className="text-[12px] text-red-500">{errors.email}</p>
+      )}
 
-      {/* 인증번호 */}
+      {/* 인증번호 검증하기 */}
       <div className="flex items-center gap-2">
         <label htmlFor="verificationCode">인증 번호</label>
         <input
@@ -201,14 +211,31 @@ const RegistForm = ({ onRegist }: RegistFormProps) => {
           type="text"
           name="verificationCode"
           placeholder="인증 번호"
-          value={formData.verificationCode}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e, formData, setFormData)}
           className="border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
-        <button type="button" className={miniBtnStyles}>
+        <button
+          type="button"
+          className={miniBtnStyles}
+          onClick={() => {
+            const code = formData.get('verificationCode') as string;
+            console.log(code);
+            if (code) {
+              handleEmailVerification(code, setErrors);
+            } else {
+              setErrors((prev) => ({
+                ...prev,
+                verificationCode: '인증번호를 입력해주세요.',
+              }));
+            }
+          }}
+        >
           확인
         </button>
       </div>
+      {errors.verificationCode && (
+        <p className="text-[12px] text-red-500">{errors.verificationCode}</p>
+      )}
     </form>
   );
 };

@@ -1,17 +1,96 @@
 import React, { useState, FormEvent } from 'react';
 import {
-  handleChange,
-  handleGenderSelect,
-  handleSubmit,
   handleCheckDuplicate,
   handleGetEmailCode,
   handleEmailVerification,
-} from '../../../../utils/register/registFormHandler';
+} from '../handler/registFormHandler';
+import { registUser } from '../../../../apis/user/regist';
+import { validatePassword, validateId } from '../../../../utils/validation';
 
 const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
-  // FormData 객체 생성
-  const [formData, setFormData] = useState(new FormData());
+  // 단순 상태 객체로 변경
+  const [formData, setFormData] = useState({
+    id: '',
+    nickname: '',
+    password: '',
+    confirmPassword: '',
+    birthYear: '',
+    birthMonth: '',
+    birthDay: '',
+    gender: '',
+    email: '',
+    verificationCode: '',
+  });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // 입력 변경 핸들러
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // 폼 제출 핸들러
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors({}); // 에러 초기화
+
+    let newErrors: { [key: string]: string } = {};
+
+    // 유효성 검사 적용
+    const idError = validateId(formData.id);
+    if (idError) newErrors.id = idError;
+
+    if (!formData.nickname.trim()) {
+      newErrors.nickname = '닉네임을 입력해주세요.';
+    }
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) newErrors.password = passwordError;
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+    }
+
+    if (!formData.birthYear || !formData.birthMonth || !formData.birthDay) {
+      newErrors.birth = '생년월일을 정확히 입력하세요.';
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = '이메일을 입력해주세요.';
+    }
+    if (!formData.verificationCode.trim()) {
+      newErrors.verificationCode = '인증 번호를 입력해주세요.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // 생년월일 조합 및 서버 요청
+    const birthDate = `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`;
+
+    const userData = {
+      id: formData.id,
+      password: formData.password,
+      nickname: formData.nickname,
+      email: formData.email,
+      imgNum: 0, // 기본값 0
+      socialType: 0,
+      gender: Number(formData.gender) || 2, // 기본값 2
+      birth: birthDate,
+      mainDeviceId: 0, // 기본값 0
+    };
+
+    try {
+      // 회원가입 API 호출
+      await registUser(userData);
+      onRegist();
+    } catch (error) {
+      setErrors({ server: '서버에 문제가 발생했습니다.' });
+    }
+  };
 
   const inputStyles =
     'border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand';
@@ -22,10 +101,8 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
   return (
     <form
       id="registForm"
-      onSubmit={(e) => {
-        setErrors({}); // 에러 초기화
-        handleSubmit(e, setErrors, onRegist);
-      }}
+      onSubmit={handleSubmit}
+      noValidate
       className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12"
     >
       {/* 아이디 */}
@@ -35,21 +112,15 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="id"
           type="text"
           name="id"
-          onChange={(e) => handleChange(e, formData, setFormData)}
+          value={formData.id}
+          onChange={handleChange}
           placeholder="아이디"
           className={inputStyles}
         />
         <button
           type="button"
           className={miniBtnStyles}
-          onClick={() => {
-            const id = formData.get('id') as string;
-            if (id) {
-              handleCheckDuplicate(id, setErrors);
-            } else {
-              setErrors((prev) => ({ ...prev, id: '아이디를 입력해주세요.' }));
-            }
-          }}
+          onClick={() => handleCheckDuplicate(formData.id, setErrors)}
         >
           중복 확인
         </button>
@@ -73,7 +144,8 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="nickname"
           type="text"
           name="nickname"
-          onChange={(e) => handleChange(e, formData, setFormData)}
+          value={formData.nickname}
+          onChange={handleChange}
           placeholder="닉네임"
           className={inputStyles}
         />
@@ -86,7 +158,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="password"
           type="password"
           name="password"
-          onChange={(e) => handleChange(e, formData, setFormData)}
+          onChange={handleChange}
           placeholder="비밀번호"
           className={inputStyles}
         />
@@ -99,7 +171,8 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="confirmPassword"
           type="password"
           name="confirmPassword"
-          onChange={(e) => handleChange(e, formData, setFormData)}
+          value={formData.confirmPassword}
+          onChange={handleChange}
           placeholder="비밀번호 확인"
           className={inputStyles}
         />
@@ -113,23 +186,24 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
         <legend className="flex text-12">생년월일</legend>
 
         <input
-          id="birthYear"
           type="text"
           name="birthYear"
+          value={formData.birthYear}
           placeholder="년(4자)"
           maxLength={4}
-          onChange={(e) => handleChange(e, formData, setFormData)}
+          onChange={handleChange}
           className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
         <select
           id="birthMonth"
           name="birthMonth"
-          onChange={(e) => handleChange(e, formData, setFormData)}
-          className="border h-9 w-[80px] rounded-lg bg-component focus:outline-none focus:ring-2 focus:ring-brand"
+          value={formData.birthMonth}
+          onChange={handleChange}
+          className={inputStyles}
         >
           <option value="">월</option>
           {Array.from({ length: 12 }, (_, i) => (
-            <option key={i + 1} value={i + 1}>
+            <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
               {i + 1}월
             </option>
           ))}
@@ -138,12 +212,16 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="birthDay"
           type="text"
           name="birthDay"
+          value={formData.birthDay}
           placeholder="일"
           maxLength={2}
-          onChange={(e) => handleChange(e, formData, setFormData)}
+          onChange={handleChange}
           className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
       </fieldset>
+      {errors.birth && (
+        <p className="text-[12px] text-red-500">{errors.birth}</p>
+      )}
 
       {/* 성별 선택 */}
       <div className="flex items-center gap-2">
@@ -157,12 +235,10 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             key={gender.value}
             type="button"
             onClick={() =>
-              handleGenderSelect(gender.value, formData, setFormData)
+              setFormData((prev) => ({ ...prev, gender: gender.value }))
             }
             className={`h-9 rounded-lg px-4 border-brand border-0.5 ${
-              formData.get('gender') === gender.value
-                ? 'bg-sub text-white'
-                : 'bg-bg'
+              formData.gender === gender.value ? 'bg-sub text-white' : 'bg-bg'
             }`}
           >
             {gender.label}
@@ -177,24 +253,15 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="email"
           type="email"
           name="email"
+          value={formData.email}
+          onChange={handleChange}
           placeholder="이메일"
-          onChange={(e) => handleChange(e, formData, setFormData)}
           className="border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />
         <button
           type="button"
           className={miniBtnStyles}
-          onClick={() => {
-            const email = formData.get('email') as string;
-            if (email) {
-              handleGetEmailCode(email, setErrors);
-            } else {
-              setErrors((prev) => ({
-                ...prev,
-                email: '이메일을 입력해주세요.',
-              }));
-            }
-          }}
+          onClick={() => handleGetEmailCode(formData.email, setErrors)}
         >
           인증하기
         </button>
@@ -210,25 +277,17 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           id="verificationCode"
           type="text"
           name="verificationCode"
-          placeholder="인증 번호"
-          onChange={(e) => handleChange(e, formData, setFormData)}
-          className="border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+          value={formData.verificationCode}
+          onChange={handleChange}
+          placeholder="인증번호"
+          className={inputStyles}
         />
         <button
           type="button"
           className={miniBtnStyles}
-          onClick={() => {
-            const code = formData.get('verificationCode') as string;
-            console.log(code);
-            if (code) {
-              handleEmailVerification(code, setErrors);
-            } else {
-              setErrors((prev) => ({
-                ...prev,
-                verificationCode: '인증번호를 입력해주세요.',
-              }));
-            }
-          }}
+          onClick={() =>
+            handleEmailVerification(formData.verificationCode, setErrors)
+          }
         >
           확인
         </button>

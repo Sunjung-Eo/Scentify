@@ -7,7 +7,7 @@ const Regist = () => {
 
   // 회원가입 완료 후 실행할 함수 정의
   const handleRegistrationComplete = () => {
-    console.log('회원가입 완료!');
+    alert('회원가입이 완료되었습니다.');
     navigate('/auth/login');
   };
 

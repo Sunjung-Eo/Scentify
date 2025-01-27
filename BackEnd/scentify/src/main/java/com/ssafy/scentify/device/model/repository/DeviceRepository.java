@@ -1,11 +1,14 @@
 package com.ssafy.scentify.device.model.repository;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
+import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 
 @Mapper
@@ -27,4 +30,7 @@ public interface DeviceRepository {
     // 기본향 정보 업데이트
     @Update("UPDATE device SET room_type = #{roomType}, default_combination = #{combinationId} WHERE id = #{id}")
 	boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId);
+    
+    // 디바이스 id로 정보 조회 및 반환
+	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
 }

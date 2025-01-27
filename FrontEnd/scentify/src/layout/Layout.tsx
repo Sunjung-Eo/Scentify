@@ -22,13 +22,15 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/combination/set") ||
     location.pathname.startsWith("/control/auto/detect") ||
     location.pathname.startsWith("/control/auto/deodorize") ||
-    location.pathname.startsWith("/control/auto/behavior");
+    location.pathname.startsWith("/control/auto/behavior") ||
+    location.pathname.startsWith("/home/registcapsule");
   const showFinish =
     location.pathname.startsWith("/home/capsule/set") ||
     location.pathname.startsWith("/home/combination/set") ||
     location.pathname.startsWith("/control/auto/detect") ||
     location.pathname.startsWith("/control/auto/deodorize") ||
-    location.pathname.startsWith("/control/auto/behavior");
+    location.pathname.startsWith("/control/auto/behavior") ||
+    location.pathname.startsWith("/home/registcapsule");
   const showDeviceManage = location.pathname.startsWith("/home");
   const showAdd =
     location.pathname.startsWith("/home/deviceManage") ||
@@ -38,6 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
     if (pathname.includes("/auto/detect")) return "탐지 모드";
     if (pathname.includes("/auto/deodorize")) return "탈취 모드";
     if (pathname.includes("/auto/behavior")) return "동작모드";
+    if (pathname.includes("/home/registcapsule")) return "캡슐 등록";
     return undefined;
   };
 

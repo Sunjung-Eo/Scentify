@@ -37,7 +37,7 @@ const UserCard: React.FC = () => {
     weatherIcon: string;
     weatherDescription: string;
   }> => {
-    const API_KEY = "f8347bfb4ea81ec6f58c126428ff773c"; // OpenWeatherMap에서 발급받은 API 키
+    const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || ""; // 환경 변수 값 로드
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
     try {

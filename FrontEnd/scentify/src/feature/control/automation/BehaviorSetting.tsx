@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useControlStore } from "../../../stores/useControlStore";
-import SprayIntervalSelector from "../../../components/SprayIntervalSelector";
+import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
 
 export default function BehaviorSetting() {
   const navigate = useNavigate();
@@ -51,16 +51,18 @@ export default function BehaviorSetting() {
 
   return (
     <div className="content p-0">
-      {/* <button onClick={handleComplete}>완료</button> */}
       <div className="relative">
         <div className="flex flex-col w-[320px] h-[130px] p-5 ml-5 bg-sub text-white rounded-xl">
           <div className="flex justify-between">
             <h3 className="font-pre-medium text-20">집중</h3>
             <div onClick={() => toggleFocus()}>
-              <div className="w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand"></div>
               <div
-                className={`absolute top-[20px] left-[270px] w-[25px] h-[25px] bg-white rounded-full transition-transform ${focus ? "translate-x-full" : "translate-x-0"}`}
-              ></div>
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${focus ? "" : "bg-lightgray"}`}
+              >
+                <div
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${focus ? "translate-x-full" : "translate-x-0"}`}
+                ></div>
+              </div>
             </div>
           </div>
           <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
@@ -79,10 +81,13 @@ export default function BehaviorSetting() {
           <div className="flex justify-between">
             <h3 className="font-pre-medium text-20">휴식</h3>
             <div onClick={() => toggleRest()}>
-              <div className="w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand"></div>
               <div
-                className={`absolute top-[20px] left-[270px] w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? "translate-x-full" : "translate-x-0"}`}
-              ></div>
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? "" : "bg-lightgray"}`}
+              >
+                <div
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? "translate-x-full" : "translate-x-0"}`}
+                ></div>
+              </div>
             </div>
           </div>
           <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">

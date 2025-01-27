@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AlarmIcon from "../../../assets/icons/alarm-icon.svg";
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
-import DeviceSelect from "../../../components/DeviceSelect";
+import DeviceSelect from "../../../components/Control/DeviceSelect";
 import HeartButton from "../../../components/Button/HeartButton";
 import DeleteConfirmModal from "./DeleteReservationModal";
 import {

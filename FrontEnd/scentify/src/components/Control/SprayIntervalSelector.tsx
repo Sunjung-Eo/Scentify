@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ArrowDownIcon from "../assets/icons/arrow-down-icon.svg";
+import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
 
 interface SprayIntervalSelectorProps {
   selectedTime: string;

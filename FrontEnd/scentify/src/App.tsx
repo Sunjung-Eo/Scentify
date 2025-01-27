@@ -39,6 +39,14 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route
+          path="/home/*"
+          element={
+            <Layout>
+              <Home />
+            </Layout>
+          }
+        />
         {/* 시작 페이지, 로그인 페이지지 */}
         <Route path="/" element={<Start />} />
         <Route path="/auth/login" element={<Login />} />
@@ -62,7 +70,7 @@ function App() {
             element={
               <Layout>
                 <Routes>
-                  <Route path="/home/*" element={<Home />} />
+                  {/* <Route path="/home/*" element={<Home />} /> */}
                   <Route path="/control/*" element={<Control />} />
                   <Route path="/scent" element={<Scent />} />
                   <Route path="/my" element={<My />} />

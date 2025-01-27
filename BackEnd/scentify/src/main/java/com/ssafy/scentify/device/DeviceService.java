@@ -1,8 +1,11 @@
 package com.ssafy.scentify.device;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
+import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
 import com.ssafy.scentify.user.model.repository.UserRepository;
@@ -33,5 +36,9 @@ public class DeviceService {
 
 	public boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId) {
 		return deviceRepository.updateDefalutCombination(id, roomType, combinationId) ? true : false;
+	}
+
+	public List<DeviceInfoDto> findDevicesByIds(List<Integer> deviceIds) {
+		return deviceRepository.selectDevicesByIds(deviceIds);
 	}
 }

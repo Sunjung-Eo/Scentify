@@ -18,6 +18,7 @@ import com.ssafy.scentify.combination.CombinationService;
 import com.ssafy.scentify.combination.model.entity.Combination;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
+import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
@@ -200,4 +201,36 @@ public class DeviceController {
 	                  .filter(Objects::nonNull)
 	                  .allMatch(capsules::contains);
 	}
+	
+	// API 70번 : 기기 정보 반환
+	@PostMapping("/info")
+	public ResponseEntity<?> getDeviceInfo(@RequestBody Map<String, List<Integer>> payload) {
+		try {
+			// deviceIds 리스트 추출
+			List<Integer> deviceIds = payload.get("deviceIds");
+			
+			if (deviceIds == null || deviceIds.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+			
+			// DB 조회
+			List<DeviceInfoDto> devices = deviceService.findDevicesByIds(deviceIds);
+
+	        // 조회 결과가 없을 경우
+	        if (devices.isEmpty()) {
+	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	        }
+
+	        // 반환할 데이터 생성
+	        Map<String, List<DeviceInfoDto>> response = new HashMap<>();
+	        response.put("devices", devices);
+			
+	        return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

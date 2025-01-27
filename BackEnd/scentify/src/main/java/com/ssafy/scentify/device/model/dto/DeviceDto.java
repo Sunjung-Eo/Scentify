@@ -194,5 +194,24 @@ public class DeviceDto {
 	        }
 	    }
 	}
+	
+	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
+	@Getter
+	@Setter
+	@AllArgsConstructor
+	public static class DeviceInfoDto {
+	    private Integer deviceId;
+	    private String name;
+	    private Integer groupId;
+	    private Integer slot1;
+	    private Integer slot1RemainingRatio;
+	    private Integer slot2;
+	    private Integer slot2RemainingRatio;
+	    private Integer slot3;
+	    private Integer slot3RemainingRatio;
+	    private Integer slot4;
+	    private Integer slot4RemainingRatio;
+	    private Integer mode;
+	}
 
 }

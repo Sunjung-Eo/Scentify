@@ -202,6 +202,7 @@ public class DeviceController {
 	                  .allMatch(capsules::contains);
 	}
 	
+	// API 70번 : 기기 정보 반환
 	@PostMapping("/info")
 	public ResponseEntity<?> getDeviceInfo(@RequestBody Map<String, List<Integer>> payload) {
 		try {

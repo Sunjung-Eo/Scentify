@@ -32,6 +32,6 @@ public class DeviceService {
 	}
 
 	public boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId) {
-		return deviceRepository.updateCapsueInfo(id, roomType, combinationId) ? true : false;
+		return deviceRepository.updateDefalutCombination(id, roomType, combinationId) ? true : false;
 	}
 }

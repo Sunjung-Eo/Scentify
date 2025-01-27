@@ -24,8 +24,7 @@ public interface DeviceRepository {
     						+" slot_3 = #{slot3}, slot_4 = #{slot4} WHERE id = #{id}")
 	boolean updateCapsueInfo(CapsuleInfo capsuleInfo);
     
-    
     // 기본향 정보 업데이트
     @Update("UPDATE device SET room_type = #{roomType}, default_combination = #{combinationId} WHERE id = #{id}")
-	boolean updateCapsueInfo(Integer id, Integer roomType, Integer combinationId);
+	boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId);
 }

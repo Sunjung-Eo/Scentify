@@ -120,7 +120,6 @@ public class DeviceController {
 		}
 	}
 	
-	
 	// API 19번 : 기본향 등록
 	@PostMapping("/set")
 	public ResponseEntity<?> inputDefualtCombination(@RequestBody defaultCombinationDto combinationDto, HttpServletRequest request) {

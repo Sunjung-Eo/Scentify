@@ -132,6 +132,7 @@ public class DeviceDto {
 	    }
 
 	    @Getter
+	    @AllArgsConstructor
 	    public static class Combination {
 	        private Integer choice1; // NOT NULL
 	        private Integer choice1Count;

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class DeviceDto {
 	// - IPv4는 4개의 10진수 숫자로 구성되며 각 숫자는 0~255 사이.
@@ -135,12 +136,16 @@ public class DeviceDto {
 	    @AllArgsConstructor
 	    public static class Combination {
 	        private Integer choice1; // NOT NULL
+	        @Setter
 	        private Integer choice1Count;
 	        private Integer choice2; // NULL 허용
+	        @Setter
 	        private Integer choice2Count;
 	        private Integer choice3; // NULL 허용
+	        @Setter
 	        private Integer choice3Count;
 	        private Integer choice4; // NULL 허용
+	        @Setter
 	        private Integer choice4Count;
 
 	        public void setChoice1(Integer choice1) {

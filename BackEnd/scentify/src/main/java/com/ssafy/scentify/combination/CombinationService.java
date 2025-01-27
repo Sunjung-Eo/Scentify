@@ -22,5 +22,11 @@ public class CombinationService {
 		if (!combinationRepository.createCombination(combinationId, combination)) return null;
 		return combinationId;
 	}
+
+	public Integer createAutoCombination(Integer choice, int count) {
+		Integer combinationId = UUID.randomUUID().hashCode() & Integer.MAX_VALUE;
+		if (!combinationRepository.createAutoCombination(combinationId, choice, count)) return null;
+		return combinationId;
+	}
 	
 }

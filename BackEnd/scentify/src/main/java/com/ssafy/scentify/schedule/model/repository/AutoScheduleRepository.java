@@ -6,14 +6,14 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AutoScheduleRepository {
 	
-	// 악취 탐지 모드 생성
-	@Insert("Insert INTO autoschedule (device_id, combination_id, sub_mode, `interval`, mode_on, created_at, updated_at) "
-			+ "VALUES (#{deviceId}, #{combinationId}, #{subMode}, #{interval}, 0, NOW(), NOW())")
-	boolean createDeodorizationMode(Integer deviceId, Integer combinationId, Integer subMode, Integer interval);
+	// 인터벌이 있는 자동화 모드 생성
+	@Insert("Insert INTO autoschedule (device_id, combination_id, sub_mode, type, `interval`, mode_on, created_at, updated_at) "
+			+ "VALUES (#{deviceId}, #{combinationId}, #{subMode}, #{type}, #{interval}, 0, NOW(), NOW())")
+	boolean createMode(Integer deviceId, Integer combinationId, Integer subMode, Integer type, Integer interval);
 	
-	// 단순 탐지 모드 생성
+	// 인터벌이 없는 자동화 모드 생성
 	@Insert("Insert INTO autoschedule (device_id, combination_id, sub_mode, mode_on, created_at, updated_at) "
 			+ "VALUES (#{deviceId}, #{combinationId}, #{subMode}, 0, NOW(), NOW())")
-	boolean createDetectionMode(Integer deviceId, Integer combinationId, Integer subMode);
+	boolean createModeWithoutInterval(Integer deviceId, Integer combinationId, Integer subMode);
 
 }

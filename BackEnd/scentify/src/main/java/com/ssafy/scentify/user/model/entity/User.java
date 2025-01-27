@@ -38,21 +38,21 @@ public class User {
     private Integer mainDeviceId;
 
     public void setId(String id) {
-        if (id == null || id.contains(" ") || id.length() > 30) {
+        if (id == null || id.isBlank()  || id.length() > 30) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.id = id;
     }
 
     public void setPassword(String password) {
-        if (password == null || password.contains(" ")) {
+        if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.password = password;
     }
 
     public void setNickname(String nickname) {
-        if (nickname == null || nickname.contains(" ") || nickname.length() > 30) {
+        if (nickname == null || nickname.isBlank() || nickname.length() > 30) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.nickname = nickname;

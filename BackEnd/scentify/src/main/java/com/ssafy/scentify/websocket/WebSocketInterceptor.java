@@ -27,10 +27,12 @@ import java.util.Map;
 public class WebSocketInterceptor implements HandshakeInterceptor {
 	
 	private final DeviceService deviceService;
+	private final HandshakeStateManager stateManager;
     private final TokenProvider tokenProvider;
 
-    public WebSocketInterceptor(DeviceService deviceService, TokenProvider tokenProvider) {
+    public WebSocketInterceptor(DeviceService deviceService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
         this.deviceService = deviceService;
+        this.stateManager = stateManager;
     	this.tokenProvider = tokenProvider;
     }
     
@@ -68,6 +70,9 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             }
             
             attributes.put("serial", serial);
+            
+            // 핸드쉐이크 상태를 Redis에 저장 (유효 시간: 300초)
+            stateManager.setHandshakeState(serial, true, 300);
     		return true; // 핸드쉐이크 진행		
         }
         return false; // ServletServerHttpRequest가 아닌 경우

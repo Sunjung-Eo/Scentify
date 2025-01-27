@@ -155,7 +155,7 @@ public class DeviceController {
 			}
 			
 			autoScheduleService.setDeodorizationMode(deviceId, combinationId, 2, 15);
-			
+			autoScheduleService.setDetectionMode(deviceId, combinationId, 0);
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {

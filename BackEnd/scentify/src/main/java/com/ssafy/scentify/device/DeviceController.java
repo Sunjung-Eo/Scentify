@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.combination.CombinationService;
+import com.ssafy.scentify.combination.model.entity.Combination;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
@@ -132,21 +133,17 @@ public class DeviceController {
 			List<Integer> capsules = (List<Integer>) session.getAttribute("capsules");
 
 	        // capsules이 null이거나 비어있으면 유효성 검사를 할 수 없음
-	        if (capsules == null || capsules.isEmpty()) {
-	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
-	        }
+	        if (capsules == null || capsules.isEmpty()) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // choice 값 검증
-	        if (!isValidCombination(capsules, combinationDto)) {
-	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-	        }
+	        if (!isValidCombination(capsules, combinationDto)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
-			// 조합을 먼저 등록
-			Integer combinationId = combinationService.createCombination(combinationDto.getCombination());
+	        // 조합을 먼저 등록
+	        defaultCombinationDto.Combination combination = combinationDto.getCombination();
+			Integer combinationId = combinationService.createCombination(combination);			
 			
 			// 조합 id가 null이면 등록 실패로 400 반환
-			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-			
+			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }			
 			Integer deviceId = combinationDto.getId();
 			
 			// 기기 기본향 등록 (등록 실패 시 400 반환)
@@ -154,8 +151,32 @@ public class DeviceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-			autoScheduleService.setDeodorizationMode(deviceId, combinationId, 2, 15);
-			autoScheduleService.setDetectionMode(deviceId, combinationId, 0);
+			// 자동화 모드 설정 (탈취 모드/ 단순 탐지 모드)
+			if (!autoScheduleService.setMode(deviceId, combinationId, 2, null, 15) || !autoScheduleService.setModeWithoutInterval(deviceId, combinationId, 0)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			// roomType에 따라 분사량 선택
+			Integer roomType = combinationDto.getRoomType();
+			int count = switch (roomType) {
+				case 0 -> 3;
+				case 1 -> 6;
+				default -> throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+			};
+			
+			// 자동화 모드 설정 (시용자 행동 기반)
+			Integer exerciseCombinationId = combinationService.createAutoCombination(capsules.get(0), count);
+			if (exerciseCombinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			if (!autoScheduleService.setMode(deviceId, exerciseCombinationId, 1, 1, 15)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			Integer restCombinationId = combinationService.createAutoCombination(capsules.get(1), count);
+			if (restCombinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			if(!autoScheduleService.setMode(deviceId, restCombinationId, 1, 2, 15)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// 로직 수행 후 세션 만료
+			session.invalidate();
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {

@@ -13,12 +13,12 @@ public class AutoScheduleService {
 		this.autoScheduleRepository = autoScheduleRepository;
 	}
 
-	public boolean setDeodorizationMode(Integer deviceId, Integer combinationId, Integer subMode, Integer interval) {
-		return autoScheduleRepository.createDeodorizationMode(deviceId, combinationId, subMode, interval) ? true : false;
+	public boolean setMode(Integer deviceId, Integer combinationId, Integer subMode, Integer type, Integer interval) {
+		return autoScheduleRepository.createMode(deviceId, combinationId, subMode, type, interval) ? true : false;
 	}
 
-	public boolean setDetectionMode(Integer deviceId, Integer combinationId, Integer subMode) {
-		return autoScheduleRepository.createDetectionMode(deviceId, combinationId, subMode) ? true : false;
+	public boolean setModeWithoutInterval(Integer deviceId, Integer combinationId, Integer subMode) {
+		return autoScheduleRepository.createModeWithoutInterval(deviceId, combinationId, subMode) ? true : false;
 	}
 
 }

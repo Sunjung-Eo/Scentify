@@ -3,6 +3,7 @@ package com.ssafy.scentify.device.model.entity;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -23,7 +24,7 @@ public class Device {
             						"(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
 	static final Pattern ipPattern  = Pattern.compile(ipRegex);
 	
-	@NotBlank
+	@NotNull
     private Integer id;
 	@NotBlank
 	private String serial;
@@ -87,14 +88,10 @@ public class Device {
         this.roomType = roomType;
     }
 
-    private void validateSlot(Integer slot, String slotName) {
-        if (slot == null || slot < 0 || slot > 8) {
-            throw new IllegalArgumentException(slotName + "의 입력값이 형식에 맞지 않습니다.");
-        }
-    }
-
     public void setSlot1(Integer slot1) {
-        validateSlot(slot1, "slot1");
+    	if (slot1 == null || slot1 < 0 || slot1 > 2) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
         this.slot1 = slot1;
     }
 
@@ -106,7 +103,9 @@ public class Device {
     }
 
     public void setSlot2(Integer slot2) {
-        validateSlot(slot2, "slot2");
+    	if (slot2 == null || slot2 < 3 || slot2 > 5) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
         this.slot2 = slot2;
     }
 
@@ -118,7 +117,9 @@ public class Device {
     }
 
     public void setSlot3(Integer slot3) {
-        validateSlot(slot3, "slot3");
+    	if (slot3 == null || slot3 < 0 || slot3 > 8) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
         this.slot3 = slot3;
     }
 
@@ -130,7 +131,9 @@ public class Device {
     }
 
     public void setSlot4(Integer slot4) {
-        validateSlot(slot4, "slot4");
+    	if (slot4 == null || slot4 < 0 || slot4 > 8) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
         this.slot4 = slot4;
     }
 

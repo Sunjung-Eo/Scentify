@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import com.ssafy.scentify.user.model.dto.UserDto;
 
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,6 +59,59 @@ public class DeviceDto {
 	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	        }
 	        this.ipAddress = ipAddress;
+	    }
+	}
+	
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CapsuleInfo {
+		@NotNull
+	    private Integer id;
+		@NotBlank
+	    private String name;
+		@NotNull
+		private Integer slot1;
+		@NotNull
+		private Integer slot2;
+		@NotNull
+		private Integer slot3;
+		@NotNull
+		private Integer slot4;
+		
+		public void setName(String name) {
+	        if (name == null || name.isBlank() || name.length() > 15) {
+	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+	        }
+	        this.name = name;
+	    }
+
+		public void setSlot1(Integer slot1) {
+	    	if (slot1 == null || slot1 < 0 || slot1 > 2) {
+	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+	        }
+	        this.slot1 = slot1;
+	    }
+	    
+	    public void setSlot2(Integer slot2) {
+	    	if (slot2 == null || slot2 < 3 || slot2 > 5) {
+	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+	        }
+	        this.slot2 = slot2;
+	    }
+	    
+	    public void setSlot3(Integer slot3) {
+	    	if (slot3 == null || slot3 < 0 || slot3 > 8) {
+	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+	        }
+	        this.slot3 = slot3;
+	    }
+	    
+	    public void setSlot4(Integer slot4) {
+	    	if (slot4 == null || slot4 < 0 || slot4 > 8) {
+	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+	        }
+	        this.slot4 = slot4;
 	    }
 	}
 }

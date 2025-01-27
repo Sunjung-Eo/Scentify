@@ -3,7 +3,9 @@ package com.ssafy.scentify.device.model.repository;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 
 @Mapper
@@ -16,4 +18,9 @@ public interface DeviceRepository {
     @Insert("INSERT INTO device (id, serial, admin_id, ip_address)"
     		+ "VALUES (#{id}, #{serial}, #{adminId}, #{ipAddress})")
 	boolean createDevice(RegisterDto registerDto);
+    
+    // 캡슐 정보 업데이트
+    @Update("UPDATE device SET name = #{name}, slot_1 = #{slot1}, slot_2 = #{slot2},"
+    						+" slot_3 = #{slot3}, slot_4 = #{slot4} WHERE id = #{id}")
+	boolean updateCapsueInfo(CapsuleInfo capsuleInfo);
 }

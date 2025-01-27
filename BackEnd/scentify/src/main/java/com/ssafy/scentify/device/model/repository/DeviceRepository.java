@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 @Mapper
 public interface DeviceRepository {
@@ -33,4 +36,8 @@ public interface DeviceRepository {
     
     // 디바이스 id로 정보 조회 및 반환
 	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
+	
+	// 온습도 정보 업데이트
+	@Update("UPDATE device SET temperature = #{request.temperature}, humidity = #{request.humidity} WHERE serial = #{serial}")
+	boolean updateTempHum(String serial, @Param("request") WebSocketDto.TempHumRequest request);
 }

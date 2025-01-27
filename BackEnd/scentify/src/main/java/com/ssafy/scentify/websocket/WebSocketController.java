@@ -10,6 +10,7 @@ import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.ModeChangeRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.Response;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +30,27 @@ public class WebSocketController {
 	}
 	
 	@MessageMapping("/DeviceStatus/Sensor/TempHum")
-    public void handleSensorData(@Payload TempHumRequest request) {
-        String token = request.getToken();
-        
-        try {
-        	tokenProvider.validateJwtToken(token);
-        } catch (ExpiredJwtException e) {
-        	log.info("Token 만료됨");
-        }
-        
-        String serial = tokenProvider.getSerial(token);
-        
-        //deviceService.addInfo(request);
-        template.convertAndSend("/topic/DeviceStatus/Sensor/TempHum", "안녕");
-    }
+	public void handleSensorData(@Payload TempHumRequest request) {
+	    String token = request.getToken();
+	    String serial;
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        serial = tokenProvider.getSerial(token);
+	        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        
+	        serial = tokenProvider.getSerial(token);
+	        template.convertAndSend("/topic/DeviceStatus/Sensor/TempHum/" + serial , new Response(400));
+	        return;
+	    }
+
+	    deviceService.updateTempHum(serial, request);
+	    log.info("Data processed for serial: {}", serial);
+
+	    // 특정 사용자에게만 메시지 전송
+	    template.convertAndSend("/topic/DeviceStatus/Sensor/TempHum/" + serial, new Response(200));
+	}
 	
 }

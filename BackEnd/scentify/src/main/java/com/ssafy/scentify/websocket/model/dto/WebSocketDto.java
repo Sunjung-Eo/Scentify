@@ -1,10 +1,12 @@
 package com.ssafy.scentify.websocket.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 public class WebSocketDto {
 	
 	@Data
+	@AllArgsConstructor
 	public static class ModeChangeRequest {
 	    private String type;  
 	    private int mode;     
@@ -15,9 +17,16 @@ public class WebSocketDto {
 	}
 	
 	@Data
+	@AllArgsConstructor
 	public static class TempHumRequest {
 	    private String token;               
 	    private Float temperature;   
 	    private Integer humidity;    
 	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class Response {
+        private int status;
+    }
 }

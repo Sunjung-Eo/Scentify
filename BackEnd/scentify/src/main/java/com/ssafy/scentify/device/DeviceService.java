@@ -9,6 +9,7 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
 import com.ssafy.scentify.user.model.repository.UserRepository;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 @Service
 public class DeviceService {
@@ -40,5 +41,9 @@ public class DeviceService {
 
 	public List<DeviceInfoDto> findDevicesByIds(List<Integer> deviceIds) {
 		return deviceRepository.selectDevicesByIds(deviceIds);
+	}
+
+	public boolean updateTempHum(String serial, TempHumRequest request) {
+		return deviceRepository.updateTempHum(serial, request);
 	}
 }

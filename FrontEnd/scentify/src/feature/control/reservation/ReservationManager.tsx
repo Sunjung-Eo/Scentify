@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AlarmIcon from "../../../assets/icons/alarm-icon.svg";
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import DeviceSelect from "../../../components/Control/DeviceSelect";
@@ -14,6 +15,8 @@ export default function ReservationManager({
   selectedDevice,
   onDeviceChange,
 }: ReservationManagerProps) {
+  const navigate = useNavigate();
+
   // 대표기기, 기기 명, 각 기기 별 예약 목록 - api나 저장소, 상위 컴포넌트에서 가져오기
   const [heartStatus, setHeartStatus] = useState<HeartStatus>({});
   const reservations: Reservations = {
@@ -80,7 +83,11 @@ export default function ReservationManager({
                       }));
                     }}
                   />
-                  <button>
+                  <button
+                    onClick={() =>
+                      navigate(`/modify-reservation/${reservation}`)
+                    }
+                  >
                     <img src={ModifyIcon} alt="수정 이미지" />
                   </button>
                 </div>

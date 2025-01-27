@@ -6,6 +6,7 @@ import RegistDevice2 from "./RegistDevice2.tsx";
 import RegistConnecting from "./RegistConnecting.tsx";
 import ConnectSuccess from "./ConnectSuccess.tsx";
 import HomeMain from "./HomeMain.tsx";
+import RegistCapsule from "../../feature/Home/Device/RegistCapsule.tsx";
 
 const Home = () => {
   return (
@@ -15,6 +16,7 @@ const Home = () => {
       <Route path="/registdevice2" element={<RegistDevice2 />} />
       <Route path="/registconnecting" element={<RegistConnecting />} />
       <Route path="/connectsuccess" element={<ConnectSuccess />} />
+      <Route path="/registcapsule" element={<RegistCapsule />} />
     </Routes>
   );
 };

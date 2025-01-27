@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-// 사용자 데이터 타입 정의
-interface UserData {
-  userName: string;
-  imgNum: number; // 프로필 사진 번호
-  date: string;
-  weatherIcon: string;
-  weatherDescription: string;
-}
+import { UserData } from "./UserTypes";
 
 const UserCard: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
@@ -37,7 +29,7 @@ const UserCard: React.FC = () => {
     weatherIcon: string;
     weatherDescription: string;
   }> => {
-    const API_KEY = "f8347bfb4ea81ec6f58c126428ff773c"; // OpenWeatherMap에서 발급받은 API 키
+    const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || ""; // 환경 변수 값 로드
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
     try {
@@ -122,7 +114,7 @@ const UserCard: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-sub rounded-3xl px-6 py-4 text-white w-[360px] h-[132px] flex flex-col">
+    <div className="bg-sub rounded-3xl px-6 py-4 text-white h-[132px] flex flex-col">
       {/* 프로필이미지+닉네임 묶음 */}
       <div className="flex items-center gap-4">
         {/* 프로필 이미지 */}
@@ -132,8 +124,9 @@ const UserCard: React.FC = () => {
           className="w-12 h-12 rounded-full"
         />
         {/* 닉네임 */}
-        <p className="text-pre-bold text-lg">
-          {userData.userName}
+        <p className="text-[20px]">
+          <span className="font-pre-bold">{userData.userName}</span>{" "}
+          {/* 홍길동만 pre-bold */}
           <br />님 반갑습니다!
         </p>
       </div>
@@ -146,7 +139,7 @@ const UserCard: React.FC = () => {
         ) : userData.weatherIcon ? (
           <div className="flex items-center">
             <span>{userData.weatherIcon}</span>
-            <p className="text-pre-regular text-sm ml-1">
+            <p className="text-pre-regular text-[12px] ml-1">
               {userData.weatherDescription}
             </p>
           </div>

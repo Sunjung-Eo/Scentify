@@ -6,7 +6,8 @@ import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
 import { ReservationManagerProps, ReservationData } from "./ReservationType";
 
-export default function CreateReservation({
+// 예약하기 폼에서 api받아온 데이터만 초기 값으로 넣기(customSchedule id 사용)
+export default function ModifyReservation({
   onDeviceChange,
 }: ReservationManagerProps) {
   const navigate = useNavigate();

@@ -94,4 +94,8 @@ public class UserService {
 	public boolean deleteUser(String userId) {
 		return userRepository.deleteUser(userId) ? true : false;
 	}
+
+	public boolean updateMainDeviceId(String userId, Integer deviceId) {
+		return userRepository.forceUpdateMainDeviceId(userId, deviceId) ? true : false;
+	}
 }

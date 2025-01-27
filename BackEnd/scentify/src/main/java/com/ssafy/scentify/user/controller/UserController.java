@@ -456,5 +456,29 @@ public class UserController {
 		}
 	}
 	
+	// API 69번 : 대표기기 설정
+	@PostMapping("/device/set")
+	public ResponseEntity<?> setMainDevice(@RequestHeader("Authorization") String authorizationHeader,  @RequestBody Map<String, Integer> deviceIdMap) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        // 토큰에서 id 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // DB에서 정보 업데이트 (로직이 수행되지 않은 경우 400)
+	        if (!userService.updateMainDeviceId(userId, deviceIdMap.get("deviceId"))) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 }

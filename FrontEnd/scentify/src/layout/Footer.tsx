@@ -24,7 +24,7 @@ const Footer = () => {
           <Link key={tab.id} to={tab.path} className="flex-1 py-3">
             <IconComponent
               className={`mx-auto h-10 w-11 fill-[#5E5E5E] ${
-                location.pathname === tab.path
+                location.pathname.includes(tab.path)
                   ? "fill-[#EE9D7F]"
                   : "fill-[#5E5E5E]"
               }`}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import DeviceSelect from "../../../components/DeviceSelect";
+import DeviceSelect from "../../../components/Control/DeviceSelect";
 import { AutoMode, AutoManagerProps } from "./AutoModeType";
 import AutoIcon from "../../../assets/icons/auto-icon.svg";
 import SettingIcon from "../../../assets/icons/setting-icon.svg";

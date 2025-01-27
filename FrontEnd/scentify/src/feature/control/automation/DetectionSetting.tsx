@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useControlStore } from "../../../stores/useControlStore";
-import ScentSetting from "../../../components/ScentSetting";
+import ScentSetting from "../../../components/Control/ScentSetting";
 
 export default function DetectionSetting() {
   const navigate = useNavigate();
@@ -20,6 +20,16 @@ export default function DetectionSetting() {
     });
   };
 
+  // 향 설정
+  const [scentName, setScentName] = useState<string>("");
+  const [scents, setScents] = useState({
+    scent1: 0,
+    scent2: 0,
+    scent3: 0,
+    scent4: 0,
+  });
+  const [totalEnergy, setTotalEnergy] = useState<number>(3);
+
   // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
@@ -34,18 +44,24 @@ export default function DetectionSetting() {
 
   return (
     <div className="content p-0">
-      {/* <button onClick={handleComplete}>완료</button> */}
       <div className="font-pre-medium text-16 ml-5 mr-5">
         <div className="flex relative justify-between mb-6">
           <h3>향 설정</h3>
           <div onClick={() => toggleDetect()}>
-            <div className="w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand"></div>
             <div
-              className={`absolute top-[0px] left-[270px] w-[25px] h-[25px] bg-white rounded-full transition-transform ${detect ? "translate-x-full" : "translate-x-0"}`}
-            ></div>
+              className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${detect ? "" : "bg-lightgray"}`}
+            >
+              <div
+                className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${detect ? "translate-x-full" : "translate-x-0"}`}
+              ></div>
+            </div>
           </div>
         </div>
-        <ScentSetting />
+        <ScentSetting
+          scents={scents}
+          setScents={setScents}
+          totalEnergy={totalEnergy}
+        />
       </div>
     </div>
   );

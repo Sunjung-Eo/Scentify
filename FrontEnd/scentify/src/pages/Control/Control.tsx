@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { Mode } from "../../feature/control/main/ControlType";
 import ModeToggle from "../../feature/control/main/ModeToggle";
 import ReservationManager from "../../feature/control/reservation/ReservationManager";
@@ -8,10 +8,13 @@ import ModeChangeModal from "../../feature/control/main/ModeChangeModal";
 import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
 import DeodorizationSetting from "../../feature/control/automation/DeodorizationSetting";
 import DetectionSetting from "../../feature/control/automation/DetectionSetting";
+import CreateReservation from "../../feature/control/reservation/CreateReservation";
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
 
 const Control = () => {
+  const navigate = useNavigate();
+
   // mode - 어떤 모드인지 백엔드에 전달할 것
   const [mode, setMode] = useState<Mode>(false); // 백엔드에 전달한 현재 모드 상태
   const [isModal, setIsModal] = useState<boolean>(false); // 모달 활성화
@@ -97,6 +100,7 @@ const Control = () => {
         <Route path="auto/behavior" element={<BehaviorSetting />} />
         <Route path="auto/deodorize" element={<DeodorizationSetting />} />
         <Route path="auto/detect" element={<DetectionSetting />} />
+        <Route path="reservation/create" element={<CreateReservation />} />
       </Routes>
     </div>
   );

@@ -99,8 +99,4 @@ public class DeviceController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	
-	
-	
 }

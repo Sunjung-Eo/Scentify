@@ -46,8 +46,8 @@ public class UserDto {
 	    private Integer socialType;
 	    @NotNull
 	    private Integer gender;
-	    @NotNull
-	    private Date birth;
+	    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	    private LocalDate birth;
 	}
 	
 	@Data

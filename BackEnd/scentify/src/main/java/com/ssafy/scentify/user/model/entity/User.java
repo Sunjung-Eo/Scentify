@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -33,8 +35,8 @@ public class User {
     private Integer socialType;
     @NotNull
     private Integer gender;
-    @NotNull
-    private Date birth;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate birth;
     private Integer mainDeviceId;
 
     public void setId(String id) {
@@ -86,8 +88,8 @@ public class User {
         this.gender = gender;
     }
 
-    public void setBirth(Date birth) {
-        if (birth == null || birth.toLocalDate().isAfter(LocalDate.now())) {
+    public void setBirth(LocalDate birth) {
+        if (birth == null || birth.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.birth = birth;

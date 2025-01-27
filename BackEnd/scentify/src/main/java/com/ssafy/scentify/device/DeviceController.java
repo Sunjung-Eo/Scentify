@@ -23,6 +23,8 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
+import com.ssafy.scentify.websocket.WebSocketController;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -33,13 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class DeviceController {
 	
+	private final WebSocketController socketController;
 	private final DeviceService deviceService;
 	private final CombinationService combinationService;
 	private final AutoScheduleService autoScheduleService; 
 	private final HandshakeStateManager stateManager;
 	private final TokenProvider tokenProvider;
 	
-	public DeviceController(DeviceService deviceService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+	public DeviceController(WebSocketController socketController, DeviceService deviceService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+		this.socketController = socketController;
 		this.deviceService = deviceService;
 		this.combinationService = combinationService;
 		this.autoScheduleService = autoScheduleService;
@@ -104,6 +108,12 @@ public class DeviceController {
 		try {
 			// 캡슐 정보 업데이트
 			if (!deviceService.updateCapsuleInfo(capsuleInfo)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			
+			// 캡슐 정보 웹소켓에 전송
+			String serial = deviceService.selectSerialByDeviceId(capsuleInfo.getId());
+			CapsuleInfoRequest infoRequest = new CapsuleInfoRequest(capsuleInfo.getSlot1(), capsuleInfo.getSlot2(),
+																	capsuleInfo.getSlot3(), capsuleInfo.getSlot4());
+			socketController.sendCapsuleInfo(serial, infoRequest);
 			
 			// 세션에 캡슐 정보 저장
 			HttpSession session =  request.getSession();

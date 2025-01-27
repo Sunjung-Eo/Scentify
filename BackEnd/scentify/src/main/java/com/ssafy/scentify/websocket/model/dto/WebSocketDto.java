@@ -27,6 +27,25 @@ public class WebSocketDto {
 	@Data
 	@AllArgsConstructor
 	public static class Response {
-        private int status;
+        private Integer status;
     }
+	
+	@Data
+	@AllArgsConstructor
+	public static class CapsuleInfoRequest {
+        private Integer slot1;
+        private Integer slot2;
+        private Integer slot3;
+        private Integer slot4;
+    }
+	
+	@Data
+	@AllArgsConstructor
+	public static class CapsuleRemainingRequest {
+	    private String token;               
+	    private Integer slot1RemainingRatio;   
+	    private Integer slot2RemainingRatio;  
+	    private Integer slot3RemainingRatio;   
+	    private Integer slot4RemainingRatio; 
+	}
 }

@@ -12,6 +12,7 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 @Mapper
@@ -24,6 +25,10 @@ public interface DeviceRepository {
     @Insert("INSERT INTO device (id, serial, admin_id, ip_address)"
     		+ "VALUES (#{id}, #{serial}, #{adminId}, #{ipAddress})")
 	boolean createDevice(RegisterDto registerDto);
+    
+    // serial 조회 쿼리
+    @Select("SELECT serial FROM device WHERE id = #{id}")
+    String getSerialByDeviceId(Integer id);
     
     // 캡슐 정보 업데이트
     @Update("UPDATE device SET name = #{name}, slot_1 = #{slot1}, slot_2 = #{slot2},"
@@ -40,4 +45,9 @@ public interface DeviceRepository {
 	// 온습도 정보 업데이트
 	@Update("UPDATE device SET temperature = #{request.temperature}, humidity = #{request.humidity} WHERE serial = #{serial}")
 	boolean updateTempHum(String serial, @Param("request") WebSocketDto.TempHumRequest request);
+	
+	// 캡슐 잔여량 정보 업데이트
+	@Update("UPDATE device SET slot_1_remainingRatio = #{request.slot1RemainingRatio}, slot_2_remainingRatio = #{request.slot2RemainingRatio},"
+			+ "slot_3_remainingRatio = #{request.slot3RemainingRatio}, slot_4_remainingRatio = #{request.slot4RemainingRatio} WHERE serial = #{serial}")
+	boolean updateCapsuleRemaining(String serial, @Param("request") WebSocketDto.CapsuleRemainingRequest request);
 }

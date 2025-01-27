@@ -1,9 +1,6 @@
-import React from "react";
-import { useState } from "react";
-import {
-  validateUsername,
-  validatePassword,
-} from "../../../../utils/validation";
+import React from 'react';
+import { useState } from 'react';
+import { validateId, validatePassword } from '../../../../utils/validation';
 
 interface LoginFormProps {
   id: string;
@@ -28,7 +25,7 @@ const LoginForm = ({
     e.preventDefault();
 
     // id, password 유효성 검사
-    const idError = validateUsername(id);
+    const idError = validateId(id);
     const passwordError = validatePassword(password);
 
     if (idError || passwordError) {
@@ -41,7 +38,7 @@ const LoginForm = ({
 
     // 로그인 함수 호출
     onLogin();
-    console.log("로그인 시도", { id, password });
+    console.log('로그인 시도', { id, password });
   };
 
   return (

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.common.util.TokenProvider;
+import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
 
@@ -84,5 +85,22 @@ public class DeviceController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PostMapping("/capsules")
+	public ResponseEntity<?> inputCapsuleInfo(@RequestBody CapsuleInfo capsuleInfo) {
+		try {
+			// 캡슐 정보 업데이트
+			if (!deviceService.updateCapsuleInfo(capsuleInfo)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	
 	
 }

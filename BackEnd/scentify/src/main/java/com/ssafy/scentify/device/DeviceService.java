@@ -2,6 +2,7 @@ package com.ssafy.scentify.device;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
 import com.ssafy.scentify.user.model.repository.UserRepository;
@@ -24,5 +25,9 @@ public class DeviceService {
 		if (!deviceRepository.createDevice(registerDto)) return false;
 		userRepository.updateMainDeviceId(registerDto.getAdminId(), registerDto.getId());
 		return true;
+	}
+
+	public boolean updateCapsuleInfo(CapsuleInfo capsuleInfo) {
+		return deviceRepository.updateCapsueInfo(capsuleInfo) ? true : false;
 	}
 }

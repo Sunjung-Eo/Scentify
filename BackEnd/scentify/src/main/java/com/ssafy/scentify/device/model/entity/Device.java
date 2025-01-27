@@ -68,7 +68,7 @@ public class Device {
     }
 
     public void setAdminId(String adminId) {
-        if (adminId == null || adminId.isBlank() || adminId.length() > 30) {
+        if (adminId == null || adminId.isBlank() || adminId.contains(" ") || adminId.length() > 30) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.adminId = adminId;

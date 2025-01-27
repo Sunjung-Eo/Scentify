@@ -147,11 +147,14 @@ public class DeviceController {
 			// 조합 id가 null이면 등록 실패로 400 반환
 			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
+			Integer deviceId = combinationDto.getId();
+			
 			// 기기 기본향 등록 (등록 실패 시 400 반환)
-			if(!deviceService.updateDefalutCombination(combinationDto.getId(), combinationDto.getRoomType(), combinationId)) {
+			if(!deviceService.updateDefalutCombination(deviceId, combinationDto.getRoomType(), combinationId)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
+			autoScheduleService.setDeodorizationMode(deviceId, combinationId, 2, 15);
 			
 			
 			return new ResponseEntity<>(HttpStatus.OK);

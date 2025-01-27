@@ -54,4 +54,8 @@ public interface UserRepository {
 	// id에 해당하는 유저의 계정 삭제
 	@Delete("DELETE FROM user WHERE id = #{id}")
 	boolean deleteUser(String id);
+	
+	// 기기 등록 시 mainDeviceId가 없는 유저의 경우 자동으로 mainDevice 설정
+	@Update("UPDATE user SET main_device_id = #{id} WHERE id = #{userId} AND main_device_id IS NULL")
+	boolean updateMainDeviceId(String userId, Integer id);
 }

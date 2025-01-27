@@ -124,7 +124,7 @@ public class TokenProvider implements InitializingBean {
 			log.info("Extracted Serial: {}", serial);
 			return serial;
 		} catch (ExpiredJwtException e) {
-	        return e.getClaims().getSubject();
+	        return (String) e.getClaims().get("token");
 		}
 	}
 	

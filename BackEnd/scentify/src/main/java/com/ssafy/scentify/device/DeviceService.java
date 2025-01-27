@@ -9,6 +9,7 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
 import com.ssafy.scentify.user.model.repository.UserRepository;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 @Service
@@ -23,6 +24,10 @@ public class DeviceService {
 	
 	public boolean selectDeviceBySerial(String Serial) {
 		return deviceRepository.existsBySerial(Serial) ? true : false;
+	}
+	
+	public String selectSerialByDeviceId(Integer id) {
+		return deviceRepository.getSerialByDeviceId(id);
 	}
 
 	public boolean createDevice(RegisterDto registerDto) {
@@ -45,5 +50,9 @@ public class DeviceService {
 
 	public boolean updateTempHum(String serial, TempHumRequest request) {
 		return deviceRepository.updateTempHum(serial, request);
+	}
+
+	public boolean updateCapsuleRemaining(String serial, CapsuleRemainingRequest request) {
+		return deviceRepository.updateCapsuleRemaining(serial, request);	
 	}
 }

@@ -30,4 +30,8 @@ public class DeviceService {
 	public boolean updateCapsuleInfo(CapsuleInfo capsuleInfo) {
 		return deviceRepository.updateCapsueInfo(capsuleInfo) ? true : false;
 	}
+
+	public boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId) {
+		return deviceRepository.updateDefalutCombination(id, roomType, combinationId) ? true : false;
+	}
 }

@@ -23,4 +23,8 @@ public interface DeviceRepository {
     @Update("UPDATE device SET name = #{name}, slot_1 = #{slot1}, slot_2 = #{slot2},"
     						+" slot_3 = #{slot3}, slot_4 = #{slot4} WHERE id = #{id}")
 	boolean updateCapsueInfo(CapsuleInfo capsuleInfo);
+    
+    // 기본향 정보 업데이트
+    @Update("UPDATE device SET room_type = #{roomType}, default_combination = #{combinationId} WHERE id = #{id}")
+	boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId);
 }

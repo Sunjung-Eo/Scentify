@@ -1,5 +1,7 @@
 package com.ssafy.scentify.combination.model.entity;
 
+import java.util.UUID;
+
 import lombok.*;
 
 @Getter
@@ -18,6 +20,10 @@ public class Combination {
     private Integer choice4;
     private Integer choice4Count;
     private String imageUrl;
+    
+    public void setId() {
+        this.id = UUID.randomUUID().hashCode() & Integer.MAX_VALUE;
+    }
 
     public void setName(String name) {
         if ((name != null && name.isBlank()) || (name != null && name.length() > 15)) {

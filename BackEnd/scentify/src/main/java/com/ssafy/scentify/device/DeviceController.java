@@ -1,9 +1,11 @@
 package com.ssafy.scentify.device;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +14,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.scentify.combination.CombinationService;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
+import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
+import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,11 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 public class DeviceController {
 	
 	private final DeviceService deviceService;
+	private final CombinationService combinationService;
+	private final AutoScheduleService autoScheduleService; 
 	private final HandshakeStateManager stateManager;
 	private final TokenProvider tokenProvider;
 	
-	public DeviceController(DeviceService deviceService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+	public DeviceController(DeviceService deviceService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
 		this.deviceService = deviceService;
+		this.combinationService = combinationService;
+		this.autoScheduleService = autoScheduleService;
 		this.stateManager = stateManager;
 		this.tokenProvider = tokenProvider;
 	}
@@ -86,11 +96,21 @@ public class DeviceController {
 		}
 	}
 	
+	// API 16번 : 캡슐 등록
 	@PostMapping("/capsules")
-	public ResponseEntity<?> inputCapsuleInfo(@RequestBody CapsuleInfo capsuleInfo) {
+	public ResponseEntity<?> inputCapsuleInfo(@RequestBody CapsuleInfo capsuleInfo, HttpServletRequest request) {
 		try {
 			// 캡슐 정보 업데이트
 			if (!deviceService.updateCapsuleInfo(capsuleInfo)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			
+			// 세션에 캡슐 정보 저장
+			HttpSession session =  request.getSession();
+			List<Integer> capsules = new ArrayList<>();
+			capsules.add(capsuleInfo.getSlot1());
+			capsules.add(capsuleInfo.getSlot2());
+			capsules.add(capsuleInfo.getSlot3());
+			capsules.add(capsuleInfo.getSlot4());
+			session.setAttribute("capsules", capsules);
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -98,5 +118,63 @@ public class DeviceController {
 			log.error("Exception: ", e);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	
+	// API 19번 : 기본향 등록
+	@PostMapping("/set")
+	public ResponseEntity<?> inputDefualtCombination(@RequestBody defaultCombinationDto combinationDto, HttpServletRequest request) {
+		try {
+			HttpSession session = request.getSession(false);
+			
+			// session이 null이면 유효성 검사를 할 수 없음
+	        if (session == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			List<Integer> capsules = (List<Integer>) session.getAttribute("capsules");
+
+	        // capsules이 null이거나 비어있으면 유효성 검사를 할 수 없음
+	        if (capsules == null || capsules.isEmpty()) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+	        }
+	        
+	        // choice 값 검증
+	        if (!isValidCombination(capsules, combinationDto)) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+			// 조합을 먼저 등록
+			Integer combinationId = combinationService.createCombination(combinationDto.getCombination());
+			
+			// 조합 id가 null이면 등록 실패로 400 반환
+			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// 기기 기본향 등록 (등록 실패 시 400 반환)
+			if(!deviceService.updateDefalutCombination(combinationDto.getId(), combinationDto.getRoomType(), combinationId)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// 기본향 조합 유효성 검사 메서드
+	private boolean isValidCombination(List<Integer> capsules, defaultCombinationDto combinationDto) {
+	    List<Integer> choices = List.of(
+	        combinationDto.getCombination().getChoice1(),
+	        combinationDto.getCombination().getChoice2(),
+	        combinationDto.getCombination().getChoice3(),
+	        combinationDto.getCombination().getChoice4()
+	    );
+
+	    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인
+	    return choices.stream()
+	                  .filter(Objects::nonNull)
+	                  .allMatch(capsules::contains);
 	}
 }

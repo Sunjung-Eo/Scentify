@@ -6,7 +6,10 @@ import RegistDevice2 from "./RegistDevice2.tsx";
 import RegistConnecting from "./RegistConnecting.tsx";
 import ConnectSuccess from "./ConnectSuccess.tsx";
 import HomeMain from "./HomeMain.tsx";
-import RegistCapsule from "../../feature/Home/Device/RegistCapsule.tsx";
+import RegistCapsule from "../../feature/Home/device/RegistCapsule.tsx";
+import DefaultScent from "../../feature/Home/device/DefaultScent.tsx";
+import DevicieSetting from "../../feature/Home/device/DeviceSetting.tsx";
+import ManageDevice from "./ManageDevice.tsx";
 
 const Home = () => {
   return (
@@ -17,6 +20,9 @@ const Home = () => {
       <Route path="/registconnecting" element={<RegistConnecting />} />
       <Route path="/connectsuccess" element={<ConnectSuccess />} />
       <Route path="/registcapsule" element={<RegistCapsule />} />
+      <Route path="/defaultscent" element={<DefaultScent />} />
+      <Route path="/devicesetting" element={<DevicieSetting />} />
+      <Route path="/managedevice" element={<ManageDevice />} />
     </Routes>
   );
 };

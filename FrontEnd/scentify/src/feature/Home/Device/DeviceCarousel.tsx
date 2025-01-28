@@ -4,7 +4,7 @@ import {
   Device,
   CustomSchedule,
   AutoSchedule,
-} from "./DeviceTypes";
+} from "./devicetypes";
 import deviceImg from "../../../assets/images/device.svg";
 import leftarrow from "../../../assets/icons/leftarrow-icon.svg";
 import rightarrow from "../../../assets/icons/rightarrow-icon.svg";
@@ -14,11 +14,8 @@ import temperatureIcon from "../../../assets/icons/Temperature.png";
 import PlayBtn from "../../../assets/icons/PlayBtn.svg";
 import modifyIcon from "../../../assets/icons/modify-icon.svg";
 import subtract from "../../../assets/images/Subtract.png";
-interface Props {
-  data: APIResponse; // 부모 컴포넌트로부터 전달받는 props로, API 데이터 형식 정의
-}
 
-const DeviceCarousel: React.FC<Props> = ({ data }) => {
+const DeviceCarousel = ({ data }: { data: APIResponse }) => {
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 표시 중인 기기의 인덱스를 관리
   const { main_device_id, devices, customSchedules, autoSchedules } = data; // API 데이터 구조 분해
 

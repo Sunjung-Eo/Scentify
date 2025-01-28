@@ -1,4 +1,4 @@
-import Spinner from "../../feature/Home/Loading/Spinner";
+import Spinner from "../../feature/Home/loading/Spinner";
 import { Link } from "react-router-dom";
 //나중에 눌러라 버튼 지우기
 function RegistConnecting() {

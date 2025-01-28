@@ -24,20 +24,29 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/control/auto/detect") ||
     location.pathname.startsWith("/control/auto/deodorize") ||
     location.pathname.startsWith("/control/auto/behavior") ||
-    location.pathname.startsWith("/control/reservation/create");
-  location.pathname.startsWith("/home/registcapsule");
+    location.pathname.startsWith("/control/reservation/create") ||
+    location.pathname.startsWith("/home/registcapsule") ||
+    location.pathname.startsWith("/home/defaultscent") ||
+    location.pathname.startsWith("/home/devicesetting") ||
+    location.pathname.startsWith("/home/managedevice");
+
   const showFinish =
     location.pathname.startsWith("/home/capsule/set") ||
     location.pathname.startsWith("/home/combination/set") ||
     location.pathname.startsWith("/control/auto/detect") ||
     location.pathname.startsWith("/control/auto/deodorize") ||
     location.pathname.startsWith("/control/auto/behavior") ||
-    location.pathname.startsWith("/control/reservation/create");
-  location.pathname.startsWith("/home/registcapsule");
-  const showDeviceManage = location.pathname.startsWith("/home");
+    location.pathname.startsWith("/control/reservation/create") ||
+    location.pathname.startsWith("/home/registcapsule") ||
+    location.pathname.startsWith("/home/defaultscent") ||
+    location.pathname.startsWith("/home/devicesetting");
+  const showDeviceManage =
+    location.pathname.startsWith("/home") && // "/home" 및 하위 경로 확인
+    !location.pathname.startsWith("/home/managedevice"); // "/home/managedevice"는 제외
   const showAdd =
     location.pathname.startsWith("/home/deviceManage") ||
-    location.pathname.startsWith("/control");
+    location.pathname.startsWith("/control") ||
+    location.pathname.includes("/home/managedevice");
 
   // 로고 대신 title 출력
   const getHeaderTitle = (pathname: string) => {
@@ -46,6 +55,10 @@ const Layout = ({ children }: LayoutProps) => {
     if (pathname.includes("/auto/behavior")) return "동작모드";
     if (pathname.includes("/reservation/create")) return "예약하기";
     if (pathname.includes("/home/registcapsule")) return "캡슐 등록";
+    if (pathname.includes("/home/defaultscent")) return "기본향 등록";
+    if (pathname.includes("/home/devicesetting")) return "기기 설정";
+    if (pathname.includes("/home/managedevice")) return "기기 관리/추가";
+
     return undefined;
   };
 
@@ -54,6 +67,10 @@ const Layout = ({ children }: LayoutProps) => {
     if (location.pathname === "/control") {
       navigate("/control/reservation/create");
     }
+  };
+
+  const handleDeviceManageClick = () => {
+    navigate("/home/managedevice");
   };
 
   return (
@@ -66,6 +83,7 @@ const Layout = ({ children }: LayoutProps) => {
           showAdd={showAdd}
           title={getHeaderTitle(location.pathname)}
           onAddClick={handleAddClick}
+          onDeviceManageClick={handleDeviceManageClick}
         />
       )}
       <main className="content flex flex-grow justify-center">{children}</main>

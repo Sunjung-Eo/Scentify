@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Capsule from "./Capsule";
+import Capsule from "./Capsule.tsx";
 import deviceImg from "../../../assets/images/device.svg";
-import { CreateCapsuleRequest } from "./CapsuleType.ts";
-import { useControlStore } from "../../../stores/useControlStore";
+import { CreateCapsuleRequest } from "./capsuletypes.ts";
+import { useControlStore } from "../../../stores/useControlStore.ts";
+import { useCapsuleStore } from "../../../stores/useCapsuleStore";
 
-const RegistCapsule: React.FC = () => {
+function RegistCapsule() {
   const [name, setName] = useState<string>(""); // 입력된 기기명을 저장하는 상태 초기값은 빈 문자열
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
@@ -13,10 +14,10 @@ const RegistCapsule: React.FC = () => {
   // 전역 상태 관리에서 제공하는 핸들러 설정 메서드
   const { setCompleteHandler } = useControlStore(); // 완료 버튼의 동작을 정의할 수 있도록 설정
 
-  // 기기명 입력 변경 시 호출되는 함수
+  // 기기명 입력 변경
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value); // 입력된 값을 상태에 저장
-    setErrorMessage(""); // 에러 메시지를 초기화
+    if (errorMessage) setErrorMessage(""); // 에러 메시지 초기화
   };
 
   // Capsule 컴포넌트에서 데이터를 받아오는 함수
@@ -26,7 +27,7 @@ const RegistCapsule: React.FC = () => {
   };
 
   // 완료 버튼 클릭 시 호출되는 함수
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     console.log("handleSubmit 호출됨");
     console.log("현재 캡슐 데이터:", capsuleDataRef.current);
 
@@ -45,30 +46,18 @@ const RegistCapsule: React.FC = () => {
     // 서버로 전송할 최종 데이터 생성
     const finalRequestData = { ...capsuleDataRef.current, name };
 
-    // 서버 요청 로직 (주석 처리 - 서버 연결 시 활성화)
-    /*
-    try {
-      const response = await fetch("/v1/device/capsules", {
-        method: "POST", 
-        headers: {
-          "Content-Type": "application/json",  // JSON 형식으로 데이터 전송
-        },
-        body: JSON.stringify(finalRequestData), // JSON 형식으로 직렬화
-      });
+    // 전역 상태에 데이터 저장
+    const { updateRecentCapsule } = useCapsuleStore.getState();
+    updateRecentCapsule({
+      slot1: finalRequestData.slot1,
+      slot2: finalRequestData.slot2,
+      slot3: finalRequestData.slot3,
+      slot4: finalRequestData.slot4,
+    });
 
-         // 응답 상태에 따른 처리
-    if (response.ok) {
-      setSuccessMessage("캡슐 등록이 완료되었습니다."); // 성공 메시지 설정
-    } else {
-      setErrorMessage("캡슐 등록에 실패했습니다."); // 실패 메시지 설정
-    }
-  } catch (error) {
-    // 네트워크 오류 처리
-    setErrorMessage("네트워크 오류가 발생했습니다.");
-  }
-}, [name]);
-    */
-  }, [name]); // name이 변경될 때만 새로 정의
+    // 성공 메시지
+    setSuccessMessage("캡슐 등록이 완료되었습니다.");
+  }, [name]);
 
   // 완료 버튼에 handleSubmit을 연결
   useEffect(() => {
@@ -115,6 +104,6 @@ const RegistCapsule: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default RegistCapsule;

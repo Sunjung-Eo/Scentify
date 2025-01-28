@@ -21,6 +21,9 @@ import com.ssafy.scentify.auth.TokenService;
 import com.ssafy.scentify.auth.model.dto.TokenDto;
 import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
+import com.ssafy.scentify.group.GroupService;
+import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -31,6 +34,7 @@ public class UserController {
 	
 	private final UserService userService;
 	private final EmailService emailService;
+	private final GroupService groupService;
 	private final TokenService tokenService;
 	private final CodeProvider codeProvider;
 	private final TokenProvider tokenProvider;
@@ -43,9 +47,10 @@ public class UserController {
     static final String passwordRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=:<>?])[A-Za-z0-9!@#$%^&*()_+\\-=:<>?]{9,}$";
     static final Pattern passwordPattern = Pattern.compile(passwordRegex);
 	
-	public UserController(UserService userService, EmailService emailService, TokenService tokenService, CodeProvider codeProvider, TokenProvider tokenProvider) {
+	public UserController(UserService userService, EmailService emailService, GroupService groupService, TokenService tokenService, CodeProvider codeProvider, TokenProvider tokenProvider) {
 		this.userService = userService;
 		this.emailService = emailService;
+		this.groupService = groupService;
 		this.tokenService = tokenService;
 		this.codeProvider = codeProvider;
 		this.tokenProvider = tokenProvider;
@@ -67,7 +72,8 @@ public class UserController {
 	        }
 
 	        // 세션에 id 저장
-	        HttpSession session = request.getSession();
+	        HttpSession session = request.getSession(false);
+	        if (session == null) { session = request.getSession(); }
 	        session.setAttribute("id", id);
 
 	        return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
@@ -157,14 +163,20 @@ public class UserController {
 	        // 비밀번호가 지정된 패턴을 따르지 않은 경우
 	        if (!passwordPattern.matcher(user.getPassword()).matches()) {
 	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-	        }
-
+	        }	        
+	        
 	        if (!userService.createUser(user)) { // 사용자 계정 생성
 	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 	        
-	        session.invalidate(); //세션 무효화
-	        
+	        // 그룹 초대 링크 접속 후 회원 가입인지 검증
+            HttpStatus invitationResult = handleGroupInvitation(request, user.getId());
+            if (invitationResult == HttpStatus.CONFLICT) {
+                // 그룹 멤버가 다 차서 등록하지 못함 (409 상황에서도 가입은 완료됨)
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+	                
+            session.invalidate();	        
 	        return new ResponseEntity<>(HttpStatus.OK);  // 성공적으로 처리됨
 	    } catch (Exception e) {
 	    	// 예기치 않은 에러 처리
@@ -176,7 +188,7 @@ public class UserController {
 	
 	// API 11번 : 로그인
 	@PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto) {
+    public ResponseEntity<?> loginUser(@RequestBody UserDto.LoginDto loginDto, HttpServletRequest request) {
         try {
         	// 로그인 서비스 호출하여 아이디, 비밀번호 검중
         	int status = userService.login(loginDto);
@@ -186,6 +198,17 @@ public class UserController {
         	
         	// 입력한 비밀번호가 DB 정보와 다름
             if (status == 401) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
+            
+            // 그룹 초대 링크 접속 후 로그인인지 검증
+            HttpStatus invitationResult = handleGroupInvitation(request, loginDto.getId());
+            if (invitationResult == HttpStatus.CONFLICT) {
+                // 그룹 멤버가 다 차서 등록하지 못함
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+            
+            // 세션이 있다면 만료 시킴
+            HttpSession session = request.getSession(false);
+            if (session != null) { session.invalidate(); }
             
             // 토큰 생성
             TokenDto tokenDto = tokenProvider.createJwtToken(loginDto.getId());
@@ -213,6 +236,34 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+	
+	// 초대 링크로 들어온 사용자인지 검사
+	private HttpStatus handleGroupInvitation(HttpServletRequest request, String userId) {
+	    // 세션 가져오기 (존재하지 않으면 null)
+	    HttpSession session = request.getSession(false);
+	    
+	    // 초대링크로 들어오지 않은 사용자이므로 돌아가서 로그인 로직 수행
+	    if (session == null) { return HttpStatus.OK; }
+
+	    Integer groupId = (Integer) session.getAttribute("groupId");
+	    Integer deviceId = (Integer) session.getAttribute("deviceId");
+	    if (groupId == null && deviceId == null) { return HttpStatus.OK; }
+        
+	    // 그룹 멤버 업데이트
+        String userNickname = userService.getUserNiceNameById(userId);
+        MemberDto memberDto = new MemberDto(groupId, userId, userNickname);
+        
+        // 멤버 자리가 꽉 찬 경우 409 반환
+        boolean updated = groupService.updateMember(memberDto);
+        if (!updated) {
+            session.invalidate();
+            return HttpStatus.CONFLICT; 
+        }
+
+        // 만약 그룹에 해당한 사용자의 대표기기가 아직 설정되어 있지 않다면 그룹 기기로 설정
+        userService.updateMainDeviceIdIfNull(userId, deviceId);
+	    return HttpStatus.OK;
+	}
 	
 	// API 12번 : 로그아웃
 	@PostMapping("/logout")

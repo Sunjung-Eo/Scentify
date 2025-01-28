@@ -20,11 +20,13 @@ import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
-import com.ssafy.scentify.group.model.dto.GroupDto.deleteMemberDto;
-import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.DeleteMemberDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;
 import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.user.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -94,6 +96,45 @@ public class GroupController {
 		}
 	}
 	
+	// API 24번 : 그룹 링크로 가입
+	@PostMapping("/verify-link")
+	public ResponseEntity<?> joinGroupByLink(@RequestBody Map<String, String> inviteCodeMap, HttpServletRequest request) {
+		try {
+			// 초대 코드 추출 및 유효성 검사
+	        String inviteCode = inviteCodeMap.get("inviteCode");
+	        if (inviteCode == null || inviteCode.isBlank() || inviteCode.length() != 8) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Redis에서 초대 코드 데이터 가져오기
+	        String redisKey = "invite:" + inviteCode;
+	        String redisData = redisTemplate.opsForValue().get(redisKey);
+
+	        // Redis에 데이터가 없으면 초대 코드가 유효하지 않음
+	        if (redisData == null) { return new ResponseEntity<>(HttpStatus.GONE); }
+
+	        // Redis 데이터를 JSON으로 파싱
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        Map<String, String> inviteData = objectMapper.readValue(redisData, new TypeReference<>() {});
+
+	        // Redis 데이터에서 groupId와 deviceId 추출
+	        Integer groupId = Integer.parseInt(inviteData.get("groupId"));
+	        Integer deviceId = Integer.parseInt(inviteData.get("deviceId"));
+	        
+	        // 세션 부여 및 데이터 저장
+	        HttpSession session = request.getSession();
+	        session.setAttribute("groupId", groupId);
+	        session.setAttribute("deviceId", deviceId);
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
 	// API 25번 : 그룹 코드로 가입
 	@PostMapping("/verify-code")
 	public ResponseEntity<?> joinGroupByCode(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> inviteCodeMap) {
@@ -130,7 +171,7 @@ public class GroupController {
 
 	        // 그룹에 사용자 추가 
 	        String nickname = userService.getUserNiceNameById(userId);
-	        memberDto memberDto = new memberDto(groupId, userId, nickname);
+	        MemberDto memberDto = new MemberDto(groupId, userId, nickname);
 	        
 	        // 그룹에 자리가 없으면 409 반환
 	        if (!groupService.updateMember(memberDto)) { return new ResponseEntity<>(HttpStatus.CONFLICT); };
@@ -184,7 +225,7 @@ public class GroupController {
 	
 	// API 26번 : 그룹 멤버 삭제
 	@PostMapping("/member/delete")
-	public ResponseEntity<?> deleteGroupMember(@RequestHeader("Authorization") String authorizationHeader, @RequestBody deleteMemberDto deleteMemberDto) {
+	public ResponseEntity<?> deleteGroupMember(@RequestHeader("Authorization") String authorizationHeader, @RequestBody DeleteMemberDto deleteMemberDto) {
 		try {
 			// "Bearer " 제거
 	        if (!authorizationHeader.startsWith("Bearer ")) {

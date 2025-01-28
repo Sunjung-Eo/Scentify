@@ -74,12 +74,16 @@ public class GroupController {
 	        // 초대 코드 생성
 	        String inviteCode = codeProvider.generateVerificationCode();
 	        Integer groupId = groupInfoDto.getGroupId(); // 그룹 ID 가져오기
-
+	        
+	        // 어드민 닉네임 조회
+	        String adminNickname = userService.getUserNiceNameById(userId);
+	        
 	        // Redis에 초대 코드와 groupId를 JSON으로 저장 (유효 기간: 30분)
 	        String redisKey = "invite:" + inviteCode;
 	        Map<String, String> redisData = new HashMap<>();
 	        redisData.put("deviceId", deviceId.toString());
 	        redisData.put("groupId", groupId.toString());
+	        redisData.put("adminNickname", adminNickname);
 
 	        redisTemplate.opsForValue().set(redisKey, new ObjectMapper().writeValueAsString(redisData), 30, TimeUnit.MINUTES);
 	        
@@ -120,13 +124,18 @@ public class GroupController {
 	        // Redis 데이터에서 groupId와 deviceId 추출
 	        Integer groupId = Integer.parseInt(inviteData.get("groupId"));
 	        Integer deviceId = Integer.parseInt(inviteData.get("deviceId"));
+	        String adminNickname = inviteData.get("adminNickname");
 	        
 	        // 세션 부여 및 데이터 저장
 	        HttpSession session = request.getSession();
 	        session.setAttribute("groupId", groupId);
 	        session.setAttribute("deviceId", deviceId);
+	        
+	        // 반환 데이터 생성
+	        Map<String, String> response = new HashMap<>();
+	        response.put("adminNickname", adminNickname);
 			
-			return new ResponseEntity<>(HttpStatus.OK);
+	        return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리
 			log.error("Exception: ", e);
@@ -305,6 +314,5 @@ public class GroupController {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
-	
-	
+		
 }

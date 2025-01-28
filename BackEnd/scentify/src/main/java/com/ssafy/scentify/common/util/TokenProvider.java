@@ -73,8 +73,22 @@ public class TokenProvider implements InitializingBean {
 					.compact();
 	}
 	
-	// 쿠키를 만드는 메서드
-	public Cookie createCookie(String refreshToken) {
+	// access token 쿠키를 만드는 메서드
+	public Cookie createAccessTokenCookie(String accessToken) {
+        String cookieName = "accessToken";
+        String cookieValue = accessToken;
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+       
+        // 쿠키 속성 설정
+        cookie.setHttpOnly(true);  
+        cookie.setSecure(true); 
+        cookie.setPath("/"); 
+        cookie.setMaxAge(60 * 30);
+        return cookie;
+	}
+	
+	// refresh token 쿠키를 만드는 메서드
+	public Cookie createRefreshTokenCookie(String refreshToken) {
         String cookieName = "refreshToken";
         String cookieValue = refreshToken;
         Cookie cookie = new Cookie(cookieName, cookieValue);

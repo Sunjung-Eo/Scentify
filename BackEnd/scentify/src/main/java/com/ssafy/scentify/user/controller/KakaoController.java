@@ -129,15 +129,19 @@ public class KakaoController {
 			
 			// 해당 이메일 정보로 가입한 회원이 있고 아이디도 같은 경우 (소셜 로그인한 경우)
 		    if (existingUserInfo != null && existingUserInfo.getId().equals(id) ) { 
-		    	// 그룹 멤버 업데이트
-		        String userNickname = userService.getUserNiceNameById(id);
-		        MemberDto memberDto = new MemberDto(groupId, id, userNickname);
-		        
-		        // 멤버 자리가 꽉 찬 경우 409 반환
-		        boolean updated = groupService.updateMember(memberDto);
+		    	boolean updated = true;
+		    	
+		    	if (groupId != null && deviceId != null) {	
+			    	// 그룹 멤버 업데이트
+			        String userNickname = userService.getUserNiceNameById(id);
+			        MemberDto memberDto = new MemberDto(groupId, id, userNickname);
+			        
+			        // 멤버 자리가 꽉 찬 경우 false 
+			        updated = groupService.updateMember(memberDto);
 
-		        // 만약 그룹에 해당한 사용자의 대표기기가 아직 설정되어 있지 않다면 그룹 기기로 설정
-		        userService.updateMainDeviceIdIfNull(id, deviceId);
+			        // 만약 그룹에 해당한 사용자의 대표기기가 아직 설정되어 있지 않다면 그룹 기기로 설정
+			        userService.updateMainDeviceIdIfNull(id, deviceId);
+		    	}
 		    	
 		    	// 토큰 발급
 		    	TokenDto tokenDto = tokenProvider.createJwtToken(existingUserInfo.getId());
@@ -146,8 +150,8 @@ public class KakaoController {
 	            tokenService.saveRefreshToken(existingUserInfo.getId(), tokenDto.getRefreshToken());
 	            
 	            // 발급한 토큰을 쿠키로 삽입
-	            Cookie accessTokenCookie = tokenProvider.createCookie(tokenDto.getAccessToken());
-	            Cookie refreshTokenCookie = tokenProvider.createCookie(tokenDto.getRefreshToken());
+	            Cookie accessTokenCookie = tokenProvider.createAccessTokenCookie(tokenDto.getAccessToken());
+	            Cookie refreshTokenCookie = tokenProvider.createRefreshTokenCookie(tokenDto.getRefreshToken());
 	            response.addCookie(accessTokenCookie);
 	            response.addCookie(refreshTokenCookie);
 	            

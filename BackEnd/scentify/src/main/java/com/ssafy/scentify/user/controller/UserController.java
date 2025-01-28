@@ -219,7 +219,7 @@ public class UserController {
             // 헤더에 access 토큰 및 refresh 토큰 쿠키 삽입 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", tokenDto.getGrantType() + " " + tokenDto.getAccessToken());
-            Cookie refreshTokenCookie = tokenProvider.createCookie(tokenDto.getRefreshToken());
+            Cookie refreshTokenCookie = tokenProvider.createRefreshTokenCookie(tokenDto.getRefreshToken());
             String cookieHeader = String.format("%s=%s; HttpOnly; Secure; Path=%s; Max-Age=%d",
                 refreshTokenCookie.getName(),
                 refreshTokenCookie.getValue(),

@@ -21,7 +21,10 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
+import com.ssafy.scentify.group.GroupService;
+import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
+import com.ssafy.scentify.user.service.UserService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
 import com.ssafy.scentify.websocket.WebSocketController;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
@@ -35,16 +38,20 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class DeviceController {
 	
+	private final UserService userService;
 	private final WebSocketController socketController;
 	private final DeviceService deviceService;
+	private final GroupService groupService;
 	private final CombinationService combinationService;
 	private final AutoScheduleService autoScheduleService; 
 	private final HandshakeStateManager stateManager;
 	private final TokenProvider tokenProvider;
 	
-	public DeviceController(WebSocketController socketController, DeviceService deviceService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+	public DeviceController(UserService userService, WebSocketController socketController, DeviceService deviceService, GroupService groupService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+		this.userService = userService;
 		this.socketController = socketController;
 		this.deviceService = deviceService;
+		this.groupService = groupService;
 		this.combinationService = combinationService;
 		this.autoScheduleService = autoScheduleService;
 		this.stateManager = stateManager;
@@ -76,15 +83,16 @@ public class DeviceController {
 	        // device 등록
 	        deviceService.createDevice(registerDto);
 	        
-//	        // 핸드쉐이크 확인 전 3초 대기
-//	        try {
-//	            Thread.sleep(3000); // 3000 milliseconds = 3 seconds
-//	        } catch (InterruptedException e) {
-//	            Thread.currentThread().interrupt();
-//	            log.error("3초 sleep 과정에서 에러 발생", e);
-//	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//	        }
-//	        
+	        // device의 그룹 생성
+	        String nickname = userService.getUserNiceNameById(userId);
+	        Integer deviceId = registerDto.getId();
+	        CreateDto createDto = groupService.createGroup(deviceId, userId, nickname);
+	        
+	        // device의 그룹 id 업데이트
+	        if (!deviceService.updateGroupId(deviceId, createDto.getId())) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        	        
 //	        // Redis에서 핸드쉐이크 성공 여부 확인
 //	        if (!stateManager.getHandshakeState(registerDto.getSerial())) {
 //	            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 핸드쉐이크 실패 시 반환

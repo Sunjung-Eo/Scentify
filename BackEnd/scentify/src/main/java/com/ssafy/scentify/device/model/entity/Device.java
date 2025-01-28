@@ -74,6 +74,10 @@ public class Device {
         this.adminId = adminId;
     }
 
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
     public void setIpAddress(String ipAddress) {
         if (ipAddress == null || !ipPattern.matcher(ipAddress).matches()) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");

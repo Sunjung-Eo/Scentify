@@ -62,5 +62,9 @@ public interface UserRepository {
 	// 대표기기 설정 시 값이 있더라도 변경
 	@Update("UPDATE user SET main_device_id = #{deviceId} WHERE id = #{userId}")
 	boolean forceUpdateMainDeviceId(String userId, Integer deviceId);
+	
+	// id로 유저 닉네임 가져오기
+	@Select("SELECT nickname FROM user WHERE id = #{id}")
+	String getUserNickNameById(String id);
 
 }

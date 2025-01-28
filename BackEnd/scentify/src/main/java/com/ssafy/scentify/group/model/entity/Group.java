@@ -9,13 +9,13 @@ import lombok.*;
 public class Group {
     private Integer id;
     private String adminId;
-    private String adminName;
+    private String adminNickname;
     private String member1Id;
-    private String member1Name;
+    private String member1Nickname;
     private String member2Id;
-    private String member2Name;
+    private String member2Nickname;
     private String member3Id;
-    private String member3Name;
+    private String member3Nickname;
     private String member4Id;
-    private String member4Name;
+    private String member4Nickname;
 }

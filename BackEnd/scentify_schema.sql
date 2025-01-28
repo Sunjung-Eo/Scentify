@@ -1,143 +1,621 @@
--- 스키마 생성
-DROP DATABASE IF EXISTS Scentify;
-CREATE SCHEMA Scentify DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE Scentify;
 
--- 유저 테이블 생성
-CREATE TABLE user (
-    id VARCHAR(255) NOT NULL PRIMARY KEY,
-    password VARCHAR(255) NOT NULL,
-    nickname VARCHAR(255) NOT NULL,
-    phone_number VARCHAR(255) NOT NULL UNIQUE,
-    img_num INT NOT NULL,
-    social_type INT NOT NULL,
-    gender INT NOT NULL,
-    birth DATE NOT NULL,
-    main_device_id INT DEFAULT NULL
-);
+-- Drop the database if it exists
+DROP DATABASE IF EXISTS scentify;
 
--- 유저 보안 정보 테이블 생성
-CREATE TABLE userSecuinfo (
-    user_id VARCHAR(255) NOT NULL PRIMARY KEY,
-    salt VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-);
+-- Create the database
+CREATE DATABASE scentify;
+USE scentify;
 
--- 그룹 테이블 생성
+
+-- Begin /mnt/data/scentify_autoschedule.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `autoschedule`
+--
+
+DROP TABLE IF EXISTS `autoschedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `autoschedule` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `device_id` int NOT NULL,
+  `combination_id` int NOT NULL,
+  `sub_mode` int NOT NULL,
+  `type` int DEFAULT NULL,
+  `interval` int DEFAULT NULL,
+  `mode_on` tinyint(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `device_id` (`device_id`),
+  KEY `combination_id` (`combination_id`),
+  CONSTRAINT `autoschedule_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `autoschedule_ibfk_3` FOREIGN KEY (`combination_id`) REFERENCES `combination` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:17
+
+-- End /mnt/data/scentify_autoschedule.sql
+
+-- Begin /mnt/data/scentify_combination.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `combination`
+--
+
+DROP TABLE IF EXISTS `combination`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `combination` (
+  `id` int NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `choice1` int NOT NULL,
+  `choice1_count` int NOT NULL,
+  `choice2` int DEFAULT '0',
+  `choice2_count` int DEFAULT '0',
+  `choice3` int DEFAULT '0',
+  `choice3_count` int DEFAULT '0',
+  `choice4` int DEFAULT '0',
+  `choice4_count` int DEFAULT '0',
+  `img_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:17
+
+-- End /mnt/data/scentify_combination.sql
+
+-- Begin /mnt/data/scentify_customschedule.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `customschedule`
+--
+
+DROP TABLE IF EXISTS `customschedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `customschedule` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `device_id` int NOT NULL,
+  `combination_id` int NOT NULL,
+  `combination_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `isFavorite` tinyint(1) NOT NULL,
+  `day` int DEFAULT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `interval` int NOT NULL,
+  `mode_on` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `device_id` (`device_id`),
+  KEY `combination_id` (`combination_id`),
+  CONSTRAINT `customschedule_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `customschedule_ibfk_3` FOREIGN KEY (`combination_id`) REFERENCES `combination` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:18
+
+-- End /mnt/data/scentify_customschedule.sql
+
+-- Begin /mnt/data/scentify_device.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `device`
+--
+
+DROP TABLE IF EXISTS `device`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `device` (
+  `id` int NOT NULL,
+  `serial` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `admin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `group_id` int DEFAULT NULL,
+  `ip_address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `room_type` int DEFAULT NULL,
+  `slot_1` int DEFAULT NULL,
+  `slot_1_remainingRatio` int DEFAULT NULL,
+  `slot_2` int DEFAULT NULL,
+  `slot_2_remainingRatio` int DEFAULT NULL,
+  `slot_3` int DEFAULT NULL,
+  `slot_3_remainingRatio` int DEFAULT NULL,
+  `slot_4` int DEFAULT NULL,
+  `slot_4_remainingRatio` int DEFAULT NULL,
+  `mode` tinyint(1) NOT NULL DEFAULT '0',
+  `temperature` float DEFAULT NULL,
+  `humidity` int DEFAULT NULL,
+  `default_combination` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `serial` (`serial`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `admin_id` (`admin_id`),
+  KEY `group_id` (`group_id`),
+  CONSTRAINT `device_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `device_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:18
+
+-- End /mnt/data/scentify_device.sql
+
+-- Begin /mnt/data/scentify_favorite.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `favorite`
+--
+
+DROP TABLE IF EXISTS `favorite`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `favorite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `combination_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `combination_id` (`combination_id`),
+  CONSTRAINT `favorite_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `favorite_ibfk_2` FOREIGN KEY (`combination_id`) REFERENCES `combination` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:18
+
+-- End /mnt/data/scentify_favorite.sql
+
+-- Begin /mnt/data/scentify_group.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `group`
+--
+
+DROP TABLE IF EXISTS `group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `group` (
-    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    device_id INT NOT NULL,
-    admin_id VARCHAR(255) NOT NULL,
-    admin_nickname VARCHAR(255) NOT NULL,
-    member_1_id VARCHAR(255),
-    member_1_nickname VARCHAR(255),
-    member_2 VARCHAR(255),
-    member_2_nickname VARCHAR(255),
-    member_3 VARCHAR(255),
-    member_3_nickname VARCHAR(255),
-    member_4 VARCHAR(255),
-    member_4_nickname VARCHAR(255),
-    FOREIGN KEY (admin_id) REFERENCES user(id) ON DELETE CASCADE
-);
+  `id` int NOT NULL AUTO_INCREMENT,
+  `device_id` int NOT NULL,
+  `admin_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `admin_nickname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `member_1_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_1_nickname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_2_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_2_nickname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_3_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_3_nickname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_4_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `member_4_nickname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `admin_id` (`admin_id`),
+  KEY `fk_group_member_1_id` (`member_1_id`),
+  KEY `fk_group_member_2_id` (`member_2_id`),
+  KEY `fk_group_member_3_id` (`member_3_id`),
+  KEY `fk_group_member_4_id` (`member_4_id`),
+  KEY `device_fk_1_idx` (`device_id`),
+  CONSTRAINT `device_fk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_group_member_1_id` FOREIGN KEY (`member_1_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_group_member_2_id` FOREIGN KEY (`member_2_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_group_member_3_id` FOREIGN KEY (`member_3_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_group_member_4_id` FOREIGN KEY (`member_4_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `group_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
--- 디바이스 테이블 생성
-CREATE TABLE device (
-    id INT NOT NULL PRIMARY KEY,
-    serial VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255),
-    admin_id VARCHAR(255) NOT NULL,
-    group_id INT DEFAULT NULL,
-    ip_address VARCHAR(255) NOT NULL,
-    room_type INT DEFAULT NULL,
-    slot_1 INT DEFAULT NULL,
-    slot_1_remainingRatio INT DEFAULT NULL,
-    slot_2 INT DEFAULT NULL,
-    slot_2_remainingRatio INT DEFAULT NULL,
-    slot_3 INT DEFAULT NULL,
-    slot_3_remainingRatio INT DEFAULT NULL,
-    slot_4 INT DEFAULT NULL,
-    slot_4_remainingRatio INT DEFAULT NULL,
-    mode BOOLEAN NOT NULL DEFAULT 0,
-    temperature INT DEFAULT NULL,
-    humidity INT DEFAULT NULL,
-    default_combination INT DEFAULT NULL,
-    FOREIGN KEY (admin_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (group_id) REFERENCES `group`(id) ON DELETE SET NULL
-);
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- 콤비네이션 테이블 생성
-CREATE TABLE combination (
-    id INT NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    choice1 INT NOT NULL,
-    choice1_count INT NOT NULL,
-    choice2 INT DEFAULT NULL,
-    choice2_count INT DEFAULT NULL,
-    choice3 INT DEFAULT NULL,
-    choice3_count INT DEFAULT NULL,
-    choice4 INT DEFAULT NULL,
-    choice4_count INT DEFAULT NULL,
-    img_url VARCHAR(255) DEFAULT NULL
-);
+-- Dump completed on 2025-01-28 12:59:17
 
--- 찜 기록 테이블 생성
-CREATE TABLE favorite (
-    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL,
-    combination_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (combination_id) REFERENCES combination(id) ON DELETE CASCADE
-);
+-- End /mnt/data/scentify_group.sql
 
--- 자동화 스케줄 테이블 생성
-CREATE TABLE autoSchedule (
-    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    device_id INT NOT NULL,
-    user_id VARCHAR(255) NOT NULL,
-    combination_id INT NOT NULL,
-    sub_mode INT NOT NULL,
-    type INT DEFAULT NULL,
-    `interval` INT NOT NULL,
-    mode_on BOOLEAN NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (device_id) REFERENCES device(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (combination_id) REFERENCES combination(id) ON DELETE CASCADE
-);
+-- Begin /mnt/data/scentify_log.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
 
--- 커스텀 스케줄 테이블 생성
-CREATE TABLE customSchedule (
-    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    device_id INT NOT NULL,
-    user_id VARCHAR(255) NOT NULL,
-    combination_id INT NOT NULL,
-    combination_name VARCHAR(255) NOT NULL,
-    isFavorite BOOLEAN NOT NULL,
-    day INT DEFAULT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    `interval` INT NOT NULL,
-    mode_on BOOLEAN  NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (device_id) REFERENCES device(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (combination_id) REFERENCES combination(id) ON DELETE CASCADE
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- 로그 테이블 생성
-CREATE TABLE log (
-    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    device_serial VARCHAR(255) NOT NULL,
-    user_id VARCHAR(255) NOT NULL,
-    device_mode BOOLEAN NOT NULL,
-    autoSchedule_id INT DEFAULT NULL,
-    customSchedule_id INT DEFAULT NULL,
-    sprayTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (device_serial) REFERENCES device(serial) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-    FOREIGN KEY (autoSchedule_id) REFERENCES autoSchedule(id) ON DELETE SET NULL,
-    FOREIGN KEY (customSchedule_id) REFERENCES customSchedule(id) ON DELETE SET NULL
-);
+--
+-- Table structure for table `log`
+--
+
+DROP TABLE IF EXISTS `log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `device_serial` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `device_mode` tinyint(1) NOT NULL,
+  `autoSchedule_id` int DEFAULT NULL,
+  `customSchedule_id` int DEFAULT NULL,
+  `sprayTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `device_serial` (`device_serial`),
+  KEY `user_id` (`user_id`),
+  KEY `autoSchedule_id` (`autoSchedule_id`),
+  KEY `customSchedule_id` (`customSchedule_id`),
+  CONSTRAINT `log_ibfk_1` FOREIGN KEY (`device_serial`) REFERENCES `device` (`serial`) ON DELETE CASCADE,
+  CONSTRAINT `log_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `log_ibfk_3` FOREIGN KEY (`autoSchedule_id`) REFERENCES `autoschedule` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `log_ibfk_4` FOREIGN KEY (`customSchedule_id`) REFERENCES `customschedule` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:17
+
+-- End /mnt/data/scentify_log.sql
+
+-- Begin /mnt/data/scentify_routines.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Dumping events for database 'scentify'
+--
+
+--
+-- Dumping routines for database 'scentify'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:18
+
+-- End /mnt/data/scentify_routines.sql
+
+-- Begin /mnt/data/scentify_user.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user` (
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nickname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `img_num` int NOT NULL,
+  `social_type` int NOT NULL,
+  `gender` int NOT NULL,
+  `birth` date NOT NULL,
+  `main_device_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`,`nickname`),
+  UNIQUE KEY `phone_number` (`email`),
+  KEY `fk1_idx` (`main_device_id`),
+  CONSTRAINT `fk1` FOREIGN KEY (`main_device_id`) REFERENCES `device` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `after_user_update` AFTER UPDATE ON `user` FOR EACH ROW BEGIN
+    -- admin_nickname 업데이트
+    UPDATE `group`
+    SET admin_nickname = 
+        CASE 
+            WHEN admin_id IS NULL THEN NULL
+            ELSE NEW.nickname
+        END
+    WHERE admin_id = NEW.id;
+
+    -- member_1_nickname 업데이트
+    UPDATE `group`
+    SET member_1_nickname = 
+        CASE 
+            WHEN member_1_id IS NULL THEN NULL
+            ELSE NEW.nickname
+        END
+    WHERE member_1_id = NEW.id;
+
+    -- member_2_nickname 업데이트
+    UPDATE `group`
+    SET member_2_nickname = 
+        CASE 
+            WHEN member_2_id IS NULL THEN NULL
+            ELSE NEW.nickname
+        END
+    WHERE member_2_id = NEW.id;
+
+    -- member_3_nickname 업데이트
+    UPDATE `group`
+    SET member_3_nickname = 
+        CASE 
+            WHEN member_3_id IS NULL THEN NULL
+            ELSE NEW.nickname
+        END
+    WHERE member_3_id = NEW.id;
+
+    -- member_4_nickname 업데이트
+    UPDATE `group`
+    SET member_4_nickname = 
+        CASE 
+            WHEN member_4_id IS NULL THEN NULL
+            ELSE NEW.nickname
+        END
+    WHERE member_4_id = NEW.id;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:18
+
+-- End /mnt/data/scentify_user.sql
+
+-- Begin /mnt/data/scentify_usersecuinfo.sql
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: scentify
+-- ------------------------------------------------------
+-- Server version	8.0.40
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `usersecuinfo`
+--
+
+DROP TABLE IF EXISTS `usersecuinfo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `usersecuinfo` (
+  `user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `salt` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `usersecuinfo_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-28 12:59:18
+
+-- End /mnt/data/scentify_usersecuinfo.sql

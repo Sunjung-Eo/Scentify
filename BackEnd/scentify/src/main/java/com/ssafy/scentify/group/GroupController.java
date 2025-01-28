@@ -181,6 +181,16 @@ public class GroupController {
 	    }
 	}
 	
+	// API 26번 : 그룹 멤버 삭제
+	@PostMapping("/member/delete")
+	public String deleteGroupMember(@RequestBody String entity) {
+		
+		
+		return entity;
+	}
+	
+	
+	
 	// API 27번 : 그룹 삭제
 	@PostMapping("/delete")
 	public ResponseEntity<?> deleteGroup(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> groupIdMap) {
@@ -206,8 +216,8 @@ public class GroupController {
 			// 요청 아이디가 그룹 어드민이 아님
 			if (!group.getAdminId().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
 			
-			// 그룹 삭제 (삭제가 되지 않았을 경우 400 반환)
-			if (!groupService.deleteGroupById(groupId)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			// 모든 그룹 멤버를 null로 만듦 (수행 되지 않았을 경우 400 반환)
+			if (!groupService.updateGroupAllMemberById(groupId)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {

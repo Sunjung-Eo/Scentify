@@ -13,4 +13,12 @@ public class GroupDto {
         private String adminId;  
         private String adminNickname; 
     }
+	
+	@Data
+    @AllArgsConstructor
+    public static class memberDto {
+        private Integer id;   
+        private String memberId;  
+        private String memberNickname; 
+    }
 }

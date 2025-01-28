@@ -102,4 +102,8 @@ public class UserService {
 	public boolean updateMainDeviceId(String userId, Integer deviceId) {
 		return userRepository.forceUpdateMainDeviceId(userId, deviceId) ? true : false;
 	}
+	
+	public boolean updateMainDeviceIdIfNull(String userId, Integer deviceId) {
+		return userRepository.updateMainDeviceId(userId, deviceId);
+	}
 }

@@ -1,7 +1,7 @@
-import DeviceCarousel from "../../feature/Home/Device/DeviceCarousel";
-import UserCard from "../../feature/Home/User/UserCard";
+import DeviceCarousel from "../../feature/Home/device/DeviceCarousel";
+import UserCard from "../../feature/Home/user/UserCard";
 import { Link } from "react-router-dom";
-import { APIResponse } from "../../feature/Home/Device/DeviceTypes";
+import { APIResponse } from "../../feature/Home/device/devicetypes";
 
 const exampleData: APIResponse = {
   main_device_id: ["145", "221", "332"], // 연결된 기기의 ID

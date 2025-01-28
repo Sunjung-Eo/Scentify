@@ -13,6 +13,7 @@ interface HeaderProps {
   showAdd: boolean;
   title?: string;
   onAddClick?: () => void;
+  onDeviceManageClick?: () => void;
 }
 
 const Header = ({
@@ -22,6 +23,7 @@ const Header = ({
   showAdd,
   title,
   onAddClick,
+  onDeviceManageClick,
 }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,7 +64,10 @@ const Header = ({
       {showFinish ? (
         <FinishButton onClick={handleFinishClick} />
       ) : showDeviceManage ? (
-        <button className="font-pre-light text-14 tracking-[-1px] text-black">
+        <button
+          className="font-pre-light text-14 tracking-[-1px] text-black"
+          onClick={onDeviceManageClick}
+        >
           기기 관리/추가
         </button>
       ) : showAdd ? (

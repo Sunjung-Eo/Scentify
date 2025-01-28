@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { fragranceMap } from "../../../utils/fragranceUtils";
-import { CreateCapsuleRequest } from "./CapsuleType.ts";
+import { fragranceMap } from "../../../utils/fragranceUtils.ts";
+import { CreateCapsuleRequest } from "./capsuletypes.ts";
 
-//캡슐컴포넌트가 상위컴포넌트인 RegistCapsule에서 name 값을 props로 받아 슬롯 값과 함께 상위로 전달.
 interface CapsuleProps {
   name: string; // 기기명
   onSubmit: (requestData: CreateCapsuleRequest) => void; // 완료 버튼 클릭 시 호출될 함수
 }
 
-const Capsule: React.FC<CapsuleProps> = ({ name, onSubmit }) => {
+const Capsule = ({ name, onSubmit }: CapsuleProps) => {
   const [slot1, setSlot1] = useState<string>(""); // 슬롯 1 상태
   const [slot2, setSlot2] = useState<string>(""); // 슬롯 2 상태
   const [slot3, setSlot3] = useState<string>(""); // 슬롯 3 상태
@@ -29,7 +28,7 @@ const Capsule: React.FC<CapsuleProps> = ({ name, onSubmit }) => {
     "오렌지블라썸",
   ];
 
-  //useEffect를 통해 슬롯 값과 이름이 변경될 때마다 상위로 데이터 전달.
+  // useEffect를 통해 슬롯 값과 이름이 변경될 때마다 상위로 데이터 전달
   useEffect(() => {
     onSubmit({
       name, // 상위에서 전달받은 name 사용

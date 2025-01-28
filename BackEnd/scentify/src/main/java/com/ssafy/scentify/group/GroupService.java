@@ -30,8 +30,12 @@ public class GroupService {
 		return groupRepository.selectGroupById(groupId);
 	}
 	
-	public boolean deleteGroupById(Integer groupId) {
-		return groupRepository.deleteGroupById(groupId);
+	public boolean updateGroupAllMemberById(Integer groupId) {
+		return groupRepository.updateGroupAllMemberById(groupId);
+	}
+
+	public boolean updateGroupMemberById(Integer groupId, String memberPosition) {
+		return groupRepository.updateGroupMemberById(groupId, memberPosition);
 	}
 
 }

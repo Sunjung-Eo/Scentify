@@ -3,7 +3,7 @@ package com.ssafy.scentify.group;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
-import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;
 import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.group.model.repository.GroupRepository;
 
@@ -22,7 +22,7 @@ public class GroupService {
 		return createDto;
 	}
 
-	public boolean updateMember(memberDto memberDto) {
+	public boolean updateMember(MemberDto memberDto) {
 		return groupRepository.updateMember(memberDto);
 	}
 

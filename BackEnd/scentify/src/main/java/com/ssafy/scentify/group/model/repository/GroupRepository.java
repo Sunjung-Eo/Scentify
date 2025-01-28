@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
-import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;
 import com.ssafy.scentify.group.model.entity.Group;
 
 @Mapper
@@ -20,7 +20,7 @@ public interface GroupRepository {
 	boolean createGroup(CreateDto group);
 	
 	// 멤버 1 ~ 4 중 null인 곳에 저장하는 메서드
-	boolean updateMember(memberDto memberDto);
+	boolean updateMember(MemberDto memberDto);
 	
 	// 그룹 id에 해당하는 그룹 정보 반환
 	@Select("SELECT * FROM `group` WHERE id = #{id}")

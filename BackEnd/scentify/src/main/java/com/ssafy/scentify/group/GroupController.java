@@ -20,8 +20,8 @@ import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
-import com.ssafy.scentify.group.model.dto.GroupDto.deleteMemberDto;
-import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.DeleteMemberDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;
 import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.user.service.UserService;
 
@@ -171,7 +171,7 @@ public class GroupController {
 
 	        // 그룹에 사용자 추가 
 	        String nickname = userService.getUserNiceNameById(userId);
-	        memberDto memberDto = new memberDto(groupId, userId, nickname);
+	        MemberDto memberDto = new MemberDto(groupId, userId, nickname);
 	        
 	        // 그룹에 자리가 없으면 409 반환
 	        if (!groupService.updateMember(memberDto)) { return new ResponseEntity<>(HttpStatus.CONFLICT); };
@@ -225,7 +225,7 @@ public class GroupController {
 	
 	// API 26번 : 그룹 멤버 삭제
 	@PostMapping("/member/delete")
-	public ResponseEntity<?> deleteGroupMember(@RequestHeader("Authorization") String authorizationHeader, @RequestBody deleteMemberDto deleteMemberDto) {
+	public ResponseEntity<?> deleteGroupMember(@RequestHeader("Authorization") String authorizationHeader, @RequestBody DeleteMemberDto deleteMemberDto) {
 		try {
 			// "Bearer " 제거
 	        if (!authorizationHeader.startsWith("Bearer ")) {

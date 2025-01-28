@@ -21,7 +21,7 @@ public class GroupDto {
 	
 	@Data
     @AllArgsConstructor
-    public static class memberDto {
+    public static class MemberDto {
         private Integer id;   
         private String memberId;  
         private String memberNickname; 
@@ -29,7 +29,7 @@ public class GroupDto {
 	
 	@Getter
 	@AllArgsConstructor
-	public static class deleteMemberDto {
+	public static class DeleteMemberDto {
 		@NotNull @Setter
 		private Integer groupId;
 		private String memberId;

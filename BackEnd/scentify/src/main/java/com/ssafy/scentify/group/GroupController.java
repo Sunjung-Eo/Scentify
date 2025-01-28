@@ -21,6 +21,7 @@ import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
 import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
+import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public class GroupController {
 	        String userId = tokenProvider.getId(token);
 	        
 	        // 디바이스 아이디 추출
-	        Integer deviceId = deviceIdMap.get("id");
+	        Integer deviceId = deviceIdMap.get("deviceId");
 	        DeviceGroupInfoDto groupInfoDto = deviceService.selectGroupInfoByDeviceId(deviceId);
 	        
 	        // 요청 아이디가 어드민 아이디와 다름
@@ -143,7 +144,45 @@ public class GroupController {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
+	
+	// API 68번 : 디바이스별 그룹 조회
+	@PostMapping("/info")
+	public ResponseEntity<?> getGroupByDeviceId(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> deviceIdMap) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        // 토큰에서 userId 추출
+	        String userId = tokenProvider.getId(token);
+	        
+			// 디바이스 아이디 추출
+	        Integer deviceId = deviceIdMap.get("deviceId");
+	        DeviceGroupInfoDto groupInfoDto = deviceService.selectGroupInfoByDeviceId(deviceId);
+	        
+	        // 그룹 정보 DB 조회
+	        Group group = groupService.selectGroupById(groupInfoDto.getGroupId());
+	        if (group == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // 요청자의 ID가 그룹 멤버 ID에 포함되어 있는지 검사
+	        boolean isMember = userId.equals(group.getMember1Id()) || userId.equals(group.getMember2Id()) ||
+	                           userId.equals(group.getMember3Id()) || userId.equals(group.getMember4Id()) ||
+	                           userId.equals(group.getAdminId());
 
+	        if (!isMember) {
+	            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
+	        }
+	        
+	        return ResponseEntity.ok(Map.of("group", group));
+		} catch (Exception e) {
+	        // 예기치 않은 에러 처리
+	        log.error("Exception: ", e);
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
+	}
+	
 	
 	
 }

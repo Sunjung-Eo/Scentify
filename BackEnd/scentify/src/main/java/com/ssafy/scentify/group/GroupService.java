@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
 import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
+import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.group.model.repository.GroupRepository;
 
 @Service
@@ -23,6 +24,10 @@ public class GroupService {
 
 	public boolean updateMember(memberDto memberDto) {
 		return groupRepository.updateMember(memberDto);
+	}
+
+	public Group selectGroupById(Integer groupId) {
+		return groupRepository.selectGroupById(groupId);
 	}
 
 }

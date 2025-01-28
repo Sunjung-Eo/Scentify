@@ -20,6 +20,7 @@ import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.deleteMemberDto;
 import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
 import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.user.service.UserService;
@@ -183,13 +184,50 @@ public class GroupController {
 	
 	// API 26번 : 그룹 멤버 삭제
 	@PostMapping("/member/delete")
-	public String deleteGroupMember(@RequestBody String entity) {
+	public ResponseEntity<?> deleteGroupMember(@RequestHeader("Authorization") String authorizationHeader, @RequestBody deleteMemberDto deleteMemberDto) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        // 토큰에서 userId 추출
+	        String userId = tokenProvider.getId(token);
+	        
+	        // 그룹 아이디 추출
+	        Integer groupId = deleteMemberDto.getGroupId();
+	        
+	        // 그룹 아이디로 그룹 정보 DB 조회
+ 			Group group = groupService.selectGroupById(groupId);
+ 			
+ 			// 그룹 정보가 없음
+ 			if (group == null) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+ 			
+ 			// 요청 아이디가 그룹 어드민이 아님
+ 			if (!group.getAdminId().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }	        
+ 			
+ 			// 삭제 요청 ID가 그룹 멤버 ID에 포함되어 있는지 검사
+ 			String memberId = deleteMemberDto.getMemberId();			
+ 			String memberPosition = null;
+
+	 		if (memberPosition == null && memberId.equals(group.getMember1Id())) { memberPosition = "member_1"; }
+	 		if (memberPosition == null && memberId.equals(group.getMember2Id())) { memberPosition = "member_2"; }
+	 		if (memberPosition == null && userId.equals(group.getMember3Id())) { memberPosition = "member_3"; }
+	 		if (memberPosition == null && userId.equals(group.getMember4Id())) { memberPosition = "member_4"; }
+	
+	 		if (memberPosition == null) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+ 			
+	 		// 해당 멤버 자리를 null로 변경
+	 		if (!groupService.updateGroupMemberById(groupId, memberPosition)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 		
-		
-		return entity;
+	        return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+	        // 예기치 않은 에러 처리
+	        log.error("Exception: ", e);
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
 	}
-	
-	
 	
 	// API 27번 : 그룹 삭제
 	@PostMapping("/delete")

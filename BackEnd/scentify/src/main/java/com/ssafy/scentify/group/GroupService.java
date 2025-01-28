@@ -34,4 +34,8 @@ public class GroupService {
 		return groupRepository.updateGroupAllMemberById(groupId);
 	}
 
+	public boolean updateGroupMemberById(Integer groupId, String memberPosition) {
+		return groupRepository.updateGroupMemberById(groupId, memberPosition);
+	}
+
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
+import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
@@ -27,7 +28,15 @@ public class DeviceService {
 	}
 	
 	public String selectSerialByDeviceId(Integer id) {
-		return deviceRepository.getSerialByDeviceId(id);
+		return deviceRepository.selectSerialByDeviceId(id);
+	}
+	
+	public DeviceGroupInfoDto selectGroupInfoByDeviceId(Integer id) {
+		return deviceRepository.selectGroupInfoByDeviceId(id);
+	}
+	
+	public List<DeviceInfoDto> findDevicesByIds(List<Integer> deviceIds) {
+		return deviceRepository.selectDevicesByIds(deviceIds);
 	}
 
 	public boolean createDevice(RegisterDto registerDto) {
@@ -42,10 +51,6 @@ public class DeviceService {
 
 	public boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId) {
 		return deviceRepository.updateDefalutCombination(id, roomType, combinationId) ? true : false;
-	}
-
-	public List<DeviceInfoDto> findDevicesByIds(List<Integer> deviceIds) {
-		return deviceRepository.selectDevicesByIds(deviceIds);
 	}
 
 	public boolean updateTempHum(String serial, TempHumRequest request) {

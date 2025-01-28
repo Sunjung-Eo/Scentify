@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
+import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto;
@@ -17,18 +18,25 @@ import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 @Mapper
 public interface DeviceRepository {
+	// 기기 등록
+    @Insert("INSERT INTO device (id, serial, admin_id, ip_address)"
+    		+ "VALUES (#{id}, #{serial}, #{adminId}, #{ipAddress})")
+	boolean createDevice(RegisterDto registerDto);
+	
 	// serial 존재 여부 확인
     @Select("SELECT COUNT(*) > 0 FROM device WHERE serial = #{serial}")
     boolean existsBySerial(String serial);
     
-    // 기기 등록
-    @Insert("INSERT INTO device (id, serial, admin_id, ip_address)"
-    		+ "VALUES (#{id}, #{serial}, #{adminId}, #{ipAddress})")
-	boolean createDevice(RegisterDto registerDto);
-    
     // serial 조회 쿼리
     @Select("SELECT serial FROM device WHERE id = #{id}")
-    String getSerialByDeviceId(Integer id);
+    String selectSerialByDeviceId(Integer id);
+    
+    // 그룹 정보 조회 쿼리
+    @Select("SELECT group_id, admin_id FROM device WHERE id = #{id}")
+    DeviceGroupInfoDto selectGroupInfoByDeviceId(Integer id);
+    
+    // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
+   	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
     
     // 그룹 아이디 업데이트
     @Update("UPDATE device SET group_id = #{groupId} WHERE id = #{id}")
@@ -42,9 +50,6 @@ public interface DeviceRepository {
     // 기본향 정보 업데이트
     @Update("UPDATE device SET room_type = #{roomType}, default_combination = #{combinationId} WHERE id = #{id}")
 	boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId);
-    
-    // 디바이스 id로 정보 조회 및 반환
-	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
 	
 	// 온습도 정보 업데이트
 	@Update("UPDATE device SET temperature = #{request.temperature}, humidity = #{request.humidity} WHERE serial = #{serial}")

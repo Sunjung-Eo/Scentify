@@ -196,9 +196,7 @@ public class DeviceDto {
 	}
 	
 	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
-	@Getter
-	@Setter
-	@AllArgsConstructor
+	@Data
 	public static class DeviceInfoDto {
 	    private Integer deviceId;
 	    private String name;
@@ -212,6 +210,14 @@ public class DeviceDto {
 	    private Integer slot4;
 	    private Integer slot4RemainingRatio;
 	    private Integer mode;
+	}
+	
+	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
+	@Data
+	public static class DeviceGroupInfoDto {
+		private Integer deviceId;
+		private Integer groupId;
+		private String adminId;
 	}
 
 }

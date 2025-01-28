@@ -37,9 +37,7 @@ public class UserDto {
 		@NotBlank
 	    private String password;
 	    @NotBlank
-	    private String nickname;   
-	    @Email @NotBlank
-	    private String email;   
+	    private String nickname;    
 	    @NotNull
 	    private Integer imgNum;
 	    @NotNull

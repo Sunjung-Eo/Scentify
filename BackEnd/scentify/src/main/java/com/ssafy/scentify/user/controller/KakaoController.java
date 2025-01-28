@@ -87,7 +87,7 @@ public class KakaoController {
 			
 			// 해당 이메일 정보로 가입한 회원이 이미 있는데 카카오 소셜 회원이 아닌 경우
 			if (existingUserInfo != null && existingUserInfo.getSocialType() != 2) {
-				response.sendRedirect("http://localhost:3000/login/social?social=false"); 
+				response.sendRedirect("http://localhost:5173/login/social?social=false"); 
 				return;
 			}
 			
@@ -104,7 +104,7 @@ public class KakaoController {
 	            Cookie refreshTokenCookie = tokenProvider.createCookie(tokenDto.getRefreshToken());
 	            response.addCookie(refreshTokenCookie);
 	            
-				response.sendRedirect("http://localhost:3000/login/social?social=true&status=login");
+				response.sendRedirect("http://localhost:5173/login/social?social=true&status=login");
 				return;
 		    }
 		    
@@ -112,12 +112,14 @@ public class KakaoController {
 		    HttpSession session =  request.getSession();
 		    session.setAttribute("socialType", 2);
 		    session.setAttribute("id", id);
-			response.sendRedirect("http://localhost:3000/login/social?social=true&status=regist");
+		    session.setAttribute("email", email);
+			response.sendRedirect("http://localhost:5173/login/social?social=true&status=regist&email=" + email);
+			return;
 	    
 	    } catch (Exception e) {
 	    	try {
 	    		// 예기치 못한 에러 발생
-				response.sendRedirect("http://localhost:3000");			
+				response.sendRedirect("http://localhost:5173");			
 			} catch (IOException io) {
 				log.error("IOException: ", io);
 			}
@@ -137,16 +139,18 @@ public class KakaoController {
 			// 세션에서 아이디와 소셜 타입 정보 가져옴
 			String id = (String) session.getAttribute("id");
 			Integer socialType = (Integer) session.getAttribute("socialType");
+			String email = (String) session.getAttribute("email");
 			
 			// 정보가 없는 경우
-			if (id == null || id.isEmpty() || socialType == null) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
+			if (id == null || id.isEmpty() || socialType == null 
+					|| email == null || email.isEmpty()) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
 			
 			// 데이터 유효성 검사
 			User user = new User();
 			user.setId(id);
 			user.setPassword(socialUser.getPassword());
 			user.setNickname(socialUser.getNickname());
-			user.setEmail(socialUser.getEmail());
+			user.setEmail(email);
 			user.setImgNum(socialUser.getImgNum());
 			user.setSocialType(socialType);
 			user.setGender(socialUser.getGender());

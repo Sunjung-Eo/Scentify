@@ -1,5 +1,6 @@
 package com.ssafy.scentify.group.model.repository;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -23,4 +24,8 @@ public interface GroupRepository {
 	// 그룹 id에 해당하는 그룹 정보 반환
 	@Select("SELECT * FROM `group` WHERE id = #{id}")
 	Group selectGroupById(Integer id);
+	
+	// 그룹 id로 그룹 삭제
+	@Delete("DELETE FROM `group` WHERE id = #{id}")
+	boolean deleteGroupById(Integer id);
 }

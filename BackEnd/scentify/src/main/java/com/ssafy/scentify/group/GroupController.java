@@ -171,9 +171,7 @@ public class GroupController {
 	                           userId.equals(group.getMember3Id()) || userId.equals(group.getMember4Id()) ||
 	                           userId.equals(group.getAdminId());
 
-	        if (!isMember) {
-	            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
-	        }
+	        if (!isMember) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
 	        
 	        return ResponseEntity.ok(Map.of("group", group));
 		} catch (Exception e) {
@@ -183,6 +181,41 @@ public class GroupController {
 	    }
 	}
 	
+	// API 27번 : 그룹 삭제
+	@PostMapping("/delete")
+	public ResponseEntity<?> deleteGroup(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> groupIdMap) {
+		try {
+			// "Bearer " 제거
+	        if (!authorizationHeader.startsWith("Bearer ")) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	        String token = authorizationHeader.substring(7);
+	        
+	        // 토큰에서 userId 추출
+	        String userId = tokenProvider.getId(token);
+			
+	        // 그룹 아이디 추출
+			Integer groupId = groupIdMap.get("groupId");
+			
+			// 그룹 아이디로 그룹 정보 DB 조회
+			Group group = groupService.selectGroupById(groupId);
+			
+			// 그룹 정보가 없음
+			if (group == null) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+			
+			// 요청 아이디가 그룹 어드민이 아님
+			if (!group.getAdminId().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
+			
+			// 그룹 삭제 (삭제가 되지 않았을 경우 400 반환)
+			if (!groupService.deleteGroupById(groupId)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+	        // 예기치 않은 에러 처리
+	        log.error("Exception: ", e);
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	    }
+	}
 	
 	
 }

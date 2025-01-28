@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
+import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
 
 @Mapper
 public interface GroupRepository {
@@ -13,4 +14,7 @@ public interface GroupRepository {
 	@Insert("INSERT INTO `group` (device_id, admin_id, admin_nickname) VALUES (#{deviceId}, #{adminId}, #{adminNickname})")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	boolean createGroup(CreateDto group);
+	
+	// 멤버 1 ~ 4 중 null인 곳에 저장하는 메서드
+	boolean updateMember(memberDto memberDto);
 }

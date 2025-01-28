@@ -102,6 +102,7 @@ public class KakaoController {
 	            // 발급한 토큰을 쿠키로 삽입
 	            Cookie accessTokenCookie = tokenProvider.createCookie(tokenDto.getAccessToken());
 	            Cookie refreshTokenCookie = tokenProvider.createCookie(tokenDto.getRefreshToken());
+	            response.addCookie(accessTokenCookie);
 	            response.addCookie(refreshTokenCookie);
 	            
 				response.sendRedirect("http://localhost:5173/login/social?social=true&status=login");

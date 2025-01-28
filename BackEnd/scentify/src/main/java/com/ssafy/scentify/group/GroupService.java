@@ -29,5 +29,9 @@ public class GroupService {
 	public Group selectGroupById(Integer groupId) {
 		return groupRepository.selectGroupById(groupId);
 	}
+	
+	public boolean deleteGroupById(Integer groupId) {
+		return groupRepository.deleteGroupById(groupId);
+	}
 
 }

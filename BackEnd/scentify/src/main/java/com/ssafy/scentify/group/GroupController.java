@@ -25,6 +25,8 @@ import com.ssafy.scentify.group.model.dto.GroupDto.memberDto;
 import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.user.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -93,6 +95,45 @@ public class GroupController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// API 24번 : 그룹 링크로 가입
+	@PostMapping("/verify-link")
+	public ResponseEntity<?> joinGroupByLink(@RequestBody Map<String, String> inviteCodeMap, HttpServletRequest request) {
+		try {
+			// 초대 코드 추출 및 유효성 검사
+	        String inviteCode = inviteCodeMap.get("inviteCode");
+	        if (inviteCode == null || inviteCode.isBlank() || inviteCode.length() != 8) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Redis에서 초대 코드 데이터 가져오기
+	        String redisKey = "invite:" + inviteCode;
+	        String redisData = redisTemplate.opsForValue().get(redisKey);
+
+	        // Redis에 데이터가 없으면 초대 코드가 유효하지 않음
+	        if (redisData == null) { return new ResponseEntity<>(HttpStatus.GONE); }
+
+	        // Redis 데이터를 JSON으로 파싱
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        Map<String, String> inviteData = objectMapper.readValue(redisData, new TypeReference<>() {});
+
+	        // Redis 데이터에서 groupId와 deviceId 추출
+	        Integer groupId = Integer.parseInt(inviteData.get("groupId"));
+	        Integer deviceId = Integer.parseInt(inviteData.get("deviceId"));
+	        
+	        // 세션 부여 및 데이터 저장
+	        HttpSession session = request.getSession();
+	        session.setAttribute("groupId", groupId);
+	        session.setAttribute("deviceId", deviceId);
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 	// API 25번 : 그룹 코드로 가입
 	@PostMapping("/verify-code")

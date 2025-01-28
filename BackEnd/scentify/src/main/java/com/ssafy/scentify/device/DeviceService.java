@@ -55,4 +55,8 @@ public class DeviceService {
 	public boolean updateCapsuleRemaining(String serial, CapsuleRemainingRequest request) {
 		return deviceRepository.updateCapsuleRemaining(serial, request);	
 	}
+
+	public boolean updateGroupId(Integer id, Integer groupId) {
+		return deviceRepository.updateGroupId(id, groupId);
+	}
 }

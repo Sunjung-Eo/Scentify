@@ -30,6 +30,10 @@ public interface DeviceRepository {
     @Select("SELECT serial FROM device WHERE id = #{id}")
     String getSerialByDeviceId(Integer id);
     
+    // 그룹 아이디 업데이트
+    @Update("UPDATE device SET group_id = #{groupId} WHERE id = #{id}")
+    boolean updateGroupId(Integer id, Integer groupId);
+    
     // 캡슐 정보 업데이트
     @Update("UPDATE device SET name = #{name}, slot_1 = #{slot1}, slot_2 = #{slot2},"
     						+" slot_3 = #{slot3}, slot_4 = #{slot4} WHERE id = #{id}")

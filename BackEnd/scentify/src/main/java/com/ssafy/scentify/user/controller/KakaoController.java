@@ -1,6 +1,9 @@
 package com.ssafy.scentify.user.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.scentify.auth.TokenService;
 import com.ssafy.scentify.auth.model.dto.TokenDto;
 import com.ssafy.scentify.common.util.TokenProvider;
+import com.ssafy.scentify.group.GroupService;
+import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;
 import com.ssafy.scentify.user.model.dto.UserDto.SocialLoginDto;
 import com.ssafy.scentify.user.model.dto.UserDto.SocialRegisterDto;
 import com.ssafy.scentify.user.model.entity.User;
@@ -42,24 +47,42 @@ public class KakaoController {
 	
 	private final UserService userService;
 	private final KakaoService kakaoService;
+	private final GroupService groupService;
 	private final TokenProvider tokenProvider;
 	private final TokenService tokenService;
 
-	public KakaoController(UserService userService, KakaoService kakaoService, TokenProvider tokenProvider, TokenService tokenService) {
+	public KakaoController(UserService userService, KakaoService kakaoService, GroupService groupService, TokenProvider tokenProvider, TokenService tokenService) {
 		this.userService = userService;
 		this.kakaoService = kakaoService;
+		this.groupService = groupService;
 		this.tokenProvider = tokenProvider;
 		this.tokenService = tokenService;
 	}
 	
 	// API 5번 : 카카오 로그인
 	@GetMapping("/login")
-	public void kakaoLogin(HttpServletResponse response) {
+	public void kakaoLogin(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession(false);
+		Integer groupId = null;
+		Integer deviceId = null;
+		
+		if (session != null) {
+			groupId = (Integer) session.getAttribute("groupId");
+		    deviceId = (Integer) session.getAttribute("deviceId");
+		}
+		
 		// 카카오 리다이렉트 주소
-		String redirectUrl = "https://kauth.kakao.com/oauth/authorize"
+		String redirectUrl =  "https://kauth.kakao.com/oauth/authorize"
 								+ "?client_id=" + kakaoApiKey
 								+ "&redirect_uri=" + kakaoRedirectUrl
 								+ "&response_type=code";
+		
+		if (groupId != null && deviceId != null) {
+			String stateValue = groupId + "-" + deviceId;
+            stateValue = URLEncoder.encode(stateValue, StandardCharsets.UTF_8);
+            redirectUrl += "&state=" + stateValue;
+		}
+		
         try {
         	// 리다이렉트
 			response.sendRedirect(redirectUrl);
@@ -70,7 +93,7 @@ public class KakaoController {
 	
 	// API 6번 : 카카오 콜백 메서드
 	@GetMapping("/call-back")
-	public void kakaoCallback(@RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response)  {
+	public void kakaoCallback(@RequestParam("code") String code, @RequestParam(value = "state", required = false) String state, HttpServletRequest request, HttpServletResponse response)  {
 	    try {
 	    	// 카카오에서 발급받은 토큰
 			String[] tokens = kakaoService.getKakaoAccessToken(code);
@@ -91,8 +114,31 @@ public class KakaoController {
 				return;
 			}
 			
+			// 그룹 초대 링크로 들어온 경우
+			Integer groupId = null;
+			Integer deviceId = null;
+			
+			if (state != null && !state.isEmpty()) {
+		        String decodedState = URLDecoder.decode(state, StandardCharsets.UTF_8);
+		        String[] split = decodedState.split("-");
+		        if (split.length == 2) {
+		            groupId = Integer.valueOf(split[0]);
+		            deviceId = Integer.valueOf(split[1]);
+		        }
+	        }
+			
 			// 해당 이메일 정보로 가입한 회원이 있고 아이디도 같은 경우 (소셜 로그인한 경우)
 		    if (existingUserInfo != null && existingUserInfo.getId().equals(id) ) { 
+		    	// 그룹 멤버 업데이트
+		        String userNickname = userService.getUserNiceNameById(id);
+		        MemberDto memberDto = new MemberDto(groupId, id, userNickname);
+		        
+		        // 멤버 자리가 꽉 찬 경우 409 반환
+		        boolean updated = groupService.updateMember(memberDto);
+
+		        // 만약 그룹에 해당한 사용자의 대표기기가 아직 설정되어 있지 않다면 그룹 기기로 설정
+		        userService.updateMainDeviceIdIfNull(id, deviceId);
+		    	
 		    	// 토큰 발급
 		    	TokenDto tokenDto = tokenProvider.createJwtToken(existingUserInfo.getId());
 		    	
@@ -105,7 +151,12 @@ public class KakaoController {
 	            response.addCookie(accessTokenCookie);
 	            response.addCookie(refreshTokenCookie);
 	            
-				response.sendRedirect("http://localhost:5173/login/social?social=true&status=login");
+	            if (updated) {
+	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login");
+	            	return;
+	            }
+	            
+	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false");
 				return;
 		    }
 		    
@@ -114,6 +165,12 @@ public class KakaoController {
 		    session.setAttribute("socialType", 2);
 		    session.setAttribute("id", id);
 		    session.setAttribute("email", email);
+		    
+		    if (groupId != null && deviceId != null) {
+		    	session.setAttribute("groupId", groupId);
+		    	session.setAttribute("deviceId", deviceId);
+		    }
+		    
 			response.sendRedirect("http://localhost:5173/login/social?social=true&status=regist&email=" + email);
 			return;
 	    
@@ -142,6 +199,10 @@ public class KakaoController {
 			Integer socialType = (Integer) session.getAttribute("socialType");
 			String email = (String) session.getAttribute("email");
 			
+			// 그룹 링크로 접속한 회원가입인 경우 가져옴
+			Integer groupId = (Integer) session.getAttribute("groupId");
+		    Integer deviceId = (Integer) session.getAttribute("deviceId");
+			
 			// 정보가 없는 경우
 			if (id == null || id.isEmpty() || socialType == null 
 					|| email == null || email.isEmpty()) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
@@ -159,8 +220,24 @@ public class KakaoController {
 			
 			// 유저 생성
 			userService.createUser(user);
-			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
-	   
+			session.invalidate();
+			
+			// 그룹 등록 로직
+			if (groupId != null && deviceId != null) {
+				 // 그룹 멤버 업데이트
+		        String userNickname = userService.getUserNiceNameById(id);
+		        MemberDto memberDto = new MemberDto(groupId, id, userNickname);
+		       
+		        boolean updated = groupService.updateMember(memberDto);
+		        if (!updated) {
+		        	 return new ResponseEntity<>(HttpStatus.CONFLICT); 
+		        }
+		        
+		        // 그룹에 해당하는 기기를 대표 기기로 설정
+		        userService.updateMainDeviceIdIfNull(id, deviceId);
+			}
+					
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨	   
 		} catch (Exception e) {
 			// 예기치 못한 에러 처리
 			log.error("Exception: ", e);

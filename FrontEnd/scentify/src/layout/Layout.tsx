@@ -40,9 +40,9 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/home/registcapsule") ||
     location.pathname.startsWith("/home/defaultscent") ||
     location.pathname.startsWith("/home/devicesetting");
-  const showDeviceManage =
-    location.pathname.startsWith("/home") && // "/home" 및 하위 경로 확인
-    !location.pathname.startsWith("/home/managedevice"); // "/home/managedevice"는 제외
+
+  const showDeviceManage = location.pathname === "/home"; // 정확히 "/home" 경로만 확인
+
   const showAdd =
     location.pathname.startsWith("/home/deviceManage") ||
     location.pathname.startsWith("/control") ||
@@ -66,6 +66,8 @@ const Layout = ({ children }: LayoutProps) => {
   const handleAddClick = () => {
     if (location.pathname === "/control") {
       navigate("/control/reservation/create");
+    } else if (location.pathname === "/home/managedevice") {
+      navigate("/home/registdevice1");
     }
   };
 

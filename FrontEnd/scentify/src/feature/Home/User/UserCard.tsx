@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserData } from "./UserTypes";
 
-const UserCard: React.FC = () => {
+const UserCard = () => {
   const [userData, setUserData] = useState<UserData>({
     userName: "홍길동", // 사용자 이름 하드코딩 (백엔드 연동 시 업데이트 가능)
     imgNum: 1, // 기본 프로필 사진 번호
@@ -114,38 +114,40 @@ const UserCard: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-sub rounded-3xl px-6 py-4 text-white h-[132px] flex flex-col">
-      {/* 프로필이미지+닉네임 묶음 */}
-      <div className="flex items-center gap-4">
-        {/* 프로필 이미지 */}
-        <img
-          src={`https://example.com/profile-images/img-${userData.imgNum}.png`} // img_num 기반 동적 프로필 URL
-          alt="Profile"
-          className="w-12 h-12 rounded-full"
-        />
-        {/* 닉네임 */}
-        <p className="text-[20px]">
-          <span className="font-pre-bold">{userData.userName}</span>{" "}
-          {/* 홍길동만 pre-bold */}
-          <br />님 반갑습니다!
-        </p>
-      </div>
+    <div>
+      <div className="bg-sub rounded-3xl px-6 py-4 text-white h-[132px] flex flex-col">
+        {/* 프로필이미지+닉네임 묶음 */}
+        <div className="flex items-center gap-4">
+          {/* 프로필 이미지 */}
+          <img
+            src={`https://example.com/profile-images/img-${userData.imgNum}.png`} // img_num 기반 동적 프로필 URL
+            alt="Profile"
+            className="w-12 h-12 rounded-full"
+          />
+          {/* 닉네임 */}
+          <p className="text-[20px]">
+            <span className="font-pre-bold">{userData.userName}</span>{" "}
+            {/* 홍길동만 pre-bold */}
+            <br />님 반갑습니다!
+          </p>
+        </div>
 
-      {/* 날짜+ 날씨 묶음*/}
-      <div className="flex justify-end mt-auto">
-        <p className="text-pre-regular text-sm mr-4">{userData.date}</p>
-        {error ? (
-          <p className="text-red-500 text-sm">{error}</p>
-        ) : userData.weatherIcon ? (
-          <div className="flex items-center">
-            <span>{userData.weatherIcon}</span>
-            <p className="text-pre-regular text-[12px] ml-1">
-              {userData.weatherDescription}
-            </p>
-          </div>
-        ) : (
-          <span>날씨 정보를 가져오는 중...</span>
-        )}
+        {/* 날짜+ 날씨 묶음*/}
+        <div className="flex justify-end mt-auto">
+          <p className="text-pre-regular text-sm mr-4">{userData.date}</p>
+          {error ? (
+            <p className="text-red-500 text-sm">{error}</p>
+          ) : userData.weatherIcon ? (
+            <div className="flex items-center">
+              <span>{userData.weatherIcon}</span>
+              <p className="text-pre-regular text-[12px] ml-1">
+                {userData.weatherDescription}
+              </p>
+            </div>
+          ) : (
+            <span>날씨 정보를 가져오는 중...</span>
+          )}
+        </div>
       </div>
     </div>
   );

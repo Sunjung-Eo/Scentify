@@ -1,7 +1,6 @@
-import DeviceCarousel from "../../feature/Home/device/DeviceCarousel";
-import UserCard from "../../feature/Home/user/UserCard";
-import { Link } from "react-router-dom";
-import { APIResponse } from "../../feature/Home/device/devicetypes";
+import DeviceCarousel from "./DeviceCarousel";
+import UserCard from "../user/UserCard";
+import { APIResponse } from "./DeviceTypes.ts";
 
 const exampleData: APIResponse = {
   main_device_id: ["145", "221", "332"], // 연결된 기기의 ID
@@ -101,11 +100,10 @@ const exampleData: APIResponse = {
 
 function HomeMain() {
   return (
-    <div className="content px-4 pt-6">
-      <UserCard />
-      <Link to="/home/registdevice1">
-        <button className="p-2 bg-blue-500 text-white rounded">눌러라</button>
-      </Link>
+    <div className="content px-4 py-1">
+      <div className="mb-5">
+        <UserCard />
+      </div>
       {/* DeviceCarousel에 데이터 전달 */}
       <DeviceCarousel data={exampleData} />
     </div>

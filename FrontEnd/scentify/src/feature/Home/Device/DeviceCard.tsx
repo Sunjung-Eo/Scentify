@@ -1,8 +1,9 @@
+import React, { useState } from "react";
 import cuttingdeviceImg from "../../../assets/images/cuttingdevice2.svg";
 import crownIcon from "../../../assets/icons/crown-icon.svg";
 
-//더미 데이터
-const dummyDevices = [
+// 초기 더미 데이터
+const initialDevices = [
   {
     deviceId: 1,
     name: "우리 방",
@@ -10,7 +11,7 @@ const dummyDevices = [
     slot2: "자스민",
     slot3: "화이트머스크",
     slot4: "유칼립투스",
-    isRepresentative: true, // 대표기기 여부
+    isRepresentative: true,
   },
   {
     deviceId: 2,
@@ -31,14 +32,36 @@ const dummyDevices = [
     isRepresentative: false,
   },
 ];
+// useState를 통한 상태관리(초기 devices 데이터는 배열로 저장.삭제 버튼 클릭 시 filter 메서드를 사용해 선택된 deviceId를 제외.)
+//일단 모든 기기의 isRepresentative를 false로 설정. 선택된 기기의 isRepresentative를 true로 업데이트.
+//기기 삭제(handleDelete 함수로 deviceId를 받아 filter로 해당 deviceId를 제외한 새로운 배열을 상태로 저장.)
 
 //cards에서 space-y-4: 카드 컴포넌트간의 수직 간격을 조정.
 //card에서  개별 카드 내부의 자식 요소들 간의 간격을 조정.
 //deviceImg는 map내부에 위치하면서 초록색 박스에 relative를 추가하고 deviceImg에 absolute -left-6적용(경계에 걸쳐보임)
 const DeviceCard = () => {
+  const [devices, setDevices] = useState(initialDevices); // 디바이스 상태 관리
+
+  // 삭제 버튼 클릭 핸들러
+  const handleDelete = (deviceId: number) => {
+    setDevices((prevDevices) =>
+      prevDevices.filter((d) => d.deviceId !== deviceId)
+    );
+  };
+
+  // 대표기기 설정 핸들러
+  const handleSetRepresentative = (deviceId: number) => {
+    setDevices((prevDevices) =>
+      prevDevices.map((d) =>
+        d.deviceId === deviceId
+          ? { ...d, isRepresentative: true }
+          : { ...d, isRepresentative: false }
+      )
+    );
+  };
   return (
     <div className="cards space-y-4">
-      {dummyDevices.map((device) => (
+      {devices.map((device) => (
         // 오른쪽으로 정렬하기 위해 초록색박스와 기기img묶어둠
         <div key={device.deviceId} className="relative mt-4 flex justify-end">
           <div className="card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md">
@@ -82,6 +105,7 @@ const DeviceCard = () => {
             {/* 버튼들 */}
             <div className="mt-auto flex justify-end gap-2">
               <button
+                onClick={() => handleSetRepresentative(device.deviceId)} // 대표기기로 설정
                 className={`text-pre-medium rounded-lg px-2 py-1 text-[10px] ${
                   device.isRepresentative
                     ? "bg-brand text-white"
@@ -90,7 +114,10 @@ const DeviceCard = () => {
               >
                 대표기기로 설정
               </button>
-              <button className="text-pre-medium rounded-lg bg-component px-2 py-1 text-[10px] text-sub">
+              <button
+                onClick={() => handleDelete(device.deviceId)} // 삭제
+                className="text-pre-medium rounded-lg bg-component px-2 py-1 text-[10px] text-sub"
+              >
                 삭제
               </button>
             </div>

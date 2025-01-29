@@ -1,153 +1,85 @@
-import React, { useState } from "react";
-import {
-  fragranceMap,
-  reverseFragranceMap,
-} from "../../../utils/fragranceUtils.ts";
+import React, { useState, useEffect, useCallback } from "react";
+import Capsule from "./Capsule";
+import deviceImg from "../../../assets/images/device.svg";
+import { useCapsuleAndDefaultScentStore } from "../../../stores/useCapsuleAndDefaultScentStore";
+import { useControlStore } from "../../../stores/useControlStore";
 
-interface EditCapsuleProps {
-  slotData: {
-    slot1: number;
-    slot2: number;
-    slot3: number;
-    slot4: number;
+function EditCapsule() {
+  const { capsuleData, updateCapsuleData } = useCapsuleAndDefaultScentStore();
+  const { setCompleteHandler } = useControlStore();
+
+  const [capsuleSlots, setCapsuleSlots] = useState({
+    slot1: capsuleData.slot1,
+    slot2: capsuleData.slot2,
+    slot3: capsuleData.slot3,
+    slot4: capsuleData.slot4,
+  });
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  // 캡슐 데이터 변경 핸들러
+  const handleCapsuleDataChange = (data: typeof capsuleSlots) => {
+    setCapsuleSlots(data);
   };
-  onUpdate: (updatedData: {
-    slot1: number;
-    slot2: number;
-    slot3: number;
-    slot4: number;
-  }) => void;
-}
 
-const EditCapsule = ({ slotData, onUpdate }: EditCapsuleProps) => {
-  const [slot1, setSlot1] = useState<string>(
-    reverseFragranceMap[slotData.slot1] || ""
-  );
-  const [slot2, setSlot2] = useState<string>(
-    reverseFragranceMap[slotData.slot2] || ""
-  );
-  const [slot3, setSlot3] = useState<string>(
-    reverseFragranceMap[slotData.slot3] || ""
-  );
-  const [slot4, setSlot4] = useState<string>(
-    reverseFragranceMap[slotData.slot4] || ""
-  );
+  // 완료 버튼 클릭 시 호출되는 함수
+  const handleSubmit = useCallback(() => {
+    if (
+      capsuleSlots.slot1 === 0 ||
+      capsuleSlots.slot2 === 0 ||
+      capsuleSlots.slot3 === 0 ||
+      capsuleSlots.slot4 === 0
+    ) {
+      setErrorMessage("모든 슬롯에 향을 설정해주세요.");
+      return;
+    }
 
-  const slot1Options = ["레몬", "유칼립투스", "페퍼민트"];
-  const slot2Options = ["라벤더", "시더우드", "카모마일"];
-  const slot3and4Options = [
-    "레몬",
-    "유칼립투스",
-    "페퍼민트",
-    "라벤더",
-    "시더우드",
-    "카모마일",
-    "샌달우드",
-    "화이트머스크",
-    "오렌지블라썸",
-  ];
-
-  // 슬롯 값 변경 시 호출하여 부모 컴포넌트로 전달
-  const handleUpdate = () => {
-    onUpdate({
-      slot1: fragranceMap[slot1] || -1,
-      slot2: fragranceMap[slot2] || -1,
-      slot3: fragranceMap[slot3] || -1,
-      slot4: fragranceMap[slot4] || -1,
+    // 캡슐 데이터 업데이트
+    updateCapsuleData({
+      deviceName: capsuleData.deviceName, // 기존 기기명 유지
+      slot1: capsuleSlots.slot1,
+      slot2: capsuleSlots.slot2,
+      slot3: capsuleSlots.slot3,
+      slot4: capsuleSlots.slot4,
     });
-  };
+
+    // 완료 메시지 출력 및 이동
+    alert("캡슐 정보가 성공적으로 수정되었습니다.");
+  }, [capsuleData.deviceName, capsuleSlots, updateCapsuleData]);
+
+  // 완료 버튼에 핸들러 연결
+  useEffect(() => {
+    setCompleteHandler(handleSubmit);
+    return () => {
+      setCompleteHandler(null); // 언마운트 시 초기화
+    };
+  }, [handleSubmit, setCompleteHandler]);
 
   return (
     <div>
-      {/* 슬롯 1 */}
-      <div className="flex items-center justify-between mb-4">
-        <label className="mr-4 text-[12px] text-pre-light">캡슐 슬롯 1</label>
-        <select
-          value={slot1}
-          onChange={(e) => {
-            setSlot1(e.target.value);
-            handleUpdate();
-          }}
-          className="w-[200px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:ring focus:ring-brand"
-        >
-          <option value="" disabled>
-            -- 선택하세요 --
-          </option>
-          {slot1Options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+      {/* 기기명 표시 */}
+      <div className="text-center text-lg font-pre-medium mb-5">
+        {capsuleData.deviceName}
       </div>
 
-      {/* 슬롯 2 */}
-      <div className="flex items-center justify-between mb-4">
-        <label className="mr-4 text-[12px] text-pre-light">캡슐 슬롯 2</label>
-        <select
-          value={slot2}
-          onChange={(e) => {
-            setSlot2(e.target.value);
-            handleUpdate();
-          }}
-          className="w-[200px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:ring focus:ring-brand"
-        >
-          <option value="" disabled>
-            -- 선택하세요 --
-          </option>
-          {slot2Options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* 기기 이미지 */}
+      <img
+        src={deviceImg}
+        alt="device"
+        className="w-32 h-32 mx-auto mt-5 mb-8"
+      />
 
-      {/* 슬롯 3 */}
-      <div className="flex items-center justify-between mb-4">
-        <label className="mr-4 text-[12px] text-pre-light">캡슐 슬롯 3</label>
-        <select
-          value={slot3}
-          onChange={(e) => {
-            setSlot3(e.target.value);
-            handleUpdate();
-          }}
-          className="w-[200px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:ring focus:ring-brand"
-        >
-          <option value="" disabled>
-            -- 선택하세요 --
-          </option>
-          {slot3and4Options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* 캡슐 슬롯 설정 */}
+      <Capsule
+        name={capsuleData.deviceName}
+        onSubmit={handleCapsuleDataChange}
+        initialData={capsuleSlots}
+      />
 
-      {/* 슬롯 4 */}
-      <div className="flex items-center justify-between mb-4">
-        <label className="mr-4 text-[12px] text-pre-light">캡슐 슬롯 4</label>
-        <select
-          value={slot4}
-          onChange={(e) => {
-            setSlot4(e.target.value);
-            handleUpdate();
-          }}
-          className="w-[200px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:ring focus:ring-brand"
-        >
-          <option value="" disabled>
-            -- 선택하세요 --
-          </option>
-          {slot3and4Options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* 에러 메시지 */}
+      {errorMessage && (
+        <p className="mt-4 text-center text-sm text-red-500">{errorMessage}</p>
+      )}
     </div>
   );
-};
-
+}
 export default EditCapsule;

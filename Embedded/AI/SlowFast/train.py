@@ -46,7 +46,7 @@ def train(model, data_loader, train_optimizer):
     return total_loss / total_num, total_acc / total_num
 
 
-# test for one epoch
+# test for one epochl
 def val(model, data_loader):
     model.eval()
     with torch.no_grad():
@@ -56,10 +56,10 @@ def val(model, data_loader):
             video, label = [i.cuda() for i in batch['video']], batch['label'].cuda()
             pred = model(video)
             total_top_1 += (torch.eq(pred.argmax(dim=-1), label)).sum().item()
-            total_top_5 += torch.any(torch.eq(pred.topk(k=5, dim=-1).indices, label.unsqueeze(dim=-1)),
+            total_top_5 += torch.any(torch.eq(pred.topk(k=4, dim=-1).indices, label.unsqueeze(dim=-1)),
                                      dim=-1).sum().item()
             total_num += video[0].size(0)
-            test_bar.set_description('Test Epoch: [{}/{}] | Top-1:{:.2f}% | Top-5:{:.2f}%'
+            test_bar.set_description('Test Epoch: [{}/{}] | Top-1:{:.2f}% | Top-4:{:.2f}%'
                                      .format(epoch, epochs, total_top_1 * 100 / total_num,
                                              total_top_5 * 100 / total_num))
     return total_top_1 / total_num, total_top_5 / total_num
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # common args
     parser.add_argument('--data_root', default='data', type=str, help='Datasets root path')
     parser.add_argument('--batch_size', default=8, type=int, help='Number of videos in each mini-batch')
-    parser.add_argument('--epochs', default=10, type=int, help='Number of epochs over the model to train')
+    parser.add_argument('--epochs', default=30, type=int, help='Number of epochs over the model to train')
     parser.add_argument('--save_root', default='result', type=str, help='Result saved root path')
 
     # args parse
@@ -91,15 +91,34 @@ if __name__ == '__main__':
                                       transform=test_transform, decode_audio=False)
     train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=0)
     test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=0)
-
+    for batch in train_loader:
+        batch['video'] = [i.cuda() for i in batch['video']]  # 비디오 데이터를 GPU로 전송
+        batch['label'] = batch['label'].cuda() 
+        print(batch['video'][0].shape)  # (B, C, T, H, W) 형태인지 확인
+        break
     # model define, loss setup and optimizer config
-    slow_fast = create_slowfast(model_num_class=num_classes).cuda()
-    # slow_fast = torch.hub.load('facebookresearch/pytorchvideo:main', model='slowfast_r50', pretrained=True)
+    # slow_fast = create_slowfast(model_num_class=num_classes).cuda()
+    slow_fast = torch.hub.load('facebookresearch/pytorchvideo:main', model='slowfast_r50', pretrained=True).cuda()
+    slow_fast.blocks[6].proj = torch.nn.Linear(
+        slow_fast.blocks[6].proj.in_features,  # 입력 특징 수 그대로 유지
+        num_classes  # 출력 클래스 수를 원하는 값으로 설정
+    ).cuda()
+
+    # 모든 파라미터를 학습하지 않도록 고정
+    for param in slow_fast.parameters():
+        param.requires_grad = False
+
+    # 새로 추가된 최종 레이어는 학습 가능하도록 설정
+    for param in slow_fast.blocks[6].proj.parameters():
+        param.requires_grad = True
+
+
+
     loss_criterion = CrossEntropyLoss()
-    optimizer = Adam(slow_fast.parameters(), lr=1e-1)
+    optimizer = Adam(slow_fast.parameters(), lr=5e-4)
 
     # training loop
-    results = {'loss': [], 'acc': [], 'top-1': [], 'top-5': []}
+    results = {'loss': [], 'acc': [], 'top-1': [], 'top-4': []}
     if not os.path.exists(save_root):
         os.makedirs(save_root)
     best_acc = 0.0
@@ -109,7 +128,7 @@ if __name__ == '__main__':
         results['acc'].append(train_acc * 100)
         top_1, top_5 = val(slow_fast, test_loader)
         results['top-1'].append(top_1 * 100)
-        results['top-5'].append(top_5 * 100)
+        results['top-4'].append(top_5 * 100)
         # save statistics
         data_frame = pd.DataFrame(data=results, index=range(1, epoch + 1))
         data_frame.to_csv('{}/metrics.csv'.format(save_root), index_label='epoch')

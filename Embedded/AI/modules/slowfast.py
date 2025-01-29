@@ -9,7 +9,7 @@ from slowfast_utils import *
 from enum import Enum
 
 class Action(Enum):
-    Anything = 0
+    Nothing = 0
     Exercise = 1
     Relax = 2
 
@@ -82,27 +82,27 @@ class SlowFast:
             if pred_class_names_probs[0][1] >= self.th_squat:
                 return Action.Exercise
             else:
-                return Action.Anything
+                return Action.Nothing
             
         elif pred_class_names_probs[0][0] == "push_up" and self.active_exercise_mode:
             if pred_class_names_probs[0][1] >= self.th_pushup:
                 return Action.Exercise
             else:
-                return Action.Anything
+                return Action.Nothing
             
         elif pred_class_names_probs[0][0] == "situp" and self.active_exercise_mode:
             if pred_class_names_probs[0][1] >= self.th_situp:
                 return Action.Exercise
             else:
-                return Action.Anything
+                return Action.Nothing
             
         elif pred_class_names_probs[0][0] == "relax" and self.active_relax_mode:
             if pred_class_names_probs[0][1] >= self.th_relax:
                 return Action.Relax
             else:
-                return Action.Anything
+                return Action.Nothing
             
-        return Action.Anything
+        return Action.Nothing
 
 
 

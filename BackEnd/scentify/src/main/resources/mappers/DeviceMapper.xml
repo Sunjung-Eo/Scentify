@@ -12,4 +12,12 @@
 	        #{id}
 	    </foreach>
 	</select>
+	
+	<select id="getDeviceHomeInfoById" resultType="com.ssafy.scentify.home.model.dto.HomeDto$DeviceHomeDto">
+        SELECT id, name, group_id, slot_1, slot_1_remainingRatio, slot_2, slot_2_remainingRatio,
+            	slot_3, slot_3_remainingRatio, slot_4, slot_4_remainingRatio, mode, temperature, humidity, 
+            	default_combination
+        FROM device
+        WHERE id = #{deviceId}
+    </select>
 </mapper>

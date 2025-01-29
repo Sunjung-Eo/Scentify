@@ -35,19 +35,19 @@ public class Device {
     private Integer groupId;
     @NotBlank
     private String ipAddress;
-    private Integer roomType;
-    private Integer slot1;
+    private int roomType;
+    private int slot1;
     private Integer slot1RemainingRatio;
-    private Integer slot2;
+    private int slot2;
     private Integer slot2RemainingRatio;
-    private Integer slot3;
+    private int slot3;
     private Integer slot3RemainingRatio;
-    private Integer slot4;
+    private int slot4;
     private Integer slot4RemainingRatio;
     private Boolean mode;
     private Float temperature;
     private Integer humidity;
-    private Integer defaultCombination;
+    private int defaultCombination;
     
     public void setId() {
         this.id = UUID.randomUUID().hashCode() & Integer.MAX_VALUE;
@@ -74,7 +74,7 @@ public class Device {
         this.adminId = adminId;
     }
 
-	public void setGroupId(Integer groupId) {
+	public void setGroupId(int groupId) {
 		this.groupId = groupId;
 	}
 
@@ -85,64 +85,64 @@ public class Device {
         this.ipAddress = ipAddress;
     }
 
-    public void setRoomType(Integer roomType) {
-        if (roomType == null || (roomType != 0 && roomType != 1)) {
+    public void setRoomType(int roomType) {
+        if (roomType != 0 && roomType != 1) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.roomType = roomType;
     }
 
-    public void setSlot1(Integer slot1) {
-    	if (slot1 == null || slot1 < 0 || slot1 > 2) {
+    public void setSlot1(int slot1) {
+    	if (slot1 < 0 || slot1 > 2) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot1 = slot1;
     }
 
     public void setSlot1RemainingRatio(Integer slot1RemainingRatio) {
-        if (slot1RemainingRatio == null || slot1RemainingRatio < 0 || slot1RemainingRatio > 100) {
+        if (slot1RemainingRatio < 0 || slot1RemainingRatio > 100) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot1RemainingRatio = slot1RemainingRatio;
     }
 
-    public void setSlot2(Integer slot2) {
-    	if (slot2 == null || slot2 < 3 || slot2 > 5) {
+    public void setSlot2(int slot2) {
+    	if (slot2 < 3 || slot2 > 5) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot2 = slot2;
     }
 
     public void setSlot2RemainingRatio(Integer slot2RemainingRatio) {
-        if (slot2RemainingRatio == null || slot2RemainingRatio < 0 || slot2RemainingRatio > 100) {
+        if (slot2RemainingRatio < 0 || slot2RemainingRatio > 100) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot2RemainingRatio = slot2RemainingRatio;
     }
 
-    public void setSlot3(Integer slot3) {
-    	if (slot3 == null || slot3 < 0 || slot3 > 8) {
+    public void setSlot3(int slot3) {
+    	if (slot3 < 0 || slot3 > 8) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot3 = slot3;
     }
 
     public void setSlot3RemainingRatio(Integer slot3RemainingRatio) {
-        if (slot3RemainingRatio == null || slot3RemainingRatio < 0 || slot3RemainingRatio > 100) {
+        if (slot3RemainingRatio < 0 || slot3RemainingRatio > 100) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot3RemainingRatio = slot3RemainingRatio;
     }
 
-    public void setSlot4(Integer slot4) {
-    	if (slot4 == null || slot4 < 0 || slot4 > 8) {
+    public void setSlot4(int slot4) {
+    	if (slot4 < 0 || slot4 > 8) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot4 = slot4;
     }
 
     public void setSlot4RemainingRatio(Integer slot4RemainingRatio) {
-        if (slot4RemainingRatio == null || slot4RemainingRatio < 0 || slot4RemainingRatio > 100) {
+        if (slot4RemainingRatio < 0 || slot4RemainingRatio > 100) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.slot4RemainingRatio = slot4RemainingRatio;
@@ -166,7 +166,7 @@ public class Device {
         this.humidity = humidity;
     }
 
-    public void setDefaultCombination(Integer defaultCombination) {
+    public void setDefaultCombination(int defaultCombination) {
         this.defaultCombination = defaultCombination;
     }
 }

@@ -4,6 +4,7 @@ import java.sql.Date;
 
 import org.apache.ibatis.annotations.*;
 
+import com.ssafy.scentify.home.model.dto.HomeDto.UserHomeDto;
 import com.ssafy.scentify.user.model.dto.UserDto.SocialLoginDto;
 import com.ssafy.scentify.user.model.dto.UserDto.UserInfoDto;
 import com.ssafy.scentify.user.model.entity.User;
@@ -34,6 +35,10 @@ public interface UserRepository {
     // id로 유저 성별과 생년월일 가져오기
 	@Select("SELECT gender, birth FROM user WHERE id = #{id}")
     UserInfoDto getUserInfoById(String id);
+	
+	// id로 홈탭에서 반환할 유저 정보 받아오기 (닉네임, 이미지 번호, 메인 기기 아이디)
+	@Select("SELECT nickname, img_num, main_device_id FROM user WHERE id = #{id}")
+	UserHomeDto getUserHomeInfoById(String id);
 	
 	// id에 해당하는 유저의 nickName 업데이트
 	@Update("UPDATE user SET nickname = #{nickname} WHERE id = #{id}")

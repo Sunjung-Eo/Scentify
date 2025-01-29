@@ -28,7 +28,7 @@ public class UserDto {
 		@NotBlank 
 	    private String id;
 		@NotBlank
-	    private Integer socialType;
+	    private int socialType;
 	}
 	
 	@Data
@@ -39,11 +39,11 @@ public class UserDto {
 	    @NotBlank
 	    private String nickname;    
 	    @NotNull
-	    private Integer imgNum;
+	    private int imgNum;
 	    @NotNull
-	    private Integer socialType;
+	    private int socialType;
 	    @NotNull
-	    private Integer gender;
+	    private int gender;
 	    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	    private LocalDate birth;
 	}
@@ -52,7 +52,7 @@ public class UserDto {
 	@AllArgsConstructor
 	public static class UserInfoDto {
 		@NotNull
-	    private Integer gender;
+	    private int gender;
 		@NotNull
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	    private LocalDate birth;

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.common.util.OpenCrypt;
+import com.ssafy.scentify.home.model.dto.HomeDto.UserHomeDto;
 import com.ssafy.scentify.user.model.dto.UserDto.LoginDto;
 import com.ssafy.scentify.user.model.dto.UserDto.SocialLoginDto;
 import com.ssafy.scentify.user.model.dto.UserDto.UserInfoDto;
@@ -67,6 +68,10 @@ public class UserService {
 
 	public UserInfoDto getUserInfoById(String id) {
 		return userRepository.getUserInfoById(id);
+	}
+	
+	public UserHomeDto getUserHomeInfoById(String id) {
+		return userRepository.getUserHomeInfoById(id);
 	}
 	
 	public String getUserNiceNameById(String id) {

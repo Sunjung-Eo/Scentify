@@ -2,16 +2,13 @@ package com.ssafy.scentify.device.model.repository;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
+import com.ssafy.scentify.home.model.dto.HomeDto.DeviceHomeDto;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
@@ -38,6 +35,9 @@ public interface DeviceRepository {
     // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
    	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
     
+   	// 디바이스 id로 홈탭 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
+	DeviceHomeDto getDeviceHomeInfoById(int deviceId);
+   	
     // 그룹 아이디 업데이트
     @Update("UPDATE device SET group_id = #{groupId} WHERE id = #{id}")
     boolean updateGroupId(Integer id, Integer groupId);

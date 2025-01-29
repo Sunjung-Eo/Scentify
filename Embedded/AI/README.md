@@ -5,10 +5,10 @@ Jetson Nano의 카메라 프레임을 기반으로 사용자를 감지하거나 
 
 ## Loss, Accuracy
 ### Best Model : SlowFast Fine Tuning + learning Rate : 5e-4 
-<img src="SlowFast/results/train_log.jpg">
+<img src="results/train_log.jpg">
 
 ## Test Result
-<img src="SlowFast/results/test_result.jpg">
+<img src="results/test_result.jpg">
 
 
 ## 개발 환경

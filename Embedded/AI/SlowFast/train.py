@@ -65,6 +65,12 @@ def val(model, data_loader):
     return total_top_1 / total_num, total_top_5 / total_num
 
 
+def worker_init_fn(worker_id):
+    # 각 워커에서 고유한 난수 생성기를 설정
+    seed = torch.initial_seed() % (2**32)
+    np.random.seed(seed)
+    random.seed(seed)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Model')
     # common args
@@ -83,8 +89,8 @@ if __name__ == '__main__':
     test_data = labeled_video_dataset('{}/test'.format(data_root),
                                       make_clip_sampler('constant_clips_per_video', clip_duration, 1),
                                       transform=test_transform, decode_audio=False)
-    train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=8)
-    test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=8)
+    train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=0)
+    test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=0)
 
     # model define, loss setup and optimizer config
     slow_fast = create_slowfast(model_num_class=num_classes).cuda()

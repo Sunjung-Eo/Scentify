@@ -2,18 +2,19 @@ import torch
 from pytorchvideo.transforms import ApplyTransformToKey, UniformTemporalSubsample, RandomShortSideScale, \
     ShortSideScale, Normalize
 from torch import nn
-from torchvision.transforms import Compose, Lambda, RandomCrop, RandomHorizontalFlip, CenterCrop
+from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, CenterCrop
 
 side_size = 256
 max_size = 320
 mean = [0.45, 0.45, 0.45]
 std = [0.225, 0.225, 0.225]
-crop_size = 256
+crop_size = 224
 num_frames = 32
 sampling_rate = 2
 frames_per_second = 30
 clip_duration = (num_frames * sampling_rate) / frames_per_second
-num_classes = 400
+# num_classes = 400
+num_classes = 4
 
 
 class PackPathway(nn.Module):
@@ -34,10 +35,13 @@ class PackPathway(nn.Module):
         return frame_list
 
 
+def normalize_video(x):
+    return x / 255.0
+
 train_transform = ApplyTransformToKey(key="video", transform=Compose(
-    [UniformTemporalSubsample(num_frames), Lambda(lambda x: x / 255.0), Normalize(mean, std),
+    [UniformTemporalSubsample(num_frames), normalize_video, Normalize(mean, std),
      RandomShortSideScale(min_size=side_size, max_size=max_size), RandomCrop(crop_size), RandomHorizontalFlip(),
      PackPathway()]))
 test_transform = ApplyTransformToKey(key="video", transform=Compose(
-    [UniformTemporalSubsample(num_frames), Lambda(lambda x: x / 255.0), Normalize(mean, std),
+    [UniformTemporalSubsample(num_frames), normalize_video, Normalize(mean, std),
      ShortSideScale(size=side_size), CenterCrop(crop_size), PackPathway()]))

@@ -71,14 +71,10 @@ public class DeviceDto {
 	    private Integer id;
 		@NotBlank
 	    private String name;
-		@NotNull
-		private Integer slot1;
-		@NotNull
-		private Integer slot2;
-		@NotNull
-		private Integer slot3;
-		@NotNull
-		private Integer slot4;
+		private int slot1;
+		private int slot2;
+		private int slot3;
+		private int slot4;
 		
 		public void setName(String name) {
 	        if (name == null || name.isBlank() || name.length() > 15) {
@@ -87,29 +83,29 @@ public class DeviceDto {
 	        this.name = name;
 	    }
 
-		public void setSlot1(Integer slot1) {
-	    	if (slot1 == null || slot1 < 0 || slot1 > 2) {
+		public void setSlot1(int slot1) {
+	    	if (slot1 < 0 || slot1 > 2) {
 	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	        }
 	        this.slot1 = slot1;
 	    }
 	    
-	    public void setSlot2(Integer slot2) {
-	    	if (slot2 == null || slot2 < 3 || slot2 > 5) {
+	    public void setSlot2(int slot2) {
+	    	if (slot2 < 3 || slot2 > 5) {
 	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	        }
 	        this.slot2 = slot2;
 	    }
 	    
-	    public void setSlot3(Integer slot3) {
-	    	if (slot3 == null || slot3 < 0 || slot3 > 8) {
+	    public void setSlot3(int slot3) {
+	    	if (slot3 < 0 || slot3 > 8) {
 	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	        }
 	        this.slot3 = slot3;
 	    }
 	    
-	    public void setSlot4(Integer slot4) {
-	    	if (slot4 == null || slot4 < 0 || slot4 > 8) {
+	    public void setSlot4(int slot4) {
+	    	if (slot4 < 0 || slot4 > 8) {
 	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	        }
 	        this.slot4 = slot4;
@@ -121,12 +117,11 @@ public class DeviceDto {
 	public static class defaultCombinationDto {
 		@NotNull
 	    private Integer id;
-		@NotNull
-	    private Integer roomType;
+	    private int roomType;
 	    private Combination combination;
 
-	    public void setRoomType(Integer roomType) {
-	        if (roomType == null || (roomType != 0 && roomType != 1)) {
+	    public void setRoomType(int roomType) {
+	        if (roomType != 0 && roomType != 1) {
 	            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	        }
 	        this.roomType = roomType;
@@ -135,9 +130,9 @@ public class DeviceDto {
 	    @Getter
 	    @AllArgsConstructor
 	    public static class Combination {
-	        private Integer choice1; // NOT NULL
+	        private int choice1; // NOT NULL
 	        @Setter
-	        private Integer choice1Count;
+	        private int choice1Count;
 	        private Integer choice2; // NULL 허용
 	        @Setter
 	        private Integer choice2Count;
@@ -148,8 +143,8 @@ public class DeviceDto {
 	        @Setter
 	        private Integer choice4Count;
 
-	        public void setChoice1(Integer choice1) {
-	            if (choice1 == null || choice1 < 0 || choice1 > 8) {
+	        public void setChoice1(int choice1) {
+	            if (choice1 < 0 || choice1 > 8) {
 	                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 	            }
 	            this.choice1 = choice1;
@@ -177,7 +172,7 @@ public class DeviceDto {
 	        }
 
 	        public int calculateChoiceCountSum() {
-	            return (choice1Count != null ? choice1Count : 0) +
+	            return choice1Count +
 	                   (choice2Count != null ? choice2Count : 0) +
 	                   (choice3Count != null ? choice3Count : 0) +
 	                   (choice4Count != null ? choice4Count : 0);
@@ -198,11 +193,11 @@ public class DeviceDto {
 	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
 	@Data
 	public static class DeviceInfoDto {
-	    private Integer deviceId;
+	    private int deviceId;
 	    private String name;
-	    private Integer groupId;
-	    private Integer slot1;
-	    private Integer slot1RemainingRatio;
+	    private int groupId;
+	    private int slot1;
+	    private int slot1RemainingRatio;
 	    private Integer slot2;
 	    private Integer slot2RemainingRatio;
 	    private Integer slot3;
@@ -215,8 +210,8 @@ public class DeviceDto {
 	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
 	@Data
 	public static class DeviceGroupInfoDto {
-		private Integer deviceId;
-		private Integer groupId;
+		private int deviceId;
+		private int groupId;
 		private String adminId;
 	}
 

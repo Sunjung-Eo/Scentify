@@ -9,5 +9,5 @@ import lombok.*;
 public class Favorite {
     private Integer id;
     private String userId;
-    private Integer combinationId;
+    private int combinationId;
 }

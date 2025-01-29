@@ -12,13 +12,13 @@ public class CustomSchedule {
     private String name;
     private String deviceId;
     private String userId;
-    private Integer combinationId;
+    private int combinationId;
     private String combinationName;
     private Boolean isFavorite;
     private String day;
     private Time startTime;
     private Time endTime;
-    private Integer interval;
+    private int interval;
     private Boolean modeOn;
     private Timestamp createdAt;
     private Timestamp updatedAt;

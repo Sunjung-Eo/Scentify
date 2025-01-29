@@ -14,7 +14,7 @@ public class GroupDto {
     @AllArgsConstructor
     public static class CreateDto {
         private Integer id;   
-        private Integer deviceId;
+        private int deviceId;
         private String adminId;  
         private String adminNickname; 
     }
@@ -30,8 +30,8 @@ public class GroupDto {
 	@Getter
 	@AllArgsConstructor
 	public static class DeleteMemberDto {
-		@NotNull @Setter
-		private Integer groupId;
+		@Setter
+		private int groupId;
 		private String memberId;
 		
 		public void setMemberId(String memberId) {

@@ -9,6 +9,7 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
+import com.ssafy.scentify.home.model.dto.HomeDto.DeviceHomeDto;
 import com.ssafy.scentify.user.model.repository.UserRepository;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
@@ -38,6 +39,11 @@ public class DeviceService {
 	public List<DeviceInfoDto> findDevicesByIds(List<Integer> deviceIds) {
 		return deviceRepository.selectDevicesByIds(deviceIds);
 	}
+	
+
+	public DeviceHomeDto getDeviceHomeInfoById(int mainDeviceId) {
+		return deviceRepository.getDeviceHomeInfoById(mainDeviceId);
+	}
 
 	public boolean createDevice(RegisterDto registerDto) {
 		if (!deviceRepository.createDevice(registerDto)) return false;
@@ -64,4 +70,5 @@ public class DeviceService {
 	public boolean updateGroupId(Integer id, Integer groupId) {
 		return deviceRepository.updateGroupId(id, groupId);
 	}
+
 }

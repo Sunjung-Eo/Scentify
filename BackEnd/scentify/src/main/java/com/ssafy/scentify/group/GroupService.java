@@ -1,5 +1,7 @@
 package com.ssafy.scentify.group;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
@@ -22,12 +24,16 @@ public class GroupService {
 		return createDto;
 	}
 
-	public boolean updateMember(MemberDto memberDto) {
-		return groupRepository.updateMember(memberDto);
-	}
-
 	public Group selectGroupById(Integer groupId) {
 		return groupRepository.selectGroupById(groupId);
+	}
+	
+	public List<Integer> getDeviceIdByUserId(String userId) {
+		return groupRepository.getDeviceIdByUserId(userId);
+	}
+
+	public boolean updateMember(MemberDto memberDto) {
+		return groupRepository.updateMember(memberDto);
 	}
 	
 	public boolean updateGroupAllMemberById(Integer groupId) {

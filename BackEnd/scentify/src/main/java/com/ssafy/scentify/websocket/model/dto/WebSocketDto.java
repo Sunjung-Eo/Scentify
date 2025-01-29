@@ -20,32 +20,32 @@ public class WebSocketDto {
 	@AllArgsConstructor
 	public static class TempHumRequest {
 	    private String token;               
-	    private Float temperature;   
-	    private Integer humidity;    
+	    private float temperature;   
+	    private int humidity;    
 	}
 	
 	@Data
 	@AllArgsConstructor
 	public static class Response {
-        private Integer status;
+        private int status;
     }
 	
 	@Data
 	@AllArgsConstructor
 	public static class CapsuleInfoRequest {
-        private Integer slot1;
-        private Integer slot2;
-        private Integer slot3;
-        private Integer slot4;
+        private int slot1;
+        private int slot2;
+        private int slot3;
+        private int slot4;
     }
 	
 	@Data
 	@AllArgsConstructor
 	public static class CapsuleRemainingRequest {
 	    private String token;               
-	    private Integer slot1RemainingRatio;   
-	    private Integer slot2RemainingRatio;  
-	    private Integer slot3RemainingRatio;   
-	    private Integer slot4RemainingRatio; 
+	    private int slot1RemainingRatio;   
+	    private int slot2RemainingRatio;  
+	    private int slot3RemainingRatio;   
+	    private int slot4RemainingRatio; 
 	}
 }

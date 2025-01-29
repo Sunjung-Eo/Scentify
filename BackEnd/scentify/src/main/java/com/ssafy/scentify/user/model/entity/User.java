@@ -30,11 +30,11 @@ public class User {
     @Email @NotBlank
     private String email;   
     @NotNull
-    private Integer imgNum;
+    private int imgNum;
     @NotNull
-    private Integer socialType;
+    private int socialType;
     @NotNull
-    private Integer gender;
+    private int gender;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birth;
     private Integer mainDeviceId;
@@ -67,22 +67,22 @@ public class User {
         this.email = email;
     }
 
-    public void setImgNum(Integer imgNum) {
-        if (imgNum == null || 0 > imgNum || imgNum > 8) {
+    public void setImgNum(int imgNum) {
+        if (0 > imgNum || imgNum > 8) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.imgNum = imgNum;
     }
 
-    public void setSocialType(Integer socialType) {
-        if (socialType == null || 0 > socialType || socialType > 2) {
+    public void setSocialType(int socialType) {
+        if (0 > socialType || socialType > 2) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.socialType = socialType;
     }
 
-    public void setGender(Integer gender) {
-        if (gender == null || 0 > gender || gender > 2) {
+    public void setGender(int gender) {
+        if (0 > gender || gender > 2) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.gender = gender;
@@ -98,5 +98,4 @@ public class User {
     public void setMainDeviceId(Integer mainDeviceId) {
         this.mainDeviceId = mainDeviceId;
     }
-
 }

@@ -1,10 +1,9 @@
 from ultralytics import YOLO
 import torch
-import cv2
 
 class SIMPLEYOLO:
     def __init__(self):
-        self.model = YOLO('yolov8s.pt')
+        self.model = YOLO('yolov8s.pt', verbose=False)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model.to(self.device)
         print("Load Yolo Model Module")

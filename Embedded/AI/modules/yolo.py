@@ -1,0 +1,25 @@
+from ultralytics import YOLO
+import torch
+import cv2
+
+class SIMPLEYOLO:
+    def __init__(self):
+        self.model = YOLO('yolov8s.pt')
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model.to(self.device)
+        print("Load Yolo Model Module")
+
+    def person_detect(self, frame):
+        results = self.model(frame, device=self.device)
+
+        # 감지된 객체들의 클래스 리스트
+        detected_classes = results[0].boxes.cls.tolist()  
+        # 감지된 객체들의 신뢰도 리스트
+        confidence_scores = results[0].boxes.conf.tolist()  
+
+        for cls, conf in zip(detected_classes, confidence_scores):
+            if cls == 0 and conf > 0.8:  # 클래스 ID 0 == 사람(person)
+                return True
+
+        return False 
+

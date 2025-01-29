@@ -1,5 +1,8 @@
 from ultralytics import YOLO
 import torch
+import logging
+
+logging.getLogger("ultralytics").setLevel(logging.CRITICAL)
 
 class SIMPLEYOLO:
     def __init__(self):

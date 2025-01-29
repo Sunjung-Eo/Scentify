@@ -3,9 +3,6 @@ from yolo import SIMPLEYOLO
 from slowfast import *
 
 import time
-import logging
-
-logging.getLogger("ultralytics").setLevel(logging.CRITICAL)
 
 if __name__ == "__main__":
     camera = Camera()

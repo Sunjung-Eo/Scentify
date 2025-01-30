@@ -1,7 +1,6 @@
 package com.ssafy.scentify.schedule.model.dto;
 
 import java.sql.Time;
-import java.util.UUID;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
 

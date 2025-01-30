@@ -3,7 +3,6 @@ package com.ssafy.scentify.schedule.model.repository;
 import java.util.List;
 
 import org.apache.ibatis.annotations.*;
-import com.ssafy.scentify.home.model.dto.HomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 

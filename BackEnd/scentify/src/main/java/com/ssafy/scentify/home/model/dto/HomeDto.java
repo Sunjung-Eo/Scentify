@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class HomeDto {
+    
 	@Data
 	public static class HomeResponseDto {
 	    private UserHomeDto user;
@@ -12,6 +15,11 @@ public class HomeDto {
 	    private DeviceHomeDto mainDevice;
 	    private List<AutoScheduleHomeDto> autoSchedules;
 	    private List<CustomScheduleHomeDto> customSchedules;
+	}
+	
+	@Data
+    public static class CustomScheduleListResponseDto {
+    	private List<CustomScheduleHomeDto> customSchedules;
 	}
 
 	@Data
@@ -55,10 +63,12 @@ public class HomeDto {
 	    private String name;
 	    private int combinationId;
 	    private String combinationName;
-	    private int isFavorite;
+	    @JsonProperty("isFavorite") 
+	    private boolean isFavorite;
 	    private int day;
 	    private String startTime;
 	    private String endTime;
 	    private int interval;
+	    private boolean modeOn;
 	}
 }

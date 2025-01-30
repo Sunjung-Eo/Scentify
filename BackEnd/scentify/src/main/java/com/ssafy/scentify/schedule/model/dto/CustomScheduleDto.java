@@ -2,7 +2,7 @@ package com.ssafy.scentify.schedule.model.dto;
 
 import java.sql.Time;
 
-import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
+import com.ssafy.scentify.combination.model.dto.CombinationDto;
 
 import groovy.transform.ToString;
 import lombok.AllArgsConstructor;
@@ -14,16 +14,19 @@ import lombok.Setter;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomScheduleDto {
+public class CustomScheduleDto extends CombinationDto{
 	private Integer id;
     private String name;
     private int deviceId;
     private int day; 
-    private defaultCombinationDto.Combination combination;
     private Time startTime;
     private Time endTime;
     private int interval;
     private boolean modeOn;
+    
+    public String getParentName() {
+        return super.getName(); // 부모 클래스 `CombinationDto`의 name 값 반환
+    }
     
 	public void setId(Integer id) {
 		this.id = id;
@@ -73,58 +76,5 @@ public class CustomScheduleDto {
 
 	public void setModeOn(boolean modeOn) {
 		this.modeOn = modeOn;
-	}
-	
-	@Getter
-    @AllArgsConstructor
-    public static class Combination {
-    	private String name;
-        private int choice1; // NOT NULL
-        @Setter
-        private int choice1Count;
-        private Integer choice2; // NULL 허용
-        @Setter
-        private Integer choice2Count;
-        private Integer choice3; // NULL 허용
-        @Setter
-        private Integer choice3Count;
-        private Integer choice4; // NULL 허용
-        @Setter
-        private Integer choice4Count;
-        
-        public void setName(String name) {
-            if ((name != null && name.isBlank()) || (name != null && name.length() > 15)) {
-                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-            }
-            this.name = name;
-        }
-
-        public void setChoice1(int choice1) {
-            if (choice1 < 0 || choice1 > 8) {
-                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-            }
-            this.choice1 = choice1;
-        }
-
-        public void setChoice2(Integer choice2) {
-            if (choice2 != null && (choice2 < 0 || choice2 > 8)) {
-                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-            }
-            this.choice2 = choice2;
-        }
-
-        public void setChoice3(Integer choice3) {
-            if (choice3 != null && (choice3 < 0 || choice3 > 8)) {
-                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-            }
-            this.choice3 = choice3;
-        }
-
-        public void setChoice4(Integer choice4) {
-            if (choice4 != null && (choice4 < 0 || choice4 > 8)) {
-                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-            }
-            this.choice4 = choice4;
-        }
 	}
 }

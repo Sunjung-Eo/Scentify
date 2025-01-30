@@ -10,7 +10,7 @@ import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 public interface CustomScheduleRepository {
 	
 	// 디바이스 아이디로 스케줄 조회
-	@Select("SELECT id, name, combination_id, combination_name, is_favorite, day, start_time, end_time, `interval` "
+	@Select("SELECT id, name, combination_id, combination_name, is_favorite, day, start_time, end_time, `interval`, mode_on "
 	          + "FROM customschedule WHERE device_id = #{deviceId}")
     @Results({
         @Result(column = "id", property = "id"),
@@ -21,10 +21,12 @@ public interface CustomScheduleRepository {
         @Result(column = "day", property = "day"),
         @Result(column = "start_time", property = "startTime"),
         @Result(column = "end_time", property = "endTime"),
-        @Result(column = "interval", property = "interval")
+        @Result(column = "interval", property = "interval"),
+        @Result(column = "mode_on", property = "modeOn")
     })
     List<CustomScheduleHomeDto> getSchedulesByDeviceId(int deviceId);
 	
+	// 커스텀 스케줄 생성
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 
 		    + " VALUES (#{customSchedule.name}, #{customSchedule.deviceId}, #{combinationId}, #{conbinationName}, #{customSchedule.day},"
 			+ " #{customSchedule.startTime}, #{customSchedule.endTime}, #{customSchedule.interval}, #{customSchedule.modeOn}, NOW(), NOW())")

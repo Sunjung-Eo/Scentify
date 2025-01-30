@@ -1,6 +1,9 @@
 package com.ssafy.scentify.schedule.model.entity;
 
 import java.sql.*;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.*;
 
 @Getter
@@ -14,6 +17,7 @@ public class CustomSchedule {
     private String userId;
     private int combinationId;
     private String combinationName;
+    @JsonProperty("isFavorite") 
     private Boolean isFavorite;
     private int day;
     private Time startTime;

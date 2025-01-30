@@ -4,9 +4,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.combination.model.repository.CombinationRepository;
-import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
-import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto.Combination;
 
 @Service
 public class CombinationService {
@@ -17,7 +16,7 @@ public class CombinationService {
 		this.combinationRepository = combinationRepository;
 	}
 
-	public Integer createCombination(defaultCombinationDto.Combination combination) {
+	public Integer createCombination(CombinationDto combination) {
 		int combinationId = UUID.randomUUID().hashCode() & Integer.MAX_VALUE;
 		if (!combinationRepository.createCombination(combinationId, combination)) return null;
 		return combinationId;
@@ -29,7 +28,7 @@ public class CombinationService {
 		return combinationId;
 	}
 
-	public Combination getCombinationById(int combinationId) {
+	public CombinationDto getCombinationById(int combinationId) {
 		return combinationRepository.getCombinationById(combinationId);
 	}
 }

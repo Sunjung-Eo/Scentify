@@ -108,6 +108,19 @@ public class CustomScheduleController {
 		}
 	}
 	
+	// API 35번 : 시간 기반 예약 삭제
+	@PostMapping("/delete")
+	public ResponseEntity<?> deleteCustomSchedule(@RequestBody Map<String, Integer> entity) {
+		try {
+			
+			
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	// API 37번 : 시간 기반 예약 전체 조회
 	@PostMapping("/all")

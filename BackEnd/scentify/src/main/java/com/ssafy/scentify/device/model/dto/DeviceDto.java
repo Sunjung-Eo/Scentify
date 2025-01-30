@@ -130,6 +130,7 @@ public class DeviceDto {
 	    @Getter
 	    @AllArgsConstructor
 	    public static class Combination {
+	    	private String name;
 	        private int choice1; // NOT NULL
 	        @Setter
 	        private int choice1Count;
@@ -142,6 +143,13 @@ public class DeviceDto {
 	        private Integer choice4; // NULL 허용
 	        @Setter
 	        private Integer choice4Count;
+	        
+	        public void setName(String name) {
+	            if ((name != null && name.isBlank()) || (name != null && name.length() > 15)) {
+	                throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+	            }
+	            this.name = name;
+	        }
 
 	        public void setChoice1(int choice1) {
 	            if (choice1 < 0 || choice1 > 8) {

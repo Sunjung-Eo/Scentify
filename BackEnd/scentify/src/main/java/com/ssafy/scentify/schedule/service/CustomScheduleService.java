@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
+import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.model.repository.CustomScheduleRepository;
 
 @Service
@@ -18,6 +19,10 @@ public class CustomScheduleService {
 	
 	public List<CustomScheduleHomeDto> getSchedulesByDeviceId(int mainDeviceId) {
 		return customScheduleRepository.getSchedulesByDeviceId(mainDeviceId);
+	}
+
+	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName) {
+		return customScheduleRepository.createCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}
 
 }

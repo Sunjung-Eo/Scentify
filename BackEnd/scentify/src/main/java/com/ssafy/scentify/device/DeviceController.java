@@ -159,6 +159,7 @@ public class DeviceController {
 	        
 	        // 조합을 먼저 등록
 	        defaultCombinationDto.Combination combination = combinationDto.getCombination();
+	        combination.setName("기본향");
 			Integer combinationId = combinationService.createCombination(combination);			
 			
 			// 조합 id가 null이면 등록 실패로 400 반환

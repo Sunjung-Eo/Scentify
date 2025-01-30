@@ -37,4 +37,8 @@ public interface CustomScheduleRepository {
 			+ "THEN #{combinationName} ELSE combination_name END, day = #{customSchedule.day}, start_time = #{customSchedule.startTime}, end_time = #{customSchedule.endTime}, "
 			+ "`interval` = #{customSchedule.interval}, mode_on = #{customSchedule.modeOn}, updated_at = NOW() WHERE id = #{customSchedule.id} AND device_id = #{customSchedule.deviceId}")
 	boolean updateCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName);
+	
+	// 커스텀 스케줄 삭제
+	@ Delete("DELETE FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")
+	boolean deleteCustomScheduleById(int id, int deviceId);
 }

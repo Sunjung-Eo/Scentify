@@ -47,7 +47,7 @@ public class HomeController {
 		this.tokenProvider = tokenProvider;
 	}
 	
-	
+	// API 28번 : 홈탭 정보 반환
 	@PostMapping("/info")
 	public ResponseEntity<?> getHomeInfo(@RequestHeader("Authorization") String authorizationHeader) {
 		try {

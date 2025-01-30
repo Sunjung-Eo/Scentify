@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.*;
 import com.ssafy.scentify.home.model.dto.HomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
+import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 
 @Mapper
 public interface CustomScheduleRepository {
@@ -24,4 +25,9 @@ public interface CustomScheduleRepository {
         @Result(column = "interval", property = "interval")
     })
     List<CustomScheduleHomeDto> getSchedulesByDeviceId(int deviceId);
+	
+	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 
+		    + " VALUES (#{customSchedule.name}, #{customSchedule.deviceId}, #{combinationId}, #{conbinationName}, #{customSchedule.day},"
+			+ " #{customSchedule.startTime}, #{customSchedule.endTime}, #{customSchedule.interval}, #{customSchedule.modeOn}, NOW(), NOW())")
+	boolean createCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, Integer combinationId, String conbinationName);
 }

@@ -1,7 +1,6 @@
 package com.ssafy.scentify.schedule.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.combination.CombinationService;
-import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto.Combination;
+import com.ssafy.scentify.combination.model.dto.CombinationDto;
+import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
+import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
 
@@ -34,17 +35,14 @@ public class CustomScheduleController {
 	@PostMapping("/add")
 	public ResponseEntity<?> setCustomSchedule(@RequestBody CustomScheduleDto customScheduleDto) {
 		try {
-			// 향 조합 등록
-			Combination combination = customScheduleDto.getCombination();
-			
 			// 향 조합 등록 실패 시 400 반환
-			Integer combinationId = combinationService.createCombination(combination);
+			Integer combinationId = combinationService.createCombination(customScheduleDto);
 			if (combinationId  == null) { 
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
 			// 커스텀 스케줄 등록 실패 시 400 반환
-			if (!customScheduleService.createCustomSchedule(customScheduleDto, combinationId, combination.getName())) {
+			if (!customScheduleService.createCustomSchedule(customScheduleDto, combinationId, customScheduleDto.getParentName())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
@@ -65,14 +63,37 @@ public class CustomScheduleController {
 			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			// 조합 정보 DB에서 조회 및 추출
-			Combination combination = combinationService.getCombinationById(combinationId);
+			CombinationDto combination = combinationService.getCombinationById(combinationId);
 			if (combination == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			// JSON 응답을 위한 Map 생성
-		    Map<String, Combination> response = new HashMap<>();
+		    Map<String, CombinationDto> response = new HashMap<>();
 		    response.put("combination", combination);
 
 		    return new ResponseEntity<>(response, HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 37번 : 시간 기반 예약 전체 조회
+	@PostMapping("/all")
+	public ResponseEntity<?> getAllCustomSchedule(@RequestBody Map<String, Integer> deviceIdMap) {
+		try {
+			// 기기 아이디 추출
+			Integer deviceId = deviceIdMap.get("deviceId");
+			if (deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// DB 스케줄 조회
+			List<CustomScheduleHomeDto> schedules = customScheduleService.getSchedulesByDeviceId(deviceId);
+			
+	        // 응답 DTO 생성
+			CustomScheduleListResponseDto response = new CustomScheduleListResponseDto();
+			response.setCustomSchedules(schedules);
+
+	        return new ResponseEntity<>(response, HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리
 			log.error("Exception: ", e);

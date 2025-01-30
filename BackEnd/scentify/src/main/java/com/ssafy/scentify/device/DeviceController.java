@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.combination.CombinationService;
+import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.combination.model.entity.Combination;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
@@ -158,9 +159,8 @@ public class DeviceController {
 	        if (!isValidCombination(capsules, combinationDto)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // 조합을 먼저 등록
-	        defaultCombinationDto.Combination combination = combinationDto.getCombination();
-	        combination.setName("기본향");
-			Integer combinationId = combinationService.createCombination(combination);			
+	        combinationDto.setName("기본향");
+			Integer combinationId = combinationService.createCombination(combinationDto);			
 			
 			// 조합 id가 null이면 등록 실패로 400 반환
 			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }			
@@ -209,10 +209,10 @@ public class DeviceController {
 	// 기본향 조합 유효성 검사 메서드
 	private boolean isValidCombination(List<Integer> capsules, defaultCombinationDto combinationDto) {
 	    List<Integer> choices = List.of(
-	        combinationDto.getCombination().getChoice1(),
-	        combinationDto.getCombination().getChoice2(),
-	        combinationDto.getCombination().getChoice3(),
-	        combinationDto.getCombination().getChoice4()
+	        combinationDto.getChoice1(),
+	        combinationDto.getChoice2(),
+	        combinationDto.getChoice3(),
+	        combinationDto.getChoice4()
 	    );
 
 	    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인

@@ -1,17 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { fragranceMap } from "../../../utils/fragranceUtils.ts";
-import { CreateCapsuleRequest } from "./capsuletypes.ts";
+import {
+  fragranceMap,
+  reverseFragranceMap,
+} from "../../../utils/fragranceUtils";
+import { CreateCapsuleRequest } from "./capsuletypes";
+
+//capsuleDatasms는 캡슐 등록 시 설정된 향기 (예: slot1 = 레몬, slot2 = 라벤더)
+//scents는 각 슬롯에서 선택된 향기의 사용량(count) (예: slot1 = 2, slot2 = 1)
 
 interface CapsuleProps {
   name: string; // 기기명
   onSubmit: (requestData: CreateCapsuleRequest) => void; // 완료 버튼 클릭 시 호출될 함수
+  initialData?: {
+    slot1: number;
+    slot2: number;
+    slot3: number;
+    slot4: number;
+  }; // 초기 데이터 (수정용)
 }
 
-const Capsule = ({ name, onSubmit }: CapsuleProps) => {
-  const [slot1, setSlot1] = useState<string>(""); // 슬롯 1 상태
-  const [slot2, setSlot2] = useState<string>(""); // 슬롯 2 상태
-  const [slot3, setSlot3] = useState<string>(""); // 슬롯 3 상태
-  const [slot4, setSlot4] = useState<string>(""); // 슬롯 4 상태
+const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
+  // 슬롯 상태를 초기값 또는 빈 문자열로 설정
+  const [slot1, setSlot1] = useState<string>(
+    initialData?.slot1 !== undefined
+      ? reverseFragranceMap[initialData.slot1]
+      : ""
+  );
+  const [slot2, setSlot2] = useState<string>(
+    initialData?.slot2 !== undefined
+      ? reverseFragranceMap[initialData.slot2]
+      : ""
+  );
+  const [slot3, setSlot3] = useState<string>(
+    initialData?.slot3 !== undefined
+      ? reverseFragranceMap[initialData.slot3]
+      : ""
+  );
+  const [slot4, setSlot4] = useState<string>(
+    initialData?.slot4 !== undefined
+      ? reverseFragranceMap[initialData.slot4]
+      : ""
+  );
 
   // 슬롯별 선택 가능한 옵션
   const slot1Options = ["레몬", "유칼립투스", "페퍼민트"];
@@ -28,14 +57,14 @@ const Capsule = ({ name, onSubmit }: CapsuleProps) => {
     "오렌지블라썸",
   ];
 
-  // useEffect를 통해 슬롯 값과 이름이 변경될 때마다 상위로 데이터 전달
+  // 슬롯 상태가 변경될 때마다 상위로 데이터 전달
   useEffect(() => {
     onSubmit({
-      name, // 상위에서 전달받은 name 사용
-      slot1: fragranceMap[slot1],
-      slot2: fragranceMap[slot2],
-      slot3: fragranceMap[slot3],
-      slot4: fragranceMap[slot4],
+      name,
+      slot1: fragranceMap[slot1] || 0,
+      slot2: fragranceMap[slot2] || 0,
+      slot3: fragranceMap[slot3] || 0,
+      slot4: fragranceMap[slot4] || 0,
     });
   }, [name, slot1, slot2, slot3, slot4, onSubmit]);
 

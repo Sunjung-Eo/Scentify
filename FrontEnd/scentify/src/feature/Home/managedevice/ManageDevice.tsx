@@ -1,4 +1,4 @@
-import DeviceCard from "../../feature/Home/device/DeviceCard";
+import DeviceCard from "./DeviceCard";
 
 function ManageDevice() {
   return (

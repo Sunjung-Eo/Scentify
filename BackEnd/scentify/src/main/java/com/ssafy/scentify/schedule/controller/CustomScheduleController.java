@@ -108,6 +108,28 @@ public class CustomScheduleController {
 		}
 	}
 	
+	// API 35번 : 시간 기반 예약 삭제
+	@PostMapping("/delete")
+	public ResponseEntity<?> deleteCustomSchedule(@RequestBody Map<String, Integer> deleteScheduleMap) {
+		try {
+			Integer customScheduleId = deleteScheduleMap.get("id");
+			Integer deviceId = deleteScheduleMap.get("deviceId");
+			
+			// 요청 데이터 유효성 검사
+			if (customScheduleId == null || deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// 삭제가 이루어지지 않은 경우 400 반환
+			if (!customScheduleService.deleteCustomScheduleById(customScheduleId, deviceId)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	// API 37번 : 시간 기반 예약 전체 조회
 	@PostMapping("/all")

@@ -28,4 +28,8 @@ public class CustomScheduleService {
 	public boolean updateCustomSchedule(CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName) {
 		return customScheduleRepository.updateCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}
+
+	public boolean deleteCustomScheduleById(int customScheduleId, int deviceId) {
+		return customScheduleRepository.deleteCustomScheduleById(customScheduleId, deviceId);
+	}
 }

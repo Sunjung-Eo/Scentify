@@ -5,17 +5,17 @@ import {
   CustomSchedule,
   AutoSchedule,
 } from "./DeviceTypes.ts";
-import deviceImg from "../../../assets/images/device.svg";
-import leftarrow from "../../../assets/icons/leftarrow-icon.svg";
-import rightarrow from "../../../assets/icons/rightarrow-icon.svg";
-import { mapIntToFragrance } from "../../../utils/fragranceUtils";
-import waterIcon from "../../../assets/icons/Water.png";
-import temperatureIcon from "../../../assets/icons/Temperature.png";
-import PlayBtn from "../../../assets/icons/PlayBtn.svg";
-import modifyIcon from "../../../assets/icons/modify-icon.svg";
-import subtract from "../../../assets/images/Subtract.png";
+import deviceImg from "../../../../assets/images/device.svg";
+import leftarrow from "../../../../assets/icons/leftarrow-icon.svg";
+import rightarrow from "../../../../assets/icons/rightarrow-icon.svg";
+import { mapIntToFragrance } from "../../../../utils/fragranceUtils.ts";
+import waterIcon from "../../../../assets/icons/Water.png";
+import temperatureIcon from "../../../../assets/icons/Temperature.png";
+import PlayBtn from "../../../../assets/icons/PlayBtn.svg";
+import modifyIcon from "../../../../assets/icons/modify-icon.svg";
+import subtract from "../../../../assets/images/Subtract.png";
 import { Link } from "react-router-dom";
-import crownIcon from "../../../assets/icons/crown-icon.svg";
+import crownIcon from "../../../../assets/icons/crown-icon.svg";
 
 const DeviceCarousel = ({ data }: { data: APIResponse }) => {
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 표시 중인 기기의 인덱스를 관리

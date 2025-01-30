@@ -1,6 +1,6 @@
-import DeviceCarousel from "./DeviceCarousel";
-import UserCard from "../user/UserCard";
-import { APIResponse } from "./DeviceTypes.ts";
+import DeviceCarousel from "./device/DeviceCarousel.tsx";
+import UserCard from "./user/UserCard.tsx";
+import { APIResponse } from "./device/DeviceTypes.ts";
 
 const exampleData: APIResponse = {
   main_device_id: ["145", "221", "332"], // 연결된 기기의 ID

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Capsule from "./Capsule";
+import Capsule from "../capsule/Capsule";
 import deviceImg from "../../../assets/images/device.svg";
 import { useCapsuleAndDefaultScentStore } from "../../../stores/useCapsuleAndDefaultScentStore";
 import { useControlStore } from "../../../stores/useControlStore";

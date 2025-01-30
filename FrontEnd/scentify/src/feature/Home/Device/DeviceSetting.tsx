@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import Capsule from "./Capsule";
 import EditDefaultScent from "./EditDefaultScent";
-import { CreateCapsuleRequest } from "./capsuletypes";
 import EditCapsule from "./EditCapsule";
 import { useCapsuleAndDefaultScentStore } from "../../../stores/useCapsuleAndDefaultScentStore";
 
 function DeviceSetting() {
   const { capsuleData } = useCapsuleAndDefaultScentStore();
-  const [activeTab, setActiveTab] = useState("Capsule"); // 현재 활성화된 탭 상태 (초깃값: 캡슐 정보)
-  const [latestCapsuleData, setLatestCapsuleData] = useState(capsuleData); //탭 전환 시 latestCapsuleData를 사용하여 최신 데이터 반영
+  const [activeTab, setActiveTab] = useState("Capsule"); // 현재 활성화된 탭 상태
+  const [latestCapsuleData, setLatestCapsuleData] = useState(capsuleData); // 최신 캡슐 데이터
 
-  // 캡슐 데이터가 변경될 때 최신 데이터를 업데이트
+  // 📌 캡슐 데이터가 변경될 때 최신 데이터 업데이트
   useEffect(() => {
     setLatestCapsuleData(capsuleData);
   }, [capsuleData]);
@@ -46,9 +44,14 @@ function DeviceSetting() {
 
       {/* 콘텐츠 영역 */}
       <div className="px-8 py-8">
-        {activeTab === "Capsule" && <EditCapsule />}
+        {activeTab === "Capsule" && (
+          <EditCapsule
+            latestCapsuleData={latestCapsuleData}
+            setLatestCapsuleData={setLatestCapsuleData}
+          />
+        )}
         {activeTab === "DefaultScent" && (
-          <EditDefaultScent key={latestCapsuleData.deviceName} />
+          <EditDefaultScent latestCapsuleData={latestCapsuleData} />
         )}
       </div>
     </div>

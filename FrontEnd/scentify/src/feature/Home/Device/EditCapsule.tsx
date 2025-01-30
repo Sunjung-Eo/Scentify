@@ -1,64 +1,67 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Capsule from "./Capsule";
 import deviceImg from "../../../assets/images/device.svg";
 import { useCapsuleAndDefaultScentStore } from "../../../stores/useCapsuleAndDefaultScentStore";
 import { useControlStore } from "../../../stores/useControlStore";
 
-function EditCapsule() {
-  const { capsuleData, updateCapsuleData } = useCapsuleAndDefaultScentStore();
+interface EditCapsuleProps {
+  latestCapsuleData: {
+    deviceName: string;
+    slot1: number;
+    slot2: number;
+    slot3: number;
+    slot4: number;
+  };
+  setLatestCapsuleData: (data: {
+    deviceName: string;
+    slot1: number;
+    slot2: number;
+    slot3: number;
+    slot4: number;
+  }) => void;
+}
+
+function EditCapsule({
+  latestCapsuleData,
+  setLatestCapsuleData,
+}: EditCapsuleProps) {
+  const { updateCapsuleData } = useCapsuleAndDefaultScentStore();
   const { setCompleteHandler } = useControlStore();
 
+  // 📌 최신 캡슐 데이터를 사용하여 초기 상태 설정
   const [capsuleSlots, setCapsuleSlots] = useState({
-    slot1: capsuleData.slot1,
-    slot2: capsuleData.slot2,
-    slot3: capsuleData.slot3,
-    slot4: capsuleData.slot4,
+    slot1: latestCapsuleData.slot1,
+    slot2: latestCapsuleData.slot2,
+    slot3: latestCapsuleData.slot3,
+    slot4: latestCapsuleData.slot4,
   });
+
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // 캡슐 데이터 변경 핸들러
+  // ✅ 캡슐 데이터 변경 시 즉시 업데이트 (완료 버튼 없이)
   const handleCapsuleDataChange = (data: typeof capsuleSlots) => {
     setCapsuleSlots(data);
   };
 
-  // 완료 버튼 클릭 시 호출되는 함수
-  const handleSubmit = useCallback(() => {
-    if (
-      capsuleSlots.slot1 === 0 ||
-      capsuleSlots.slot2 === 0 ||
-      capsuleSlots.slot3 === 0 ||
-      capsuleSlots.slot4 === 0
-    ) {
-      setErrorMessage("모든 슬롯에 향을 설정해주세요.");
-      return;
-    }
-
-    // 캡슐 데이터 업데이트
-    updateCapsuleData({
-      deviceName: capsuleData.deviceName, // 기존 기기명 유지
+  // ✅ `useEffect`를 사용하여 `capsuleSlots`가 변경될 때만 상태 업데이트
+  useEffect(() => {
+    const updatedCapsuleData = {
+      deviceName: latestCapsuleData.deviceName,
       slot1: capsuleSlots.slot1,
       slot2: capsuleSlots.slot2,
       slot3: capsuleSlots.slot3,
       slot4: capsuleSlots.slot4,
-    });
-
-    // 완료 메시지 출력 및 이동
-    alert("캡슐 정보가 성공적으로 수정되었습니다.");
-  }, [capsuleData.deviceName, capsuleSlots, updateCapsuleData]);
-
-  // 완료 버튼에 핸들러 연결
-  useEffect(() => {
-    setCompleteHandler(handleSubmit);
-    return () => {
-      setCompleteHandler(null); // 언마운트 시 초기화
     };
-  }, [handleSubmit, setCompleteHandler]);
+
+    setLatestCapsuleData(updatedCapsuleData); // 부모 컴포넌트 (DeviceSetting) 상태 업데이트
+    updateCapsuleData(updatedCapsuleData); // 전역 상태 업데이트
+  }, [capsuleSlots]); // 🔹 `capsuleSlots` 변경 시만 실행
 
   return (
     <div>
       {/* 기기명 표시 */}
       <div className="text-center text-lg font-pre-medium mb-5">
-        {capsuleData.deviceName}
+        {latestCapsuleData.deviceName}
       </div>
 
       {/* 기기 이미지 */}
@@ -70,8 +73,8 @@ function EditCapsule() {
 
       {/* 캡슐 슬롯 설정 */}
       <Capsule
-        name={capsuleData.deviceName}
-        onSubmit={handleCapsuleDataChange}
+        name={latestCapsuleData.deviceName}
+        onSubmit={handleCapsuleDataChange} // ✅ 변경된 데이터가 즉시 반영됨
         initialData={capsuleSlots}
       />
 
@@ -82,4 +85,5 @@ function EditCapsule() {
     </div>
   );
 }
+
 export default EditCapsule;

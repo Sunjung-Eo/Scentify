@@ -14,20 +14,17 @@ import lombok.Setter;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomScheduleDto extends CombinationDto{
+public class CustomScheduleDto {
 	private Integer id;
     private String name;
     private int deviceId;
     private int day; 
+    private CombinationDto combination; 
     private Time startTime;
     private Time endTime;
     private int interval;
     private boolean modeOn;
-    
-    public String getParentName() {
-        return super.getName(); // 부모 클래스 `CombinationDto`의 name 값 반환
-    }
-    
+
 	public void setId(Integer id) {
 		this.id = id;
 	}

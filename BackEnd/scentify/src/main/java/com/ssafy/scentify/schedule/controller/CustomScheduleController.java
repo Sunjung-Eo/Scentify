@@ -1,5 +1,8 @@
 package com.ssafy.scentify.schedule.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +30,7 @@ public class CustomScheduleController {
 		this.customScheduleService = customScheduleService;
 	}
 	
+	// API 31번 : 시간 기반 예약 설정
 	@PostMapping("/add")
 	public ResponseEntity<?> setCustomSchedule(@RequestBody CustomScheduleDto customScheduleDto) {
 		try {
@@ -51,5 +55,30 @@ public class CustomScheduleController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// API 32번 : 시간 기반 예약 개별 조회
+	@PostMapping("/one")
+	public ResponseEntity<?> getIndividualCustomSchedule(@RequestBody Map<String, Integer> combinationIdMap) {
+		try {
+			// 조합 아이디 추출
+			Integer combinationId = combinationIdMap.get("combinationId");
+			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// 조합 정보 DB에서 조회 및 추출
+			Combination combination = combinationService.getCombinationById(combinationId);
+			if (combination == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// JSON 응답을 위한 Map 생성
+		    Map<String, Combination> response = new HashMap<>();
+		    response.put("combination", combination);
+
+		    return new ResponseEntity<>(response, HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.ssafy.scentify.combination.model.repository.CombinationRepository;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto.Combination;
-import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 
 @Service
 public class CombinationService {
@@ -24,9 +23,13 @@ public class CombinationService {
 		return combinationId;
 	}
 
-	public Integer createAutoCombination(Integer choice, int count) {
+	public Integer createAutoCombination(int choice, int count) {
 		int combinationId = UUID.randomUUID().hashCode() & Integer.MAX_VALUE;
 		if (!combinationRepository.createAutoCombination(combinationId, choice, count)) return null;
 		return combinationId;
+	}
+
+	public Combination getCombinationById(int combinationId) {
+		return combinationRepository.getCombinationById(combinationId);
 	}
 }

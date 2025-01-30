@@ -36,13 +36,14 @@ public class CustomScheduleController {
 	public ResponseEntity<?> setCustomSchedule(@RequestBody CustomScheduleDto customScheduleDto) {
 		try {
 			// 향 조합 등록 실패 시 400 반환
-			Integer combinationId = combinationService.createCombination(customScheduleDto);
+			CombinationDto combination = customScheduleDto.getCombination();
+			Integer combinationId = combinationService.createCombination(combination);
 			if (combinationId  == null) { 
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
 			// 커스텀 스케줄 등록 실패 시 400 반환
-			if (!customScheduleService.createCustomSchedule(customScheduleDto, combinationId, customScheduleDto.getParentName())) {
+			if (!customScheduleService.createCustomSchedule(customScheduleDto, combinationId, combination.getName())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
@@ -77,6 +78,36 @@ public class CustomScheduleController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	// API 33번 : 시간 기반 예약 수정
+	@PostMapping("/update")
+	public ResponseEntity<?> updateCustomSchedule(@RequestBody CustomScheduleDto customScheduleDto) {
+		try {
+			// 향 조합이 바뀌지 않았다면 id 값이 있음
+			CombinationDto combination = customScheduleDto.getCombination();
+			Integer combinationId = combination.getId();
+			
+			// 향 조합이 바뀐 경우 새롭게 등록해줌
+			if (combinationId == null) {			
+				combinationId = combinationService.createCombination(combination);			
+				if (combinationId  == null) { 
+					return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	
+				}
+			}
+			
+			// 커스텀 스케줄 수정 실패 시 400 반환
+			if (!customScheduleService.updateCustomSchedule(customScheduleDto, combinationId, combination.getName())) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 	// API 37번 : 시간 기반 예약 전체 조회
 	@PostMapping("/all")

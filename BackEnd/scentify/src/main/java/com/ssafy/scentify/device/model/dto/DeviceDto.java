@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class DeviceDto {
 	// - IPv4는 4개의 10진수 숫자로 구성되며 각 숫자는 0~255 사이.
@@ -113,9 +114,11 @@ public class DeviceDto {
 	
 	@Getter
 	@AllArgsConstructor
-	public static class defaultCombinationDto extends CombinationDto{
+	public static class defaultCombinationDto {
 		@NotNull
 	    private Integer id;
+		@Setter
+		private CombinationDto combination; 
 	    private int roomType;
 
 	    public void setRoomType(int roomType) {

@@ -156,11 +156,12 @@ public class DeviceController {
 	        if (capsules == null || capsules.isEmpty()) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // choice 값 검증
-	        if (!isValidCombination(capsules, combinationDto)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        CombinationDto combination = combinationDto.getCombination();
+	        if (!isValidCombination(capsules, combination)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // 조합을 먼저 등록
-	        combinationDto.setName("기본향");
-			Integer combinationId = combinationService.createCombination(combinationDto);			
+	        combination.setName("기본향");
+			Integer combinationId = combinationService.createCombination(combination);			
 			
 			// 조합 id가 null이면 등록 실패로 400 반환
 			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }			
@@ -207,12 +208,12 @@ public class DeviceController {
 	}
 	
 	// 기본향 조합 유효성 검사 메서드
-	private boolean isValidCombination(List<Integer> capsules, defaultCombinationDto combinationDto) {
+	private boolean isValidCombination(List<Integer> capsules, CombinationDto combination) {
 	    List<Integer> choices = List.of(
-	        combinationDto.getChoice1(),
-	        combinationDto.getChoice2(),
-	        combinationDto.getChoice3(),
-	        combinationDto.getChoice4()
+	        combination.getChoice1(),
+	        combination.getChoice2(),
+	        combination.getChoice3(),
+	        combination.getChoice4()
 	    );
 
 	    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인

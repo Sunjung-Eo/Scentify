@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CombinationDto {
+	private Integer id;
 	private String name;
     private int choice1; // NOT NULL
     @Setter

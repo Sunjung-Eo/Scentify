@@ -24,4 +24,8 @@ public class CustomScheduleService {
 	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName) {
 		return customScheduleRepository.createCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}
+
+	public boolean updateCustomSchedule(CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName) {
+		return customScheduleRepository.updateCustomSchedule(customScheduleDto, combinationId, combinationName);
+	}
 }

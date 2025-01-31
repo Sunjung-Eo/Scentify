@@ -1,12 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import "./start.css";
-import startBtnIcon from "../../assets/icons/start-btn.svg";
+import { useNavigate } from 'react-router-dom';
+import './start.css';
+import startBtnIcon from '../../assets/icons/start-btn.svg';
 
 const Start = () => {
   const navigate = useNavigate();
 
   const handleStart = () => {
-    navigate("/auth");
+    navigate('/login');
   };
 
   return (

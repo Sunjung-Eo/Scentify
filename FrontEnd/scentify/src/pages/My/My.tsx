@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/useAuthStore';
-
+import UserCard from '../../feature/Home/User/UserCard';
 const My = () => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -15,8 +15,11 @@ const My = () => {
   };
 
   return (
-    <div className="flex h-full items-center justify-center">
-      <button onClick={handleLogout}>로그아웃</button>
+    <div className="w-full mx-5">
+      <UserCard />
+      <div className="flex h-full items-center justify-center">
+        <button onClick={handleLogout}>로그아웃</button>
+      </div>
     </div>
   );
 };

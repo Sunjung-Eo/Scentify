@@ -1,20 +1,27 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import HomeIcon from "../assets/icons/home-icon.svg?react";
-import ControlIcon from "../assets/icons/control-icon.svg?react";
-import ScentIcon from "../assets/icons/scent-icon.svg?react";
-import MyIcon from "../assets/icons/my-icon.svg?react";
-import "../styles/footer.css";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import HomeIcon from '../assets/icons/home-icon.svg?react';
+import ControlIcon from '../assets/icons/control-icon.svg?react';
+import ScentIcon from '../assets/icons/scent-icon.svg?react';
+import MyIcon from '../assets/icons/my-icon.svg?react';
+import '../styles/footer.css';
 
 const Footer = () => {
   const location = useLocation();
 
+  // 특정 경로에서 Footer 숨김
+  const hideFooterPaths = /^\/user\/regist(\/.*)?$/;
+
   const tabs = [
-    { id: "home", icon: HomeIcon, path: "/home" },
-    { id: "control", icon: ControlIcon, path: "/control" },
-    { id: "scent", icon: ScentIcon, path: "/scent" },
-    { id: "my", icon: MyIcon, path: "/my" },
+    { id: 'home', icon: HomeIcon, path: '/home' },
+    { id: 'control', icon: ControlIcon, path: '/control' },
+    { id: 'scent', icon: ScentIcon, path: '/scent' },
+    { id: 'my', icon: MyIcon, path: '/my' },
   ];
+
+  if (hideFooterPaths.test(location.pathname)) {
+    return null;
+  }
 
   return (
     <nav className="footer">
@@ -25,8 +32,8 @@ const Footer = () => {
             <IconComponent
               className={`mx-auto h-10 w-11 fill-[#5E5E5E] ${
                 location.pathname.includes(tab.path)
-                  ? "fill-[#EE9D7F]"
-                  : "fill-[#5E5E5E]"
+                  ? 'fill-[#EE9D7F]'
+                  : 'fill-[#5E5E5E]'
               }`}
             />
           </Link>

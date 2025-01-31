@@ -1,6 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../stores/useAuthStore';
-import UserCard from '../../feature/Home/User/UserCard';
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/useAuthStore";
+import UserCard from "../../feature/Home/mainhome/user/UserCard";
+
 const My = () => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -8,9 +9,9 @@ const My = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/auth/login'); // 로그아웃 후 로그인 페이지로 이동
+      navigate("/auth/login"); // 로그아웃 후 로그인 페이지로 이동
     } catch (error) {
-      console.error('로그아웃 실패:', error);
+      console.error("로그아웃 실패:", error);
     }
   };
 

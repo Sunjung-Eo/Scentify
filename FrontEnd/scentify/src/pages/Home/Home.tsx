@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-// import HomeMain from "./HomeMain.tsx"; // Home의 메인 화면
 import RegistDevice1 from "../../feature/Home/deviceregistration/ReigistDevice1.tsx";
 import RegistDevice2 from "../../feature/Home/deviceregistration/RegistDevice2.tsx";
 import RegistConnecting from "../../feature/Home/deviceregistration/RegistConnecting.tsx";

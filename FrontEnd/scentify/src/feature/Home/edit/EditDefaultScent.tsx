@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SpaceDescription from "../defaultscent/SpaceDescription";
 import { useControlStore } from "../../../stores/useControlStore";
 import { useCapsuleAndDefaultScentStore } from "../../../stores/useCapsuleAndDefaultScentStore";
@@ -14,6 +15,7 @@ interface EditDefaultScentProps {
 }
 
 function EditDefaultScent({ latestCapsuleData }: EditDefaultScentProps) {
+  const navigate = useNavigate();
   const { setCompleteHandler } = useControlStore();
   const { previousCapsuleData, previousScentData, updateDefaultScentData } =
     useCapsuleAndDefaultScentStore();
@@ -65,6 +67,7 @@ function EditDefaultScent({ latestCapsuleData }: EditDefaultScentProps) {
       });
 
       console.log("저장된 기본향 설정:", scents);
+      navigate("/home");
     };
 
     setCompleteHandler(handleComplete);

@@ -30,10 +30,10 @@ const Footer = () => {
         return (
           <Link key={tab.id} to={tab.path} className="flex-1 py-3">
             <IconComponent
-              className={`mx-auto h-10 w-11 fill-[#5E5E5E] ${
+              className={`mx-auto h-10 w-11 ${
                 location.pathname.includes(tab.path)
-                  ? 'fill-[#EE9D7F]'
-                  : 'fill-[#5E5E5E]'
+                  ? 'text-[#EE9D7F]'
+                  : 'text-[#5E5E5E]'
               }`}
             />
           </Link>

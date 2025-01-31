@@ -8,6 +8,7 @@ if __name__ == "__main__":
     camera = Camera()
     slowfast = SlowFast()
     yolo_model = SIMPLEYOLO()
+    yolo_model.print_log=True
     while True:
         frame = camera.get_one_frame()
         person_detect = yolo_model.person_detect(frame)

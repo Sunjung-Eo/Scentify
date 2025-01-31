@@ -27,7 +27,7 @@ class SlowFast:
         self.active_exercise_mode = True
 
         # Load SlowFast Model
-        self.model_path="slow_fast_lr=5e-4.pth"
+        self.model_path="./model/slow_fast_lr=5e-4.pth"
         self.model = create_slowfast(model_num_class=num_classes).cuda()
         self.model.blocks[6].proj = torch.nn.Linear(
             self.model.blocks[6].proj.in_features,

@@ -40,7 +40,7 @@ public interface DeviceRepository {
    	
     // 그룹 아이디 업데이트
     @Update("UPDATE device SET group_id = #{groupId} WHERE id = #{id}")
-    boolean updateGroupId(Integer id, Integer groupId);
+    boolean updateGroupId(int id, int groupId);
     
     // 캡슐 정보 업데이트
     @Update("UPDATE device SET name = #{name}, slot_1 = #{slot1}, slot_2 = #{slot2},"
@@ -59,4 +59,8 @@ public interface DeviceRepository {
 	@Update("UPDATE device SET slot_1_remainingRatio = #{request.slot1RemainingRatio}, slot_2_remainingRatio = #{request.slot2RemainingRatio},"
 			+ "slot_3_remainingRatio = #{request.slot3RemainingRatio}, slot_4_remainingRatio = #{request.slot4RemainingRatio} WHERE id = #{id}")
 	boolean updateCapsuleRemaining(int id, @Param("request") WebSocketDto.CapsuleRemainingRequest request);
+	
+	// 모드 업데이트
+    @Update("UPDATE device SET mode = #{mode} WHERE id = #{id}")
+	boolean updateMode(int id, boolean mode);
 }

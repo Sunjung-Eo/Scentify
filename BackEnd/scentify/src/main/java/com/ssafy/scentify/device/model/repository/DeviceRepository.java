@@ -57,6 +57,6 @@ public interface DeviceRepository {
 	
 	// 캡슐 잔여량 정보 업데이트
 	@Update("UPDATE device SET slot_1_remainingRatio = #{request.slot1RemainingRatio}, slot_2_remainingRatio = #{request.slot2RemainingRatio},"
-			+ "slot_3_remainingRatio = #{request.slot3RemainingRatio}, slot_4_remainingRatio = #{request.slot4RemainingRatio} WHERE serial = #{serial}")
-	boolean updateCapsuleRemaining(String serial, @Param("request") WebSocketDto.CapsuleRemainingRequest request);
+			+ "slot_3_remainingRatio = #{request.slot3RemainingRatio}, slot_4_remainingRatio = #{request.slot4RemainingRatio} WHERE id = #{id}")
+	boolean updateCapsuleRemaining(int id, @Param("request") WebSocketDto.CapsuleRemainingRequest request);
 }

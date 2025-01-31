@@ -63,8 +63,8 @@ public class DeviceService {
 		return deviceRepository.updateTempHum(id, request);
 	}
 
-	public boolean updateCapsuleRemaining(String serial, CapsuleRemainingRequest request) {
-		return deviceRepository.updateCapsuleRemaining(serial, request);	
+	public boolean updateCapsuleRemaining(int id, CapsuleRemainingRequest request) {
+		return deviceRepository.updateCapsuleRemaining(id, request);	
 	}
 
 	public boolean updateGroupId(Integer id, Integer groupId) {

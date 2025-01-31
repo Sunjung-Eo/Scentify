@@ -1,21 +1,25 @@
 package com.ssafy.scentify.websocket;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.schedule.service.CustomScheduleService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
-import com.ssafy.scentify.websocket.model.dto.WebSocketDto.UpdateCustomScheduleRequest;
-import com.ssafy.scentify.websocket.model.dto.WebSocketDto.UpdateCustomScheduleRequest.Combination;
+
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 public class WebSocketController {
 	
 	private final DeviceService deviceService;
+	private final CustomScheduleService customScheduleService;
 	private final TokenProvider tokenProvider;
 	private final SimpMessagingTemplate template;
 	
-	public WebSocketController(DeviceService deviceService, TokenProvider tokenProvider, SimpMessagingTemplate template) {
+	public WebSocketController(DeviceService deviceService, CustomScheduleService customScheduleService, TokenProvider tokenProvider, SimpMessagingTemplate template) {
 		this.deviceService = deviceService;
+		this.customScheduleService = customScheduleService;
 		this.tokenProvider = tokenProvider;
 		this.template = template;
 	}
@@ -80,7 +86,7 @@ public class WebSocketController {
 	public void sendCustomScheduleUpdate(CustomScheduleDto scheduleDto) {
 		// 요청 객체 생성
 		int deviceId = scheduleDto.getDeviceId();
-		UpdateCustomScheduleRequest scheduleRequest = new UpdateCustomScheduleRequest();
+		CustomScheduleRequest scheduleRequest = new CustomScheduleRequest();
 		scheduleRequest.setId(scheduleDto.getId());
 		scheduleRequest.setStartTime(scheduleDto.getStartTime());
 		scheduleRequest.setEndTime(scheduleDto.getEndTime());
@@ -89,10 +95,15 @@ public class WebSocketController {
 		scheduleRequest.setCombination(null);
 		
 		if (scheduleDto.getCombination().getId() == null) {
-			Combination combination = new Combination(scheduleDto.getCombination().getChoice1(), scheduleDto.getCombination().getChoice1Count(),
-													  scheduleDto.getCombination().getChoice2(), scheduleDto.getCombination().getChoice2Count(), 
-													  scheduleDto.getCombination().getChoice3(), scheduleDto.getCombination().getChoice3Count(),
-													  scheduleDto.getCombination().getChoice4(), scheduleDto.getCombination().getChoice4Count());
+			Combination combination = new Combination();
+			combination.setChoice1(scheduleDto.getCombination().getChoice1());
+			combination.setChoice1Count(scheduleDto.getCombination().getChoice1Count());
+			combination.setChoice2(scheduleDto.getCombination().getChoice2());
+			combination.setChoice2Count(scheduleDto.getCombination().getChoice2Count());
+			combination.setChoice3(scheduleDto.getCombination().getChoice3());
+			combination.setChoice3Count(scheduleDto.getCombination().getChoice3Count());
+			combination.setChoice4(scheduleDto.getCombination().getChoice4());
+			combination.setChoice4Count(scheduleDto.getCombination().getChoice4Count());
 			scheduleRequest.setCombination(combination);
 		}
 
@@ -110,5 +121,19 @@ public class WebSocketController {
 		
 		// 메시지 전송
         template.convertAndSend("/topic/Schedule/Delete/" + deviceId, scheduleRequest);
+	}
+	
+	// API 38번 : 매일 자정 custom 스케줄 배치
+	@Scheduled(cron = "0 0 0 * * ?") 
+	public void sendDailyCustomSchedules() {
+		Map<Integer, List<CustomScheduleRequest>> groupedSchedules = customScheduleService.getGroupedSchedules();
+		
+		groupedSchedules.forEach((deviceId, schedules) -> {
+            String destination = "/topic/Schedule/Initial/" + deviceId;
+            Map<String, Object> message = new HashMap<>();
+            message.put("schedules", schedules);
+            template.convertAndSend(destination, message);
+            log.info("자정 배치: deviceId={} 에 스케줄 {}개 전송", deviceId, schedules.size());
+        });
 	}
 }

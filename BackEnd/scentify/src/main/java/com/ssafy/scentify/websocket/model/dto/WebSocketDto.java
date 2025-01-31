@@ -55,17 +55,16 @@ public class WebSocketDto {
 	
 	@Data
 	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class UpdateCustomScheduleRequest {
+	public static class CustomScheduleRequest {
 		private int id;
-	    private Combination combination; 
+		private int deviceId;
 	    private Time startTime;
 	    private Time endTime;
 	    private int interval;
 	    private boolean modeOn;
+	    private Combination combination; 
 	    
 	    @Data
-	    @AllArgsConstructor
 	    public static class Combination {
 	    	private int choice1; // NOT NULL
     	    @Setter

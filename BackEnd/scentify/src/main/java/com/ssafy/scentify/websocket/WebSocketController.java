@@ -136,4 +136,18 @@ public class WebSocketController {
             log.info("자정 배치: deviceId={} 에 스케줄 {}개 전송", deviceId, schedules.size());
         });
 	}
+	
+	// API 30번 : 모드 변경 시 RB에 정보를 전달하는 메서드
+	public void sendDeviceMode(Map<String, Object> modeInfoMap) {
+		// 디바이스 아이디와 모드 추출
+		int deviceId = (int) modeInfoMap.get("deviceId");
+		int mode = (boolean) modeInfoMap.get("mode") ? 1 : 0;
+        
+        // 요청 객체 생성
+		Map<String, Integer> modeRequest = new HashMap<>();
+		modeRequest.put("mode", mode);
+		
+		// 메시지 전송
+        template.convertAndSend("/topic/ModeChange/" + deviceId, modeRequest);
+	}
 }

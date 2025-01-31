@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.*;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 
 @Mapper
 public interface CustomScheduleRepository {
@@ -25,6 +26,9 @@ public interface CustomScheduleRepository {
         @Result(column = "mode_on", property = "modeOn")
     })
     List<CustomScheduleHomeDto> getSchedulesByDeviceId(int deviceId);
+	
+	// 배치를 위해 모든 custom 스케줄 조회 (별도의 매퍼에 구현)
+	List<CustomScheduleRequest> selectAllSchedules();
 	
 	// 커스텀 스케줄 생성
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 

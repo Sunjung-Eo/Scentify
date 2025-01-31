@@ -1,12 +1,15 @@
 package com.ssafy.scentify.schedule.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.model.repository.CustomScheduleRepository;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 
 @Service
 public class CustomScheduleService {
@@ -31,5 +34,11 @@ public class CustomScheduleService {
 
 	public boolean deleteCustomScheduleById(int customScheduleId, int deviceId) {
 		return customScheduleRepository.deleteCustomScheduleById(customScheduleId, deviceId);
+	}
+
+	public Map<Integer, List<CustomScheduleRequest>> getGroupedSchedules() {
+		List<CustomScheduleRequest> allSchedules = customScheduleRepository.selectAllSchedules();
+        return allSchedules.stream()
+        					.collect(Collectors.groupingBy(CustomScheduleRequest::getDeviceId));
 	}
 }

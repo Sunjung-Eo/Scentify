@@ -110,7 +110,7 @@ public class KakaoController {
 			
 			// 해당 이메일 정보로 가입한 회원이 이미 있는데 카카오 소셜 회원이 아닌 경우
 			if (existingUserInfo != null && existingUserInfo.getSocialType() != 2) {
-				response.sendRedirect("http://localhost:5173/login/social?social=false"); 
+				response.sendRedirect("http://localhost:5173/login/social?social=false&provider=kakao"); 
 				return;
 			}
 			
@@ -154,11 +154,11 @@ public class KakaoController {
 	            response.addCookie(refreshTokenCookie);
 		    	
 	            if (updated) {
-	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login");
+	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&provider=kakao");
 	            	return;
 	            }
 	            
-	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false");
+	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false&provider=kakao");
 				return;
 		    }
 		    
@@ -173,7 +173,7 @@ public class KakaoController {
 		    	session.setAttribute("deviceId", deviceId);
 		    }
 		    
-			response.sendRedirect("http://localhost:5173/login/social?social=true&status=regist&email=" + email);
+			response.sendRedirect("http://localhost:5173/login/social?social=true&status=regist&email=" + email + "&provider=kakao");
 			return;
 	    
 	    } catch (Exception e) {

@@ -266,6 +266,9 @@ public class DeviceController {
 	        // 만약 업데이트를 실패하면 400 반환
 	        if (!deviceService.updateMode(deviceId, mode)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
+	        // RB에 전달
+	        socketController.sendDeviceMode(payload);
+	        
 	        return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리

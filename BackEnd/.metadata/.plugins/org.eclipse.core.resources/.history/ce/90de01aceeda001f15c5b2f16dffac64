@@ -1,0 +1,64 @@
+package com.ssafy.scentify.model.dto;
+
+import java.sql.Date;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+public class UserDto {
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
+	
+	@Data
+	@AllArgsConstructor
+	public static class LoginDto {
+		@NotBlank 
+	    private String id;
+		@NotBlank
+	    private String password;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class SocialLoginDto {
+		@NotBlank 
+	    private String id;
+		@NotBlank
+	    private Integer socialType;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class SocialRegisterDto {
+		@NotBlank
+	    private String password;
+	    @NotBlank
+	    private String nickname;   
+	    @Email @NotBlank
+	    private String email;   
+	    @NotNull
+	    private Integer imgNum;
+	    @NotNull
+	    private Integer socialType;
+	    @NotNull
+	    private Integer gender;
+	    @NotNull
+	    private Date birth;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class UserInfoDto {
+		@NotNull
+	    private Integer gender;
+	    @NotNull
+	    private LocalDate birth;
+	}
+}

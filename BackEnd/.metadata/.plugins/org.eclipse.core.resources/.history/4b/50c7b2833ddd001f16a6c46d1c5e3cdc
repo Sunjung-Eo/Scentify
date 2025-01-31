@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.scentify.group.model.repository.GroupRepository">
+	<update id="updateMember">
+		UPDATE `group`
+			<set>
+				CASE 
+				    WHEN member_1_id IS NULL THEN 
+				        member_1_id = #{memberId},
+				        member_1_nickname = #{memberNickname}
+				    WHEN member_1_id IS NOT NULL AND member_2_id IS NULL THEN
+				        member_2_id = #{memberId},
+				        member_2_nickname = #{memberNickname}
+				    WHEN member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NULL THEN
+				        member_3_id = #{memberId},
+				        member_3_nickname = #{memberNickname}
+				    WHEN member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NOT NULL AND member_4_id IS NULL THEN
+				        member_4_id = #{memberId},
+				        member_4_nickname = #{memberNickname}
+				END
+			</set>
+		WHERE id = #{id}
+		AND (
+		    member_1_id IS NULL OR
+		    (member_1_id IS NOT NULL AND member_2_id IS NULL) OR
+		    (member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NULL) OR
+		    (member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NOT NULL AND member_4_id IS NULL)
+		);
+	</update>
+</mapper>
+
+

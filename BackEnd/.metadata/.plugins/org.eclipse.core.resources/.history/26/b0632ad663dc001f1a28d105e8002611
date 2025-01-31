@@ -1,0 +1,14 @@
+package com.ssafy.scentify.combination;
+
+import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto.Combination;
+
+@Service
+public class CombinationService {
+
+	public boolean createCombination(Combination combination) {
+		
+	}
+	
+}

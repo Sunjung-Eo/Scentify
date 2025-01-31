@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f4f4f9; color: #333333;">
+    <div style="margin: 50px auto; padding: 20px; max-width: 600px; background-color: #fff7e6; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+        <h3 style="font-size: 24px; text-align: center; margin-bottom: 20px; color: #333333; font-weight: bold;">
+            안녕하세요 😊
+        </h3>
+        <p style="font-size: 18px; text-align: center; margin: 10px 0; line-height: 1.5; color: #555555; font-weight: bold;">
+            당신의 공간에 향기를 만들어 주는, 스마트 디퓨저 서비스 <span style="color: #637d42;">Scentify</span>입니다.
+        </p>
+        <p style="font-size: 16px; text-align: center; margin: 20px 0; line-height: 1.5; color: #555555;">
+            요청하신 인증코드를 입력해주세요.
+        </p>
+        <div style="margin: 20px auto; padding: 20px; border: 2px solid #637d42; border-radius: 8px; background-color: #ffffff; text-align: center;">
+            <h3 style="font-size: 20px; margin: 10px 0; color: #637d42; font-weight: bold;">인증코드 :</h3>
+            <div style="font-size: 24px; font-weight: bold; color: #333333; margin: 10px 0;" th:text="${verifyCode}">[인증코드]</div>
+        </div>
+        <p style="text-align: center; font-size: 12px; color: #aaaaaa; margin-top: 20px;">
+            ⓒ 2025 Scentify, All Rights Reserved.
+        </p>
+    </div>
+</body>
+</html>

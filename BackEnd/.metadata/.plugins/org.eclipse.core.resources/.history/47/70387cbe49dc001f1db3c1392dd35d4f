@@ -1,0 +1,5 @@
+package com.ssafy.scentify.websocket;
+
+public class HandShakeStateManager {
+
+}

@@ -1,0 +1,32 @@
+package com.ssafy.scentify.home.model.dto;
+
+import lombok.Data;
+
+public class HomeDto {
+	@Data
+	public class UserHomeDto {
+	    private String nickName;
+	    private int imgNum;
+	    private int mainDeviceId;
+	}
+	
+	@Data
+	public class DeviceHomeDto {
+	    private int id;
+	    private String name;
+	    private int groupId;
+	    private int slot1;
+	    private int slot1RemainingRatio;
+	    private int slot2;
+	    private int slot2RemainingRatio;
+	    private int slot3;
+	    private int slot3RemainingRatio;
+	    private int slot4;
+	    private int slot4RemainingRatio;
+	    private int mode;
+	    private int temperature;
+	    private int humidity;
+	    private int defaultCombination;
+	}
+
+}

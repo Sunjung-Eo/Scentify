@@ -1,0 +1,44 @@
+package com.example.demo;
+
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
+@RestController
+public class Controller {
+	
+	@Autowired
+	private TokenProvider provider;
+	
+	@GetMapping("/")
+	public String postMethodName() {
+		System.out.println(provider.createJwtToken("f5tH8jW9qA2D1Z7n"));
+		return "";
+	}
+	
+	@GetMapping("/email")
+	 public String mailSend(String url){
+	        String test = "성공";
+	        try {
+	            MimeMessage m = mailSend(); 
+	            MimeMessageHelper h = new MimeMessageHelper(m,"UTF-8");
+	            h.setFrom("djtjswjd1@naver.com");
+	            h.setTo("sunjung.eo@gmail.com");
+	            h.setSubject("test");
+	            h.setText("test입니다");
+	            
+	        } catch (Exception e){
+	            e.printStackTrace();
+	            test = "실패";
+	        }
+	        return test;
+	    }
+}

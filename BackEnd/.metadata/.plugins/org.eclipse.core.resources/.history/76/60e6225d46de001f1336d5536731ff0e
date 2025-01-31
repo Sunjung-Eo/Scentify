@@ -1,0 +1,55 @@
+package com.ssafy.scentify.home.model.dto;
+
+import lombok.Data;
+
+public class HomeDto {
+	@Data
+	public static class UserHomeDto {
+	    private String nickName;
+	    private int imgNum;
+	    private int mainDeviceId;
+	}
+	
+	@Data
+	public static class DeviceHomeDto {
+	    private int id;
+	    private String name;
+	    private int groupId;
+	    private int slot1;
+	    private int slot1RemainingRatio;
+	    private int slot2;
+	    private int slot2RemainingRatio;
+	    private int slot3;
+	    private int slot3RemainingRatio;
+	    private int slot4;
+	    private int slot4RemainingRatio;
+	    private int mode;
+	    private int temperature;
+	    private int humidity;
+	    private int defaultCombination;
+	}
+	
+	@Data
+	public static class AutoScheduleHomeDto {
+	    private int id;
+	    private int combinationId;
+	    private Integer subMode; 
+	    private Integer type;    
+	    private int modeOn;
+	}
+	
+	@Data
+	public class CustomScheduleDto {
+	    private int id;
+	    private String name;
+	    private int combinationId;
+	    private String combinationName;
+	    private int isFavorite;
+	    private int day;
+	    private String startTime;
+	    private String endTime;
+	    private int interval;
+	}
+
+
+}

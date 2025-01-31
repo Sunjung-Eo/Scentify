@@ -1,0 +1,25 @@
+package com.ssafy.scentify.schedule.service;
+
+import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.schedule.model.repository.AutoScheduleRepository;
+
+@Service
+public class AutoScheduleService {
+	
+	private final AutoScheduleRepository autoScheduleRepository;
+	
+	public AutoScheduleService(AutoScheduleRepository autoScheduleRepository) {
+		this.autoScheduleRepository = autoScheduleRepository;
+	}
+
+	public boolean setDeodorizationMode(Integer deviceId, Integer combinationId, Integer subMode, Integer interval) {
+		return autoScheduleRepository.createDeodorizationMode(deviceId, combinationId, subMode, interval) ? true : false;
+	}
+
+	public void setDetectionMode(Integer deviceId, Integer combinationId, Integer subMode) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

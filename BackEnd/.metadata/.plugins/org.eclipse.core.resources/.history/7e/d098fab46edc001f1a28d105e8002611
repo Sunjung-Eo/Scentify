@@ -1,0 +1,10 @@
+package com.ssafy.scentify.schedule.model.repository;
+
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface AutoScheduleRepository {
+
+	boolean createDeodorizationMode(Integer deviceId, Integer combinationId, Integer subMode, Integer interval);
+
+}

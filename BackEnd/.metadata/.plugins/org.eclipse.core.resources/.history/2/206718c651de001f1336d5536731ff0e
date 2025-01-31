@@ -1,0 +1,37 @@
+package com.ssafy.scentify.schedule.model.repository;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
+
+@Mapper
+public interface AutoScheduleRepository {
+	
+	// 인터벌이 있는 자동화 모드 생성
+	@Insert("Insert INTO autoschedule (device_id, combination_id, sub_mode, type, `interval`, mode_on, created_at, updated_at) "
+			+ "VALUES (#{deviceId}, #{combinationId}, #{subMode}, #{type}, #{interval}, 0, NOW(), NOW())")
+	boolean createMode(int deviceId, int combinationId, int subMode, Integer type, int interval);
+	
+	// 인터벌이 없는 자동화 모드 생성
+	@Insert("Insert INTO autoschedule (device_id, combination_id, sub_mode, mode_on, created_at, updated_at) "
+			+ "VALUES (#{deviceId}, #{combinationId}, #{subMode}, 0, NOW(), NOW())")
+	boolean createModeWithoutInterval(int deviceId, int combinationId, int subMode);
+	
+	// 디바이스 아이디에 해당하는 자동화 스케줄 선택
+	@Select("SELECT id, combination_id, sub_mode, type, mode_on " +
+	        "FROM autoschedule WHERE device_id = #{deviceId}")
+	@Results({
+	    @Result(column = "id", property = "id"),
+	    @Result(column = "combination_id", property = "combinationId"),
+	    @Result(column = "sub_mode", property = "subMode"),
+	    @Result(column = "type", property = "type"),
+	    @Result(column = "mode_on", property = "modeOn")
+	})
+	List<AutoScheduleHomeDto> selectSchedulesByDeviceId(int deviceId);
+
+
+}

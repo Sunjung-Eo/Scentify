@@ -1,0 +1,18 @@
+package com.ssafy.scentify.service;
+
+import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.model.repository.DeviceRepository;
+
+@Service
+public class DeviceService {
+	private final DeviceRepository deviceRepository;
+	
+	public DeviceService(DeviceRepository deviceRepository) {
+		this.deviceRepository = deviceRepository;
+	}
+	
+	public boolean selectDeviceBySerial(String Serial) {
+		return deviceRepository.existsBySerial(Serial) ? true : false;
+	}
+}

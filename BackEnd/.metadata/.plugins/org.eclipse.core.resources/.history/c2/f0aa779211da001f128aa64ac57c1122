@@ -1,0 +1,46 @@
+package com.example.demo;
+
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+
+@Component
+public class TokenProvider implements InitializingBean {
+	private String secretKeyPlain="e83985d264a1a7e45ccbe38b9359e41b3d26cb4afea9302b77003f4a0e0680723982e61fea4b9e205d1a62861502b3854b141b2a55ce513d98451303faaba66d";
+	private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 30; // 30분
+	private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24; // 1일
+	
+	private static SecretKey secretKey;
+	private final OpenCrypt openCrypt;
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		byte[] keyBytes = Decoders.BASE64.decode(secretKeyPlain);
+		this.secretKey =Keys.hmacShaKeyFor(keyBytes);	
+	}
+	
+	public TokenProvider(OpenCrypt openCrypt) {
+		this.openCrypt = openCrypt;
+	}
+	
+	// 토큰 DTO를 만드는 메서드 
+	public String  createJwtToken(String id) {
+		Date now = new Date();
+
+		return Jwts.builder()
+				.claim("token", now)
+				.setIssuedAt(now)
+				.setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION))
+				.signWith(SignatureAlgorithm.HS256, secretKey)
+				.compact();
+	}
+	
+}

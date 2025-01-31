@@ -1,0 +1,15 @@
+package com.ssafy.scentify.schedule.model.repository;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
+
+@Mapper
+public interface CustomScheduleRepository {
+	
+	@Select()
+	List<CustomScheduleHomeDto> getSchedulesByDeviceId(int mainDeviceId);
+}

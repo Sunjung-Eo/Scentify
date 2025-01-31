@@ -1,0 +1,22 @@
+package com.ssafy.scentify.group;
+
+import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
+import com.ssafy.scentify.group.model.repository.GroupRepository;
+
+@Service
+public class GroupService {
+	
+	private final GroupRepository groupRepository;
+	
+	public GroupService(GroupRepository groupRepository) {
+		this.groupRepository = groupRepository;
+	}
+
+	public int createGroup(String userId, String nickname) {
+		CreateDto createDto = new CreateDto(null, userId, nickname);
+		return groupRepository.createGroup(createDto);
+	}
+
+}

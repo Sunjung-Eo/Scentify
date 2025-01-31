@@ -1,0 +1,89 @@
+package com.ssafy.scentify.combination.model.entity;
+
+import lombok.*;
+
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Combination {
+    private Integer id;
+    private String name;
+    private Integer choice1;
+    private Integer choice1Count;
+    private Integer choice2;
+    private Integer choice2Count;
+    private Integer choice3;
+    private Integer choice3Count;
+    private Integer choice4;
+    private Integer choice4Count;
+    private String imageUrl;
+    
+ // name의 유효성 검사 및 설정
+    public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or blank.");
+        }
+        if (name.length() > 15) {
+            throw new IllegalArgumentException("Name cannot exceed 15 characters.");
+        }
+        this.name = name;
+    }
+
+    // choice1의 유효성 검사 및 설정 (NOT NULL, 0 ~ 8)
+    public void setChoice1(Integer choice1) {
+        if (choice1 == null || choice1 < 0 || choice1 > 8) {
+            throw new IllegalArgumentException("Choice1 must not be null and must be between 0 and 8.");
+        }
+        this.choice1 = choice1;
+    }
+
+    // choice1Count의 설정
+    public void setChoice1Count(Integer choice1Count) {
+        this.choice1Count = choice1Count;
+    }
+
+    // choice2의 유효성 검사 및 설정 (NULL 허용, 0 ~ 8)
+    public void setChoice2(Integer choice2) {
+        if (choice2 != null && (choice2 < 0 || choice2 > 8)) {
+            throw new IllegalArgumentException("Choice2 must be between 0 and 8, or null.");
+        }
+        this.choice2 = choice2;
+    }
+
+    // choice2Count의 설정
+    public void setChoice2Count(Integer choice2Count) {
+        this.choice2Count = choice2Count;
+    }
+
+    // choice3의 유효성 검사 및 설정 (NULL 허용, 0 ~ 8)
+    public void setChoice3(Integer choice3) {
+        if (choice3 != null && (choice3 < 0 || choice3 > 8)) {
+            throw new IllegalArgumentException("Choice3 must be between 0 and 8, or null.");
+        }
+        this.choice3 = choice3;
+    }
+
+    // choice3Count의 설정
+    public void setChoice3Count(Integer choice3Count) {
+        this.choice3Count = choice3Count;
+    }
+
+    // choice4의 유효성 검사 및 설정 (NULL 허용, 0 ~ 8)
+    public void setChoice4(Integer choice4) {
+        if (choice4 != null && (choice4 < 0 || choice4 > 8)) {
+            throw new IllegalArgumentException("Choice4 must be between 0 and 8, or null.");
+        }
+        this.choice4 = choice4;
+    }
+
+    // choice4Count의 설정
+    public void setChoice4Count(Integer choice4Count) {
+        this.choice4Count = choice4Count;
+    }
+
+    // imageUrl의 설정
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+}

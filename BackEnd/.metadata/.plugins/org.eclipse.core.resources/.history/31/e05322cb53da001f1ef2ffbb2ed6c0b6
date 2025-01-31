@@ -1,0 +1,39 @@
+package com.ssafy.scentify.config;
+
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import com.ssafy.scentify.util.TokenFilter;
+
+import lombok.extern.slf4j.Slf4j;
+
+//@Slf4j
+//@Configuration
+public class EmailConfig {
+//	@Value("${GOOGLE_EMAIL}") private String fromEmail;
+//	@Value("${GOOGLE_PASSWORD}") private String emailPassword;
+//	
+//	@Bean
+//	public JavaMailSender mailSender() {
+//		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//	    mailSender.setHost("smtp.gmail.com");
+//	    mailSender.setPort(587); // TLS port
+//	    mailSender.setUsername(fromEmail);
+//	    mailSender.setPassword(emailPassword);
+//	
+//	    Properties javaMailProperties = new Properties();
+//	    javaMailProperties.put("mail.transport.protocol", "smtp");
+//	    javaMailProperties.put("mail.smtp.auth", "true");
+//	    javaMailProperties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+//	    javaMailProperties.put("mail.smtp.starttls.enable", "true");
+//	    javaMailProperties.put("mail.debug", "true");
+//	    javaMailProperties.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+//	    javaMailProperties.put("mail.smtp.ssl.protocols", "TLSv1.3"); 
+//		return mailSender;
+//	}
+}

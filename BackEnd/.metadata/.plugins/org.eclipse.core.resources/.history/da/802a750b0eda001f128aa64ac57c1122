@@ -1,0 +1,24 @@
+package com.ssafy.scentify.model.dto;
+
+import lombok.Data;
+
+public class WebSocketDto {
+	
+	@Data
+	public class ModeChangeRequest {
+	    private String type;  
+	    private int mode;     
+	    private boolean stinkModeOn;
+	    private boolean exerciseModeOn;
+	    private boolean restModeOn;
+	    private boolean simpleDetectionModeOn;
+	}
+	
+	@Data
+	public class DeviceRequest {
+	    private String token;        // 시리얼 번호 JWT
+	    private String type;         // 요청 타입
+	    private Float temperature;   // 온도 (옵션)
+	    private Integer humidity;    // 습도 (옵션)
+	}
+}

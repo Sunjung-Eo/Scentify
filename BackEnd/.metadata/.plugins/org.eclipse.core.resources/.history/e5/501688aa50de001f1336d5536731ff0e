@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.scentify.device.model.repository.DeviceRepository">
+	<select id="selectDevicesByIds" parameterType="list" resultType="com.ssafy.scentify.device.model.dto.DeviceDto$DeviceInfoDto">
+	    SELECT id, name, group_id, slot_1, slot_1_remainingRatio, slot_2, slot_2_remainingRatio, 
+	    		slot_3, slot_3_remainingRatio, slot_4, slot_4_remainingRatio, mode
+	    FROM device
+	    WHERE id IN
+	    <foreach item="id" collection="deviceIds" open="(" separator="," close=")">
+	        #{id}
+	    </foreach>
+	</select>
+	
+	<select id="getDeviceHomeInfoById" resultType="com.ssafy.scentify.home.model.dto.HomeDto$DeviceHomeDto">
+        SELECT 
+            id, 
+            name, 
+            group_id AS groupId,
+            slot_1 AS slot1, 
+            slot_1_remainingRatio AS slot1RemainingRatio,
+            slot_2 AS slot2, 
+            slot_2_remainingRatio AS slot2RemainingRatio,
+            slot_3 AS slot3, 
+            slot_3_remainingRatio AS slot3RemainingRatio,
+            slot_4 AS slot4, 
+            slot_4_remainingRatio AS slot4RemainingRatio,
+            mode, 
+            temperature, 
+            humidity, 
+            default_combination AS defaultCombination
+        FROM device
+        WHERE id = #{deviceId}
+    </select>
+</mapper>

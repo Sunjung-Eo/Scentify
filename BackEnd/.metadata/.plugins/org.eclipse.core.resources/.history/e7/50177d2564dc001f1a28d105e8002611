@@ -1,0 +1,12 @@
+package com.ssafy.scentify.combination.model.repository;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto.Combination;
+
+@Mapper
+public interface CombinationRepository {
+
+	boolean createCombination(Integer combinationId, Combination combination);
+
+}

@@ -1,0 +1,23 @@
+package com.ssafy.scentify.schedule.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
+import com.ssafy.scentify.schedule.model.repository.CustomScheduleRepository;
+
+@Service
+public class CustomScheduleService {
+	
+	private final CustomScheduleRepository customScheduleRepository;
+	
+	public CustomScheduleService(CustomScheduleRepository customScheduleRepository) {
+		this.customScheduleRepository = customScheduleRepositoryl
+	}
+	
+	public List<CustomScheduleHomeDto> getSchedulesByDeviceId(int mainDeviceId) {
+		return null;
+	}
+
+}

@@ -1,0 +1,161 @@
+package com.ssafy.scentify.device.model.entity;
+
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Device {
+	
+	// - IPv4는 4개의 10진수 숫자로 구성되며 각 숫자는 0~255 사이.
+	// - 각 숫자는 "."으로 구분됨.
+	// - (25[0-5]): 250~255 범위의 숫자
+	// - (2[0-4][0-9]): 200~249 범위의 숫자
+	// - ([0-1]?[0-9][0-9]?): 0~199 범위의 숫자
+	// - ^와 $: 문자열의 시작과 끝을 나타내, 전체 문자열이 이 형식과 일치해야 함.
+	static final String ipRegex = "^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\." +
+            						"(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\." +
+            						"(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\." +
+            						"(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
+	static final Pattern ipPattern  = Pattern.compile(ipRegex);
+	
+	@NotBlank
+    private Integer id;
+	@NotBlank
+	private String serial;
+	@NotBlank
+    private String name;
+	@NotBlank
+	private String userId;
+    private Integer groupId;
+    @NotBlank
+    private String ipAddress;
+    private Integer roomType;
+    private Integer slot1;
+    private Integer slot1RemainingRatio;
+    private Integer slot2;
+    private Integer slot2RemainingRatio;
+    private Integer slot3;
+    private Integer slot3RemainingRatio;
+    private Integer slot4;
+    private Integer slot4RemainingRatio;
+    private Boolean mode;
+    private Float temperature;
+    private Integer humidity;
+    private Integer defaultCombination;
+    
+    public void setId() {
+        this.id = UUID.randomUUID().hashCode();
+    }
+
+    public void setSerial(String serial) {
+        if (serial == null || !serial.matches("[a-zA-Z0-9]{12}")) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.serial = serial;
+    }
+
+    public void setName(String name) {
+        if (name == null || name.isBlank() || name.length() > 15) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.name = name;
+    }
+
+    public void setUserId(String userId) {
+        if (userId == null || userId.isBlank() || userId.length() > 30) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.userId = userId;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        if (ipAddress == null || !ipPattern.matcher(ipAddress).matches()) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.ipAddress = ipAddress;
+    }
+
+    public void setRoomType(Integer roomType) {
+        if (roomType == null || (roomType != 0 && roomType != 1)) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.roomType = roomType;
+    }
+
+    private void validateSlot(Integer slot, String slotName) {
+        if (slot == null || slot < 0 || slot > 8) {
+            throw new IllegalArgumentException(slotName + "의 입력값이 형식에 맞지 않습니다.");
+        }
+    }
+
+    public void setSlot1(Integer slot1) {
+        validateSlot(slot1, "slot1");
+        this.slot1 = slot1;
+    }
+
+    public void setSlot1RemainingRatio(Integer slot1RemainingRatio) {
+        if (slot1RemainingRatio == null || slot1RemainingRatio < 0 || slot1RemainingRatio > 100) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.slot1RemainingRatio = slot1RemainingRatio;
+    }
+
+    public void setSlot2(Integer slot2) {
+        validateSlot(slot2, "slot2");
+        this.slot2 = slot2;
+    }
+
+    public void setSlot2RemainingRatio(Integer slot2RemainingRatio) {
+        if (slot2RemainingRatio == null || slot2RemainingRatio < 0 || slot2RemainingRatio > 100) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.slot2RemainingRatio = slot2RemainingRatio;
+    }
+
+    public void setSlot3(Integer slot3) {
+        validateSlot(slot3, "slot3");
+        this.slot3 = slot3;
+    }
+
+    public void setSlot3RemainingRatio(Integer slot3RemainingRatio) {
+        if (slot3RemainingRatio == null || slot3RemainingRatio < 0 || slot3RemainingRatio > 100) {
+            throw new IllegalArgumentException("Invalid slot3RemainingRatio: must be between 0 and 100.");
+        }
+        this.slot3RemainingRatio = slot3RemainingRatio;
+    }
+
+    public void setSlot4(Integer slot4) {
+        validateSlot(slot4, "slot4");
+        this.slot4 = slot4;
+    }
+
+    public void setSlot4RemainingRatio(Integer slot4RemainingRatio) {
+        if (slot4RemainingRatio == null || slot4RemainingRatio < 0 || slot4RemainingRatio > 100) {
+            throw new IllegalArgumentException("Invalid slot4RemainingRatio: must be between 0 and 100.");
+        }
+        this.slot4RemainingRatio = slot4RemainingRatio;
+    }
+
+    public void setMode(Boolean mode) {
+        this.mode = mode;
+    }
+
+    public void setTemperature(Float temperature) {
+        this.temperature = temperature;
+    }
+
+    public void setHumidity(Integer humidity) {
+        this.humidity = humidity;
+    }
+
+    public void setDefaultCombination(Integer defaultCombination) {
+        this.defaultCombination = defaultCombination;
+    }
+}
+

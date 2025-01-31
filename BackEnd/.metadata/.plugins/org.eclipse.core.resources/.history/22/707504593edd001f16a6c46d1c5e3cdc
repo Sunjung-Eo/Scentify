@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.scentify.group.model.repository.GroupRepository">
+<update id="updateMember">
+UPDATE `group`
+SET 
+    member_1_id = IF(member_1_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_1_id IS NOT NULL
+    ), #{memberId}, member_1_id),
+    member_1_nickname = IF(member_1_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_1_id IS NOT NULL
+    ), #{memberNickname}, member_1_nickname),
+    member_2_id = IF(member_1_id IS NOT NULL AND member_2_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_2_id IS NOT NULL
+    ), #{memberId}, member_2_id),
+    member_2_nickname = IF(member_1_id IS NOT NULL AND member_2_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_2_id IS NOT NULL
+    ), #{memberNickname}, member_2_nickname),
+    member_3_id = IF(member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_3_id IS NOT NULL
+    ), #{memberId}, member_3_id),
+    member_3_nickname = IF(member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_3_id IS NOT NULL
+    ), #{memberNickname}, member_3_nickname),
+    member_4_id = IF(member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NOT NULL AND member_4_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_4_id IS NOT NULL
+    ), #{memberId}, member_4_id),
+    member_4_nickname = IF(member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NOT NULL AND member_4_id IS NULL AND NOT EXISTS (
+        SELECT 1 FROM (SELECT id FROM `group` WHERE id = #{id}) AS temp
+        WHERE member_4_id IS NOT NULL
+    ), #{memberNickname}, member_4_nickname)
+WHERE id = #{id}
+AND (
+    member_1_id IS NULL OR
+    (member_1_id IS NOT NULL AND member_2_id IS NULL) OR
+    (member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NULL) OR
+    (member_1_id IS NOT NULL AND member_2_id IS NOT NULL AND member_3_id IS NOT NULL AND member_4_id IS NULL)
+);
+</update>
+</mapper>
+
+

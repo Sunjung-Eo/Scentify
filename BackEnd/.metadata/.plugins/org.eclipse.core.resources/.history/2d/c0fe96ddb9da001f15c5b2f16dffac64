@@ -1,0 +1,14 @@
+package com.ssafy.scentify.util;
+
+import com.ssafy.scentify.util.NullOrNotBlank;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+public class NullOrNotBlankValidator implements ConstraintValidator<NullOrNotBlank, String> {
+
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        // 허용 조건: null 또는 공백이 아닌 문자열
+        return value == null || !value.trim().isEmpty();
+    }
+}

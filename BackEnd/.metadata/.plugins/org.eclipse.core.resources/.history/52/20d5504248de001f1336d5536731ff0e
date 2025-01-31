@@ -1,0 +1,51 @@
+package com.ssafy.scentify.websocket.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+public class WebSocketDto {
+	
+	@Data
+	@AllArgsConstructor
+	public static class ModeChangeRequest {
+	    private String type;  
+	    private int mode;     
+	    private boolean stinkModeOn;
+	    private boolean exerciseModeOn;
+	    private boolean restModeOn;
+	    private boolean simpleDetectionModeOn;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class TempHumRequest {
+	    private String token;               
+	    private float temperature;   
+	    private int humidity;    
+	}
+	
+	@Data
+	@AllArgsConstructor
+	public static class Response {
+        private Integer status;
+    }
+	
+	@Data
+	@AllArgsConstructor
+	public static class CapsuleInfoRequest {
+        private Integer slot1;
+        private Integer slot2;
+        private Integer slot3;
+        private Integer slot4;
+    }
+	
+	@Data
+	@AllArgsConstructor
+	public static class CapsuleRemainingRequest {
+	    private String token;               
+	    private Integer slot1RemainingRatio;   
+	    private Integer slot2RemainingRatio;  
+	    private Integer slot3RemainingRatio;   
+	    private Integer slot4RemainingRatio; 
+	}
+}

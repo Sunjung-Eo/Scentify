@@ -1,0 +1,86 @@
+package com.ssafy.scentify.schedule.model.entity;
+
+import java.sql.*;
+import lombok.*;
+
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class CustomSchedule {
+    private Integer id;
+    private String name;
+    private int deviceId;
+    private String userId;
+    private int combinationId;
+    private String combinationName;
+    private Boolean isFavorite;
+    private int day;
+    private Time startTime;
+    private Time endTime;
+    private int interval;
+    private Boolean modeOn;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    
+    public void setUserId(String userId) {
+        if (userId == null || userId.isBlank() || userId.contains(" ") || userId.length() > 30) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.userId = userId;
+    }
+
+    public void setName(String name) {
+        if (name == null || name.length() < 1 || name.length() > 30) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.name = name;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public void setCombinationName(String combinationName) {
+        if (combinationName == null || combinationName.length() < 1 || combinationName.length() > 30) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.combinationName = combinationName;
+    }
+
+    public void setCombinationId(int combinationId) {
+        if (combinationId < 0) {
+            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+        }
+        this.combinationId = combinationId;
+    }
+
+    public void setDay(int day) {
+        if (day < 0 || day > 0b1111111) { // 7비트 이내 값이어야 함 (0 ~ 127)
+            throw new IllegalArgumentException("day 값이 잘못되었습니다. (0b0000000 ~ 0b1111111 범위여야 함)");
+        }
+        this.day = day;
+    }
+
+    public void setStartTime(Time startTime) {
+        if (startTime == null) {
+            throw new IllegalArgumentException("startTime은 null일 수 없습니다.");
+        }
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(Time endTime) {
+        if (endTime == null) {
+            throw new IllegalArgumentException("endTime은 null일 수 없습니다.");
+        }
+        this.endTime = endTime;
+    }
+
+    public void setInterval(int interval) {
+        if (interval < 0) {
+            throw new IllegalArgumentException("interval은 0 이상이어야 합니다.");
+        }
+        this.interval = interval;
+    }
+}
+

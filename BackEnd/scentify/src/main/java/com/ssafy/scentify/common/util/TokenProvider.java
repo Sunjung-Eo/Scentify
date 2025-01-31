@@ -73,6 +73,17 @@ public class TokenProvider implements InitializingBean {
 					.compact();
 	}
 	
+	// refresh token을 만드는 메서드
+	public String createRefreshToken(String id) {
+		Date now = new Date();
+		return Jwts.builder()
+					.setSubject(id)
+					.setIssuedAt(now)
+					.setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION))
+					.signWith(SignatureAlgorithm.HS256, secretKey)
+					.compact();
+	}
+	
 	// access token 쿠키를 만드는 메서드
 	public Cookie createAccessTokenCookie(String accessToken) {
         String cookieName = "accessToken";

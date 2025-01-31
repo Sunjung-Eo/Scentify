@@ -1,0 +1,31 @@
+package com.ssafy.scentify.group.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+
+public class GroupDto {
+	
+	@Data
+    @AllArgsConstructor
+    public static class CreateDto {
+        private Integer id;   
+        private Integer deviceId;
+        private String adminId;  
+        private String adminNickname; 
+    }
+	
+	@Data
+    @AllArgsConstructor
+    public static class memberDto {
+        private Integer id;   
+        private String memberId;  
+        private String memberNickname; 
+    }
+	
+	@Getter
+	public static class deleteMemberDto {
+		private Integer groupId;
+		private String memberId;
+	}
+}

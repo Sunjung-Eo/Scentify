@@ -1,0 +1,31 @@
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CustomScheduleListResponseDto {
+    private List<CustomScheduleResponseDto> customSchedules;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)  // NULL 값인 필드는 JSON에서 제외
+    public static class CustomScheduleResponseDto {
+        private String name;
+        private String combinationName;
+        private int day; // 비트마스킹 값
+        private boolean isFavorite;
+        private int combinationId;
+        private String startTime;
+        private String endTime;
+        private int interval;
+        private boolean modeOn;
+    }
+}

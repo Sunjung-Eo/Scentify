@@ -1,0 +1,37 @@
+package com.ssafy.scentify.device;
+
+import org.springframework.stereotype.Service;
+
+import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
+import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
+import com.ssafy.scentify.device.model.repository.DeviceRepository;
+import com.ssafy.scentify.user.model.repository.UserRepository;
+
+@Service
+public class DeviceService {
+	private final UserRepository userRepository;
+	private final DeviceRepository deviceRepository;
+	
+	public DeviceService(UserRepository userRepository, DeviceRepository deviceRepository) {
+		this.userRepository = userRepository;
+		this.deviceRepository = deviceRepository;
+	}
+	
+	public boolean selectDeviceBySerial(String Serial) {
+		return deviceRepository.existsBySerial(Serial) ? true : false;
+	}
+
+	public boolean createDevice(RegisterDto registerDto) {
+		if (!deviceRepository.createDevice(registerDto)) return false;
+		userRepository.updateMainDeviceId(registerDto.getAdminId(), registerDto.getId());
+		return true;
+	}
+
+	public boolean updateCapsuleInfo(CapsuleInfo capsuleInfo) {
+		return deviceRepository.updateCapsueInfo(capsuleInfo) ? true : false;
+	}
+
+	public boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId) {
+		return deviceRepository.updateCapsueInfo(id, roomType, combinationId) ? true : false;
+	}
+}

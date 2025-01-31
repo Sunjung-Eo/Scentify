@@ -1,0 +1,16 @@
+package com.ssafy.scentify.group.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+public class GroupDto {
+	
+	@Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateDto {
+        private Integer id;       // Auto-increment ID
+        private String adminId;   // Admin user ID
+        private String adminName; // Admin nickname
+    }
+}

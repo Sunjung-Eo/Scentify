@@ -1,0 +1,15 @@
+package com.ssafy.scentify.service;
+
+public class KakaoService {
+
+	public String[] getKakaoAccessToken(String code) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] getKakaoUserInfo(String accessToken) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -1,17 +1,65 @@
 import { create } from 'zustand';
+import { useDeviceStore } from './useDeviceStore';
 
-// 타입 정의
-interface DeviceState {
-  serial: string; // 디바이스 시리얼 넘버
-  ip_address: string; // IP 주소
-  setSerial: (serial: string) => void; // serial 상태를 업데이트하는 함수
-  setIPAddress: (ip: string) => void; // ip_address 상태를 업데이트하는 함수
+export interface UserState {
+  id: string;
+  nickname: string;
+  email: string;
+  imgNum: number;
+  socialType: number;
+  gender: number;
+  birth: string;
+  mainDeviceId: number | null;
+  setUser: (user: Partial<UserState>) => void;
+  resetUser: () => void;
 }
 
-// Zustand 스토어 생성
-export const useDeviceStore = create<DeviceState>((set) => ({
-  serial: '',
-  ip_address: '',
-  setSerial: (serial) => set({ serial }),
-  setIPAddress: (ip) => set({ ip_address: ip }),
+export const useUserStore = create<UserState>((set) => ({
+  id: '',
+  nickname: '',
+  email: '',
+  imgNum: 0,
+  socialType: 0,
+  gender: 0,
+  birth: '',
+  mainDeviceId: null,
+
+  /** 유저 정보 업데이트 시 mainDeviceId 변경 감지 */
+  setUser: (user) => {
+    set((state) => {
+      const updatedState = { ...state, ...user }; //
+
+      if (user.mainDeviceId !== undefined) {
+        const deviceStore = useDeviceStore.getState();
+
+        // 1) 일반 기기가 없을 경우 mainDevice를 그대로 저장
+        if (deviceStore.devices.length === 0) {
+          deviceStore.setMainDevice(user.mainDeviceId);
+        } else {
+          // 2) devices 배열에서 mainDeviceId와 일치하는 기기 찾음
+          const newMainDevice = deviceStore.devices.find(
+            (device) => device.deviceId === user.mainDeviceId
+          );
+
+          if (newMainDevice) {
+            deviceStore.setMainDevice(newMainDevice.deviceId);
+          }
+        }
+      }
+
+      return updatedState;
+    });
+  },
+
+  resetUser: () =>
+    set({
+      id: '',
+      nickname: '',
+      email: '',
+      imgNum: 0,
+      socialType: 0,
+      gender: 0,
+      birth: '',
+      mainDeviceId: null,
+    }),
 }));

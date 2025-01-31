@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { AuthState } from '../types/AuthState';
 import { loginUser, refreshAccessToken } from '../apis/user/login';
 import { logoutUser } from '../apis/user/logout';
+import { useUserStore } from './useUserStore';
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: '',

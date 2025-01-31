@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useControlStore } from "../../../stores/useControlStore";
-import ScentSetting from "../../../components/Control/ScentSetting";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useControlStore } from '../../../stores/useControlStore';
+import ScentSetting from '../../../components/Control/ScentSetting';
 
 export default function DetectionSetting() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function DetectionSetting() {
 
   // 탐지 모드 토글
   const toggleDetect = () => {
-    setDetect((prev) => {
+    setDetect((prev: any) => {
       const newState = !prev;
       setDetectModeOn(newState != detect);
       return newState;
@@ -21,7 +21,7 @@ export default function DetectionSetting() {
   };
 
   // 향 설정
-  const [scentName, setScentName] = useState<string>("");
+  const [scentName, setScentName] = useState<string>('');
   const [scents, setScents] = useState({
     scent1: 0,
     scent2: 0,
@@ -33,7 +33,7 @@ export default function DetectionSetting() {
   // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
-    navigate("/control", {
+    navigate('/control', {
       state: { detect },
     });
   };
@@ -49,10 +49,10 @@ export default function DetectionSetting() {
           <h3>향 설정</h3>
           <div onClick={() => toggleDetect()}>
             <div
-              className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${detect ? "" : "bg-lightgray"}`}
+              className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${detect ? '' : 'bg-lightgray'}`}
             >
               <div
-                className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${detect ? "translate-x-full" : "translate-x-0"}`}
+                className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${detect ? 'translate-x-full' : 'translate-x-0'}`}
               ></div>
             </div>
           </div>

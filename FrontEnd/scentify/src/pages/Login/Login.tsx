@@ -1,26 +1,61 @@
-import { useAuthStore } from "../../stores/useAuthStore";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import LoginForm from "../../feature/user/login/components/LoginForm";
-import "../../styles/global.css";
-import { useState } from "react";
-import Logo from "../../assets/icons/scentify-green-logo.svg";
-import SocialLogoBtn from "../../components/Social/SocialLogoBtn";
+import { useAuthStore } from '../../stores/useAuthStore';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import LoginForm from '../../feature/user/login/components/LoginForm';
+import '../../styles/global.css';
+import { useState } from 'react';
+import Logo from '../../assets/icons/scentify-green-logo.svg';
+import SocialLogoBtn from '../../components/Social/SocialLogoBtn';
+import { useUserStore } from '../../stores/useUserStore';
+import { useDeviceStore } from '../../stores/useDeviceStore';
+import { useScheduleStore } from '../../stores/useScheduleStore';
+import { homeInfo } from '../../apis/home/homeInfo';
+import { DeviceState } from '../../types/DeviceType';
 
 const Login = () => {
   const { login } = useAuthStore();
+  const { setUser } = useUserStore();
+  const { setMainDevice, setDevices, setDeviceIds } = useDeviceStore();
+  const { setSchedules } = useScheduleStore();
   const navigate = useNavigate();
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      await login(id, password); // 사용자 입력값 사용
-      navigate("/home");
+      await login(id, password); // 1. 로그인 수행
+      const data = await homeInfo(); // 2. 홈 정보 가져오기
+
+      // 3. 전역 상태 업데이트
+      if (data) {
+        setUser({
+          nickname: data.user.nickName,
+          imgNum: data.user.imgNum,
+          mainDeviceId: data.user.mainDeviceId,
+        });
+
+        // ✅ 일반 기기 ID 리스트 저장 (숫자 배열)
+        if (data.deviceIds && Array.isArray(data.deviceIds)) {
+          setDeviceIds(data.deviceIds);
+        }
+
+        // ✅ 일반 기기 정보는 빈 배열로 초기화 (추후 API 호출로 업데이트)
+        setDevices([]);
+
+        // ✅ 메인 디바이스 설정
+        if (data.mainDevice) {
+          setMainDevice(data.mainDevice.id);
+        }
+
+        setSchedules(data.autoSchedules, data.customSchedules);
+      }
+
+      // 4. 홈으로 이동
+      navigate('/home');
     } catch (error) {
-      alert("로그인에 실패했습니다.");
+      alert('로그인에 실패했습니다.');
     } finally {
       setLoading(false);
     }

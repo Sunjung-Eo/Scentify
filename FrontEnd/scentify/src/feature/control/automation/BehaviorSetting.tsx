@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useControlStore } from "../../../stores/useControlStore";
-import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useControlStore } from '../../../stores/useControlStore';
+import SprayIntervalSelector from '../../../components/Control/SprayIntervalSelector';
 
 export default function BehaviorSetting() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function BehaviorSetting() {
   const [restModeOn, setRestModeOn] = useState<boolean>(false);
   // 집중 모드 토글
   const toggleFocus = () => {
-    setFocus((prev) => {
+    setFocus((prev: any) => {
       const newState = !prev;
       setFocusModeOn(newState != focus);
       return newState;
@@ -23,7 +23,7 @@ export default function BehaviorSetting() {
   };
   // 휴식 모드 토글
   const toggleRest = () => {
-    setRest((prev) => {
+    setRest((prev: any) => {
       const newState = !prev;
       setRestModeOn(newState != rest);
       return newState;
@@ -31,7 +31,7 @@ export default function BehaviorSetting() {
   };
 
   // 분사주기 드롭박스 초기값
-  const [selectedTime, setSelectedTime] = useState("15분");
+  const [selectedTime, setSelectedTime] = useState('15분');
   // 분사주기 선택
   const handleSelectTime = (time: string) => {
     setSelectedTime(time);
@@ -40,7 +40,7 @@ export default function BehaviorSetting() {
   // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
-    navigate("/control", {
+    navigate('/control', {
       state: { focus, rest },
     });
   };
@@ -57,10 +57,10 @@ export default function BehaviorSetting() {
             <h3 className="font-pre-medium text-20">집중</h3>
             <div onClick={() => toggleFocus()}>
               <div
-                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${focus ? "" : "bg-lightgray"}`}
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${focus ? '' : 'bg-lightgray'}`}
               >
                 <div
-                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${focus ? "translate-x-full" : "translate-x-0"}`}
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${focus ? 'translate-x-full' : 'translate-x-0'}`}
                 ></div>
               </div>
             </div>
@@ -82,10 +82,10 @@ export default function BehaviorSetting() {
             <h3 className="font-pre-medium text-20">휴식</h3>
             <div onClick={() => toggleRest()}>
               <div
-                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? "" : "bg-lightgray"}`}
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? '' : 'bg-lightgray'}`}
               >
                 <div
-                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? "translate-x-full" : "translate-x-0"}`}
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? 'translate-x-full' : 'translate-x-0'}`}
                 ></div>
               </div>
             </div>

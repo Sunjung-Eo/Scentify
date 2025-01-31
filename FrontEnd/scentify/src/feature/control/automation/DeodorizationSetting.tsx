@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useControlStore } from "../../../stores/useControlStore";
-import ScentSetting from "../../../components/Control/ScentSetting";
-import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useControlStore } from '../../../stores/useControlStore';
+import ScentSetting from '../../../components/Control/ScentSetting';
+import SprayIntervalSelector from '../../../components/Control/SprayIntervalSelector';
 
 export default function DeodorizationSetting() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function DeodorizationSetting() {
 
   // 탈취 모드 토글
   const toggleDeodorize = () => {
-    setDeodorize((prev) => {
+    setDeodorize((prev: any) => {
       const newState = !prev;
       setDeodorizeModeOn(newState != deodorize);
       return newState;
@@ -23,7 +23,7 @@ export default function DeodorizationSetting() {
   };
 
   // 향 설정
-  const [scentName, setScentName] = useState<string>("");
+  const [scentName, setScentName] = useState<string>('');
   const [scents, setScents] = useState({
     scent1: 0,
     scent2: 0,
@@ -33,7 +33,7 @@ export default function DeodorizationSetting() {
   const [totalEnergy, setTotalEnergy] = useState<number>(3);
 
   // 분사주기 드롭박스 초기값
-  const [selectedTime, setSelectedTime] = useState("15분");
+  const [selectedTime, setSelectedTime] = useState('15분');
   // 분사주기 선택
   const handleSelectTime = (time: string) => {
     setSelectedTime(time);
@@ -42,7 +42,7 @@ export default function DeodorizationSetting() {
   // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
-    navigate("/control", {
+    navigate('/control', {
       state: { deodorize },
     });
   };
@@ -58,10 +58,10 @@ export default function DeodorizationSetting() {
           <h3>향 설정</h3>
           <div onClick={() => toggleDeodorize()}>
             <div
-              className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${deodorize ? "" : "bg-lightgray"}`}
+              className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${deodorize ? '' : 'bg-lightgray'}`}
             >
               <div
-                className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${deodorize ? "translate-x-full" : "translate-x-0"}`}
+                className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${deodorize ? 'translate-x-full' : 'translate-x-0'}`}
               ></div>
             </div>
           </div>

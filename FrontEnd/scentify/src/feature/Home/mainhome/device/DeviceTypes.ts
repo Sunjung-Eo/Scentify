@@ -14,6 +14,7 @@ export interface Device {
   temperature: number | null;
   humidity: number | null;
   defaultCombination: number | null;
+  isRepresentative?: boolean; // 대표기기 여부 추가
 }
 
 export interface AutoSchedule {

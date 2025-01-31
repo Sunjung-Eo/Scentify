@@ -4,21 +4,20 @@ import {
   Device,
   CustomSchedule,
   AutoSchedule,
-} from "./DeviceTypes";
-import deviceImg from "../../../assets/images/device.svg";
-import leftarrow from "../../../assets/icons/leftarrow-icon.svg";
-import rightarrow from "../../../assets/icons/rightarrow-icon.svg";
-import { mapIntToFragrance } from "../../../utils/fragranceUtils";
-import waterIcon from "../../../assets/icons/Water.png";
-import temperatureIcon from "../../../assets/icons/Temperature.png";
-import PlayBtn from "../../../assets/icons/PlayBtn.svg";
-import modifyIcon from "../../../assets/icons/modify-icon.svg";
-import subtract from "../../../assets/images/Subtract.png";
-interface Props {
-  data: APIResponse; // 부모 컴포넌트로부터 전달받는 props로, API 데이터 형식 정의
-}
+} from "./DeviceTypes.ts";
+import deviceImg from "../../../../assets/images/device.svg";
+import leftarrow from "../../../../assets/icons/leftarrow-icon.svg";
+import rightarrow from "../../../../assets/icons/rightarrow-icon.svg";
+import { mapIntToFragrance } from "../../../../utils/fragranceUtils.ts";
+import waterIcon from "../../../../assets/icons/Water.png";
+import temperatureIcon from "../../../../assets/icons/Temperature.png";
+import PlayBtn from "../../../../assets/icons/PlayBtn.svg";
+import modifyIcon from "../../../../assets/icons/modify-icon.svg";
+import subtract from "../../../../assets/images/Subtract.png";
+import { Link } from "react-router-dom";
+import crownIcon from "../../../../assets/icons/crown-icon.svg";
 
-const DeviceCarousel: React.FC<Props> = ({ data }) => {
+const DeviceCarousel = ({ data }: { data: APIResponse }) => {
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 표시 중인 기기의 인덱스를 관리
   const { main_device_id, devices, customSchedules, autoSchedules } = data; // API 데이터 구조 분해
 
@@ -101,15 +100,24 @@ const DeviceCarousel: React.FC<Props> = ({ data }) => {
               {/* 왼쪽 빈 공간 */}
               <div></div>
               {/* 가운데 정렬된 이름 */}
-              <h2 className="text-[20px] font-pre-bold text-center">
+              <h2 className="text-[20px] font-pre-bold text-center flex items-center justify-center">
                 {currentDevice?.name}
+                {currentDevice?.isRepresentative && (
+                  <img
+                    src={crownIcon}
+                    alt="Crown Icon"
+                    className="ml-1 h-4 w-4"
+                  />
+                )}
               </h2>
               {/* 오른쪽 끝에 위치한 아이콘 */}
-              <img
-                src={modifyIcon}
-                alt="modifyIcon"
-                className="justify-self-end w-[24px] h-[24px]"
-              />
+              <Link to="/home/devicesetting">
+                <img
+                  src={modifyIcon}
+                  alt="modifyIcon"
+                  className="justify-self-end w-[24px] h-[24px]"
+                />
+              </Link>
             </div>
             <div className="ImgSlotRemainingGroup flex justify-between items-center w-full px-7">
               <div className="relative w-[72px] h-[120px]">

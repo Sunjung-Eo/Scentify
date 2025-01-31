@@ -56,6 +56,10 @@ const Layout = ({ children }: LayoutProps) => {
     }
   };
 
+  const handleDeviceManageClick = () => {
+    navigate('/home/managedevice');
+  };
+
   return (
     <div className="app">
       {showHeader && (
@@ -66,6 +70,7 @@ const Layout = ({ children }: LayoutProps) => {
           showAdd={showAdd}
           title={getHeaderTitle(location.pathname)}
           onAddClick={handleAddClick}
+          onDeviceManageClick={handleDeviceManageClick}
         />
       )}
       <main className="content flex justify-center">{children}</main>

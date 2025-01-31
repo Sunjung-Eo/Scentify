@@ -1,4 +1,4 @@
-package com.ssafy.scentify.common.config;
+package com.ssafy.scentify.websocket.config;
 
 import java.util.List;
 

@@ -28,8 +28,8 @@ public class DeviceService {
 		return deviceRepository.existsBySerial(Serial) ? true : false;
 	}
 	
-	public String selectSerialByDeviceId(Integer id) {
-		return deviceRepository.selectSerialByDeviceId(id);
+	public int selectDeviceIdBySerial(String Serial) {
+		return deviceRepository.selectDeviceIdBySerial(Serial);
 	}
 	
 	public DeviceGroupInfoDto selectGroupInfoByDeviceId(Integer id) {
@@ -59,8 +59,8 @@ public class DeviceService {
 		return deviceRepository.updateDefalutCombination(id, roomType, combinationId) ? true : false;
 	}
 
-	public boolean updateTempHum(String serial, TempHumRequest request) {
-		return deviceRepository.updateTempHum(serial, request);
+	public boolean updateTempHum(int id, TempHumRequest request) {
+		return deviceRepository.updateTempHum(id, request);
 	}
 
 	public boolean updateCapsuleRemaining(String serial, CapsuleRemainingRequest request) {

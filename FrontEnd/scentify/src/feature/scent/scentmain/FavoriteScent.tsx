@@ -30,18 +30,29 @@ const FavoriteScent = ({
   onShare,
 }: FavoriteScentProps) => {
   return (
-    <div className="flex justify-between items-start p-4 border-b">
-      <div>
+    <div className="flex justify-between items-start">
+      <div className="mb-[19px]">
         {/* 조합 이름 */}
-        <h3 className="text-lg font-bold">
+        <h3 className="text-14 text-brand font-pre-medium mb-1">
           {combination.name || "이름 없는 조합"}
         </h3>
         {/* 향기 정보 */}
-        <p className="text-sm text-gray">
-          {combination.choice1}({combination.choice1Count})
-          {combination.choice2 || "없음"}({combination.choice2Count || "없음"})
-          {combination.choice3 || "없음"}({combination.choice3Count || "없음"})
-          {combination.choice4 || "없음"}({combination.choice4Count || "없음"})
+        <p className="text-10 text-sub font-pre-light flex gap-1">
+          <span className="mr-1">
+            {combination.choice1} ({combination.choice1Count})
+          </span>
+          <span className="mr-1">
+            {combination.choice2 || "없음"} (
+            {combination.choice2Count || "없음"})
+          </span>
+          <span className="mr-1">
+            {combination.choice3 || "없음"} (
+            {combination.choice3Count || "없음"})
+          </span>
+          <span>
+            {combination.choice4 || "없음"} (
+            {combination.choice4Count || "없음"})
+          </span>
         </p>
       </div>
       {/* 찜 & 공유 버튼 */}

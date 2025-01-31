@@ -21,16 +21,19 @@ const scentImages = [
 ];
 const ScentCarousel = () => {
   return (
-    <div className="overflow-x-auto">
-      <div className="flex gap-[10px]">
-        {scentImages.map((scent, index) => (
-          <img
-            key={index}
-            src={scent.src}
-            alt={scent.alt}
-            className="w-[70px] h-[150px] rounded-md"
-          />
-        ))}
+    <div>
+      <div className="overflow-x-scroll scrollbar-hide whitespace-nowrap">
+        {/* 가로 스크롤 여전히 보임, 아직 해결 못함 */}
+        <div className="flex gap-[10px]">
+          {scentImages.map((scent, index) => (
+            <img
+              key={index}
+              src={scent.src}
+              alt={scent.alt}
+              className="w-[70px] h-[150px] rounded-md"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -28,7 +28,8 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/home/registcapsule") ||
     location.pathname.startsWith("/home/defaultscent") ||
     location.pathname.startsWith("/home/devicesetting") ||
-    location.pathname.startsWith("/home/managedevice");
+    location.pathname.startsWith("/home/managedevice") ||
+    location.pathname.startsWith("/scent/scentmain");
 
   const showFinish =
     location.pathname.startsWith("/home/capsule/set") ||

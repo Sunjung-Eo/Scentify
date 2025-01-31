@@ -1,4 +1,4 @@
-import FavoriteScent from "./favoritescent";
+import FavoriteScent from "./FavoriteScent";
 
 // API에서 반환된 데이터 구조에 맞는 Favorite 타입 정의
 interface Combination {

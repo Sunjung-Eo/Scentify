@@ -110,7 +110,7 @@ public class KakaoController {
 			
 			// 해당 이메일 정보로 가입한 회원이 이미 있는데 카카오 소셜 회원이 아닌 경우
 			if (existingUserInfo != null && existingUserInfo.getSocialType() != 2) {
-				response.sendRedirect("http://localhost:5173/login/social?social=false"); 
+				response.sendRedirect("http://localhost:5173/login/social?social=false&provider=kakao"); 
 				return;
 			}
 			
@@ -142,25 +142,23 @@ public class KakaoController {
 			        // 만약 그룹에 해당한 사용자의 대표기기가 아직 설정되어 있지 않다면 그룹 기기로 설정
 			        userService.updateMainDeviceIdIfNull(id, deviceId);
 		    	}
-		    	
+	            
 		    	// 토큰 발급
-		    	TokenDto tokenDto = tokenProvider.createJwtToken(existingUserInfo.getId());
+		    	refreshToken = tokenProvider.createRefreshToken(existingUserInfo.getId());
 		    	
 		    	// 리프레시 토큰 레디스 저장
-	            tokenService.saveRefreshToken(existingUserInfo.getId(), tokenDto.getRefreshToken());
+	            tokenService.saveRefreshToken(existingUserInfo.getId(), refreshToken);
 	            
 	            // 발급한 토큰을 쿠키로 삽입
-	            Cookie accessTokenCookie = tokenProvider.createAccessTokenCookie(tokenDto.getAccessToken());
-	            Cookie refreshTokenCookie = tokenProvider.createRefreshTokenCookie(tokenDto.getRefreshToken());
-	            response.addCookie(accessTokenCookie);
+	            Cookie refreshTokenCookie = tokenProvider.createRefreshTokenCookie(refreshToken);
 	            response.addCookie(refreshTokenCookie);
-	            
+		    	
 	            if (updated) {
-	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login");
+	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&provider=kakao");
 	            	return;
 	            }
 	            
-	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false");
+	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false&provider=kakao");
 				return;
 		    }
 		    
@@ -175,7 +173,7 @@ public class KakaoController {
 		    	session.setAttribute("deviceId", deviceId);
 		    }
 		    
-			response.sendRedirect("http://localhost:5173/login/social?social=true&status=regist&email=" + email);
+			response.sendRedirect("http://localhost:5173/login/social?social=true&status=regist&email=" + email + "&provider=kakao");
 			return;
 	    
 	    } catch (Exception e) {
@@ -188,9 +186,52 @@ public class KakaoController {
 	    } 
 	}
 	
+	// API 71번 : 카카오 로그인 Access 토큰 발급
+	@PostMapping("/token/issue")
+	public ResponseEntity<?> isseueAccessToken(HttpServletRequest request) {
+		try {
+			// 쿠키에서 Refresh Token 추출
+            String refreshToken = getRefreshTokenFromCookies(request.getCookies());
+			
+            // Refrsh Tokne에서 userId 추출
+            String userId = tokenProvider.getId(refreshToken);
+            
+            // 응답 헤더 생성
+            HttpHeaders headers = new HttpHeaders();
+            
+			// Redis에서 Refresh Token 조회 및 검증 (만약 Refresh token이 검증되지 않으면 토큰 발급 생략)
+            if (tokenService.validateRefreshToken(userId, refreshToken)) {
+                // Access Token 생성
+                String accessToken = tokenProvider.createAccessToken(userId);
+
+                // 응답 헤더에 Access Token 추가
+                headers.add("Authorization", "Bearer " + accessToken);
+            }
+			
+            return ResponseEntity.ok().headers(headers).build();   // 성공적으로 처리됨	   
+		} catch (Exception e) {
+			// 예기치 못한 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	private String getRefreshTokenFromCookies(Cookie[] cookies) {
+        if (cookies == null) {
+            return null;
+        }
+
+        for (Cookie cookie : cookies) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+	
 	// API 7번 : 카카오 회원가입
 	@PostMapping("/regist")
-	public ResponseEntity<?> kakaoRegist(@RequestBody SocialRegisterDto socialUser, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> registerKakaoUser(@RequestBody SocialRegisterDto socialUser, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			// 현재 사용자의 세션을 가져옴 (세션이 없는 경우 null)
 			HttpSession session = request.getSession(false);			

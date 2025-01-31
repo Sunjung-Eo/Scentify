@@ -37,3 +37,16 @@ buildNumber.properties
 .DS_Store
 Thumbs.db
 
+### Metadata ###
+*.iml
+.idea/
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*.logBackEnd/.metadata/
+BackEnd/.metadata/

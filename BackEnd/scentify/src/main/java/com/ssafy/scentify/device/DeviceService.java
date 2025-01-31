@@ -67,8 +67,12 @@ public class DeviceService {
 		return deviceRepository.updateCapsuleRemaining(id, request);	
 	}
 
-	public boolean updateGroupId(Integer id, Integer groupId) {
+	public boolean updateGroupId(int id, int groupId) {
 		return deviceRepository.updateGroupId(id, groupId);
+	}
+
+	public boolean updateMode(int id, boolean mode) {
+		return deviceRepository.updateMode(id, mode);
 	}
 
 }

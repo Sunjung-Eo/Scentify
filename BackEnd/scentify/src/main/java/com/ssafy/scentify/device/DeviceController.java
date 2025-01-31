@@ -252,4 +252,27 @@ public class DeviceController {
 		}
 	}
 	
+	// API 29번 : 커스텀 or 자동화 모드 설정
+	@PostMapping("/mode/set")
+	public  ResponseEntity<?> setDeviceMode(@RequestBody Map<String, Object> payload) {
+		try {
+			// 디바이스 아이디와 모드 추출
+			Integer deviceId = (Integer) payload.get("deviceId");
+	        boolean mode = ((Number) payload.get("mode")).intValue() == 1; 
+	        
+	        // 디바이스 아이디 유효성 검사
+	        if (deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // 만약 업데이트를 실패하면 400 반환
+	        if (!deviceService.updateMode(deviceId, mode)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
 }

@@ -65,7 +65,7 @@ const ScentMain = () => {
   };
   // 공유 버튼 클릭 함수(id는 공유할 향기의 ID)
   const handleShare = (id: string) => {
-    // `favoritesData`에서 해당 ID에 맞는 항목을 찾기
+    // `favoritesData`에서 해당 ID에 맞는 항목을 찾
     const favorite = favoritesData.find((fav) => fav.id === id);
 
     // 불필요한 if문 제거하고 바로 실행

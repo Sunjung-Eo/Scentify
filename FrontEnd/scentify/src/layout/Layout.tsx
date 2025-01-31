@@ -37,17 +37,12 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/control/auto/detect") ||
     location.pathname.startsWith("/control/auto/deodorize") ||
     location.pathname.startsWith("/control/auto/behavior") ||
-    location.pathname.startsWith("/control/reservation/create") ||
-    location.pathname.startsWith("/home/registcapsule") ||
-    location.pathname.startsWith("/home/defaultscent") ||
-    location.pathname.startsWith("/home/devicesetting");
-
-  const showDeviceManage = location.pathname === "/home"; // 정확히 "/home" 경로만 확인
-
+    location.pathname.startsWith("/control/reservation/create");
+  location.pathname.startsWith("/home/registcapsule");
+  const showDeviceManage = location.pathname.startsWith("/home");
   const showAdd =
     location.pathname.startsWith("/home/deviceManage") ||
-    location.pathname.startsWith("/control") ||
-    location.pathname.includes("/home/managedevice");
+    location.pathname.startsWith("/control");
 
   // 로고 대신 title 출력
   const getHeaderTitle = (pathname: string) => {
@@ -56,10 +51,6 @@ const Layout = ({ children }: LayoutProps) => {
     if (pathname.includes("/auto/behavior")) return "동작모드";
     if (pathname.includes("/reservation/create")) return "예약하기";
     if (pathname.includes("/home/registcapsule")) return "캡슐 등록";
-    if (pathname.includes("/home/defaultscent")) return "기본향 등록";
-    if (pathname.includes("/home/devicesetting")) return "기기 설정";
-    if (pathname.includes("/home/managedevice")) return "기기 관리/추가";
-
     return undefined;
   };
 
@@ -67,8 +58,6 @@ const Layout = ({ children }: LayoutProps) => {
   const handleAddClick = () => {
     if (location.pathname === "/control") {
       navigate("/control/reservation/create");
-    } else if (location.pathname === "/home/managedevice") {
-      navigate("/home/registdevice1");
     }
   };
 
@@ -89,7 +78,7 @@ const Layout = ({ children }: LayoutProps) => {
           onDeviceManageClick={handleDeviceManageClick}
         />
       )}
-      <main className="content flex flex-grow justify-center">{children}</main>
+      <main className="content flex justify-center">{children}</main>
       <Footer />
     </div>
   );

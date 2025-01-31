@@ -258,7 +258,7 @@ public class DeviceController {
 		try {
 			// 디바이스 아이디와 모드 추출
 			Integer deviceId = (Integer) payload.get("deviceId");
-	        boolean mode = ((Number) payload.get("mode")).intValue() == 1; 
+	        boolean mode = (boolean) payload.get("mode"); 
 	        
 	        // 디바이스 아이디 유효성 검사
 	        if (deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
@@ -273,6 +273,5 @@ public class DeviceController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
 	
 }

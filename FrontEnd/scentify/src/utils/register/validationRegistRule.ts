@@ -1,4 +1,4 @@
-import { FormDataType } from '../../types/UserType';
+import { FormDataType } from '../../types/FormUserType';
 
 export interface ValidationRule {
   value: string;

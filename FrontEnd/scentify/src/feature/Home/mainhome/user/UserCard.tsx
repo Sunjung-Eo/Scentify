@@ -3,8 +3,10 @@ import { UserData } from './UserTypes';
 
 const UserCard = () => {
   const [userData, setUserData] = useState<UserData>({
+    userId: 'aaaa',
     userName: '홍길동', // 사용자 이름 하드코딩 (백엔드 연동 시 업데이트 가능)
     imgNum: 1, // 기본 프로필 사진 번호
+    mainDeviceId: 0,
     date: '',
     weatherIcon: '',
     weatherDescription: '',

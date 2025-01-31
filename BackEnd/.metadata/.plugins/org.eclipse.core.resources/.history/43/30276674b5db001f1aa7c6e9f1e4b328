@@ -1,5 +1,0 @@
-package com.ssafy.scentify.common.config;
-
-public class S3Config {
-
-}

@@ -1,5 +1,0 @@
-package com.ssafy.scentify.group.model.repository;
-
-public interface GroupRepository {
-
-}

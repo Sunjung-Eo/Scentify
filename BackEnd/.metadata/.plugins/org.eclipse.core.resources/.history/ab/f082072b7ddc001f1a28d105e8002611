@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<select id="selectDevicesByIds" parameterType="list" resultType="DeviceInfoDto">
-    SELECT *
-    FROM devices
-    WHERE id IN
-    <foreach item="id" collection="deviceIds" open="(" separator="," close=")">
-        #{id}
-    </foreach>
-</select>

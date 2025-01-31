@@ -43,3 +43,13 @@ HW/Sensor 디렉터리의 Readme는 하드웨어 센서들의 핀 커넥터를 �
 | GND               | Ground                    | Pin 6 (GND)                |
 | DT                | Sensor Data               | Pin 31 (GPIO 11)           |
 | SCK               | Clock                     | Pin 33 (GPIO 13)           |
+
+
+## DHT 11
+DHT11 은 Raspberry Pi에 연결하자.
+### DHT 11
+| **DHT 11 핀**      | **설명**                  | **Raspberry Pi 5핀**           |
+|------------------|---------------------------|----------------------------|
+| VCC               | Vcc                       | Pin 1 (3.3V)               |
+| GND               | Ground                    | Pin 6 (GND)                |
+| Vout                | Sensor Data               | Pin 8 (GPIO 14)           |

@@ -1,4 +1,4 @@
-import Jetson.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
 from array import array
@@ -59,6 +59,7 @@ class DHT11:
                 timestamp = time.monotonic()
                 transitions.append(timestamp)
                 
+        
         transition_start = max(1, len(transitions) - self._max_pulses)
         for i in range(transition_start, len(transitions)):
             pulses_micro_sec = int(1000000 * (transitions[i] - transitions[i - 1]))
@@ -94,7 +95,7 @@ class DHT11:
             # We received unplausible data
             raise RuntimeError("Received unplausible data. Try again.")
 
-        return new_temperature, new_humidity
+        return new_humidity, new_temperature
 
 
     def _wait_for_signal(self, signal, timeout):
@@ -164,13 +165,13 @@ class DHT11:
 
 # 예제 실행 코드
 if __name__ == "__main__":
-    dht11_sensor = DHT11(pin=7)  # DHT11의 데이터 핀이 연결된 GPIO 핀 번호 (BCM 기준)
+    dht11_sensor = DHT11(pin=8)  # DHT11의 데이터 핀이 연결된 GPIO 핀 번호 (BCM 기준)
     try:
         # while True:
         humidity, temperature = dht11_sensor.read()
         if humidity is not None and temperature is not None:
-            print(f"Humidity: {humidity}%")
             print(f"Temperature: {temperature}°C")
+            print(f"Humidity: {humidity}%")
         else:
             print("Failed to read data from DHT11.")
             print(humidity, temperature)

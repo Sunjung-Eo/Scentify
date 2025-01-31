@@ -12,11 +12,11 @@ try:
     while True:
         GPIO.output(GPIO_SIG, GPIO.HIGH)
         GPIO.output(GPIO_GND, GPIO.LOW)
-        time.sleep(2)
+        time.sleep(3)
 
         GPIO.output(GPIO_SIG, GPIO.LOW)
         GPIO.output(GPIO_GND, GPIO.LOW)
-        time.sleep(2)
+        time.sleep(3)
 except KeyboardInterrupt:
     print("Exiting")
     GPIO.cleanup()

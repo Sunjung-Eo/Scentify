@@ -1,5 +1,5 @@
 # HW Configuration
-HW/Sensor 디렉터리의 Readme는 하드웨어 핀 커넥터를 위해서 만들어진 파일이다.
+HW/Sensor 디렉터리의 Readme는 하드웨어 센서들의 핀 커넥터를 위해서 만들어진 파일이다.
 
 ## GSAT-P110 + ADC0834
 

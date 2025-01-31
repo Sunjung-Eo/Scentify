@@ -15,6 +15,7 @@ import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
+import com.ssafy.scentify.websocket.WebSocketController;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,10 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class CustomScheduleController {
 	
+	private final WebSocketController socketController;
 	private final CombinationService combinationService;
 	private final CustomScheduleService customScheduleService;
 	
-	public CustomScheduleController(CombinationService combinationService, CustomScheduleService customScheduleService) {
+	public CustomScheduleController(WebSocketController socketController, CombinationService combinationService, CustomScheduleService customScheduleService) {
+		this.socketController = socketController;
 		this.combinationService = combinationService;
 		this.customScheduleService = customScheduleService;
 	}
@@ -99,6 +102,8 @@ public class CustomScheduleController {
 			if (!customScheduleService.updateCustomSchedule(customScheduleDto, combinationId, combination.getName())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
+			
+			socketController.sendScheduleUpdate(customScheduleDto);
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {

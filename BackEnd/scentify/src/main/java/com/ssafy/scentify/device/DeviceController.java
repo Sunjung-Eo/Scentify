@@ -119,10 +119,9 @@ public class DeviceController {
 			if (!deviceService.updateCapsuleInfo(capsuleInfo)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			
 			// 캡슐 정보 웹소켓에 전송
-			String serial = deviceService.selectSerialByDeviceId(capsuleInfo.getId());
 			CapsuleInfoRequest infoRequest = new CapsuleInfoRequest(capsuleInfo.getSlot1(), capsuleInfo.getSlot2(),
 																	capsuleInfo.getSlot3(), capsuleInfo.getSlot4());
-			socketController.sendCapsuleInfo(serial, infoRequest);
+			socketController.sendCapsuleInfo(capsuleInfo.getId(), infoRequest);
 			
 			// 세션에 캡슐 정보 저장
 			HttpSession session =  request.getSession();

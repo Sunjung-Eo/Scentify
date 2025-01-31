@@ -1,7 +1,11 @@
 package com.ssafy.scentify.websocket.model.dto;
 
+import java.sql.Time;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class WebSocketDto {
 	
@@ -47,5 +51,34 @@ public class WebSocketDto {
 	    private int slot2RemainingRatio;  
 	    private int slot3RemainingRatio;   
 	    private int slot4RemainingRatio; 
+	}
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class UpdateCustomScheduleRequest {
+		private int id;
+	    private Combination combination; 
+	    private Time startTime;
+	    private Time endTime;
+	    private int interval;
+	    private boolean modeOn;
+	    
+	    @Data
+	    @AllArgsConstructor
+	    public static class Combination {
+	    	private int choice1; // NOT NULL
+    	    @Setter
+    	    private int choice1Count;
+    	    private Integer choice2; // NULL 허용
+    	    @Setter
+    	    private Integer choice2Count;
+    	    private Integer choice3; // NULL 허용
+    	    @Setter
+    	    private Integer choice3Count;
+    	    private Integer choice4; // NULL 허용
+    	    @Setter
+    	    private Integer choice4Count;
+	    }
 	}
 }

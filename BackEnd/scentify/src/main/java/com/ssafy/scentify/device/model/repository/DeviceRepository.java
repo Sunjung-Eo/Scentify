@@ -25,8 +25,8 @@ public interface DeviceRepository {
     boolean existsBySerial(String serial);
     
     // serial 조회 쿼리
-    @Select("SELECT serial FROM device WHERE id = #{id}")
-    String selectSerialByDeviceId(Integer id);
+    @Select("SELECT id FROM device WHERE serial = #{serial}")
+    int selectDeviceIdBySerial(String serial);
     
     // 그룹 정보 조회 쿼리
     @Select("SELECT group_id, admin_id FROM device WHERE id = #{id}")
@@ -52,8 +52,8 @@ public interface DeviceRepository {
 	boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId);
 	
 	// 온습도 정보 업데이트
-	@Update("UPDATE device SET temperature = #{request.temperature}, humidity = #{request.humidity} WHERE serial = #{serial}")
-	boolean updateTempHum(String serial, @Param("request") WebSocketDto.TempHumRequest request);
+	@Update("UPDATE device SET temperature = #{request.temperature}, humidity = #{request.humidity} WHERE id = #{id}")
+	boolean updateTempHum(int id, @Param("request") WebSocketDto.TempHumRequest request);
 	
 	// 캡슐 잔여량 정보 업데이트
 	@Update("UPDATE device SET slot_1_remainingRatio = #{request.slot1RemainingRatio}, slot_2_remainingRatio = #{request.slot2RemainingRatio},"

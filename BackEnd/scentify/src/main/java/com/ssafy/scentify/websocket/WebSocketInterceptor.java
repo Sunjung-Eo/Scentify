@@ -4,9 +4,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import com.google.api.client.json.webtoken.JsonWebSignature.Header;
 import com.ssafy.scentify.auth.model.dto.TokenDto;
-import com.ssafy.scentify.common.config.WebSocketConfig;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
+import com.ssafy.scentify.websocket.config.WebSocketConfig;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +39,7 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
     	log.info("beforeHandshake called");
-//    	
+    	
 //    	// 헤더에서 Authorization 추출
 //        if (request instanceof ServletServerHttpRequest servletRequest) {
 //            HttpServletRequest httpRequest = servletRequest.getServletRequest();
@@ -73,6 +73,12 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
 //            
 //            // 핸드쉐이크 상태를 Redis에 저장 (유효 시간: 300초)
 //            stateManager.setHandshakeState(serial, true, 300);
+//    	
+//			// 응답 헤더에 ID 추가 (WebSocket에서는 보통 Sec-WebSocket-Protocol을 사용)
+//    		String deviceId = Integer.toString(deviceService.selectDeviceIdBySerial(serial));
+//		    if (response instanceof ServerHttpResponse) {
+//		        response.getHeaders().add("Sec-WebSocket-Protocol", deviceId);
+//		    }
     		return true; // 핸드쉐이크 진행		
 //        }
 //        return false; // ServletServerHttpRequest가 아닌 경우

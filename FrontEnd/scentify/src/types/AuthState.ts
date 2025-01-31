@@ -7,7 +7,7 @@ export interface AuthState {
   isAuthenticated: boolean; // 로그인 상태, 토큰 발급 등
   login: (id: string, password: string) => Promise<void>;
   loginWithSocial: (provider: 'kakao' | 'google') => Promise<string | null>;
-  loginWithToken: (token: string) => void;
+  // loginWithToken: (token: string) => void;
   logout: () => void;
   getAccessToken: () => string;
   reissueAccessToken: () => Promise<void>;

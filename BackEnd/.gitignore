@@ -48,4 +48,5 @@ Thumbs.db
 *.bak
 *.orig
 *.rej
-*.log
+*.logBackEnd/.metadata/
+BackEnd/.metadata/

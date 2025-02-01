@@ -2,7 +2,6 @@ export interface DeviceState {
   deviceId: number;
   name: string | null;
   groupId: number | null;
-  ipAddress: string;
   roomType: number | null;
   slot1: number | null;
   slot1RemainingRatio: number | null;
@@ -16,4 +15,5 @@ export interface DeviceState {
   temperature: number | null;
   humidity: number | null;
   defaultCombination: number | null; // 기본향 ID 저장
+  isRepresentative: boolean;
 }

@@ -53,7 +53,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="relative flex flex-col items-center h-[460px] justify-between">
       {deviceIds.length === 0 ? (
         <p className="text-brand font-pre-regular text-xs mt-24">
           현재 등록된 기기가 없습니다.
@@ -66,17 +66,19 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
             customSchedules={customSchedules}
             autoSchedules={autoSchedules}
           />
+          {/* 🔹 슬라이드 버튼 정확한 중앙 배치 */}
           {orderedDevices.length > 1 && (
-            <div className="ArrowbtnGroup flex items-center justify-between w-full mt-5">
-              <button onClick={handlePrev}>
+            <div className="absolute inset-y-1/2 left-0 right-0 flex justify-between transform -translate-y-1/2">
+              <button onClick={handlePrev} className="">
                 <img src={leftarrow} alt="Left Arrow" />
               </button>
-              <button onClick={handleNext}>
+              <button onClick={handleNext} className="">
                 <img src={rightarrow} alt="Right Arrow" />
               </button>
             </div>
           )}
-          <div className="mt-1">
+
+          <div className="mt-2">
             <p className="text-[10px]">
               {currentIndex + 1} / {orderedDevices.length}
             </p>

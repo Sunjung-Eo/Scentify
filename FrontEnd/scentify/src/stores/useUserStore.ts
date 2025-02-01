@@ -10,6 +10,7 @@ export interface UserState {
   gender: number;
   birth: string;
   mainDeviceId: number | null;
+  deviceIds: number[] | null;
   setUser: (user: Partial<UserState>) => void;
   resetUser: () => void;
 }
@@ -23,11 +24,16 @@ export const useUserStore = create<UserState>((set) => ({
   gender: 0,
   birth: '',
   mainDeviceId: null,
+  deviceIds: null,
 
   /** 유저 정보 업데이트 시 mainDeviceId 변경 감지 */
   setUser: (user) => {
     set((state) => {
-      const updatedState = { ...state, ...user }; //
+      const updatedState = {
+        ...state,
+        ...user,
+        deviceIds: user.deviceIds ?? state.deviceIds ?? null,
+      }; //
 
       if (user.mainDeviceId !== undefined) {
         const deviceStore = useDeviceStore.getState();
@@ -61,5 +67,6 @@ export const useUserStore = create<UserState>((set) => ({
       gender: 0,
       birth: '',
       mainDeviceId: null,
+      deviceIds: null,
     }),
 }));

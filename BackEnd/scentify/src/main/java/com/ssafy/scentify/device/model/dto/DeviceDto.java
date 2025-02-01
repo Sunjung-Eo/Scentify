@@ -132,7 +132,7 @@ public class DeviceDto {
 	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
 	@Data
 	public static class DeviceInfoDto {
-	    private int deviceId;
+	    private int id;
 	    private String name;
 	    private int groupId;
 	    private int slot1;

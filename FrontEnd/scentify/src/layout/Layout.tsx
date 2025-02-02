@@ -29,8 +29,13 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/home/defaultscent") ||
     location.pathname.startsWith("/home/devicesetting") ||
     location.pathname.startsWith("/home/managedevice") ||
-    location.pathname.startsWith("/scent/scentmain");
-
+    location.pathname.startsWith("/scent/scentmain") ||
+    location.pathname.startsWith("/my") ||
+    location.pathname.startsWith("/my/manageaccount") ||
+    location.pathname.startsWith("/my/editnickname") ||
+    location.pathname.startsWith("/my/edituserinfo") ||
+    location.pathname.startsWith("/my/editpassword") ||
+    location.pathname.startsWith("/my/editprofileimg");
   const showFinish =
     location.pathname.startsWith("/home/capsule/set") ||
     location.pathname.startsWith("/home/combination/set") ||

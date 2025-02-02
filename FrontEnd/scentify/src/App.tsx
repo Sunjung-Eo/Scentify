@@ -49,6 +49,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/*
         <Route
           path="/home/*"
           element={
@@ -81,6 +82,7 @@ function App() {
             </Layout>
           }
         />
+        */}
         {/* 시작 페이지, 로그인 페이지 */}
         <Route path="/" element={<Start />} />
         <Route path="/login" element={<Login />} />
@@ -104,19 +106,40 @@ function App() {
 
         {/* 인증 여부에 따른 라우팅 처리 */}
         {isAuthenticated ? (
-          <Route
-            path="/*"
-            element={
-              <Layout>
-                <Routes>
-                  {/* <Route path="/home/*" element={<Home />} /> */}
-                  {/* <Route path="/control/*" element={<Control />} /> */}
-                  {/* <Route path="/scent" element={<Scent />} /> */}
-                  <Route path="/my" element={<My />} />
-                </Routes>
-              </Layout>
-            }
-          />
+          <>
+            <Route
+              path="/home/*"
+              element={
+                <Layout>
+                  <Home />
+                </Layout>
+              }
+            />
+            <Route
+              path="/scent/*"
+              element={
+                <Layout>
+                  <Scent />
+                </Layout>
+              }
+            />
+            <Route
+              path="/control/*"
+              element={
+                <Layout>
+                  <Control />
+                </Layout>
+              }
+            />
+            <Route
+              path="/my"
+              element={
+                <Layout>
+                  <My />
+                </Layout>
+              }
+            />
+          </>
         ) : (
           <Route path="/*" element={<Navigate to="/login" replace />} />
         )}

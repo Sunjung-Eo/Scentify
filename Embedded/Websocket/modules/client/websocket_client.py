@@ -15,11 +15,14 @@ class WebSocketClient:
     def __init__(self, uri, serial_number):
         # 서버의 주소와 포트로 수정
         self.__uri = uri
-
         # 인증을 위한 시리얼 넘버 해싱 (SHA-256)
         self.__serial_number = serial_number
 
         self.websocket = None
+        self.subscribe_list = [
+            "/topic/DeviceStatus/Sensor/TempHum"
+        ]
+        self.message_queue = asyncio.Queue()
     
 
     # 연결 테스트 코드
@@ -32,24 +35,13 @@ class WebSocketClient:
         try:
             async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
                 self.websocket = websocket
+                self.init_websocket()
 
-                connect_frame = get_connect_frame(self.__uri)
-                print(connect_frame)
-                await websocket.send(connect_frame)
+                receive_task = asyncio.create_task(self.receive_messages())
+                send_task = asyncio.create_task(self.send_messages())
+                
+                await asyncio.gather(receive_task, send_task)
 
-                subscribe_frame = get_subscribe_frame(1, "/topic/DeviceStatus/Sensor/TempHum")
-                print(subscribe_frame)
-                await websocket.send(subscribe_frame)
-
-                json_msg = json.dumps(msg)
-                send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg, content_type='application/json')
-                await websocket.send(send_frame)
-
-                asyncio.create_task(self.send_message(websocket))
-
-                while True:
-                    response = await websocket.recv()
-                    print(f"서버로부터 받은 메시지: {response}")
         except websockets.exceptions.ConnectionClosed:
             self.websocket = None
             print("Disconnected Websocket..")
@@ -60,6 +52,33 @@ class WebSocketClient:
             print("Exception for Websocket Connection..")
             await asyncio.sleep(5)
 
+    async def init_websocket(self):
+        connect_frame = get_connect_frame(self.__uri)
+        await self.websocket.send(connect_frame)
+
+        for (idx, topic) in enumerate(self.subscribe_list):
+            subscribe_frame = get_subscribe_frame(idx + 1, topic)
+            await self.websocket.send(subscribe_frame)
+
+    async def receive_messages(self):
+        while self.websocket is not None:
+            try:
+                response = await self.websocket.recv()
+            except websockets.exceptions.ConnectionClosed:
+                self.websocket = None
+
+    async def send_message(self):
+        while self.websocket is not None:
+            # message는 항상 topic과 payload 키를 가지는 딕셔너리 형태!
+            message = await self.message_queue.get()
+            payload = message['payload']
+            topic = message['topic']
+            message = self.make_message(dict_data=payload)
+
+            json_msg = json.dumps(message)
+            send_frame = stomper.send(topic, json_msg, content_type='application/json')
+            await self.websocket.send(send_frame)       
+        
 
     def make_message(self, dict_data):
         merge_dict = dict_data.copy()

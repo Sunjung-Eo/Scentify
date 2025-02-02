@@ -5,8 +5,7 @@ import datetime
 import subprocess
 from dotenv import load_dotenv
 
-
-load_dotenv(dotenv_path=os.path.join('../config', '.env'))
+load_dotenv(dotenv_path="./.env")
 
 def get_serial_number():
     return subprocess.run(

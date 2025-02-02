@@ -3,6 +3,9 @@ import websockets
 import hashlib
 import json
 import stomper
+import os, sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from stomp import *
 from utils import*
@@ -11,12 +14,12 @@ from utils import*
 class WebSocketClient:
     def __init__(self, uri, serial_number):
         # 서버의 주소와 포트로 수정
-        # self.uri = "ws://0.0.0.0:8765"
         self.__uri = uri
 
         # 인증을 위한 시리얼 넘버 해싱 (SHA-256)
-        # self.serial_number = "f5tH8jW9qA2D1Z7n"
         self.__serial_number = serial_number
+
+        self.isConnected = False
 
     
 
@@ -28,15 +31,8 @@ class WebSocketClient:
             "Authorization": f"Bearer {token}"
         }
 
-        # async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
-        async with websockets.connect(self.__uri) as websocket:
-            
-            temp, hum = get_temp_and_hum()
-
-            msg = self.make_message(dict_data = {
-                "temperature" : temp,
-                "humidity" : hum
-            })
+        async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
+            self.isConnected = True
 
             connect_frame = get_connect_frame(self.__uri)
             print(connect_frame)
@@ -50,9 +46,12 @@ class WebSocketClient:
             send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg, content_type='application/json')
             await websocket.send(send_frame)
 
+            asyncio.create_task(self.send_message(websocket))
+
             while True:
                 response = await websocket.recv()
                 print(f"서버로부터 받은 메시지: {response}")
+
 
     def make_message(self, dict_data):
         merge_dict = dict_data.copy()

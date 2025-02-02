@@ -19,8 +19,7 @@ class WebSocketClient:
         # 인증을 위한 시리얼 넘버 해싱 (SHA-256)
         self.__serial_number = serial_number
 
-        self.isConnected = False
-
+        self.websocket = None
     
 
     # 연결 테스트 코드
@@ -30,27 +29,36 @@ class WebSocketClient:
         headers = {
             "Authorization": f"Bearer {token}"
         }
+        try:
+            async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
+                self.websocket = websocket
 
-        async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
-            self.isConnected = True
+                connect_frame = get_connect_frame(self.__uri)
+                print(connect_frame)
+                await websocket.send(connect_frame)
 
-            connect_frame = get_connect_frame(self.__uri)
-            print(connect_frame)
-            await websocket.send(connect_frame)
+                subscribe_frame = get_subscribe_frame(1, "/topic/DeviceStatus/Sensor/TempHum")
+                print(subscribe_frame)
+                await websocket.send(subscribe_frame)
 
-            subscribe_frame = get_subscribe_frame(1, "/topic/DeviceStatus/Sensor/TempHum")
-            print(subscribe_frame)
-            await websocket.send(subscribe_frame)
+                json_msg = json.dumps(msg)
+                send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg, content_type='application/json')
+                await websocket.send(send_frame)
 
-            json_msg = json.dumps(msg)
-            send_frame = stomper.send("/app/DeviceStatus/Sensor/TempHum", json_msg, content_type='application/json')
-            await websocket.send(send_frame)
+                asyncio.create_task(self.send_message(websocket))
 
-            asyncio.create_task(self.send_message(websocket))
+                while True:
+                    response = await websocket.recv()
+                    print(f"서버로부터 받은 메시지: {response}")
+        except websockets.exceptions.ConnectionClosed:
+            self.websocket = None
+            print("Disconnected Websocket..")
+            await asyncio.sleep(5)
 
-            while True:
-                response = await websocket.recv()
-                print(f"서버로부터 받은 메시지: {response}")
+        except Exception as e:
+            self.websocket = None
+            print("Exception for Websocket Connection..")
+            await asyncio.sleep(5)
 
 
     def make_message(self, dict_data):

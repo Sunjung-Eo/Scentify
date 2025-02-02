@@ -70,12 +70,13 @@ const HomeMain = () => {
   };
 
   return (
-    <div className="content px-4 py-1">
+    <div className="flex flex-col content px-4 py-1">
       <div className="mb-5">
         <UserCard />
       </div>
       {/* DeviceCarousel에 데이터 전달 */}
       <DeviceSlide data={exampleData} />
+      <div className="h-4"></div>
     </div>
   );
 };

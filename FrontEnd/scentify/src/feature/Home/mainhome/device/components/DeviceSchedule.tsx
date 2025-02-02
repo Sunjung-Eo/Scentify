@@ -3,6 +3,7 @@ import {
   CustomSchedule,
   AutoSchedule,
 } from '../../../../../types/SchedulesType';
+import scheduleBg from '../../../../../assets/images/scheduleBg.png';
 
 interface DeviceScheduleProps {
   deviceId: number;
@@ -10,11 +11,24 @@ interface DeviceScheduleProps {
   autoSchedules: AutoSchedule[];
 }
 
+// 예약 및 자동화 스케줄의 공통 타입 정의
+interface ScheduleItem {
+  id: number;
+  deviceId: number;
+  name: string;
+  type: string;
+  scheduleTime: number;
+}
+
 const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   deviceId,
   customSchedules,
   autoSchedules,
 }) => {
+  const now = new Date();
+  const nowTime = now.getHours() * 60 + now.getMinutes(); // 현재 시간을 분 단위로 변환
+
+  // 해당 deviceId에 해당하는 스케줄 필터링
   const filteredCustomSchedules = customSchedules.filter(
     (schedule) => schedule.deviceId === deviceId
   );
@@ -22,37 +36,64 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
     (schedule) => schedule.deviceId === deviceId
   );
 
+  // 모든 스케줄을 공통 타입을 적용해 변환
+  const allSchedules: ScheduleItem[] = [
+    ...filteredCustomSchedules.map((schedule) => ({
+      id: schedule.id,
+      deviceId: schedule.deviceId,
+      name: schedule.name,
+      type: '예약 모드',
+      scheduleTime:
+        parseInt(schedule.startTime.split(':')[0]) * 60 +
+        parseInt(schedule.startTime.split(':')[1]),
+    })),
+    ...filteredAutoSchedules.map((schedule) => ({
+      id: schedule.id,
+      deviceId: schedule.deviceId,
+      name: `자동 스케줄 ${schedule.id}`,
+      type: '자동화 모드',
+      scheduleTime: schedule.interval, // interval을 분 단위로 변환하여 사용
+    })),
+  ];
+
+  // 가장 가까운 예약 찾기
+  let closestSchedule: ScheduleItem | null = null;
+  let minDiff = Infinity;
+
+  allSchedules.forEach((schedule) => {
+    const timeDiff = schedule.scheduleTime - nowTime;
+
+    if (timeDiff >= 0 && timeDiff < minDiff) {
+      closestSchedule = schedule;
+      minDiff = timeDiff;
+    }
+  });
+
+  // "X시간 Y분 후"로 변환
+  const formattedTime = closestSchedule
+    ? `${Math.floor(minDiff / 60)}시간 ${minDiff % 60}분 후`
+    : '-';
+
   return (
     <div className="w-full mt-4 px-5">
-      <h3 className="text-lg font-bold">스케줄 관리</h3>
-      <div className="mt-2">
-        <h4 className="text-md font-semibold">커스텀 스케줄</h4>
-        {filteredCustomSchedules.length > 0 ? (
-          <ul className="list-disc ml-5">
-            {filteredCustomSchedules.map((schedule) => (
-              <li key={schedule.id}>
-                {schedule.name} - {schedule.modeOn}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-gray-500">
-            등록된 커스텀 스케줄이 없습니다.
+      <div
+        className="relative w-full h-40 bg-cover bg-center flex items-center justify-center text-white"
+        style={{ backgroundImage: `url(${scheduleBg})` }}
+      >
+        {allSchedules.length === 0 ? (
+          <p className="text-sm text-gray-300">
+            현재 예정된 스케줄이 없습니다.
           </p>
-        )}
-      </div>
-
-      <div className="mt-4">
-        <h4 className="text-md font-semibold">자동 스케줄</h4>
-        {filteredAutoSchedules.length > 0 ? (
-          <ul className="list-disc ml-5">
-            {filteredAutoSchedules.map((schedule) => (
-              <li key={schedule.id}>{schedule.subMode}</li>
-            ))}
-          </ul>
+        ) : closestSchedule ? (
+          <div className="text-center bg-black bg-opacity-50 p-3 rounded-lg">
+            <h4 className="text-md font-semibold">다가오는 예약</h4>
+            <p className="text-sm">
+              {closestSchedule} - {closestSchedule} ({formattedTime})
+            </p>
+          </div>
         ) : (
-          <p className="text-sm text-gray-500">
-            등록된 자동 스케줄이 없습니다.
+          <p className="text-sm text-gray-300">
+            현재 예정된 스케줄이 없습니다.
           </p>
         )}
       </div>

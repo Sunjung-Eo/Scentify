@@ -13,33 +13,30 @@ interface DeviceInfoProps {
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ device }) => {
   return (
-    <div className="grid grid-cols-3 items-center w-[300px] mb-5">
-      <div></div>
-      <h2 className="text-[20px] font-pre-bold text-center flex items-center justify-center">
-        {device?.name ?? '이름 없음'}
-        {device?.isRepresentative && (
-          <img src={crownIcon} alt="Crown Icon" className="ml-1 h-4 w-4" />
-        )}
-      </h2>
-      <Link to="/home/devicesetting">
-        <img
-          src={modifyIcon}
-          alt="modifyIcon"
-          className="justify-self-end w-[24px] h-[24px]"
-        />
-      </Link>
-
-      <div className="flex justify-between items-center w-full px-7">
-        <div className="relative w-[72px] h-[120px]">
+    <div className="flex flex-col items-center w-full my-2">
+      {/* 기기 이름 + 수정 버튼 */}
+      <div className="relative w-full px-5 flex items-center">
+        <h2 className="text-[20px] font-pre-bold text-center flex items-center justify-center w-full">
+          {device?.name ?? '이름 없음'}
+          {device?.isRepresentative && (
+            <img src={crownIcon} alt="Crown Icon" className="ml-1 h-4 w-4" />
+          )}
+        </h2>
+        <Link to="/home/devicesetting" className="absolute right-5">
+          <img src={modifyIcon} alt="modifyIcon" className="w-6 h-6" />
+        </Link>
+      </div>
+      {/* 기기 이미지 + 슬롯 정보 */}
+      <div className="flex flex-row justify-between items-center w-full px-8">
+        <div className="flex flex-row relative border-2 border-red-500">
           <img src={deviceImg} alt="deviceImg" className="w-full h-full" />
           <img
             src={PlayBtn}
             alt="btn"
-            className="absolute -bottom-4 -right-4 w-[50px] h-[50px]"
+            className="absolute -bottom-4 -right-4 w-[60px] h-[60px]"
           />
         </div>
-
-        <div className="flex justify-around gap-2.5">
+        <div className="flex justify-around gap-2.5 mt-8 font-pre-light text-[8px]">
           {[1, 2, 3, 4].map((slot) => {
             const remainingRatio =
               device?.[`slot${slot}RemainingRatio` as keyof DeviceState] ?? 0;
@@ -53,13 +50,20 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device }) => {
 
             return (
               <div key={slot} className="flex flex-col items-center">
-                <div className="relative w-6 h-20 bg-[#EBEAE5] rounded overflow-hidden">
+                <div className="relative w-5 h-[84px] flex-shrink-0 rounded-[4px] border-[0.5px] border-white overflow-hidden">
+                  {/* 배경 막대 */}
+                  <div className="absolute inset-0 bg-component" />
+                  {/* 내부 게이지 막대 */}
                   <div
-                    className="absolute bottom-0 w-full bg-brand"
-                    style={{ height: `${remainingRatio}%` }}
+                    className="absolute bottom-0 w-full rounded-t-[4px]"
+                    style={{
+                      height: `${remainingRatio}%`,
+                      background:
+                        'linear-gradient(180deg, #6B705C 0%, #FFF 100%)',
+                    }}
                   />
                 </div>
-                <span className="text-pre-light text-[8px] mt-2 leading-snug text-center">
+                <span className="text-pre-light text-2 mt-2 leading-snug text-center">
                   {fragranceName.length > 5 ? (
                     <>
                       {fragranceName.slice(0, 3)}

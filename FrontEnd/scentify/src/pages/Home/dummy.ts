@@ -22,7 +22,7 @@ export const dummyMainDevice = {
 export const dummyDevices = [
   {
     deviceId: 2,
-    name: 'Living Room Device',
+    name: '거실방',
     groupId: null,
     roomType: 2,
     slot1: 1,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UserData } from './UserTypes';
+import greenLogo from '../../../../assets/userProfiles/green.svg';
 
 const UserCard = () => {
   const [userData, setUserData] = useState<UserData>({
@@ -122,32 +123,36 @@ const UserCard = () => {
         <div className="flex items-center gap-4">
           {/* 프로필 이미지 */}
           <img
-            src={`https://example.com/profile-images/img-${userData.imgNum}.png`} // img_num 기반 동적 프로필 URL
+            src={greenLogo} // img_num 기반 동적 프로필 URL
             alt="Profile"
             className="w-12 h-12 rounded-full"
           />
           {/* 닉네임 */}
-          <p className="text-[20px]">
-            <span className="font-pre-bold">{userData.userName}</span>{' '}
+          <div className="">
+            <span className="font-pre-bold text-[22px]">
+              {userData.userName}
+            </span>{' '}
             {/* 홍길동만 pre-bold */}
-            <br />님 반갑습니다!
-          </p>
+            <p className="font-pre-light text-[22px] ">님 반갑습니다!</p>
+          </div>
         </div>
 
         {/* 날짜+ 날씨 묶음*/}
-        <div className="flex justify-end mt-auto">
+        <div className="flex justify-end mt-auto font-pre-light text-opacity-50 text-12">
           <p className="text-pre-regular text-sm mr-4">{userData.date}</p>
           {error ? (
-            <p className="text-red-500 text-sm">{error}</p>
+            <p className="text-red-500">{error}</p>
           ) : userData.weatherIcon ? (
             <div className="flex items-center">
               <span>{userData.weatherIcon}</span>
-              <p className="text-pre-regular text-[12px] ml-1">
+              <p className="text-opacity-50 ml-1">
                 {userData.weatherDescription}
               </p>
             </div>
           ) : (
-            <span>날씨 정보를 가져오는 중...</span>
+            <span className="font-pre-light text-12">
+              날씨 정보를 가져오는 중...
+            </span>
           )}
         </div>
       </div>

@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useState } from "react";
+import MemberCard from "./MemberCard";
+
+//임의로 멤버 넣음(멤버카드 CSS만지기 위해서 넣어놓음)
+const members = [
+  { id: "ID01", nickname: "닉네임01", profileImg: "profile1.png" },
+  { id: "ID02", nickname: "닉네임02", profileImg: "profile2.png" },
+  { id: "ID03", nickname: "닉네임03", profileImg: "profile3.png" },
+];
 
 export const GroupList = () => {
   // 드롭다운 상태 관리
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // 선택된 기기 상태
-  const [selectedGroup, setSelectedGroup] = useState('A기기');
+  const [selectedGroup, setSelectedGroup] = useState("A기기");
   // 기기 목록
-  const groups = ['A기기', 'B기기', 'C기기'];
+  const groups = ["A기기", "B기기", "C기기"];
 
   // 드롭다운 토글 함수
   const toggleDropdown = () => {
@@ -17,6 +25,11 @@ export const GroupList = () => {
   const handleSelectGroup = (group: string) => {
     setSelectedGroup(group);
     setIsDropdownOpen(false); // 선택 후 드롭다운 닫기
+  };
+
+  // 멤버카드 삭제 함수
+  const handleDelete = (id: string) => {
+    console.log(`${id} 삭제 요청`);
   };
 
   return (
@@ -45,7 +58,7 @@ export const GroupList = () => {
                     className="flex items-center px-4 py-2 hover:bg-gray-100 w-full text-12 font-pre-light"
                     onClick={() => handleSelectGroup(group)}
                   >
-                    {group === 'A기기' && (
+                    {group === "A기기" && (
                       <span className="text-orange-500">👑</span>
                     )}
                     {group}
@@ -61,9 +74,18 @@ export const GroupList = () => {
           </button>
         </div>
       </div>
-      {/* 빈 컨텐츠 */}
-      <div className="flex justify-center items-center h-48 text-gray-300 text-2xl">
-        텅
+
+      {/* 멤버 리스트 */}
+      <div className="mt-4 space-y-4">
+        {members.map((member) => (
+          <MemberCard
+            key={member.id}
+            profileImg={member.profileImg}
+            id={member.id}
+            nickname={member.nickname}
+            onDelete={() => handleDelete(member.id)}
+          />
+        ))}
       </div>
     </>
   );

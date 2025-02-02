@@ -5,6 +5,8 @@ import json
 import stomper
 import os, sys
 
+from websocket_client import WebSocketHandler
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from stomp import *
@@ -23,7 +25,7 @@ class WebSocketClient:
             "/topic/DeviceStatus/Sensor/TempHum"
         ]
         self.message_queue = asyncio.Queue()
-    
+        self.websocket_hanlder = WebSocketHandler().handlers
 
     # 연결 테스트 코드
     async def test_websocket_connection(self, ):
@@ -35,10 +37,10 @@ class WebSocketClient:
         try:
             async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
                 self.websocket = websocket
-                self.init_websocket()
+                await self.init_websocket()
 
                 receive_task = asyncio.create_task(self.receive_messages())
-                send_task = asyncio.create_task(self.send_messages())
+                send_task = asyncio.create_task(self.send_message())
                 
                 await asyncio.gather(receive_task, send_task)
 
@@ -63,12 +65,25 @@ class WebSocketClient:
     async def receive_messages(self):
         while self.websocket is not None:
             try:
-                response = await self.websocket.recv()
+                req = await self.websocket.recv()
+                message = json.loads(req)
+                msg_type = message.get("type")
+                
+                handler = self.websocket_hanlder.get(msg_type, self.websocket_hanlder.get("default"))
+                res = await handler(message)
+                
+                await self.message_queue.put(res)
+                await asyncio.sleep(0.5)
+
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
 
     async def send_message(self):
         while self.websocket is not None:
+            if self.message_queue.empty():
+                await asyncio.sleep(0.5)
+                continue
+
             # message는 항상 topic과 payload 키를 가지는 딕셔너리 형태!
             message = await self.message_queue.get()
             payload = message['payload']

@@ -1,17 +1,44 @@
-import { Link } from "react-router-dom";
-import { useDeviceStore } from "../../../stores/useDeviceStore";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerDevice } from "../../../apis/home/registdevice";
+import { useAuthStore } from "../../../stores/useAuthStore";
 
-function RegistDevice2() {
-  const { serial, ip_address, setSerial, setIPAddress } = useDeviceStore();
+function RegistDevice() {
+  const [serial, setSerial] = useState("");
+  const [ipAddress, setIpAddress] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+  const authStore = useAuthStore();
+  const accessToken = authStore.accessToken;
 
-  // IP 주소 블록 분할
-  const ipBlocks = ip_address.split("."); // "192.168.1.1" → ["192", "168", "1", "1"]
+  // 디바이스 등록 요청
+  const handleRegisterDevice = async () => {
+    setErrorMessage(""); // 기존 에러 메시지 초기화
 
-  // 저장 버튼 클릭 핸들러
-  const handleSave = () => {
-    console.log("저장된 시리얼 번호:", serial);
-    console.log("저장된 IP 주소:", ip_address);
-    // 여기서 서버로 데이터를 전송하거나 추가 로직을 처리할 수 있습니다.
+    // 필수 입력값 검증
+    if (!serial.trim() || !ipAddress.trim()) {
+      setErrorMessage("시리얼 번호와 IP 주소를 입력해주세요.");
+      return;
+    }
+
+    try {
+      // API 요청
+      const response = await registerDevice(
+        { serial: serial, ipAddress: ipAddress }, // 첫 번째 매개변수: 기기 데이터
+        accessToken // 두 번째 매개변수: 액세스 토큰
+      );
+      console.log("디바이스 등록 성공, ID:", response.id);
+      navigate("/home/registconnecting"); // 성공 시 다음 페이지로 이동
+    } catch (error: any) {
+      // 백엔드 응답 상태 코드에 따라 에러 메시지 표시
+      if (error.status === 409) {
+        setErrorMessage("이미 등록된 기기입니다.");
+      } else if (error.status === 403) {
+        setErrorMessage("핸드셰이크 실패. 다시 시도해주세요.");
+      } else if (error.status === 400) {
+        setErrorMessage("요청이 잘못되었습니다.");
+      }
+    }
   };
 
   return (
@@ -30,51 +57,44 @@ function RegistDevice2() {
           </label>
           <input
             type="text"
-            value={serial} // 전역 상태의 serial 값을 바인딩
-            onChange={(e) => setSerial(e.target.value)} // 상태 업데이트
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
             placeholder="시리얼 번호 입력"
             className="w-full px-4 py-3 rounded-lg bg-component font-pre-regular"
           />
         </div>
 
         {/* IP 주소 입력 */}
-        <div>
+        <div className="mb-6">
           <label className="text-sm font-pre-regular mb-2 block">IP 주소</label>
-          <div className="flex items-center gap-2">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="flex items-center">
-                <input
-                  type="text"
-                  value={ipBlocks[index] || ""} // 해당 블록 값 설정
-                  onChange={(e) => {
-                    const updatedBlock = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 허용
-                    const updatedIP = [...ipBlocks]; // 기존 블록 복사
-                    updatedIP[index] = updatedBlock; // 해당 블록 업데이트
-                    setIPAddress(updatedIP.join(".")); // 업데이트된 IP 주소 상태 저장
-                  }}
-                  maxLength={3}
-                  className="w-16 px-2 py-2 rounded-lg text-center bg-component"
-                />
-                {index < 3 && <span className="text-gray-500">.</span>}
-              </div>
-            ))}
-          </div>
+          <input
+            type="text"
+            value={ipAddress}
+            onChange={(e) => setIpAddress(e.target.value)}
+            placeholder="IP 주소 입력 (예: 192.168.1.1)"
+            className="w-full px-4 py-3 rounded-lg bg-component font-pre-regular"
+          />
         </div>
+
+        {/* 에러 메시지 출력 */}
+        {errorMessage && (
+          <div className="text-red-500 text-sm font-pre-regular mb-4">
+            {errorMessage}
+          </div>
+        )}
       </div>
 
-      {/* 저장 버튼 영역 */}
+      {/* 저장 버튼 */}
       <div>
-        <Link to="/home/registconnecting">
-          <button
-            onClick={handleSave} // 저장 버튼 클릭 시 handleSave 호출
-            className="w-full h-[48px] rounded-lg text-gray font-pre-bold border-[1px] border-lightgray"
-          >
-            저장
-          </button>
-        </Link>
+        <button
+          onClick={handleRegisterDevice}
+          className="w-full h-[48px] rounded-lg text-gray font-pre-bold border-[1px] border-lightgray"
+        >
+          저장
+        </button>
       </div>
     </div>
   );
 }
 
-export default RegistDevice2;
+export default RegistDevice;

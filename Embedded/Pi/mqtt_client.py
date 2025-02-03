@@ -44,30 +44,30 @@ class MQTTClient:
         await self.process_message(topic, payload)
 
     async def process_message(self, topic, payload):
-        message = {
-            "topic" : "",
-            "payload" : payload,
-        }
+        message = dict()
+        topic = topic.value
+
         if topic == f"{self.device_id_list[0]}/Status/Remainder":
-            message["topic"] = "DeviceStatus/Capsule/Remainder"
+            message["type"] = "DeviceStatus/Capsule/Remainder"
+
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
-            message["payload"] = None
             # 사람 단순 감지
-            if payload == 1:
-                message["topic"] = "DeviceStatus/Camera/SimpleDetection"
+            if payload == '1':
+                message["type"] = "DeviceStatus/Camera/SimpleDetection"
             # 운동 중
-            elif payload == 2: 
-                message["topic"] = "DeviceStatus/Camera/UserAction/Exercise"
+            elif payload == '2': 
+                message["type"] = "DeviceStatus/Camera/UserAction/Exercise"
             # 휴식 중
-            elif payload == 3:
-                message["topic"] = "DeviceStatus/Camera/UserAction/Focus" 
+            elif payload == '3':
+                message["type"] = "DeviceStatus/Camera/UserAction/Focus" 
 
         elif topic == f"{self.device_id_list[0]}/Status/Stink":
-            message["payload"] = None
-            message["topic"] = "DeviceStatus/Sensor/Stink"
+            message["type"] = "DeviceStatus/Sensor/Stink"
         elif topic == f"{self.device_id_list[0]}/Setting":
             pass
-
+        
+        print(message)
+        
         await self.work_queue.put(message)
 
     async def subscribe(self):
@@ -86,11 +86,13 @@ class MQTTClient:
         print(f"pub! topic : {topic}, payload : {payload}")
 
     
-if __name__ == "__main__":
+async def main():
     queue = asyncio.Queue()
     mqtt_client = MQTTClient("localhost", queue)
-    asyncio.run(mqtt_client.connect())
+    asyncio.create_task(mqtt_client.connect())
     while True:
-        data = asyncio.run(queue.get())
+        data = await queue.get()
         print(f"Data is {data}!!\n")
-        time.sleep(1)
+        await asyncio.sleep(1)
+
+asyncio.run(main())

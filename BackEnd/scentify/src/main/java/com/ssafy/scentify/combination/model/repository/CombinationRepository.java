@@ -11,8 +11,8 @@ import com.ssafy.scentify.combination.model.dto.CombinationDto;
 public interface CombinationRepository {
 	
 	// combination 등록
-	@Insert("INSERT INTO combination (id, choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count)"
-    		+ "VALUES (#{combinationId}, #{combination.choice1}, #{combination.choice1Count}, #{combination.choice2}, #{combination.choice2Count}, "
+	@Insert("INSERT INTO combination (id, name, choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count)"
+    		+ "VALUES (#{combinationId}, #{combination.name}, #{combination.choice1}, #{combination.choice1Count}, #{combination.choice2}, #{combination.choice2Count}, "
     		+ "#{combination.choice3}, #{combination.choice3Count}, #{combination.choice4}, #{combination.choice4Count})")
 	boolean createCombination(int combinationId, @Param("combination") CombinationDto combination);
 

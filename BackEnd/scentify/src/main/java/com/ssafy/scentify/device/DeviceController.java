@@ -208,18 +208,18 @@ public class DeviceController {
 	
 	// 기본향 조합 유효성 검사 메서드
 	private boolean isValidCombination(List<Integer> capsules, CombinationDto combination) {
-	    List<Integer> choices = List.of(
-	        combination.getChoice1(),
-	        combination.getChoice2(),
-	        combination.getChoice3(),
-	        combination.getChoice4()
-	    );
+    List<Integer> choices = Arrays.asList(
+        combination.getChoice1(),
+        combination.getChoice2(),
+        combination.getChoice3(),
+        combination.getChoice4()
+    );
 
-	    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인
-	    return choices.stream()
-	                  .filter(Objects::nonNull)
-	                  .allMatch(capsules::contains);
-	}
+    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인
+    return choices.stream()
+                  .filter(Objects::nonNull)
+                  .allMatch(capsules::contains);
+	}	
 	
 	// API 70번 : 기기 정보 반환
 	@PostMapping("/info")

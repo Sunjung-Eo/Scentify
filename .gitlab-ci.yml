@@ -21,6 +21,10 @@ build:
   tags:
     - backend
   script:
+    - 'echo "현재 디렉토리: $(pwd)"'
+    - ls -la BackEnd/scentify
+    - echo "Maven 빌드를 시작합니다."
+    - mvn clean package -DskipTests -X -e -f BackEnd/scentify/pom.xml
     - echo "🛠️ Maven 프로젝트 빌드 중..."
     - mvn clean package -DskipTests -X -e -f BackEnd/scentify/pom.xml
     - mkdir -p target/deploy

@@ -14,7 +14,20 @@ from utils import*
 
 
 class WebSocketClient:
+    _instance = None  
+
+    def __new__(cls, *args, **kwargs):
+        """싱글톤 인스턴스를 생성 및 반환"""
+        if cls._instance is None:
+            cls._instance = super(WebSocketHandler, cls).__new__(cls)
+            cls._instance.__initialized = False  
+        return cls._instance
+    
     def __init__(self, uri, serial_number):
+        """초기화 (중복 실행 방지)"""
+        if not self.__initialized:
+            self.__initialized = True  
+            
         # 서버의 주소와 포트로 수정
         self.__uri = uri
         # 인증을 위한 시리얼 넘버 해싱 (SHA-256)
@@ -22,7 +35,8 @@ class WebSocketClient:
 
         self.websocket = None
         self.subscribe_list = [
-            "/topic/DeviceStatus/Sensor/TempHum"
+            "/topic/DeviceStatus/Sensor/TempHum/",
+            "/topic/DeviceStatus/Capsule/Info/"
         ]
         self.message_queue = asyncio.Queue()
         self.websocket_hanlder = WebSocketHandler().handlers
@@ -41,6 +55,7 @@ class WebSocketClient:
                 self.device_id = response_header.get("Sec-WebSocket-Protocol")
 
                 self.websocket = websocket
+                await self.init_websocket()
 
                 receive_task = asyncio.create_task(self.receive_messages())
                 send_task = asyncio.create_task(self.send_message())
@@ -62,7 +77,7 @@ class WebSocketClient:
         await self.websocket.send(connect_frame)
 
         for (idx, topic) in enumerate(self.subscribe_list):
-            subscribe_frame = get_subscribe_frame(idx + 1, topic)
+            subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
             await self.websocket.send(subscribe_frame)
 
     async def receive_messages(self):

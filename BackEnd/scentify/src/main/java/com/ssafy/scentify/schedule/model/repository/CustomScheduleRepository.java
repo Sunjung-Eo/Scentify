@@ -43,6 +43,6 @@ public interface CustomScheduleRepository {
 	boolean updateCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName);
 	
 	// 커스텀 스케줄 삭제
-	@ Delete("DELETE FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")
+	@Delete("DELETE FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")
 	boolean deleteCustomScheduleById(int id, int deviceId);
 }

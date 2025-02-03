@@ -4,14 +4,14 @@ stages:
 
 job_build:
   stage: build
-  tags:
-    - backend
   script:
     - echo "Building the project"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "BE/develop"'
 
 job_test:
   stage: test
-  tags:
-    - backend
   script:
     - echo "Running tests"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "BE/develop"'

@@ -327,7 +327,7 @@ public class UserController {
 	        String userId = tokenProvider.getId(token);
 	        
 	        // 사용자가 수정하고 싶은 닉네임 
-	        String nickname = nicknameMap.get("nickName");
+	        String nickname = nicknameMap.get("nickname");
 	        
 	        // DB에서 정보 수정 (정보 수정이 이루어지지 않은 경우 400 반환)
 	        if (!userService.updateUserNickname(userId, nickname)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }

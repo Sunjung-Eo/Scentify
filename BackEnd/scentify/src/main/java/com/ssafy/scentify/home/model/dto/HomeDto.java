@@ -24,7 +24,7 @@ public class HomeDto {
 
 	@Data
 	public static class UserHomeDto {
-	    private String nickName;
+	    private String nickname;
 	    private int imgNum;
 	    private Integer mainDeviceId;
 	}

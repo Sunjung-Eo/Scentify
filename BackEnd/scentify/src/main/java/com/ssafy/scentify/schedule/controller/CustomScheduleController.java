@@ -103,7 +103,7 @@ public class CustomScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-			socketController.sendCustomScheduleUpdate(customScheduleDto);
+//			socketController.sendCustomScheduleUpdate(customScheduleDto);
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -128,7 +128,7 @@ public class CustomScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-			socketController.sendCustomScheduleDelete(deleteScheduleMap);
+//			socketController.sendCustomScheduleDelete(deleteScheduleMap);
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {

@@ -148,7 +148,7 @@ CREATE TABLE `customschedule` (
   `device_id` int NOT NULL,
   `combination_id` int NOT NULL,
   `combination_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isFavorite` tinyint(1) NOT NULL DEFAULT '0',
+  `is_favorite` tinyint(1) NOT NULL DEFAULT '0',
   `day` int DEFAULT NULL,
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,

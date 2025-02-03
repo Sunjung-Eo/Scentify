@@ -20,7 +20,7 @@ public interface UserRepository {
     boolean existsByEmail(String email);
     
     // 유저 생성
-    @Insert("INSERT INTO User (id, password, nickname, email, img_num, social_type, gender, birth)"
+    @Insert("INSERT INTO user (id, password, nickname, email, img_num, social_type, gender, birth)"
     		+ "VALUES (#{id}, #{password}, #{nickname}, #{email}, #{imgNum}, #{socialType}, #{gender}, #{birth})")
 	boolean createUser(User user);
     

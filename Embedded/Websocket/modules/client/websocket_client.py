@@ -117,7 +117,7 @@ class WebSocketClient:
 
     def make_message(self, dict_data):
         merge_dict = dict_data.copy()
-        dict_token = {'token' : get_access_token(self.__serial_number)}
+        dict_token = {'token' : get_access_token(self.device_id)}
         merge_dict.update(dict_token)
         return merge_dict
 

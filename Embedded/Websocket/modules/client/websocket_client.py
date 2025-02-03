@@ -24,7 +24,7 @@ class WebSocketClient:
             cls._instance.__initialized = False  
         return cls._instance
     
-    def __init__(self, uri, serial_number, work_queue):
+    def __init__(self, uri, serial_number, work_queue, request_handler, response_handler):
         """초기화 (중복 실행 방지)"""
         if not self.__initialized:
             self.__initialized = True  
@@ -40,7 +40,7 @@ class WebSocketClient:
                 "/topic/DeviceStatus/Capsule/Info/"
             ]
             self.message_queue = work_queue
-            self.websocket_response_hanlder = WebSocketResponseHandler().handlers
+            self.websocket_response_hanlder = response_handler
             self.device_id = None
 
     # 연결 테스트 코드
@@ -87,12 +87,13 @@ class WebSocketClient:
                 req = await self.websocket.recv()
                 message = json.loads(req)
                 msg_type = message.get("type")
-                
+
                 handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
-                res = await handler(message)
+                await handler(message)
+                # res = await handler(message)
                 
-                await self.message_queue.put(res)
-                await asyncio.sleep(0.5)
+                # await self.message_queue.put(res)
+                # await asyncio.sleep(0.5)
 
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
@@ -103,15 +104,17 @@ class WebSocketClient:
                 await asyncio.sleep(0.5)
                 continue
 
-            # message는 항상 topic과 payload 키를 가지는 딕셔너리 형태!
+            # message는 항상 type과 payload 키를 가지는 딕셔너리 형태!
             message = await self.message_queue.get()
-            payload = message['payload']
-            topic = message['topic']
+            topic = message['type']
+            del message['type']
+            payload = message
 
             message = self.make_message(dict_data=payload)
-            print(message)
+            
             json_msg = json.dumps(message)
             send_frame = stomper.send(topic, json_msg, content_type='application/json')
+            print(send_frame)
             await self.websocket.send(send_frame)       
         
 

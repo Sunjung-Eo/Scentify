@@ -93,25 +93,25 @@ class MQTTClient:
         print(f"pub! topic : {topic}, payload : {payload}")
 
     
-async def main():
-    queue = asyncio.Queue()
-    mqtt_client = MQTTClient("localhost", queue)
-    asyncio.create_task(mqtt_client.connect())
-    await asyncio.sleep(2)
+# async def main():
+#     queue = asyncio.Queue()
+#     mqtt_client = MQTTClient("localhost", queue)
+#     asyncio.create_task(mqtt_client.connect())
+#     await asyncio.sleep(2)
 
-    # Test Code
-    test_capusle_data = {
-        "slot1" : 1,
-        "slot2" : 2,
-        "slot3" : 4,
-        "slot4" : 3,    
-    }
-    msg = json.dumps(test_capusle_data)
-    await mqtt_client.publish(f"{mqtt_client.device_id_list[0]}/CapsuleInfo", msg)
-    
-    while True:
-        data = await queue.get()
-        print(f"Data is {data}!!\n")
-        await asyncio.sleep(1)
+#     # Test Code
+#     test_capusle_data = {
+#         "slot1" : 1,
+#         "slot2" : 2,
+#         "slot3" : 4,
+#         "slot4" : 3,    
+#     }
+#     msg = json.dumps(test_capusle_data)
+#     await mqtt_client.publish(f"{mqtt_client.device_id_list[0]}/CapsuleInfo", msg)
 
-asyncio.run(main())
+#     while True:
+#         data = await queue.get()
+#         print(f"Data is {data}!!\n")
+#         await asyncio.sleep(1)
+
+# asyncio.run(main())

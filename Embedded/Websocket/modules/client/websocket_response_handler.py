@@ -1,3 +1,5 @@
+import json
+
 class WebSocketResponseHandler:
     _instance = None  
 
@@ -8,10 +10,11 @@ class WebSocketResponseHandler:
             cls._instance.__initialized = False  
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, mqtt_client):
         """초기화 (중복 실행 방지)"""
         if not self.__initialized:
             self.__initialized = True  
+            self.mqtt_client = mqtt_client
 
             self.handlers = {
                 "/topic/DeviceStatus/Sensor/TempHum": self.hanlder_response_temphum,
@@ -23,7 +26,12 @@ class WebSocketResponseHandler:
         print("Handling Temperature & Humidity data")
         pass
 
-    def handler_capsule_initial_info(self):
+    def handler_capsule_initial_info(self, message):
+        del message["type"]
+        self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/CapsuleInfo",
+            json.loads(message)
+        )
         print("Handling Capsule Initial Info")
 
     def default_hanlder(self):

@@ -51,12 +51,11 @@ class MQTTClient:
         if topic == f"{self.device_id_list[0]}/Status/Remainder":
             message["type"] = "DeviceStatus/Capsule/Remainder"
             data = json.loads(payload)
-            message["Remainder"] = {
-                "slot1RemainingRatio" : data["slot1RemainingRatio"],
-                "slot2RemainingRatio" : data["slot2RemainingRatio"],
-                "slot3RemainingRatio" : data["slot3RemainingRatio"],
-                "slot4RemainingRatio" : data["slot4RemainingRatio"],
-            }
+            
+            message["Remainder"] = dict()
+            for key, value in data.items():
+                key = key.strip()
+                message["Remainder"][key] = value
 
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
             # 사람 단순 감지
@@ -98,6 +97,18 @@ async def main():
     queue = asyncio.Queue()
     mqtt_client = MQTTClient("localhost", queue)
     asyncio.create_task(mqtt_client.connect())
+    await asyncio.sleep(2)
+
+    # Test Code
+    test_capusle_data = {
+        "slot1" : 1,
+        "slot2" : 2,
+        "slot3" : 4,
+        "slot4" : 3,    
+    }
+    msg = json.dumps(test_capusle_data)
+    await mqtt_client.publish(f"{mqtt_client.device_id_list[0]}/CapsuleInfo", msg)
+    
     while True:
         data = await queue.get()
         print(f"Data is {data}!!\n")

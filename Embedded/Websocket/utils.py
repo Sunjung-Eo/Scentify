@@ -10,6 +10,12 @@ ENV_PATH = os.path.join(BASE_DIR, "config", ".env")
 
 load_dotenv(dotenv_path=ENV_PATH)
 
+def get_websocket_url():
+    return os.getenv("WEBSOCKET_URL")
+
+def get_mqtt_url():
+    return os.getenv("MQTT_URL")
+
 def get_serial_number():
     return subprocess.run(
         "cat /proc/cpuinfo | grep Serial | awk '{print $3}'",

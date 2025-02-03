@@ -1,6 +1,7 @@
 import asyncio
 import aiomqtt
 import time
+import json
 
 class MQTTClient:
     _instance = None  
@@ -49,6 +50,13 @@ class MQTTClient:
 
         if topic == f"{self.device_id_list[0]}/Status/Remainder":
             message["type"] = "DeviceStatus/Capsule/Remainder"
+            data = json.loads(payload)
+            message["Remainder"] = {
+                "slot1RemainingRatio" : data["slot1RemainingRatio"],
+                "slot2RemainingRatio" : data["slot2RemainingRatio"],
+                "slot3RemainingRatio" : data["slot3RemainingRatio"],
+                "slot4RemainingRatio" : data["slot4RemainingRatio"],
+            }
 
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
             # 사람 단순 감지

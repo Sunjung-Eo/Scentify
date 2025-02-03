@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
-import DeviceSlide from '../../feature/Home/mainhome/device/DeviceSlide.tsx';
-import UserCard from '../../feature/Home/mainhome/user/UserCard.tsx';
-import { useDeviceStore } from '../../stores/useDeviceStore.ts';
-import { homeInfo } from '../../apis/home/homeInfo.ts';
-import { useQuery } from '@tanstack/react-query';
-import { useUserStore } from '../../stores/useUserStore.ts';
-import { dummyDevices, dummyMainDevice } from './dummy.ts';
+import { useEffect } from "react";
+import DeviceSlide from "../../feature/Home/mainhome/device/DeviceSlide.tsx";
+import UserCard from "../../feature/Home/mainhome/user/UserCard.tsx";
+import { useDeviceStore } from "../../stores/useDeviceStore.ts";
+import { homeInfo } from "../../apis/home/homeInfo.ts";
+import { useQuery } from "@tanstack/react-query";
+import { useUserStore } from "../../stores/useUserStore.ts";
+import { dummyDevices, dummyMainDevice } from "./dummy.ts";
 
-const USE_DUMMY_DATA = true; // ✅ true → 더미 데이터 사용, false → API 사용
+const USE_DUMMY_DATA = false; // ✅ true → 더미 데이터 사용, false → API 사용
 
 const HomeMain = () => {
   const { devices, setDevices } = useDeviceStore();
@@ -16,7 +16,7 @@ const HomeMain = () => {
 
   // React Query로 homeInfo() 호출
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['homeInfo'],
+    queryKey: ["homeInfo"],
     queryFn: homeInfo,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
@@ -28,7 +28,7 @@ const HomeMain = () => {
     if (USE_DUMMY_DATA) {
       setDevices(dummyMainDevice, dummyDevices),
         setUser({
-          nickname: '더미 닉네임',
+          nickname: "더미 닉네임",
           imgNum: 1,
           mainDeviceId: dummyMainDevice.deviceId,
           deviceIds: dummyDevices.map((device) => device.deviceId), // ✅ 더미 디바이스 ID 리스트 추가
@@ -48,7 +48,7 @@ const HomeMain = () => {
 
       setDevices(
         data.mainDevice,
-        data.deviceIds.map((id: number) => ({ deviceId: id }))
+        data.deviceIds.map((id: number) => ({ id: id }))
       );
     }
   }, [data, setUser, setDevices]);

@@ -1,5 +1,5 @@
 export interface DeviceState {
-  deviceId: number;
+  id: number;
   name: string | null;
   groupId: number | null;
   roomType: number | null;

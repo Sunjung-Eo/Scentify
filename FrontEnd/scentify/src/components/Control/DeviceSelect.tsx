@@ -2,10 +2,16 @@ import { useState } from "react";
 import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
 
 // 기기 선택 타입
-export interface DeviceSelectProps {
-  devices: string[];
-  selectedDevice: string;
-  onDeviceChange: (device: string) => void;
+interface DeviceSelectItem {
+  deviceId: number;
+  name: string;
+  isRepresentative: boolean;
+}
+
+interface DeviceSelectProps {
+  devices: DeviceSelectItem[];
+  selectedDevice: number | null;
+  onDeviceChange: (deviceId: number) => void;
 }
 
 // 기기 선택
@@ -15,7 +21,12 @@ export default function DeviceSelect({
   onDeviceChange,
 }: DeviceSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-
+  const getSelectedDeviceName = () => {
+    const selected = devices.find(
+      (device) => device.deviceId === selectedDevice
+    );
+    return selected;
+  };
   return (
     <div>
       <button
@@ -30,14 +41,14 @@ export default function DeviceSelect({
           <div className="border-0.2 border-lightgray bg-white rounded-lg">
             {devices.map((device) => (
               <div
-                key={device}
+                key={device.deviceId}
                 onClick={() => {
-                  onDeviceChange(device);
+                  onDeviceChange(device.deviceId);
                   setIsOpen(false);
                 }}
                 className="p-1 pl-3"
               >
-                {device}
+                {device.name}
               </div>
             ))}
           </div>

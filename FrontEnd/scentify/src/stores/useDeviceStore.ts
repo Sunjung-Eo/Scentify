@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { useCapsuleAndDefaultScentStore } from './useCapsuleAndDefaultScentStore';
-import { DeviceState } from '../types/DeviceType';
+import { create } from "zustand";
+import { useCapsuleAndDefaultScentStore } from "./useCapsuleAndDefaultScentStore";
+import { DeviceState } from "../types/DeviceType";
 
 // Device 타입은 => types/DeviceType.ts 로 불러옴.
 export interface DeviceStoreState {

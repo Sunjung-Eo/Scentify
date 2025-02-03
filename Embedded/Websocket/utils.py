@@ -5,7 +5,10 @@ import datetime
 import subprocess
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="./.env")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_PATH = os.path.join(BASE_DIR, "config", ".env")
+
+load_dotenv(dotenv_path=ENV_PATH)
 
 def get_serial_number():
     return subprocess.run(
@@ -16,11 +19,14 @@ def get_serial_number():
     ).stdout.strip()
 
 def get_access_token(token, private_key=os.getenv("JWT_SECRET_KEY")):
+    if private_key is None:
+        print("Private Key is None!!\n")
+
     payload = {
         "token" : token,
         "exp" : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
     }
-
+    
     return jwt.encode(payload, private_key, algorithm="HS256")
 
 def get_temp_and_hum():

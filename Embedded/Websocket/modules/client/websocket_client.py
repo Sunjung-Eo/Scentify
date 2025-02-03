@@ -5,7 +5,8 @@ import json
 import stomper
 import os, sys
 
-from websocket_handler import WebSocketHandler
+from websocket_response_handler import WebSocketResponseHandler
+from websocket_request_handler import WebSocketRequestHandler
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -19,28 +20,28 @@ class WebSocketClient:
     def __new__(cls, *args, **kwargs):
         """싱글톤 인스턴스를 생성 및 반환"""
         if cls._instance is None:
-            cls._instance = super(WebSocketHandler, cls).__new__(cls)
+            cls._instance = super(WebSocketClient, cls).__new__(cls)
             cls._instance.__initialized = False  
         return cls._instance
     
-    def __init__(self, uri, serial_number):
+    def __init__(self, uri, serial_number, work_queue):
         """초기화 (중복 실행 방지)"""
         if not self.__initialized:
             self.__initialized = True  
-            
-        # 서버의 주소와 포트로 수정
-        self.__uri = uri
-        # 인증을 위한 시리얼 넘버 해싱 (SHA-256)
-        self.__serial_number = serial_number
 
-        self.websocket = None
-        self.subscribe_list = [
-            "/topic/DeviceStatus/Sensor/TempHum/",
-            "/topic/DeviceStatus/Capsule/Info/"
-        ]
-        self.message_queue = asyncio.Queue()
-        self.websocket_hanlder = WebSocketHandler().handlers
-        self.device_id = None
+            # 서버의 주소와 포트로 수정
+            self.__uri = uri
+            # 인증을 위한 시리얼 넘버 해싱 (SHA-256)
+            self.__serial_number = serial_number
+
+            self.websocket = None
+            self.subscribe_list = [
+                "/topic/DeviceStatus/Sensor/TempHum/",
+                "/topic/DeviceStatus/Capsule/Info/"
+            ]
+            self.message_queue = work_queue
+            self.websocket_response_hanlder = WebSocketResponseHandler().handlers
+            self.device_id = None
 
     # 연결 테스트 코드
     async def test_websocket_connection(self, ):
@@ -87,7 +88,7 @@ class WebSocketClient:
                 message = json.loads(req)
                 msg_type = message.get("type")
                 
-                handler = self.websocket_hanlder.get(msg_type, self.websocket_hanlder.get("default"))
+                handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
                 res = await handler(message)
                 
                 await self.message_queue.put(res)
@@ -106,8 +107,9 @@ class WebSocketClient:
             message = await self.message_queue.get()
             payload = message['payload']
             topic = message['topic']
-            message = self.make_message(dict_data=payload)
 
+            message = self.make_message(dict_data=payload)
+            print(message)
             json_msg = json.dumps(message)
             send_frame = stomper.send(topic, json_msg, content_type='application/json')
             await self.websocket.send(send_frame)       
@@ -115,9 +117,8 @@ class WebSocketClient:
 
     def make_message(self, dict_data):
         merge_dict = dict_data.copy()
-        dict_token = {"token" : get_access_token(self.__serial_number)}
+        dict_token = {'token' : get_access_token(self.__serial_number)}
         merge_dict.update(dict_token)
-
         return merge_dict
 
 

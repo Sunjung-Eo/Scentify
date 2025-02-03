@@ -27,20 +27,22 @@ build:
     paths:
       - target/deploy/app.jar
     expire_in: 1 hour
+  rules:
+    - if: $CI_COMMIT_BRANCH == "BE/develop"
 
-# 2️⃣ S3 업로드
+# 2️⃣ S3 업로드 
 upload-to-s3:
   stage: deploy
   image: amazon/aws-cli
   script:
     - echo "📤 S3 업로드 시작..."
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+    - export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
     - aws s3 cp target/deploy/app.jar s3://$AWS_S3_BUCKET/app.jar --region $AWS_REGION
-  only:
-    - BE/develop
+  rules:
+    - if: $CI_COMMIT_BRANCH == "BE/develop"
 
-# 3️⃣ EC2에 배포
+# 3️⃣ EC2에 배포 
 deploy-to-ec2:
   stage: deploy
   image: alpine
@@ -48,13 +50,18 @@ deploy-to-ec2:
     - apk add --no-cache openssh
   script:
     - echo "🔐 EC2 접속 & 배포 진행..."
-    - echo "$SSH_PRIVATE_KEY" > key.pem
+    - printf "%s" "$SSH_PRIVATE_KEY" > key.pem  # SSH Key 줄바꿈 오류 방지
     - chmod 600 key.pem
-    - ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF
+    - ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << 'EOF'
         set -e
         echo "🔄 기존 애플리케이션 중지..."
-        PID=\$(lsof -t -i:8080)
+        if command -v lsof > /dev/null; then
+          PID=\$(lsof -t -i:8080)
+        else
+          PID=\$(ps aux | grep java | grep -v grep | awk '{print \$2}')
+        fi
         if [ -n "\$PID" ]; then
+          echo "🔴 기존 프로세스 종료 (PID: \$PID)"
           kill -9 \$PID
         fi
         echo "📥 S3에서 최신 JAR 다운로드..."
@@ -64,5 +71,5 @@ deploy-to-ec2:
         disown
         exit
       EOF
-  only:
-    - BE/develop
+  rules:
+    - if: $CI_COMMIT_BRANCH == "BE/develop"

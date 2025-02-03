@@ -36,8 +36,8 @@ upload-to-s3:
   image: amazon/aws-cli
   script:
     - echo "📤 S3 업로드 시작..."
-    - export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
-    - export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+    - Set-Item -Path Env:AWS_ACCESS_KEY_ID -Value "${AWS_ACCESS_KEY_ID}"
+    - Set-Item -Path Env:AWS_SECRET_ACCESS_KEY -Value "${AWS_SECRET_ACCESS_KEY}"
     - aws s3 cp target/deploy/app.jar s3://$AWS_S3_BUCKET/app.jar --region $AWS_REGION
   rules:
     - if: $CI_COMMIT_BRANCH == "BE/develop"
@@ -50,7 +50,7 @@ deploy-to-ec2:
     - apk add --no-cache openssh
   script:
     - echo "🔐 EC2 접속 & 배포 진행..."
-    - printf "%s" "$SSH_PRIVATE_KEY" > key.pem  # SSH Key 저장 방식 개선
+    - printf "%s" "$SSH_PRIVATE_KEY" > key.pem  
     - chmod 600 key.pem
     - |
       ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF

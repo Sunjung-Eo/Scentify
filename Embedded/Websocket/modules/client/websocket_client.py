@@ -5,7 +5,7 @@ import json
 import stomper
 import os, sys
 
-from websocket_client import WebSocketHandler
+from websocket_handler import WebSocketHandler
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -26,6 +26,7 @@ class WebSocketClient:
         ]
         self.message_queue = asyncio.Queue()
         self.websocket_hanlder = WebSocketHandler().handlers
+        self.device_id = None
 
     # 연결 테스트 코드
     async def test_websocket_connection(self, ):
@@ -36,8 +37,10 @@ class WebSocketClient:
         }
         try:
             async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
+                response_header = websocket.response_headers  
+                self.device_id = response_header.get("Sec-WebSocket-Protocol")
+
                 self.websocket = websocket
-                await self.init_websocket()
 
                 receive_task = asyncio.create_task(self.receive_messages())
                 send_task = asyncio.create_task(self.send_message())
@@ -51,7 +54,7 @@ class WebSocketClient:
 
         except Exception as e:
             self.websocket = None
-            print("Exception for Websocket Connection..")
+            print(f"Exception for Websocket Connection.. : {e}")
             await asyncio.sleep(5)
 
     async def init_websocket(self):
@@ -109,8 +112,8 @@ if __name__ == '__main__':
     serial_number = get_serial_number()
 
     # 웹 소켓 객체 생성
-    websocket_client = WebSocketClient("ws://70.12.246.113:8080/v1/ws/device", serial_number)
-    # websocket_client = WebSocketClient("ws://0.0.0.0:8765", serial_number)
+    # websocket_client = WebSocketClient("ws://70.12.246.113:8080/v1/ws/device", serial_number)
+    websocket_client = WebSocketClient("ws://localhost:8765", serial_number)
 
     # 비동기 이벤트 루프 실행
     asyncio.run(websocket_client.test_websocket_connection())

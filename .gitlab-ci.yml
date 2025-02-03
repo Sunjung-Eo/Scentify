@@ -30,7 +30,7 @@ build:
   rules:
     - if: $CI_COMMIT_BRANCH == "BE/develop"
 
-# 2️⃣ S3 업로드 
+# 2️⃣ S3 업로드
 upload-to-s3:
   stage: deploy
   image: amazon/aws-cli
@@ -42,7 +42,7 @@ upload-to-s3:
   rules:
     - if: $CI_COMMIT_BRANCH == "BE/develop"
 
-# 3️⃣ EC2에 배포 
+# 3️⃣ EC2에 배포
 deploy-to-ec2:
   stage: deploy
   image: alpine
@@ -50,26 +50,27 @@ deploy-to-ec2:
     - apk add --no-cache openssh
   script:
     - echo "🔐 EC2 접속 & 배포 진행..."
-    - printf "%s" "$SSH_PRIVATE_KEY" > key.pem  # SSH Key 줄바꿈 오류 방지
+    - printf "%s" "$SSH_PRIVATE_KEY" > key.pem  # SSH Key 저장 방식 개선
     - chmod 600 key.pem
-    - ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << 'EOF'
-        set -e
-        echo "🔄 기존 애플리케이션 중지..."
-        if command -v lsof > /dev/null; then
-          PID=\$(lsof -t -i:8080)
-        else
-          PID=\$(ps aux | grep java | grep -v grep | awk '{print \$2}')
-        fi
-        if [ -n "\$PID" ]; then
-          echo "🔴 기존 프로세스 종료 (PID: \$PID)"
-          kill -9 \$PID
-        fi
-        echo "📥 S3에서 최신 JAR 다운로드..."
-        aws s3 cp s3://$AWS_S3_BUCKET/app.jar ~/app/app.jar
-        echo "🚀 새 애플리케이션 실행..."
-        nohup java -jar ~/app/app.jar > ~/app/app.log 2>&1 &
-        disown
-        exit
+    - |
+      ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF
+      set -e
+      echo "🔄 기존 애플리케이션 중지..."
+      if command -v lsof > /dev/null; then
+        PID=$(lsof -t -i:8080)
+      else
+        PID=$(ps aux | grep java | grep -v grep | awk '{print $2}')
+      fi
+      if [ -n "$PID" ]; then
+        echo "🔴 기존 프로세스 종료 (PID: $PID)"
+        kill -9 $PID
+      fi
+      echo "📥 S3에서 최신 JAR 다운로드..."
+      aws s3 cp s3://$AWS_S3_BUCKET/app.jar ~/app/app.jar
+      echo "🚀 새 애플리케이션 실행..."
+      nohup java -jar ~/app/app.jar > ~/app/app.log 2>&1 &
+      disown
+      exit
       EOF
   rules:
     - if: $CI_COMMIT_BRANCH == "BE/develop"

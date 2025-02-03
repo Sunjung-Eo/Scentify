@@ -34,6 +34,7 @@ public class HomeDto {
 	    private int id;
 	    private String name;
 	    private int groupId;
+	    private int roomType;
 	    private int slot1;
 	    private int slot1RemainingRatio;
 	    private int slot2;

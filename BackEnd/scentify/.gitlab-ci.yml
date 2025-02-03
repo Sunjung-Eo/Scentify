@@ -1,0 +1,68 @@
+stages:
+  - build
+  - deploy
+
+# 환경 변수 설정
+variables:
+  MAVEN_CLI_OPTS: "-s settings.xml --batch-mode"
+  AWS_S3_BUCKET: "scentify"
+  AWS_REGION: "ap-northeast-2"
+  EC2_USER: "ubuntu"
+  EC2_HOST: "3.38.99.86"
+
+cache:
+  paths:
+    - .m2/repository/
+
+# 1️⃣ Maven 빌드
+build:
+  stage: build
+  image: maven:3.8.7-openjdk-17
+  script:
+    - echo "🛠️ Maven 프로젝트 빌드 중..."
+    - mvn clean package -DskipTests
+    - mkdir -p target/deploy
+    - cp target/*.jar target/deploy/app.jar
+  artifacts:
+    paths:
+      - target/deploy/app.jar
+    expire_in: 1 hour
+
+# 2️⃣ S3 업로드
+upload-to-s3:
+  stage: deploy
+  image: amazon/aws-cli
+  script:
+    - echo "📤 S3 업로드 시작..."
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws s3 cp target/deploy/app.jar s3://$AWS_S3_BUCKET/app.jar --region $AWS_REGION
+  only:
+    - BE/develop
+
+# 3️⃣ EC2에 배포
+deploy-to-ec2:
+  stage: deploy
+  image: alpine
+  before_script:
+    - apk add --no-cache openssh
+  script:
+    - echo "🔐 EC2 접속 & 배포 진행..."
+    - echo "$SSH_PRIVATE_KEY" > key.pem
+    - chmod 600 key.pem
+    - ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF
+        set -e
+        echo "🔄 기존 애플리케이션 중지..."
+        PID=\$(lsof -t -i:8080)
+        if [ -n "\$PID" ]; then
+          kill -9 \$PID
+        fi
+        echo "📥 S3에서 최신 JAR 다운로드..."
+        aws s3 cp s3://$AWS_S3_BUCKET/app.jar ~/app/app.jar
+        echo "🚀 새 애플리케이션 실행..."
+        nohup java -jar ~/app/app.jar > ~/app/app.log 2>&1 &
+        disown
+        exit
+      EOF
+  only:
+    - BE/develop

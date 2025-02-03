@@ -30,8 +30,8 @@ const HomeMain = () => {
         setUser({
           nickname: "더미 닉네임",
           imgNum: 1,
-          mainDeviceId: dummyMainDevice.deviceId,
-          deviceIds: dummyDevices.map((device) => device.deviceId), // ✅ 더미 디바이스 ID 리스트 추가
+          mainDeviceId: dummyMainDevice.id,
+          deviceIds: dummyDevices.map((device) => device.id), // ✅ 더미 디바이스 ID 리스트 추가
         });
     }
   }, [setDevices, setUser]);
@@ -58,7 +58,7 @@ const HomeMain = () => {
 
   // 메인 디바이스 찾기
   const mainDevice = devices.find((device) => device.isRepresentative);
-  const mainDeviceId = mainDevice ? mainDevice.deviceId : null;
+  const mainDeviceId = mainDevice ? mainDevice.id : null;
 
   // DeviceCarousel에 전달할 데이터
   const exampleData = {

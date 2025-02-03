@@ -35,12 +35,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   const filteredAutoSchedules = autoSchedules.filter(
     (schedule) => schedule.deviceId === deviceId
   );
-  // Schedule 타입에 맞는 포맷팅 함수 생성
-  const formatScheduleTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-  };
+
   // 모든 스케줄을 공통 타입을 적용해 변환
   const allSchedules: ScheduleItem[] = [
     ...filteredCustomSchedules.map((schedule) => ({
@@ -93,9 +88,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
           <div className="text-center bg-black bg-opacity-50 p-3 rounded-lg">
             <h4 className="text-md font-semibold">다가오는 예약</h4>
             <p className="text-sm">
-              {closestSchedule.name} -{" "}
-              {formatScheduleTime(closestSchedule.scheduleTime)} (
-              {formattedTime})
+              {closestSchedule} - {closestSchedule} ({formattedTime})
             </p>
           </div>
         ) : (

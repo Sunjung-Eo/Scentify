@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Mode } from "../../feature/control/main/ControlType";
 import ModeToggle from "../../feature/control/main/ModeToggle";
@@ -21,46 +21,35 @@ import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
 import DeviceSelect from "../../components/Control/DeviceSelect";
 
 const Control = () => {
-  const navigate = useNavigate();
-
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
   // 기기 정보
   const { devices } = useDeviceStore();
+  // 기기 id
   const deviceIds = devices
     .map((device) => device.id)
     .filter((id): id is number => id !== undefined);
-
+  // 선택한 기기(기본값: 대표기기 - 등록순)
   const [selectedDevice, setSelectedDevice] = useState<number | null>(null);
-
   useEffect(() => {
-    console.log("Current devices:", devices);
-    console.log("Current selectedDevice:", selectedDevice);
     if (devices.length > 0) {
       const deviceId =
         devices.find((device) => device.isRepresentative)?.id || devices[0].id;
-      console.log("Setting deviceId to:", deviceId);
       if (deviceId) {
         setSelectedDevice(deviceId);
       }
     }
   }, [devices]);
-  // const [selectedDevice, setSelectedDevice] = useState<number | null>(
-  //   mainDeviceId ?? (devices.length > 0 ? devices[0].deviceId : null)
-  // );
-  // useEffect(() => {
-  //   console.log("Devices:", devices);
-  //   console.log("Selected Device:", selectedDevice);
-  // }, [devices, selectedDevice]);
-
+  // 예약 관리 컴포넌트로 전달
   const deviceSelectItems = devices.map((device) => ({
     deviceId: device.id,
     name: device.name,
     isRepresentative: device.isRepresentative,
   }));
-  // 예약 정보
+
+  // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
     queryKey: ["reservations", deviceIds, accessToken],
     queryFn: () => getAllDevicesMode(deviceIds, accessToken),
@@ -71,31 +60,6 @@ const Control = () => {
     ? reservationData.find((data) => data.deviceId === selectedDevice)
         ?.reservations || []
     : [];
-
-  // const deviceSelectItems = devices.map((device) => ({
-  //   deviceId: device.deviceId,
-  //   name: device.name,
-  //   isRepresentative: device.isRepresentative,
-  // }));
-  // // 예약 정보
-  // const [reservationData, setReservationData] = useState<
-  //   Array<{
-  //     deviceId: number;
-  //     reservations: any[];
-  //   }>
-  // >([]);
-  // // 선택한 기기의 예약 정보
-  // const [filteredReservations, setFilteredReservations] = useState<any[]>([]);
-  // useEffect(() => {
-  //   if (selectedDevice) {
-  //     const selectedData = reservationData.find(
-  //       (data) => data.deviceId === selectedDevice
-  //     );
-  //     setFilteredReservations(selectedData?.reservations || []);
-  //   } else {
-  //     setFilteredReservations([]);
-  //   }
-  // }, [selectedDevice, reservationData]);
 
   // mode - 어떤 모드인지 백엔드에 전달할 것
   const [mode, setMode] = useState<Mode>(false); // 백엔드에 전달한 현재 모드 상태
@@ -127,18 +91,6 @@ const Control = () => {
     setSelectedDevice(deviceId);
   };
 
-  // 모든 예약 정보 조회
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (deviceIds.length > 0 && accessToken) {
-  //       console.log(deviceIds);
-  //       const result = await getAllDevicesMode(deviceIds, accessToken);
-  //       setReservationData(result);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [deviceIds, accessToken]);
-
   return (
     <div className="content pt-5">
       <Routes>
@@ -169,19 +121,16 @@ const Control = () => {
                   />
                 </div>
                 {isFirstRender || !mode ? (
-                  <ReservationManager
-                    reservationData={filteredReservations}
-                    selectedDevice={selectedDevice}
-                  />
+                  <ReservationManager reservationData={filteredReservations} />
                 ) : (
                   <div>
                     <div className="h-[130px] mt-5 mb-10 p-4 bg-component rounded-lg">
                       <p>자동화 모드 설명 ~~~</p>
                     </div>
-                    <AutoManager
+                    {/* <AutoManager
                       selectedDevice={selectedDevice}
                       onDeviceChange={handleDeviceChange}
-                    />
+                    /> */}
                   </div>
                 )}
               </div>
@@ -196,11 +145,11 @@ const Control = () => {
             </div>
           }
         />
-        <Route index element={<AutoManager />} />
+        {/* <Route index element={<AutoManager />} /> */}
         <Route path="auto/behavior" element={<BehaviorSetting />} />
         <Route path="auto/deodorize" element={<DeodorizationSetting />} />
         <Route path="auto/detect" element={<DetectionSetting />} />
-        <Route path="reservation/create" element={<CreateReservation />} />
+        {/* <Route path="reservation/create" element={<CreateReservation />} /> */}
       </Routes>
     </div>
   );

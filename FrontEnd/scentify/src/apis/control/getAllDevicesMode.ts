@@ -1,14 +1,24 @@
 // 단일 기기 예약 전체 조회
 const fetchReservations = async (deviceId: number, accessToken: string) => {
-  const response = await fetch("/v1/custom/all", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ deviceId: deviceId }),
-  });
-  return response.json();
+  try {
+    const response = await fetch("/v1/custom/all", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ deviceId: deviceId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("예약 데이터 가져오기 실패:", error);
+    throw error;
+  }
 };
 // const fetchReservations = async (deviceId: number, accessToken: string) => {
 //   const bodyData = JSON.stringify({ deviceId: deviceId });
@@ -53,9 +63,7 @@ export const getAllDevicesMode = async (
   try {
     const deviceData = await Promise.all(
       deviceIds.map(async (id) => {
-        const [reservations] = await Promise.all([
-          fetchReservations(id, accessToken),
-        ]);
+        const reservations = await fetchReservations(id, accessToken);
         return {
           deviceId: id,
           reservations,

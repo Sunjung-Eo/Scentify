@@ -46,3 +46,4 @@ upload-to-s3:
     - aws s3 cp target\deploy\app.jar s3://%AWS_S3_BUCKET%/app.jar
   rules:
     - if: '$CI_COMMIT_BRANCH == "BE/develop"'
+

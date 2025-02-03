@@ -36,9 +36,10 @@ upload-to-s3:
   image: amazon/aws-cli
   script:
     - echo "📤 S3 업로드 시작..."
-    - Set-Item -Path Env:AWS_ACCESS_KEY_ID -Value "${AWS_ACCESS_KEY_ID}"
-    - Set-Item -Path Env:AWS_SECRET_ACCESS_KEY -Value "${AWS_SECRET_ACCESS_KEY}"
-    - aws s3 cp target/deploy/app.jar s3://$AWS_S3_BUCKET/app.jar --region $AWS_REGION
+    - aws configure set aws_access_key_id $($env:AWS_ACCESS_KEY_ID)
+    - aws configure set aws_secret_access_key $($env:AWS_SECRET_ACCESS_KEY)
+    - aws configure set default.region $($env:AWS_REGION)
+    - aws s3 cp target/deploy/app.jar s3://$($env:AWS_S3_BUCKET)/app.jar
   rules:
     - if: $CI_COMMIT_BRANCH == "BE/develop"
 
@@ -55,18 +56,22 @@ deploy-to-ec2:
     - |
       ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF
       set -e
+
       echo "🔄 기존 애플리케이션 중지..."
       if command -v lsof > /dev/null; then
         PID=$(lsof -t -i:8080)
       else
         PID=$(ps aux | grep java | grep -v grep | awk '{print $2}')
       fi
+
       if [ -n "$PID" ]; then
         echo "🔴 기존 프로세스 종료 (PID: $PID)"
         kill -9 $PID
       fi
+
       echo "📥 S3에서 최신 JAR 다운로드..."
-      aws s3 cp s3://$AWS_S3_BUCKET/app.jar ~/app/app.jar
+      aws s3 cp s3://$AWS_S3_BUCKET/app.jar ~/app/app.jar --region $AWS_REGION
+
       echo "🚀 새 애플리케이션 실행..."
       nohup java -jar ~/app/app.jar > ~/app/app.log 2>&1 &
       disown

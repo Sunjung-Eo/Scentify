@@ -4,10 +4,14 @@ stages:
 
 job_build:
   stage: build
+  tags:
+    - backend
   script:
     - echo "Building the project"
 
 job_test:
   stage: test
+  tags:
+    - backend
   script:
     - echo "Running tests"

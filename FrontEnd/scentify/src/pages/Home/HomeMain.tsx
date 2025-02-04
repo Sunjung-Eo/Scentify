@@ -5,14 +5,13 @@ import { useDeviceStore } from '../../stores/useDeviceStore.ts';
 import { homeInfo } from '../../apis/home/homeInfo.ts';
 import { useQuery } from '@tanstack/react-query';
 import { useUserStore } from '../../stores/useUserStore.ts';
-import { dummyDevices, dummyMainDevice } from './dummy.ts';
-
-const USE_DUMMY_DATA = false; // ✅ true → 더미 데이터 사용, false → API 사용
+import { useAuthStore } from '../../stores/useAuthStore.ts';
 
 const HomeMain = () => {
   const { devices, setDevices } = useDeviceStore();
   const { setUser } = useUserStore();
   const { deviceIds } = useUserStore();
+  const accessToken = useAuthStore.getState().accessToken;
 
   // React Query로 homeInfo() 호출
   const { data, isLoading, isError } = useQuery({
@@ -20,26 +19,13 @@ const HomeMain = () => {
     queryFn: homeInfo, // homeInfo() API 호출
     staleTime: 1000 * 60 * 5, // 5분 동안 캐싱 유지
     refetchOnWindowFocus: false, // 창 포커스 시 재요청 방지
-    enabled: !USE_DUMMY_DATA, // ✅ USE_DUMMY_DATA가 true면 API 호출 비활성화
   });
-
-  // ✅ 더미 데이터 적용 (한 번만 실행)
-  useEffect(() => {
-    if (USE_DUMMY_DATA) {
-      setDevices(dummyMainDevice, dummyDevices),
-        setUser({
-          nickname: '더미 닉네임',
-          imgNum: 1,
-          mainDeviceId: dummyMainDevice.id,
-          deviceIds: dummyDevices.map((device) => device.id), // ✅ 더미 디바이스 ID 리스트 추가
-        });
-    }
-  }, [setDevices, setUser]);
 
   // ✅ API 응답이 있을 때만 상태 업데이트 (무한 렌더링 방지)
   useEffect(() => {
-    if (!USE_DUMMY_DATA && data) {
+    if (data) {
       setUser({
+        id: data.user.id,
         nickname: data.user.nickName,
         imgNum: data.user.imgNum,
         mainDeviceId: data.user.mainDeviceId,
@@ -48,7 +34,7 @@ const HomeMain = () => {
 
       setDevices(
         data.mainDevice,
-        data.deviceIds.map((id: number) => ({ id: id }))
+        data.deviceIds.map((id: number) => ({ id }))
       );
     }
   }, [data, setUser, setDevices]);

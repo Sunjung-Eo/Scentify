@@ -15,7 +15,7 @@ from websocket_response_handler import *
 class SmartHub():
     def __init__(self, websocket_url, mqtt_url, serial_number, work_queue):
         self.mqtt_client = MQTTClient(url="localhost", work_queue=work_queue)
-        self.websocket_response_handler = WebSocketResponseHandler(mqtt_client=self.mqtt_client)
+        self.websocket_response_handler = WebSocketResponseHandler(mqtt_client=self.mqtt_client).handlers
         self.websocket_client = WebSocketClient(
             uri=websocket_url,
             serial_number=serial_number,

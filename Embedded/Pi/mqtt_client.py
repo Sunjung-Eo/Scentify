@@ -52,10 +52,9 @@ class MQTTClient:
             message["type"] = "DeviceStatus/Capsule/Remainder"
             data = json.loads(payload)
             
-            message["Remainder"] = dict()
             for key, value in data.items():
                 key = key.strip()
-                message["Remainder"][key] = value
+                message[key] = value
 
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
             # 사람 단순 감지

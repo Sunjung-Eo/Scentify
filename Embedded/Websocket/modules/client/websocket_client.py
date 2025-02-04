@@ -4,7 +4,9 @@ import hashlib
 import json
 import stomper
 import os, sys
+import ast
 
+from pydantic import BaseModel
 from websocket_response_handler import WebSocketResponseHandler
 from websocket_request_handler import WebSocketRequestHandler
 
@@ -12,6 +14,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 
 from stomp import *
 from utils import*
+
+class DeviceIDDataDTO(BaseModel):
+    id: int
 
 
 class WebSocketClient:
@@ -37,7 +42,8 @@ class WebSocketClient:
             self.websocket = None
             self.subscribe_list = [
                 "/topic/DeviceStatus/Sensor/TempHum/",
-                "/topic/DeviceStatus/Capsule/Info/"
+                "/topic/DeviceStatus/Capsule/Info/",
+                "/topic/DeviceInfo/Id/"
             ]
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
@@ -45,38 +51,77 @@ class WebSocketClient:
 
     # 연결 테스트 코드
     async def connection(self, ):
-        token = hashlib.sha256(self.__serial_number.encode()).hexdigest()
+        while True:
+            token = get_access_token(self.__serial_number)
+            
+            headers = {
+                "Authorization": f"Bearer {token}"
+            }
 
-        headers = {
-            "Authorization": f"Bearer {token}"
-        }
-        try:
-            async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
-                response_header = websocket.response_headers  
-                self.device_id = response_header.get("Sec-WebSocket-Protocol")
+            try:
+                print("Try Web Socket Connection..")
+                async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
+                    print("Complete HandShaking")
 
-                self.websocket = websocket
-                await self.init_websocket()
+                    self.websocket = websocket
+                    await self.init_websocket()
 
-                receive_task = asyncio.create_task(self.receive_messages())
-                send_task = asyncio.create_task(self.send_message())
-                
-                await asyncio.gather(receive_task, send_task)
+                    # 초기 디바이스 serial_number <> device_id 교환
+                    """
+                    요청 경로 /app/DeviceInfo/Id
+                    구독 경로 /topic/DeviceInfo/Id/ + 자기 시리얼 
+                    """
+                    subscribe_frame = get_subscribe_frame(0, f"/topic/DeviceInfo/Id/{self.__serial_number}")
+                    await self.websocket.send(subscribe_frame)
 
-        except websockets.exceptions.ConnectionClosed:
-            self.websocket = None
-            print("Disconnected Websocket..")
-            await asyncio.sleep(5)
+                    serial_msg = json.dumps({'token' : token})
+                    send_frame = stomper.send('/app/DeviceInfo/Id', serial_msg, content_type='application/json')                    
+                    await self.websocket.send(send_frame)      
 
-        except Exception as e:
-            self.websocket = None
-            print(f"Exception for Websocket Connection.. : {e}")
-            await asyncio.sleep(5)
+                    
+                    while True:
+                        res = await self.websocket.recv()
+                        header, body = parse_stomp_message(res)
+                        if len(body) <= 1:
+                            continue
+                        
+                        message = ast.literal_eval(body)
+                        if "id" in message:
+                            self.device_id = message["id"]
+
+                        if self.device_id == None:
+                            raise Exception("Can not Receive Device Id")
+                        break
+
+                    await self.subcribe_websocket()
+                    original_key = {}
+                    for key, value in self.websocket_response_hanlder.items():
+                        if key == "default":
+                            original_key[key] = value
+                        original_key[f'{key}{self.device_id}'] = value
+                    self.websocket_response_hanlder = {}
+                    self.websocket_response_hanlder = original_key
+
+                    receive_task = asyncio.create_task(self.receive_messages())
+                    send_task = asyncio.create_task(self.send_message())
+                    
+                    await asyncio.gather(receive_task, send_task)
+
+            except websockets.exceptions.ConnectionClosed:
+                self.websocket = None
+                print("Disconnected Websocket..")
+                await asyncio.sleep(3)
+            
+            except Exception as e:
+                self.websocket = None
+                print(f"Exception for Websocket Connection.. : {e}")
+                await asyncio.sleep(3)
 
     async def init_websocket(self):
         connect_frame = get_connect_frame(self.__uri)
         await self.websocket.send(connect_frame)
 
+    async def subcribe_websocket(self):
         for (idx, topic) in enumerate(self.subscribe_list):
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
             await self.websocket.send(subscribe_frame)
@@ -84,16 +129,21 @@ class WebSocketClient:
     async def receive_messages(self):
         while self.websocket is not None:
             try:
-                req = await self.websocket.recv()
-                message = json.loads(req)
-                msg_type = message.get("type")
+                message = {}
+                while True:
+                    res = await self.websocket.recv()
+                    header, body = parse_stomp_message(res)
+                    if len(body) <= 1:
+                        continue
+                    
+                    message = ast.literal_eval(body)
+                    break
 
+                # TODO: Header에서 Type 갖고 오는 코드 작성하기!
+                # msg_type = message.get("type")
+                msg_type = "/topic/DeviceStatus/Capsule/Info/1903711731"
                 handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
                 await handler(message)
-                # res = await handler(message)
-                
-                # await self.message_queue.put(res)
-                # await asyncio.sleep(0.5)
 
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
@@ -113,8 +163,7 @@ class WebSocketClient:
             message = self.make_message(dict_data=payload)
             
             json_msg = json.dumps(message)
-            send_frame = stomper.send(topic, json_msg, content_type='application/json')
-            print(send_frame)
+            send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')
             await self.websocket.send(send_frame)       
         
 
@@ -123,7 +172,6 @@ class WebSocketClient:
         dict_token = {'token' : get_access_token(self.device_id)}
         merge_dict.update(dict_token)
         return merge_dict
-
 
 
 # if __name__ == '__main__':

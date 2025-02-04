@@ -1,4 +1,5 @@
 import json
+import asyncio
 
 class WebSocketResponseHandler:
     _instance = None  
@@ -17,8 +18,9 @@ class WebSocketResponseHandler:
             self.mqtt_client = mqtt_client
 
             self.handlers = {
-                "/topic/DeviceStatus/Sensor/TempHum": self.hanlder_response_temphum,
-                "/topic/DeviceStatus/Capsule/Info": self.handler_capsule_initial_info,
+                "/topic/DeviceStatus/Sensor/TempHum/": self.hanlder_response_temphum,
+                "/topic/DeviceStatus/Capsule/Info/": self.handler_capsule_initial_info,
+                "/topic/Remote/Operation/"
                 "default": self.default_hanlder
             }
 
@@ -26,11 +28,11 @@ class WebSocketResponseHandler:
         print("Handling Temperature & Humidity data")
         pass
 
-    def handler_capsule_initial_info(self, message):
-        del message["type"]
-        self.mqtt_client.publish(
+    async def handler_capsule_initial_info(self, message):
+        # del message["type"]
+        await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/CapsuleInfo",
-            json.loads(message)
+            json.dumps(message)
         )
         print("Handling Capsule Initial Info")
 

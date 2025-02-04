@@ -20,21 +20,25 @@ class WebSocketResponseHandler:
             self.handlers = {
                 "/topic/DeviceStatus/Sensor/TempHum/": self.hanlder_response_temphum,
                 "/topic/DeviceStatus/Capsule/Info/": self.handler_capsule_initial_info,
-                "/topic/Remote/Operation/"
+                "/topic/Remote/Operation/" : self.handler_remote_operation,
                 "default": self.default_hanlder
             }
 
-    def hanlder_response_temphum(self):
-        print("Handling Temperature & Humidity data")
+    async def hanlder_response_temphum(self):
         pass
+        print("Handling Temperature & Humidity data")
 
     async def handler_capsule_initial_info(self, message):
-        # del message["type"]
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/CapsuleInfo",
             json.dumps(message)
         )
         print("Handling Capsule Initial Info")
+
+    async def handler_remote_operation(self):
+        # TODO: 모터 제어를 위한 MQTT Pub 코드 작성
+        pass
+        print("Handling Remote Operation Motor")
 
     def default_hanlder(self):
         print("There isn't type!!")

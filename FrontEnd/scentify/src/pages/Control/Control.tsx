@@ -51,7 +51,7 @@ const Control = () => {
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
-    queryKey: ["reservations", deviceIds, accessToken],
+    queryKey: ["reservations"],
     queryFn: () => getAllDevicesMode(deviceIds, accessToken),
     enabled: deviceIds.length > 0 && !!accessToken,
   });
@@ -121,7 +121,12 @@ const Control = () => {
                   />
                 </div>
                 {isFirstRender || !mode ? (
-                  <ReservationManager reservationData={filteredReservations} />
+                  selectedDevice !== null && (
+                    <ReservationManager
+                      reservationData={filteredReservations}
+                      selectedDevice={selectedDevice}
+                    />
+                  )
                 ) : (
                   <div>
                     <div className="h-[130px] mt-5 mb-10 p-4 bg-component rounded-lg">

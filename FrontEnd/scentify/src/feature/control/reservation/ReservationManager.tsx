@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../../../stores/useAuthStore";
+import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 import AlarmIcon from "../../../assets/icons/alarm-icon.svg";
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import HeartButton from "../../../components/Button/HeartButton";
-// import DeleteConfirmModal from "./DeleteReservationModal";
+import DeleteConfirmModal from "./DeleteReservationModal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 import {
@@ -16,6 +18,7 @@ import {
 
 export default function ReservationManager({
   reservationData,
+  selectedDevice,
 }: ReservationManagerProps) {
   const navigate = useNavigate();
 
@@ -23,30 +26,47 @@ export default function ReservationManager({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  // react query
+  const queryClient = useQueryClient();
+
   const customSchedules = reservationData?.customSchedules || []; // 기기 한개의 예약 데이터 저장
   const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
 
   // 삭제 모달
-  // const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  // const [reservationDelete, setReservationDelete] = useState<string | null>(
-  //   null
-  // );
-  // const handleDeleteClick = (id: number) => {
-  //   setReservationDelete(id);
-  //   setDeleteModalOpen(true);
-  // };
-  // const handleDeleteConfirm = () => {
-  //   // 삭제 API 호출 추가
-  //   if (reservationDelete) {
-  //     // TODO: 추후 로직 추가 예정
-  //   }
-  //   setDeleteModalOpen(false);
-  //   setReservationDelete(null);
-  // };
-  // const handleDeleteCancel = () => {
-  //   setDeleteModalOpen(false);
-  //   setReservationDelete(null);
-  // };
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [reservationDelete, setReservationDelete] = useState<number | null>(
+    null
+  );
+  const deleteMutation = useMutation({
+    mutationFn: (scheduleId: number) =>
+      deleteCustomSchedule(scheduleId, selectedDevice, accessToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reservations"],
+      });
+      setDeleteModalOpen(false);
+      setReservationDelete(null);
+    },
+    onError: (error) => {
+      console.error("예약 삭제 실패:", error);
+    },
+  });
+
+  const handleDeleteClick = (scheduleId: number) => {
+    setReservationDelete(scheduleId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (reservationDelete) {
+      deleteMutation.mutate(reservationDelete);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setReservationDelete(null);
+  };
 
   // 요일 비스마스크 변환
   const getDaysFromBitMask = (bitmask: number): string[] => {
@@ -171,7 +191,7 @@ export default function ReservationManager({
                       {schedule.modeOn ? "On" : "Off"}
                     </div>
                     <button
-                      // onClick={() => handleDeleteClick(schedule.id)}
+                      onClick={() => handleDeleteClick(schedule.id)}
                       className="w-[65px] h-[30px] mt-2 border-0.2 border-lightgray rounded-lg"
                     >
                       삭제
@@ -181,12 +201,12 @@ export default function ReservationManager({
               </div>
             );
           })}
-          {/* {deleteModalOpen && (
+          {deleteModalOpen && (
             <DeleteConfirmModal
               onConfirm={handleDeleteConfirm}
               onCancel={handleDeleteCancel}
             />
-          )} */}
+          )}
         </div>
       ) : (
         <p className="mt-40 font-pre-light text-14 text-gray text-center">

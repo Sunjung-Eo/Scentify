@@ -28,6 +28,7 @@ const HomeMain = () => {
     if (USE_DUMMY_DATA) {
       setDevices(dummyMainDevice, dummyDevices),
         setUser({
+          id: "aaaa",
           nickname: "더미 닉네임",
           imgNum: 1,
           mainDeviceId: dummyMainDevice.deviceId,

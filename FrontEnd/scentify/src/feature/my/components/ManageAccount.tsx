@@ -3,14 +3,21 @@ import { useNavigate } from "react-router-dom";
 import arrowIcon from "../../../assets/icons/rightarrow-icon.svg";
 import { useUserStore } from "../../../stores/useUserStore";
 import { getProfileImage } from "../../../utils/profileImageMapper";
+import { validatePassword } from "../../../apis/user/editaccount/validatepassword";
+import { deleteUserAccount } from "../../../apis/user/editaccount/deleteUserAccount"; // 회원 탈퇴 API
+import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
 
 const ManageAccount = () => {
   const navigate = useNavigate();
   const { id, nickname, imgNum } = useUserStore();
+
+  console.log("현재 상태 확인:", { id, nickname, imgNum }); // 상태 확인
+
+  const { accessToken } = useAuthStore(); // 토큰 가져오기
+
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 창 상태
   const [inputPassword, setInputPassword] = useState(""); // 입력된 비밀번호
   const [error, setError] = useState(""); // 에러 메시지 상태
-  const currentPassword = "123456"; // 기존 비밀번호 (예제)
 
   // 닉네임 변경 페이지로 이동
   const handleNicknameChangePage = () => {
@@ -44,13 +51,30 @@ const ManageAccount = () => {
     setError(""); // 에러 메시지 초기화
   };
 
-  // 비밀번호 확인 핸들러
-  const handlePasswordCheck = () => {
-    if (inputPassword === currentPassword) {
+  // 비밀번호 확인 후 탈퇴 진행
+  const handlePasswordCheck = async () => {
+    if (!inputPassword.trim()) {
+      setError("비밀번호를 입력해주세요.");
+      return;
+    }
+
+    const passwordResult = await validatePassword(inputPassword, accessToken);
+
+    if (!passwordResult.success) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    // 비밀번호 확인 성공 -> 회원 탈퇴 진행
+    const deleteResult = await deleteUserAccount(accessToken);
+
+    if (deleteResult.success) {
       alert("회원 탈퇴가 완료되었습니다.");
       closeModal();
+      // 로그아웃 후 홈 화면으로 이동
+      navigate("/");
     } else {
-      setError("비밀번호가 일치하지 않습니다.");
+      setError(deleteResult.message || "회원 탈퇴에 실패했습니다.");
     }
   };
 

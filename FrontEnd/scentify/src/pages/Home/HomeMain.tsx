@@ -19,22 +19,7 @@ const HomeMain = () => {
     queryFn: homeInfo,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    enabled: !USE_DUMMY_DATA, // ✅ USE_DUMMY_DATA가 true면 API 호출 비활성화
   });
-
-  // ✅ 더미 데이터 적용 (한 번만 실행)
-  useEffect(() => {
-    if (USE_DUMMY_DATA) {
-      setDevices(dummyMainDevice, dummyDevices),
-        setUser({
-          id: "aaaa",
-          nickname: "더미 닉네임",
-          imgNum: 1,
-          mainDeviceId: dummyMainDevice.deviceId,
-          deviceIds: dummyDevices.map((device) => device.deviceId), // ✅ 더미 디바이스 ID 리스트 추가
-        });
-    }
-  }, [setDevices, setUser]);
 
   // ✅ API 응답이 있을 때만 상태 업데이트 (무한 렌더링 방지)
   useEffect(() => {

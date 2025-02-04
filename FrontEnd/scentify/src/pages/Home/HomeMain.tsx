@@ -25,6 +25,7 @@ const HomeMain = () => {
   useEffect(() => {
     if (data) {
       setUser({
+        id: data.user.id,
         nickname: data.user.nickName,
         imgNum: data.user.imgNum,
         mainDeviceId: data.user.mainDeviceId,

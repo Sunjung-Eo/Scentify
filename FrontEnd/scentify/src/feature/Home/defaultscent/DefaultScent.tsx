@@ -1,62 +1,126 @@
-import React, { useEffect, useState } from "react";
-import SpaceTab from "./SpaceTab";
-import SpaceDescription from "./SpaceDescription";
-import { useControlStore } from "../../../stores/useControlStore";
-import { useCapsuleAndDefaultScentStore } from "../../../stores/useCapsuleAndDefaultScentStore";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import SpaceTab from './SpaceTab';
+import SpaceDescription from './SpaceDescription';
+import { useControlStore } from '../../../stores/useControlStore';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { registDefaultScent } from '../../../apis/home/registDefaultScent';
+import { fragranceMap } from '../capsule/utils/fragranceMap';
 
 function DefaultScent() {
   const navigate = useNavigate();
-  const { setCompleteHandler } = useControlStore(); // 완료 버튼 핸들러
-  const { updateDefaultScentData } = useCapsuleAndDefaultScentStore(); // 기본향 데이터를 업데이트하는 함수
+  const location = useLocation();
+  const { id, name, slot1, slot2, slot3, slot4 } = location.state || {};
 
-  // scents는 향기의 사용량(count)
-  const [scents, setScents] = useState({
-    slot1: 0,
-    slot2: 0,
-    slot3: 0,
-    slot4: 0,
+  // console.log(
+  //   '캡슐등록한것',
+  //   id,
+  //   '/',
+  //   name,
+  //   '/',
+  //   slot1,
+  //   '/',
+  //   slot2,
+  //   '/',
+  //   slot3,
+  //   '/',
+  //   slot4
+  // );
+  const { setCompleteHandler } = useControlStore(); // 완료 버튼 핸들러 설정
+
+  // 문자열일 가능성 있으니, 숫자로 변환
+  // const safeSlot1 = Number(slot1) || 0;
+  // const safeSlot2 = Number(slot2) || 0;
+  // const safeSlot3 = Number(slot3) || 0;
+  // const safeSlot4 = Number(slot4) || 0;
+
+  // ✅ 공간 크기 상태 추가
+  const [roomType, setRoomType] = useState<'small' | 'large' | null>(null);
+
+  // ✅ 향 슬롯이 변하지 않도록 고정
+  // scentNames를 문자열로 변환
+  const [scentNames] = useState({
+    slot1: fragranceMap[slot1],
+    slot2: fragranceMap[slot2],
+    slot3: fragranceMap[slot3],
+    slot4: fragranceMap[slot4],
   });
 
-  // 완료 버튼이 클릭되었을 때 실행되는 핸들러 함수
-  // - 사용자가 모든 에너지를 할당했는지 검증
-  // - 기본향 데이터를 저장
-  useEffect(() => {
-    const handleComplete = () => {
-      const totalEnergy = Object.values(scents).reduce(
-        (sum, val) => sum + val,
-        0
+  // ✅ 향 사용량을 설정하는 상태 (초기 상태에서 `totalEnergy`를 넘지 않도록 보정)
+  const [scentCnt, setScentCnt] = useState(() => {
+    return {
+      slot1: 0,
+      slot2: 0,
+      slot3: 0,
+      slot4: 0,
+    };
+  });
+
+  console.log('🛠 부모 DefaultScent.tsx scentCnt 변경됨:', scentCnt);
+
+  console.log('1️⃣😱😱😱😱', scentCnt);
+  // console.log(
+  //   '캡슐 슬롯 숫자 변환',
+  //   id,
+  //   '/',
+  //   name,
+  //   '/',
+  //   slot1,
+  //   '/',
+  //   slot2,
+  //   '/',
+  //   slot3,
+  //   '/',
+  //   slot4
+  // );
+
+  // 완료버튼 클릭 시 공간 크기 미선택 경고
+  // ✅ 완료 버튼 클릭 시 공간 크기 미선택 경고
+  const handleComplete = async () => {
+    const roomTypeValue = roomType === 'small' ? 0 : 1;
+
+    try {
+      await registDefaultScent(
+        id,
+        name,
+        slot1,
+        scentCnt.slot1,
+        slot2,
+        scentCnt.slot2,
+        slot3,
+        scentCnt.slot3,
+        slot4,
+        scentCnt.slot4,
+        roomTypeValue
       );
+      console.log('기본향 설정 완료:', scentCnt);
+      navigate('/home');
+    } catch (error) {
+      console.error('기본향 설정 실패:', error);
+      alert('기본향 설정 중 오류가 발생했습니다.');
+    }
+  };
 
-      if (totalEnergy === 0) {
-        alert("모든 에너지를 할당해주세요.");
-        return;
-      }
-
-      // 전역 상태에 기본향 데이터 저장
-      updateDefaultScentData({
-        slot1: { slot: scents.slot1, count: scents.slot1 },
-        slot2: { slot: scents.slot2, count: scents.slot2 },
-        slot3: { slot: scents.slot3, count: scents.slot3 },
-        slot4: { slot: scents.slot4, count: scents.slot4 },
-      });
-
-      console.log("저장된 기본향 설정:", scents);
-
-      // 기본향 설정 완료 후 홈 페이지로 이동
-      navigate("/home");
-    };
-
+  useEffect(() => {
     setCompleteHandler(handleComplete);
-
     return () => {
-      setCompleteHandler(null); // 언마운트 시 초기화
+      setCompleteHandler(null);
     };
-  }, [scents, setCompleteHandler, updateDefaultScentData, navigate]);
+  }, [scentCnt, setCompleteHandler, roomType]);
 
   return (
     <div className="content px-4">
-      <SpaceTab setScents={setScents} scents={scents} />
+      <SpaceTab
+        setRoomType={setRoomType}
+        roomType={roomType}
+        scentCnt={scentCnt}
+        setScentCnt={setScentCnt}
+        scentNames={scentNames}
+      />
+      {!roomType && (
+        <p className="text-red-500 text-center mt-4">
+          공간 크기를 먼저 선택해주세요.
+        </p>
+      )}
       <div className="mt-4">
         <SpaceDescription />
       </div>

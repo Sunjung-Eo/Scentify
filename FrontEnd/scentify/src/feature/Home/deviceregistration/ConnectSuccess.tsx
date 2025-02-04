@@ -1,7 +1,20 @@
-import DoneRing from "../../../assets/images/Done_ring_round.svg";
-import { Link } from "react-router-dom";
+import DoneRing from '../../../assets/images/Done_ring_round.svg';
+import { Link, useLocation } from 'react-router-dom';
+import { useDeviceStore } from '../../../stores/useDeviceStore';
+import { useEffect } from 'react';
 
 function ConnectSuccess() {
+  const location = useLocation();
+  const { id } = location.state || {};
+  const { setMainDevice } = useDeviceStore();
+
+  // 디바이스 id 전역 상태 업데이트
+  useEffect(() => {
+    if (id) {
+      setMainDevice(id); // ✅ 기기 ID를 전역 상태에 반영
+    }
+  }, [id, setMainDevice]);
+
   return (
     <div className="content h-full px-4 pt-6 pb-8 flex flex-col justify-between">
       {/* 연결 성공 메시지 영역 */}
@@ -17,7 +30,7 @@ function ConnectSuccess() {
 
       {/* 다음 버튼 영역 */}
       <div>
-        <Link to="/home/registcapsule">
+        <Link to="/home/registcapsule" state={{ id: id }}>
           <button className="w-full h-[48px] rounded-lg text-gray font-pre-bold border-[1px] border-lightgray">
             다음
           </button>

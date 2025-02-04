@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import DeviceSlide from "../../feature/Home/mainhome/device/DeviceSlide.tsx";
-import UserCard from "../../feature/Home/mainhome/user/UserCard.tsx";
-import { useDeviceStore } from "../../stores/useDeviceStore.ts";
-import { homeInfo } from "../../apis/home/homeInfo.ts";
-import { useQuery } from "@tanstack/react-query";
-import { useUserStore } from "../../stores/useUserStore.ts";
-import { dummyDevices, dummyMainDevice } from "./dummy.ts";
+import { useEffect } from 'react';
+import DeviceSlide from '../../feature/Home/mainhome/device/DeviceSlide.tsx';
+import UserCard from '../../feature/Home/mainhome/user/UserCard.tsx';
+import { useDeviceStore } from '../../stores/useDeviceStore.ts';
+import { homeInfo } from '../../apis/home/homeInfo.ts';
+import { useQuery } from '@tanstack/react-query';
+import { useUserStore } from '../../stores/useUserStore.ts';
+import { dummyDevices, dummyMainDevice } from './dummy.ts';
 
 const USE_DUMMY_DATA = false; // ✅ true → 더미 데이터 사용, false → API 사용
 
@@ -16,10 +16,10 @@ const HomeMain = () => {
 
   // React Query로 homeInfo() 호출
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["homeInfo"],
-    queryFn: homeInfo,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
+    queryKey: ['homeInfo'], // 'homeInfo' 키로 캐싱싱
+    queryFn: homeInfo, // homeInfo() API 호출
+    staleTime: 1000 * 60 * 5, // 5분 동안 캐싱 유지
+    refetchOnWindowFocus: false, // 창 포커스 시 재요청 방지
     enabled: !USE_DUMMY_DATA, // ✅ USE_DUMMY_DATA가 true면 API 호출 비활성화
   });
 
@@ -28,10 +28,10 @@ const HomeMain = () => {
     if (USE_DUMMY_DATA) {
       setDevices(dummyMainDevice, dummyDevices),
         setUser({
-          nickname: "더미 닉네임",
+          nickname: '더미 닉네임',
           imgNum: 1,
-          mainDeviceId: dummyMainDevice.deviceId,
-          deviceIds: dummyDevices.map((device) => device.deviceId), // ✅ 더미 디바이스 ID 리스트 추가
+          mainDeviceId: dummyMainDevice.id,
+          deviceIds: dummyDevices.map((device) => device.id), // ✅ 더미 디바이스 ID 리스트 추가
         });
     }
   }, [setDevices, setUser]);
@@ -58,7 +58,7 @@ const HomeMain = () => {
 
   // 메인 디바이스 찾기
   const mainDevice = devices.find((device) => device.isRepresentative);
-  const mainDeviceId = mainDevice ? mainDevice.deviceId : null;
+  const mainDeviceId = mainDevice ? mainDevice.id : null;
 
   // DeviceCarousel에 전달할 데이터
   const exampleData = {

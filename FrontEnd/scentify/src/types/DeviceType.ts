@@ -1,5 +1,5 @@
 export interface DeviceState {
-  deviceId: number;
+  id: number;
   name: string | null;
   groupId: number | null;
   roomType: number | null;
@@ -16,4 +16,10 @@ export interface DeviceState {
   humidity: number | null;
   defaultCombination: number | null; // 기본향 ID 저장
   isRepresentative: boolean;
+  defaultScentData: {
+    slot1: { slot: number | null; count: number };
+    slot2: { slot: number | null; count: number };
+    slot3: { slot: number | null; count: number };
+    slot4: { slot: number | null; count: number };
+  };
 }

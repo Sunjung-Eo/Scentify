@@ -1,42 +1,39 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { registerDevice } from "../../../apis/home/registdevice";
-import { useAuthStore } from "../../../stores/useAuthStore";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { registerDevice } from '../../../apis/home/registdevice';
+import { useAuthStore } from '../../../stores/useAuthStore';
 
 function RegistDevice() {
-  const [serial, setSerial] = useState("");
-  const [ipAddress, setIpAddress] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [serial, setSerial] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
-  // 디바이스 등록 요청
+  // 디바이스 등록 버튼 요청
   const handleRegisterDevice = async () => {
-    setErrorMessage(""); // 기존 에러 메시지 초기화
+    setErrorMessage(''); // 기존 에러 메시지 초기화
 
     // 필수 입력값 검증
     if (!serial.trim() || !ipAddress.trim()) {
-      setErrorMessage("시리얼 번호와 IP 주소를 입력해주세요.");
+      setErrorMessage('시리얼 번호와 IP 주소를 입력해주세요.');
       return;
     }
 
     try {
-      // API 요청
-      const response = await registerDevice(
-        { serial: serial, ipAddress: ipAddress }, // 첫 번째 매개변수: 기기 데이터
-        accessToken // 두 번째 매개변수: 액세스 토큰
-      );
-      console.log("디바이스 등록 성공, ID:", response.id);
-      navigate("/home/registconnecting"); // 성공 시 다음 페이지로 이동
+      // `/home/registconnecting`으로 이동하여 로딩 화면 표시
+      navigate('/home/registconnecting', {
+        state: { serial, ipAddress, accessToken },
+      });
     } catch (error: any) {
       // 백엔드 응답 상태 코드에 따라 에러 메시지 표시
       if (error.status === 409) {
-        setErrorMessage("이미 등록된 기기입니다.");
+        setErrorMessage('이미 등록된 기기입니다.');
       } else if (error.status === 403) {
-        setErrorMessage("핸드셰이크 실패. 다시 시도해주세요.");
+        setErrorMessage('핸드셰이크 실패. 다시 시도해주세요.');
       } else if (error.status === 400) {
-        setErrorMessage("요청이 잘못되었습니다.");
+        setErrorMessage('요청이 잘못되었습니다.');
       }
     }
   };

@@ -16,7 +16,7 @@ export const homeInfo = async () => {
     });
 
     if (!response.ok) {
-      throw new Error('서버 오류가 발생했습니다.');
+      throw new Error('홈 정보를 가져올 수 없습니다');
     }
     const data = await response.json(); // 응답 데이터 파싱
     console.log('홈 정보 가져오기 성공:', data);

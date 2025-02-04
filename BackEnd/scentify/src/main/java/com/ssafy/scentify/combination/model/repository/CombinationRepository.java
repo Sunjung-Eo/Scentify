@@ -17,9 +17,9 @@ public interface CombinationRepository {
 	boolean createCombination(int combinationId, @Param("combination") CombinationDto combination);
 
 	// autoCombination 등록
-	@Insert("INSERT INTO combination (id, choice1, choice1_count)"
-    		+ "VALUES (#{combinationId}, #{choice}, #{count})")
-	boolean createAutoCombination(int combinationId, int choice, int count);
+	@Insert("INSERT INTO combination (id, name, choice1, choice1_count)"
+    		+ "VALUES (#{combinationId}, #{name}, #{choice}, #{count})")
+	boolean createAutoCombination(int combinationId, String name, int choice, int count);
 	
 	// id로 조합 정보 반환
 	@Select("SELECT id, name, choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count " 

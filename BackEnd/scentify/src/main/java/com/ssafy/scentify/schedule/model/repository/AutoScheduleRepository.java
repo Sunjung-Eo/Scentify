@@ -20,13 +20,14 @@ public interface AutoScheduleRepository {
 	boolean createModeWithoutInterval(int deviceId, int combinationId, int subMode);
 	
 	// 디바이스 아이디에 해당하는 자동화 스케줄 선택
-	@Select("SELECT id, combination_id, sub_mode, type, mode_on " +
+	@Select("SELECT id, combination_id, sub_mode, type, `interval`, mode_on " +
 	        "FROM autoschedule WHERE device_id = #{deviceId}")
 	@Results({
 	    @Result(column = "id", property = "id"),
 	    @Result(column = "combination_id", property = "combinationId"),
 	    @Result(column = "sub_mode", property = "subMode"),
 	    @Result(column = "type", property = "type"),
+	    @Result(column = "interval", property = "interval"),
 	    @Result(column = "mode_on", property = "modeOn")
 	})
 	List<AutoScheduleHomeDto> selectSchedulesByDeviceId(int deviceId);

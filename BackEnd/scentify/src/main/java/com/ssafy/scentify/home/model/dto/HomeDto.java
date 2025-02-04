@@ -21,6 +21,11 @@ public class HomeDto {
     public static class CustomScheduleListResponseDto {
     	private List<CustomScheduleHomeDto> customSchedules;
 	}
+	
+	@Data
+    public static class AutoSchedulesListResponseDto {
+    	private List<AutoScheduleHomeDto> autoSchedules;
+	}
 
 	@Data
 	public static class UserHomeDto {
@@ -54,7 +59,8 @@ public class HomeDto {
 	    private int id;
 	    private int combinationId;
 	    private Integer subMode; 
-	    private Integer type;    
+	    private Integer type;
+	    private Integer interval;
 	    private int modeOn;
 	}
 	

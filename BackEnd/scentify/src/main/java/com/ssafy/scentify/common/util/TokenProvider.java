@@ -15,6 +15,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 
@@ -114,7 +115,7 @@ public class TokenProvider implements InitializingBean {
 	
 	// 토큰을 검증하는 메서드 
 	public void validateJwtToken(String token) throws JwtException {
-	    Jwts.parserBuilder()
+		Jwts.parserBuilder()
 	        .setSigningKey(secretKey)
 	        .build()
 	        .parseClaimsJws(token);
@@ -139,8 +140,7 @@ public class TokenProvider implements InitializingBean {
 	// 토큰에 있는 시리얼 정보를 가져오는 메서드
 	public String getSerial(String token) {
 		try {
-			String serial = (String) Jwts.parserBuilder()
-		
+			String serial = (String) Jwts.parserBuilder()	
 									  .setSigningKey(secretKey)
 									  .build()
 									  .parseClaimsJws(token)

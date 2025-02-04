@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { updateUserNickname } from "../../../apis/user/editaccount/editnickname";
+import { useAuthStore } from "../../../stores/useAuthStore";
+import { useUserStore } from "../../../stores/useUserStore"; // 유저 상태 업데이트
 
 function EditNickname() {
   const [nickname, setNickname] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const authStore = useAuthStore();
+  const userStore = useUserStore();
+  const accessToken = authStore.accessToken;
 
   // 닉네임 변경 핸들러(React.ChangeEvent는 React에서 제공하는 타입으로,폼<input>,<textarea>,<select>변경이벤트 나타냄.)
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -12,15 +18,23 @@ function EditNickname() {
     setError("");
   }
 
-  // 저장 버튼 클릭 핸들러
-  function handleSave() {
+  // 저장 버튼 클릭 핸들러 (API 호출)
+  async function handleSave() {
     if (!nickname.trim()) {
-      // 닉네임이 비어 있거나 공백만 입력된 경우
       setError("닉네임을 입력해주세요.");
       return;
     }
-    alert(`닉네임이 "${nickname}"으로 변경되었습니다.`);
-    navigate("/my/manageaccount");
+    console.log("닉네임 요청:", nickname);
+
+    const result = await updateUserNickname(nickname, accessToken);
+
+    if (result.success) {
+      userStore.setUser({ nickname }); // 유저 상태 업데이트
+      alert(`닉네임이 "${nickname}"으로 변경되었습니다.`);
+      navigate("/my/manageaccount");
+    } else {
+      setError(result.message || "닉네임 변경에 실패했습니다.");
+    }
   }
 
   return (

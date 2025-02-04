@@ -1,62 +1,78 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import greenImg from "../../../assets/userProfiles/green.svg";
-import orangeImg from "../../../assets/userProfiles/orange.svg";
-import peachImg from "../../../assets/userProfiles/peach.svg";
-import purpleImg from "../../../assets/userProfiles/purple.svg";
-import redImg from "../../../assets/userProfiles/red.svg";
-import yellowgreenImg from "../../../assets/userProfiles/yellowgreen.svg";
+import { updateUserImg } from "../../../apis/user/editaccount/editprofileimg";
+import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
+import { useUserStore } from "../../../stores/useUserStore"; // Zustand로 유저 상태 업데이트
+import { getProfileImage } from "../../../utils/profileImageMapper"; //프로필 사진매핑함수
 
 function EditProfileImg() {
-  const [selectedImage, setSelectedImage] = useState<string>(""); // 선택된 이미지 상태
-  const [error, setError] = useState<string>("");
+  // Zustand에서 사용자 정보 가져오기 (현재 프로필 이미지 번호 포함)
+  const userStore = useUserStore();
+  const authStore = useAuthStore();
   const navigate = useNavigate();
 
-  const images = [
-    { src: greenImg, alt: "Green Profile" },
-    { src: orangeImg, alt: "Orange Profile" },
-    { src: peachImg, alt: "Peach Profile" },
-    { src: purpleImg, alt: "Purple Profile" },
-    { src: redImg, alt: "Red Profile" },
-    { src: yellowgreenImg, alt: "Yellowgreen Profile" },
-  ];
+  // 로그인된 사용자의 인증 토큰
+  const accessToken = authStore.accessToken;
 
-  // 이미지 클릭 핸들러
-  const handleImageSelect = (src: string) => {
-    setSelectedImage(src); //선택된 이미지 업데이트
-    setError(""); // 에러 메시지 초기화
+  // 현재 선택된 프로필 이미지 번호 (초기값: 현재 사용자의 프로필 이미지 번호)
+  const [selectedImage, setSelectedImage] = useState<number | null>(
+    userStore.imgNum
+  );
+  const [error, setError] = useState<string>("");
+
+  // 프로필 이미지 선택 시 실행되는 함수
+  const handleImageSelect = (index: number) => {
+    setSelectedImage(index);
+    setError("");
   };
 
-  // 저장 버튼 핸들러
-  const handleSave = () => {
-    if (selectedImage) {
-      alert(`프로필 사진이 변경되었습니다.`);
+  /**
+   * 저장 버튼 클릭 시 실행되는 함수
+   * 선택된 프로필 이미지 번호를 서버에 전송하여 변경
+   */
+  const handleSave = async () => {
+    if (selectedImage === null) {
+      setError("프로필 사진을 선택해주세요."); // 이미지 선택되지 않은 경우 에러 메시지 표시
+      return;
+    }
+
+    console.log("선택된 이미지 번호:", selectedImage); // 선택된 이미지 번호 콘솔 출력
+
+    const result = await updateUserImg(selectedImage, accessToken); // API 호출하여 서버에 데이터 전송
+
+    if (result.success) {
+      userStore.setUser({ imgNum: selectedImage }); // Zustand 상태 업데이트 (프로필 이미지 번호 변경)
+      alert("프로필 사진이 변경되었습니다.");
       navigate("/my/manageaccount");
     } else {
-      setError("프로필 사진을 선택해주세요.");
+      setError(result.message || "프로필 이미지 변경에 실패했습니다.");
     }
   };
 
   return (
     <div className="content pt-8 pb-8 h-full flex flex-col justify-between">
       <div>
-        {/* 제목 */}
         <h1 className="text-20 font-pre-bold text-center">프로필 사진 변경</h1>
 
         {/* 이미지 선택 영역 */}
         <div className="grid grid-cols-3 gap-4 mt-10 justify-items-center">
-          {images.map((image, index) => (
+          {/* 6개의 프로필 이미지 선택 */}
+          {[...Array(6)].map((_, index) => (
             <div
               key={index}
-              onClick={() => handleImageSelect(image.src)}
+              onClick={() => handleImageSelect(index)}
               className={`relative w-[80px] h-[80px] cursor-pointer ${
-                selectedImage === image.src ? "border-4 border-brand" : "border"
+                selectedImage === index ? "border-4 border-brand" : "border"
               }`}
             >
-              <img src={image.src} alt={image.alt} className="w-full h-full" />
-              {selectedImage === image.src && (
-                <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center rounded-full">
-                  {/* inset-0: top, right, bottom, left를 모두 0으로 설정해 부모 요소를 완전히 덮음 */}
+              {/* 이미지 표시 (getProfileImage 함수 활용) */}
+              <img
+                src={getProfileImage(index)}
+                alt={`Profile ${index}`}
+                className="w-full h-full"
+              />
+              {selectedImage === index && (
+                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-full">
                   <p className="text-white text-12 font-pre-medium">선택</p>
                 </div>
               )}
@@ -64,7 +80,7 @@ function EditProfileImg() {
           ))}
         </div>
 
-        {/* 에러 메시지 */}
+        {/* 에러 메시지 출력 */}
         {error && (
           <p className="mt-6 text-red-500 text-12 font-pre-light text-center">
             {error}
@@ -75,7 +91,7 @@ function EditProfileImg() {
       {/* 저장 버튼 */}
       <div>
         <button
-          onClick={handleSave}
+          onClick={handleSave} // 저장 버튼 클릭 시 API 호출
           className="w-full h-[48px] rounded-lg text-brand font-pre-bold border-[1px] border-brand"
         >
           저장

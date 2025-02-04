@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import userprofileImg from "../../../assets/userProfiles/green.svg";
 import arrowIcon from "../../../assets/icons/rightarrow-icon.svg";
+import { useUserStore } from "../../../stores/useUserStore";
+import { getProfileImage } from "../../../utils/profileImageMapper";
 
 const ManageAccount = () => {
   const navigate = useNavigate();
+  const { id, nickname, imgNum } = useUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 창 상태
   const [inputPassword, setInputPassword] = useState(""); // 입력된 비밀번호
   const [error, setError] = useState(""); // 에러 메시지 상태
@@ -57,13 +59,13 @@ const ManageAccount = () => {
       {/* 프로필 정보 */}
       <div className="flex items-center mb-8">
         <img
-          src={userprofileImg}
+          src={getProfileImage(imgNum)} // 유틸 함수에서 이미지 배열을 가져옴
           alt="ProfileImg"
           className="w-[63px] h-[63px] mr-7"
         />
         <div>
-          <p className="text-16 font-pre-medium">홍길동</p>
-          <p className="text-12 text-gray font-pre-light">ID: jdlkdjaldj</p>
+          <p className="text-16 font-pre-medium">{nickname}</p>
+          <p className="text-12 text-gray font-pre-light">ID:{id}</p>
         </div>
       </div>
 

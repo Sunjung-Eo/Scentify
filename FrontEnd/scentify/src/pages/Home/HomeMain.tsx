@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import DeviceSlide from '../../feature/Home/mainhome/device/DeviceSlide.tsx';
-import UserCard from '../../feature/Home/mainhome/user/UserCard.tsx';
-import { useDeviceStore } from '../../stores/useDeviceStore.ts';
-import { homeInfo } from '../../apis/home/homeInfo.ts';
-import { useQuery } from '@tanstack/react-query';
-import { useUserStore } from '../../stores/useUserStore.ts';
-import { useAuthStore } from '../../stores/useAuthStore.ts';
+import { useEffect } from "react";
+import DeviceSlide from "../../feature/Home/mainhome/device/DeviceSlide.tsx";
+import UserCard from "../../feature/Home/mainhome/user/UserCard.tsx";
+import { useDeviceStore } from "../../stores/useDeviceStore.ts";
+import { homeInfo } from "../../apis/home/homeInfo.ts";
+import { useQuery } from "@tanstack/react-query";
+import { useUserStore } from "../../stores/useUserStore.ts";
+import { useAuthStore } from "../../stores/useAuthStore.ts";
 
 const HomeMain = () => {
   const { devices, setDevices } = useDeviceStore();
@@ -15,10 +15,10 @@ const HomeMain = () => {
 
   // React Query로 homeInfo() 호출
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['homeInfo'], // 'homeInfo' 키로 캐싱싱
-    queryFn: homeInfo, // homeInfo() API 호출
-    staleTime: 1000 * 60 * 5, // 5분 동안 캐싱 유지
-    refetchOnWindowFocus: false, // 창 포커스 시 재요청 방지
+    queryKey: ["homeInfo"],
+    queryFn: homeInfo,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
   // ✅ API 응답이 있을 때만 상태 업데이트 (무한 렌더링 방지)

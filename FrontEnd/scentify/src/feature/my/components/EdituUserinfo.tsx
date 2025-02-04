@@ -1,29 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserInfo } from "../../../apis/user/editaccount/getUserInfo";
+import { updateUserInfo } from "../../../apis/user/editaccount/updateUserInfo";
+import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
 
 function EditUserinfo() {
+  const authStore = useAuthStore();
+  const navigate = useNavigate();
+  const accessToken = authStore.accessToken;
+
   const [birthYear, setBirthYear] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState<number | null>(null);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+
+  // 생년월일 포맷팅 함수 (YYYY-MM-DD → ["YYYY", "MM", "DD"])
+  const formatBirthdate = (birth: string) => {
+    const [year, month, day] = birth.split("-");
+    setBirthYear(year);
+    setBirthMonth(String(parseInt(month, 10))); // 월을 숫자로 변환 후 문자열로 저장
+    setBirthDay(day);
+  };
+  // 회원 정보 불러오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const result = await getUserInfo(accessToken);
+      if (result.success && result.birth && result.gender !== undefined) {
+        formatBirthdate(result.birth);
+        setGender(result.gender);
+      } else {
+        setError(result.message || "회원 정보를 불러오는 데 실패했습니다.");
+      }
+    };
+
+    fetchUserInfo();
+  }, [accessToken]);
 
   // 저장 버튼 클릭 핸들러
-  function handleSave() {
-    if (!birthYear || !birthMonth || !birthDay || !gender) {
-      // 하나라도 입력되지 않은 경우
+  const handleSave = async () => {
+    if (!birthYear || !birthMonth || !birthDay || gender === null) {
       setError("모든 필드를 입력해주세요.");
       return;
     }
 
-    // 모든 필드가 입력된 경우
-    setError(""); // 에러 메시지 초기화
-    alert(
-      `생년월일: ${birthYear}-${birthMonth}-${birthDay}, 성별: ${gender}으로 변경됩니다.`
+    const birthDate = `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
+
+    const result = await updateUserInfo(
+      { gender, birth: birthDate },
+      accessToken
     );
-    navigate("/my/manageaccount"); // 페이지 이동
-  }
+
+    if (result.success) {
+      alert("회원 정보가 변경되었습니다.");
+      navigate("/my/manageaccount");
+    } else {
+      setError(result.message || "회원 정보 변경에 실패했습니다.");
+    }
+  };
 
   return (
     <div className="content pt-8 pb-8 h-full flex flex-col justify-between">
@@ -74,9 +108,9 @@ function EditUserinfo() {
           <label className="text-12 font-pre-light mr-8">성별</label>
           <div className="flex gap-2">
             <button
-              onClick={() => setGender("여성")}
+              onClick={() => setGender(0)}
               className={`w-[50px] h-[30px] rounded-lg border-[1px] border-lightgray text-12 font-pre-light ${
-                gender === "여성"
+                gender === 0
                   ? "bg-brand text-white"
                   : "bg-white border-gray-300"
               }`}
@@ -84,9 +118,9 @@ function EditUserinfo() {
               여성
             </button>
             <button
-              onClick={() => setGender("남성")}
+              onClick={() => setGender(1)}
               className={`w-[50px] h-[30px] rounded-lg border-[1px] border-lightgray text-12 font-pre-light ${
-                gender === "남성"
+                gender === 1
                   ? "bg-brand text-white"
                   : "bg-white border-gray-300"
               }`}
@@ -94,9 +128,9 @@ function EditUserinfo() {
               남성
             </button>
             <button
-              onClick={() => setGender("선택하지 않음")}
+              onClick={() => setGender(2)}
               className={`w-[90px] h-[30px] rounded-lg border-[1px] border-lightgray text-12 font-pre-light ${
-                gender === "선택하지 않음"
+                gender === 2
                   ? "bg-brand text-white"
                   : "bg-white border-gray-300"
               }`}

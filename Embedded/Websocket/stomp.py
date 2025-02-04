@@ -1,5 +1,3 @@
-import json
-
 def get_connect_frame(host):
     return (
         "CONNECT\n"
@@ -40,13 +38,6 @@ def parse_stomp_message(stomp_message):
             key_value = line.split(":", 1)  # "key: value" 형태 분리
             if len(key_value) == 2:
                 headers[key_value[0].strip()] = key_value[1].strip()
-
-    # Body가 JSON이면 변환
-    # if body:
-    #     try:
-    #         body = json.loads(body)
-    #     except json.JSONDecodeError:
-    #         pass  # JSON이 아닐 경우 그대로 유지
 
     return headers, body
 

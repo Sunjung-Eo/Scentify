@@ -44,11 +44,11 @@ export const useUserStore = create<UserState>((set) => ({
         } else {
           // 2) devices 배열에서 mainDeviceId와 일치하는 기기 찾음
           const newMainDevice = deviceStore.devices.find(
-            (device) => device.deviceId === user.mainDeviceId
+            (device) => device.id === user.mainDeviceId
           );
 
           if (newMainDevice) {
-            deviceStore.setMainDevice(newMainDevice.deviceId);
+            deviceStore.setMainDevice(newMainDevice.id);
           }
         }
       }

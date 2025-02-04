@@ -5,14 +5,13 @@ import { useDeviceStore } from "../../stores/useDeviceStore.ts";
 import { homeInfo } from "../../apis/home/homeInfo.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useUserStore } from "../../stores/useUserStore.ts";
-import { dummyDevices, dummyMainDevice } from "./dummy.ts";
-
-const USE_DUMMY_DATA = false; // ✅ true → 더미 데이터 사용, false → API 사용
+import { useAuthStore } from "../../stores/useAuthStore.ts";
 
 const HomeMain = () => {
   const { devices, setDevices } = useDeviceStore();
   const { setUser } = useUserStore();
   const { deviceIds } = useUserStore();
+  const accessToken = useAuthStore.getState().accessToken;
 
   // React Query로 homeInfo() 호출
   const { data, isLoading, isError } = useQuery({
@@ -39,8 +38,9 @@ const HomeMain = () => {
 
   // ✅ API 응답이 있을 때만 상태 업데이트 (무한 렌더링 방지)
   useEffect(() => {
-    if (!USE_DUMMY_DATA && data) {
+    if (data) {
       setUser({
+        id: data.user.id,
         nickname: data.user.nickName,
         imgNum: data.user.imgNum,
         mainDeviceId: data.user.mainDeviceId,
@@ -49,7 +49,7 @@ const HomeMain = () => {
 
       setDevices(
         data.mainDevice,
-        data.deviceIds.map((id: number) => ({ deviceId: id }))
+        data.deviceIds.map((id: number) => ({ id }))
       );
     }
   }, [data, setUser, setDevices]);
@@ -59,7 +59,7 @@ const HomeMain = () => {
 
   // 메인 디바이스 찾기
   const mainDevice = devices.find((device) => device.isRepresentative);
-  const mainDeviceId = mainDevice ? mainDevice.deviceId : null;
+  const mainDeviceId = mainDevice ? mainDevice.id : null;
 
   // DeviceCarousel에 전달할 데이터
   const exampleData = {

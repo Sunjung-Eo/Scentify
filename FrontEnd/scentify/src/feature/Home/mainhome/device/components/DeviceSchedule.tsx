@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import {
   CustomSchedule,
   AutoSchedule,
-} from '../../../../../types/SchedulesType';
-import scheduleBg from '../../../../../assets/images/scheduleBg.png';
+} from "../../../../../types/SchedulesType";
+import scheduleBg from "../../../../../assets/images/scheduleBg.png";
 
 interface DeviceScheduleProps {
   deviceId: number;
@@ -42,16 +42,16 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
       id: schedule.id,
       deviceId: schedule.deviceId,
       name: schedule.name,
-      type: '예약 모드',
+      type: "예약 모드",
       scheduleTime:
-        parseInt(schedule.startTime.split(':')[0]) * 60 +
-        parseInt(schedule.startTime.split(':')[1]),
+        parseInt(schedule.startTime.split(":")[0]) * 60 +
+        parseInt(schedule.startTime.split(":")[1]),
     })),
     ...filteredAutoSchedules.map((schedule) => ({
       id: schedule.id,
       deviceId: schedule.deviceId,
       name: `자동 스케줄 ${schedule.id}`,
-      type: '자동화 모드',
+      type: "자동화 모드",
       scheduleTime: schedule.interval, // interval을 분 단위로 변환하여 사용
     })),
   ];
@@ -72,7 +72,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   // "X시간 Y분 후"로 변환
   const formattedTime = closestSchedule
     ? `${Math.floor(minDiff / 60)}시간 ${minDiff % 60}분 후`
-    : '-';
+    : "-";
 
   return (
     <div className="w-full mt-4 px-5">

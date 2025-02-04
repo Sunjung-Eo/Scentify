@@ -1,7 +1,7 @@
 // 더미 데이터
 export const dummyMainDevice = {
-  deviceId: 1,
-  name: '우리 방',
+  id: 1,
+  name: "우리 방",
   groupId: null,
   roomType: 1,
   slot1: 0,
@@ -21,8 +21,8 @@ export const dummyMainDevice = {
 
 export const dummyDevices = [
   {
-    deviceId: 2,
-    name: '거실방',
+    id: 2,
+    name: "거실방",
     groupId: null,
     roomType: 2,
     slot1: 1,

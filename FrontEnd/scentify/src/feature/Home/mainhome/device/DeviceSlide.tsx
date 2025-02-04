@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   CustomSchedule,
   AutoSchedule,
-} from '../../../../types/SchedulesType.ts';
-import { DeviceState } from '../../../../types/DeviceType.ts';
-import leftarrow from '../../../../assets/icons/leftarrow-icon.svg';
-import rightarrow from '../../../../assets/icons/rightarrow-icon.svg';
-import DeviceInfo from './components/DeviceInfo.tsx';
-import DeviceSchedule from './components/DeviceSchedule.tsx';
+} from "../../../../types/SchedulesType.ts";
+import { DeviceState } from "../../../../types/DeviceType.ts";
+import leftarrow from "../../../../assets/icons/leftarrow-icon.svg";
+import rightarrow from "../../../../assets/icons/rightarrow-icon.svg";
+import DeviceInfo from "./components/DeviceInfo.tsx";
+import DeviceSchedule from "./components/DeviceSchedule.tsx";
 
 interface DeviceSlideProps {
   data: {
@@ -27,11 +27,11 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
 
   // main_device_id 를 기준으로 첫 번째 기기 설정
   const mainDevice =
-    devices.find((device) => device.deviceId === main_device_id) ?? devices[0];
+    devices.find((device) => device.id === main_device_id) ?? devices[0];
 
   // deviceIds 에서 main_device_id를 제외한 나머지 기기 리스트
   const remainDevices = devices.filter(
-    (device) => device.deviceId !== main_device_id
+    (device) => device.id !== main_device_id
   );
 
   // deviceIds 순서대로 디바이스 정렬 (메인 기기 제외)
@@ -62,7 +62,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
         <>
           <DeviceInfo device={currentDevice} />
           <DeviceSchedule
-            deviceId={currentDevice.deviceId}
+            deviceId={currentDevice.id}
             customSchedules={customSchedules}
             autoSchedules={autoSchedules}
           />

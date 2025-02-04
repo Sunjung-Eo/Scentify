@@ -48,7 +48,7 @@ const HomeMain = () => {
 
       setDevices(
         data.mainDevice,
-        data.deviceIds.map((id: number) => ({ deviceId: id }))
+        data.deviceIds.map((id: number) => ({ id: id }))
       );
     }
   }, [data, setUser, setDevices]);

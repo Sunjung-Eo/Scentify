@@ -14,9 +14,24 @@ export interface DeleteModalProps {
   onCancel: () => void;
 }
 
+// 예약 리스트 조회
+export interface Reservation {
+  id: number;
+  name: string;
+  combinationName: string;
+  day: number;
+  isFavorite: boolean;
+  combinationId: number;
+  startTime: string;
+  endTime: string;
+  interval: number;
+  modeOn: boolean;
+}
 export interface ReservationManagerProps {
-  selectedDevice: string;
-  onDeviceChange: (device: string) => void;
+  reservationData: {
+    customSchedules: Reservation[];
+  };
+  // selectedDevice: string;
 }
 
 // 예약하기 데이터 전송

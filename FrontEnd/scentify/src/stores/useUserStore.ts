@@ -1,8 +1,7 @@
-import { create } from "zustand";
-import { useDeviceStore } from "./useDeviceStore";
+import { create } from 'zustand';
+import { useDeviceStore } from './useDeviceStore';
 
 export interface UserState {
-  id: string;
   nickname: string;
   email: string;
   imgNum: number;
@@ -16,15 +15,14 @@ export interface UserState {
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  id: "",
-  nickname: "",
-  email: "",
+  nickname: '',
+  email: '',
   imgNum: 0,
   socialType: 0,
   gender: 0,
-  birth: "",
+  birth: '',
   mainDeviceId: null,
-  deviceIds: null,
+  deviceIds: [],
 
   /** 유저 정보 업데이트 시 mainDeviceId 변경 감지 */
   setUser: (user) => {
@@ -32,7 +30,7 @@ export const useUserStore = create<UserState>((set) => ({
       const updatedState = {
         ...state,
         ...user,
-        deviceIds: user.deviceIds ?? state.deviceIds ?? null,
+        deviceIds: user.deviceIds ?? [],
       }; //
 
       if (user.mainDeviceId !== undefined) {
@@ -59,14 +57,13 @@ export const useUserStore = create<UserState>((set) => ({
 
   resetUser: () =>
     set({
-      id: "",
-      nickname: "",
-      email: "",
+      nickname: '',
+      email: '',
       imgNum: 0,
       socialType: 0,
       gender: 0,
-      birth: "",
+      birth: '',
       mainDeviceId: null,
-      deviceIds: null,
+      deviceIds: [],
     }),
 }));

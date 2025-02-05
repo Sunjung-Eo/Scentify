@@ -55,7 +55,7 @@ export const useDeviceStore = create<DeviceStoreState>((set, get) => ({
         );
 
         if (existingDeviceIndex !== -1) {
-          // 2-1) 기기가 이미 존재 -> 기존 데이터터 업데이트 (isRepresentative 값은 기존 값 유지)
+          // 2-1) 기기가 이미 존재 -> 기존 데이터 업데이트 (isRepresentative 값은 기존 값 유지)
           updatedDevices[existingDeviceIndex] = {
             ...updatedDevices[existingDeviceIndex],
             ...device,

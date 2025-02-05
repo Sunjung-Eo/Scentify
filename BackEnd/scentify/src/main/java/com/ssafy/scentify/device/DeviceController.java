@@ -286,4 +286,33 @@ public class DeviceController {
 		}
 	}
 	
+	
+	// API 54번 : 바로 분사
+	@PostMapping("/spray")
+	public ResponseEntity<?> sprayNow(@RequestBody Map<String, Integer> deviceIdMap) {
+		try {
+			// 디바이스 아이디 추출 (null일 경우 400 반환)
+			Integer deviceId = deviceIdMap.get("deviceId");
+			if (deviceId == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			// 기본향 id 조회 
+			int defaultCombinationId = deviceService.getDefaultCombinationId(deviceId);
+			
+			// 기본향 조합 조회 (null일 경우 400 반환)
+			CombinationDto combination = combinationService.getCombinationById(defaultCombinationId);
+			if (combination == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+			}
+			
+			// 웹소켓 통신으로 combination을 보내야함
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }

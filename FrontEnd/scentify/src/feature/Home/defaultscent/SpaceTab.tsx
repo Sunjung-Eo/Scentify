@@ -8,9 +8,6 @@ const SpaceTab = ({
   setScentCnt,
   scentNames,
 }: any) => {
-  console.log('2️⃣😂😂😂😂', scentCnt);
-  console.log('3️⃣😂😂😂😂', setScentCnt);
-
   const handleTabChange = (tab: 'small' | 'large') => {
     setRoomType(tab);
   };

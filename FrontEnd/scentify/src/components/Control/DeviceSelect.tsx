@@ -1,13 +1,13 @@
 import { useState } from "react";
 import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
 // 기기 선택 타입
-interface DeviceSelectItem {
+export interface DeviceSelectItem {
   deviceId: number;
   name: string | null;
   isRepresentative: boolean;
 }
 
-interface DeviceSelectProps {
+export interface DeviceSelectProps {
   devices: DeviceSelectItem[];
   selectedDevice: number | null;
   onDeviceChange: (deviceId: number) => void;

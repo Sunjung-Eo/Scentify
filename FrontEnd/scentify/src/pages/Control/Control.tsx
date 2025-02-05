@@ -124,7 +124,9 @@ const Control = () => {
                   selectedDevice !== null && (
                     <ReservationManager
                       reservationData={filteredReservations}
+                      devices={deviceSelectItems}
                       selectedDevice={selectedDevice}
+                      onDeviceChange={handleDeviceChange}
                     />
                   )
                 ) : (
@@ -154,7 +156,16 @@ const Control = () => {
         <Route path="auto/behavior" element={<BehaviorSetting />} />
         <Route path="auto/deodorize" element={<DeodorizationSetting />} />
         <Route path="auto/detect" element={<DetectionSetting />} />
-        {/* <Route path="reservation/create" element={<CreateReservation />} /> */}
+        <Route
+          path="reservation/create"
+          element={
+            <CreateReservation
+              devices={deviceSelectItems}
+              selectedDevice={selectedDevice}
+              onDeviceChange={handleDeviceChange}
+            />
+          }
+        />
       </Routes>
     </div>
   );

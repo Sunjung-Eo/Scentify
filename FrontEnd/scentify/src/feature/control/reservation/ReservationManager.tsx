@@ -18,7 +18,9 @@ import {
 
 export default function ReservationManager({
   reservationData,
+  devices,
   selectedDevice,
+  onDeviceChange,
 }: ReservationManagerProps) {
   const navigate = useNavigate();
 

@@ -4,26 +4,22 @@ import { useControlStore } from "../../../stores/useControlStore";
 import DeviceSelect from "../../../components/Control/DeviceSelect";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { ReservationManagerProps, ReservationData } from "./ReservationType";
+import { ReservationData } from "./ReservationType";
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
+import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 
 export default function CreateReservation({
+  devices,
+  selectedDevice,
   onDeviceChange,
-}: ReservationManagerProps) {
+}: DeviceSelectProps) {
   const navigate = useNavigate();
+
+  // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
 
   // 예약 이름
   const [reservationName, setReservationName] = useState<string>("");
-
-  // 기기선택 임시값
-  const [selectedDevice, setSeletecdDevice] = useState("기기A");
-  const devices = ["기기A", "기기B", "기기C"];
-  const handleDeviceChange = (device) => {
-    setSeletecdDevice(device);
-    if (onDeviceChange) {
-      onDeviceChange(device);
-    }
-  };
 
   // 요일 설정
   const [selectedDays, setSelectedDays] = useState<string[]>([]); //요일 배열
@@ -38,18 +34,13 @@ export default function CreateReservation({
   const toggleWeek = () => {
     setSelectedWeek((prev) => !prev);
   };
+
   // 요일 비트마스크
-  const DAYS_BIT = {
-    월: 1 << 6, // 64
-    화: 1 << 5, // 32
-    수: 1 << 4, // 16
-    목: 1 << 3, // 8
-    금: 1 << 2, // 4
-    토: 1 << 1, // 2
-    일: 1, // 1
-  };
-  const getDaysBitMask = (selectedDays) => {
-    return selectedDays.reduce((mask, day) => mask | DAYS_BIT[day], 0);
+  const getDaysBitMask = (selectedDays: string[]) => {
+    return selectedDays.reduce(
+      (mask, day) => mask | DAYS_BIT[day as keyof typeof DAYS_BIT],
+      0
+    );
   };
 
   // 시간 설정
@@ -59,16 +50,6 @@ export default function CreateReservation({
   const [endHour, setEndHour] = useState("10");
   const [endMinute, setEndMinute] = useState("00");
   const [endPeriod, setEndPeriod] = useState<"AM" | "PM">("AM");
-  // 시간 변환
-  const convertTo24Hour = (hour, minute, period) => {
-    let hours = parseInt(hour);
-    if (period === "PM" && hours !== 12) {
-      hours += 12;
-    } else if (period === "AM" && hours === 12) {
-      hours = 0;
-    }
-    return `${hours.toString().padStart(2, "0")}:${minute}:00`;
-  };
 
   // 분사주기 드롭박스 초기값
   const [spraySelectedTime, setSpraySelectedTime] = useState("15분");
@@ -200,7 +181,7 @@ export default function CreateReservation({
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
-            onDeviceChange={handleDeviceChange}
+            onDeviceChange={onDeviceChange}
           />
         </div>
       </div>
@@ -372,6 +353,7 @@ export default function CreateReservation({
             {formErrors.scentName}
           </p>
         )}
+        {/* 처음 들어갔을 시 기본향, 이후 기기변경 시에는 4개향 이름만, 강도는 0으로 */}
         <ScentSetting
           scents={scents}
           setScents={setScents}

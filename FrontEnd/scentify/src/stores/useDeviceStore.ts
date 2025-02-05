@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { DeviceState } from '../types/DeviceType';
+import { create } from "zustand";
+import { DeviceState } from "../types/DeviceType";
 
 // Device 타입은 => types/DeviceType.ts 로 불러옴.
 export interface DeviceStoreState {
@@ -9,13 +9,13 @@ export interface DeviceStoreState {
   updateCapsule: (id: number, slots: Partial<DeviceState>) => void;
   updateDefaultScent: (
     id: number,
-    data: Partial<DeviceState['defaultScentData']>
+    data: Partial<DeviceState["defaultScentData"]>
   ) => void;
   updateDeviceName: (id: number, name: string) => void;
   resetDevices: () => void;
 }
 
-export const useDeviceStore = create<DeviceStoreState>((set, get) => ({
+export const useDeviceStore = create<DeviceStoreState>((set) => ({
   devices: [],
 
   /** ✅ 초기 디바이스 설정 */
@@ -64,7 +64,7 @@ export const useDeviceStore = create<DeviceStoreState>((set, get) => ({
   /** ✅ 기본향만 개별적으로 변경 */
   updateDefaultScent: (
     deviceId: number,
-    data: Partial<DeviceState['defaultScentData']>
+    data: Partial<DeviceState["defaultScentData"]>
   ) => {
     set((state) => ({
       devices: state.devices.map((device) =>

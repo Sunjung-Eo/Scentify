@@ -1,3 +1,5 @@
+import { DeviceSelectItem } from "../../../components/Control/DeviceSelect";
+
 // 예약 목록 관련 타입
 export interface Reservations {
   [key: string]: string[];
@@ -31,7 +33,9 @@ export interface ReservationManagerProps {
   reservationData: {
     customSchedules: Reservation[];
   };
+  devices: DeviceSelectItem[];
   selectedDevice: number;
+  onDeviceChange: (deviceId: number) => void;
 }
 
 // 예약하기 데이터 전송

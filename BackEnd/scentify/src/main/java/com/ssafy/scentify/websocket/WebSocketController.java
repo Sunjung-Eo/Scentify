@@ -15,7 +15,9 @@ import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
+import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class WebSocketController {
 	
+	private final AutoScheduleService autoScheduleService;
 	private final DeviceService deviceService;
 	private final CustomScheduleService customScheduleService;
 	private final CombinationService combinationService;
@@ -39,7 +42,8 @@ public class WebSocketController {
 	private final CodeProvider codeProvider;
 	private final SimpMessagingTemplate template;
 	
-	public WebSocketController(DeviceService deviceService, CustomScheduleService customScheduleService, CombinationService combinationService, TokenProvider tokenProvider, CodeProvider codeProvider, SimpMessagingTemplate template) {
+	public WebSocketController(AutoScheduleService autoScheduleService, DeviceService deviceService, CustomScheduleService customScheduleService, CombinationService combinationService, TokenProvider tokenProvider, CodeProvider codeProvider, SimpMessagingTemplate template) {
+		this.autoScheduleService = autoScheduleService;
 		this.deviceService = deviceService;
 		this.customScheduleService = customScheduleService;
 		this.combinationService = combinationService;
@@ -191,13 +195,8 @@ public class WebSocketController {
 	        );
 	    }
 
-	    CombinationDto combinationDto = combinationService.getCombinationById(combinationId);
-	    return new Combination(
-	        combinationDto.getChoice1(), combinationDto.getChoice1Count(),
-	        combinationDto.getChoice2(), combinationDto.getChoice2Count(),
-	        combinationDto.getChoice3(), combinationDto.getChoice3Count(),
-	        combinationDto.getChoice4(), combinationDto.getChoice4Count()
-	    );
+	    Combination combination = combinationService.getSocketCombinationById(combinationId);
+	    return combination;
 	}
 
 	// API 36번 : 사용자가 custom 스케줄 삭제 시 RB에 전송하는 메서드
@@ -269,5 +268,29 @@ public class WebSocketController {
 		// 메세지 전송
 		template.convertAndSend("/topic/Remote/Operation/" + deviceId, combinationDto);
 		log.info("Data processed for id: {}", deviceId);  
+	}
+	
+	// API 74번 : 자동화 스케줄 정보 요청
+	@MessageMapping("/Auto/Schedule/Initial")
+	public void sendAutoSchedules(@Payload TokenRequest request) {
+		String token = request.getToken();
+	    Integer id = null;
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
+	        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        return;
+	    }
+	    
+	    List<AutoScheduleHomeDto> schedules = autoScheduleService.getSchedulesByDeviceId(id);
+	    Map<String, List<AutoScheduleHomeDto>> response = new HashMap<>();
+ 		response.put("schedules", schedules);
+ 		
+ 		// 메세지 전송
+		template.convertAndSend("/topic/Auto/Schedule/Initial/" + id, response);
+		log.info("Data processed for id: {}", id);  
 	}
 }

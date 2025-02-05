@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.combination.model.repository.CombinationRepository;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
 
 @Service
 public class CombinationService {
@@ -30,6 +31,10 @@ public class CombinationService {
 
 	public CombinationDto getCombinationById(int combinationId) {
 		return combinationRepository.getCombinationById(combinationId);
+	}
+	
+	public Combination getSocketCombinationById(Integer combinationId) {
+		return combinationRepository.getSocketCombinationById(combinationId);
 	}
 
 	public boolean updateCombination(CombinationDto combination) {

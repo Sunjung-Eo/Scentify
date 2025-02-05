@@ -43,6 +43,7 @@ class WebSocketClient:
             self.subscribe_list = [
                 "/topic/DeviceStatus/Sensor/TempHum/",
                 "/topic/DeviceStatus/Capsule/Info/",
+                "/topic/Remote/Operation/",
                 "/topic/DeviceInfo/Id/"
             ]
             self.message_queue = work_queue
@@ -59,6 +60,7 @@ class WebSocketClient:
             }
 
             try:
+                # TODO: 재 연결 시 NoneType Error 확인하기!
                 print("Try Web Socket Connection..")
                 async with websockets.connect(self.__uri, extra_headers=headers) as websocket:
                     print("Complete HandShaking")
@@ -66,34 +68,12 @@ class WebSocketClient:
                     self.websocket = websocket
                     await self.init_websocket()
 
-                    # 초기 디바이스 serial_number <> device_id 교환
-                    """
-                    요청 경로 /app/DeviceInfo/Id
-                    구독 경로 /topic/DeviceInfo/Id/ + 자기 시리얼 
-                    """
-                    subscribe_frame = get_subscribe_frame(0, f"/topic/DeviceInfo/Id/{self.__serial_number}")
-                    await self.websocket.send(subscribe_frame)
-
-                    serial_msg = json.dumps({'token' : token})
-                    send_frame = stomper.send('/app/DeviceInfo/Id', serial_msg, content_type='application/json')                    
-                    await self.websocket.send(send_frame)      
-
-                    
-                    while True:
-                        res = await self.websocket.recv()
-                        header, body = parse_stomp_message(res)
-                        if len(body) <= 1:
-                            continue
-                        
-                        message = ast.literal_eval(body)
-                        if "id" in message:
-                            self.device_id = message["id"]
-
-                        if self.device_id == None:
-                            raise Exception("Can not Receive Device Id")
-                        break
+                    # 초기 디바이스 serial_number <-> device_id 교환
+                    await self.set_device_id()
 
                     await self.subcribe_websocket()
+
+                    # websocket response handler 키 업데이트 (맨 뒤에 id 추가)
                     original_key = {}
                     for key, value in self.websocket_response_hanlder.items():
                         if key == "default":
@@ -117,6 +97,28 @@ class WebSocketClient:
                 print(f"Exception for Websocket Connection.. : {e}")
                 await asyncio.sleep(3)
 
+    async def set_device_id(self):
+        subscribe_frame = get_subscribe_frame(0, f"/topic/DeviceInfo/Id/{self.__serial_number}")
+        await self.websocket.send(subscribe_frame)
+
+        serial_msg = json.dumps({'token' : get_access_token(self.__serial_number)})
+        send_frame = stomper.send('/app/DeviceInfo/Id', serial_msg, content_type='application/json')                    
+        await self.websocket.send(send_frame)      
+
+        while True:
+            res = await self.websocket.recv()
+            header, body = parse_stomp_message(res)
+            if len(body) <= 1:
+                continue
+            
+            message = ast.literal_eval(body)
+            if "id" in message:
+                self.device_id = message["id"]
+
+            if self.device_id == None:
+                raise Exception("Can not Receive Device Id")
+            break
+
     async def init_websocket(self):
         connect_frame = get_connect_frame(self.__uri)
         await self.websocket.send(connect_frame)
@@ -124,6 +126,7 @@ class WebSocketClient:
     async def subcribe_websocket(self):
         for (idx, topic) in enumerate(self.subscribe_list):
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
+            print(subscribe_frame)
             await self.websocket.send(subscribe_frame)
 
     async def receive_messages(self):
@@ -135,8 +138,14 @@ class WebSocketClient:
                     header, body = parse_stomp_message(res)
                     if len(body) <= 1:
                         continue
-                    
-                    message = ast.literal_eval(body)
+
+                    message = json.loads(body)
+                    """
+                    print(header, message)
+                    {'destination': '/topic/Remote/Operation/1903711731', 'content-type': 'application/json', 'subscription': '3', 'message-id': 'da2278bd-9287-3a42-0f78-21edd7c285d6-11', 'content-length': '145'} {'id': 1296837941, 'name': None, 'choice1': 0, 'choice1Count': 3, 'choice2': 0, 'choice2Count': 0, 'choice3': 0, 'choice3Count': 0, 'choice4': 0, 'choice4Count': 0}
+                    pub! topic : 1/CapsuleInfo, payload : 
+                    """
+                    print(header, message)
                     break
 
                 # TODO: Header에서 Type 갖고 오는 코드 작성하기!

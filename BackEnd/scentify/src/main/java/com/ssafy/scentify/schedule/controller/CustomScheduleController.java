@@ -128,13 +128,22 @@ public class CustomScheduleController {
 			// 요청 데이터 유효성 검사
 			if (customScheduleId == null || deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
+			// 삭제 전 미리 요일 정보를 조회
+			int day = customScheduleService.getDayById(customScheduleId, deviceId);
+			
 			// 삭제가 이루어지지 않은 경우 400 반환
 			if (!customScheduleService.deleteCustomScheduleById(customScheduleId, deviceId)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-//			socketController.sendCustomScheduleDelete(deleteScheduleMap);
-			
+			// 현재 요일의 스케줄만 전송
+		    int currentBit = codeProvider.getCurrentDayBit();
+		    
+		    // 사용자가 선택한 요일 목록에 현재 요일이 포함되어 있는 경우만 실행
+		    if ((day & currentBit) != 0) {
+//				socketController.sendCustomScheduleDelete(deleteScheduleMap);
+		    }
+
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리

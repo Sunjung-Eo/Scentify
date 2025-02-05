@@ -33,6 +33,10 @@ public interface CustomScheduleRepository {
 	// 당일에 해당하는 스케줄 정보를 조회 (별도의 매퍼에 구현)
 	List<CustomScheduleRequest> selectTodaySchedules(int deviceId, int currentBit);
 	
+	// 요일 정보를 조회
+	@Select("SELECT day FROM customschedule WHERE id = #{id}, device_id = #{deviceId}")
+	int getDayById(int customScheduleId, int deviceId);
+	
 	// 커스텀 스케줄 생성
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 
 		    + " VALUES (#{customSchedule.name}, #{customSchedule.deviceId}, #{combinationId}, #{conbinationName}, #{customSchedule.day},"

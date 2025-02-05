@@ -24,8 +24,10 @@ public class CustomScheduleService {
 		return customScheduleRepository.getSchedulesByDeviceId(mainDeviceId);
 	}
 	
+	public int getDayById(int customScheduleId, int deviceId) {
+		return customScheduleRepository.getDayById(customScheduleId, deviceId);
+	}
 	
-
 	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, int combinationId, String combinationName) {
 		return customScheduleRepository.createCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}

@@ -23,6 +23,8 @@ public class CustomScheduleService {
 	public List<CustomScheduleHomeDto> getSchedulesByDeviceId(int mainDeviceId) {
 		return customScheduleRepository.getSchedulesByDeviceId(mainDeviceId);
 	}
+	
+	
 
 	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, int combinationId, String combinationName) {
 		return customScheduleRepository.createCustomSchedule(customScheduleDto, combinationId, combinationName);
@@ -36,9 +38,13 @@ public class CustomScheduleService {
 		return customScheduleRepository.deleteCustomScheduleById(customScheduleId, deviceId);
 	}
 
-	public Map<Integer, List<CustomScheduleRequest>> getGroupedSchedules() {
-		List<CustomScheduleRequest> allSchedules = customScheduleRepository.selectAllSchedules();
+	public Map<Integer, List<CustomScheduleRequest>> getGroupedSchedules(int currentBit) {
+		List<CustomScheduleRequest> allSchedules = customScheduleRepository.selectAllySchedules(currentBit);
         return allSchedules.stream()
         					.collect(Collectors.groupingBy(CustomScheduleRequest::getDeviceId));
+	}
+
+	public List<CustomScheduleRequest> getCustomSchedules(int deviceId, int currentBit) {
+		return customScheduleRepository.selectTodaySchedules(deviceId, currentBit);
 	}
 }

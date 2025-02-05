@@ -11,7 +11,9 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.repository.DeviceRepository;
 import com.ssafy.scentify.home.model.dto.HomeDto.DeviceHomeDto;
 import com.ssafy.scentify.user.model.repository.UserRepository;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 @Service
@@ -53,6 +55,10 @@ public class DeviceService {
 	public boolean getMode(int deviceId) {
 		return deviceRepository.getMode(deviceId);
 	}
+	
+	public CapsuleInfoRequest getCapsuleInfo(int deviceId) {
+		return deviceRepository.getCapsuleInfo(deviceId);
+	}
 
 	public boolean createDevice(RegisterDto registerDto) {
 		if (!deviceRepository.createDevice(registerDto)) return false;
@@ -83,5 +89,4 @@ public class DeviceService {
 	public boolean updateMode(int id, boolean mode) {
 		return deviceRepository.updateMode(id, mode);
 	}
-
 }

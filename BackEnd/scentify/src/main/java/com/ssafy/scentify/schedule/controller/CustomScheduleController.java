@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.combination.CombinationService;
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
+import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
 import com.ssafy.scentify.websocket.WebSocketController;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,11 +30,13 @@ public class CustomScheduleController {
 	private final WebSocketController socketController;
 	private final CombinationService combinationService;
 	private final CustomScheduleService customScheduleService;
+	private final CodeProvider codeProvider;
 	
-	public CustomScheduleController(WebSocketController socketController, CombinationService combinationService, CustomScheduleService customScheduleService) {
+	public CustomScheduleController(WebSocketController socketController, CombinationService combinationService, CustomScheduleService customScheduleService, CodeProvider codeProvider) {
 		this.socketController = socketController;
 		this.combinationService = combinationService;
 		this.customScheduleService = customScheduleService;
+		this.codeProvider =codeProvider;
 	}
 	
 	// API 31번 : 시간 기반 예약 설정
@@ -161,5 +166,18 @@ public class CustomScheduleController {
 		}
 	}
 	
-	
+	// API 38번 : 매일 자정 custom 스케줄 배치
+	@Scheduled(cron = "0 0 0 * * ?") 
+	public void sendDailyCustomSchedules() {
+		try {
+			int currentBit = codeProvider.getCurrentDayBit();
+			Map<Integer, List<CustomScheduleRequest>> groupedSchedules = customScheduleService.getGroupedSchedules(currentBit);
+			groupedSchedules.forEach((deviceId, schedules) -> {
+				socketController.sendDailyCustomSchedules(deviceId, schedules);
+        	});
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+		}
+	}
 }

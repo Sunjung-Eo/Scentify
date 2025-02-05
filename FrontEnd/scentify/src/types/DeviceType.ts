@@ -12,9 +12,9 @@ export interface DeviceState {
   slot4: number | null;
   slot4RemainingRatio: number | null;
   mode: 0 | 1;
-  temperature: number | null;
-  humidity: number | null;
-  defaultCombination: number | null; // 기본향 ID 저장
+  temperature: number | null; // 없음
+  humidity: number | null; // 없음
+  defaultCombination: number | null;
   isRepresentative: boolean;
   defaultScentData: {
     slot1: { slot: number | null; count: number };

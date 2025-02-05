@@ -1,30 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { UserData } from "../../../feature/Home/mainhome/user/UserTypes";
-import GreenProfile from "../../../assets/userProfiles/green.svg";
-import navigateIcon from "../../../assets/icons/navigatewhite.svg";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { UserData } from '../../../feature/Home/mainhome/user/UserTypes';
+import GreenProfile from '../../../assets/userProfiles/green.svg';
+import navigateIcon from '../../../assets/icons/navigatewhite.svg';
+import { Link } from 'react-router-dom';
 
-export const MyUserCard: React.FC = () => {
+interface MyUserCardProps {
+  nickname: string;
+  imgNum: number;
+  mainDeviceId: number | null;
+}
+
+const MyUserCard: React.FC<MyUserCardProps> = ({
+  nickname,
+  imgNum,
+  mainDeviceId,
+}) => {
   const [userData, setUserData] = useState<UserData>({
-    userId: "aaaa",
-    userName: "홍길동", // 사용자 이름 하드코딩 (백엔드 연동 시 업데이트 가능)
-    imgNum: 1, // 기본 프로필 사진 번호
-    mainDeviceId: 0,
-    date: "",
-    weatherIcon: "",
-    weatherDescription: "",
+    nickname: nickname, // 사용자 이름 하드코딩 (백엔드 연동 시 업데이트 가능)
+    imgNum: imgNum, // 기본 프로필 사진 번호
+    mainDeviceId: mainDeviceId ?? 0,
+    date: '',
+    weatherIcon: '',
+    weatherDescription: '',
   });
 
-  const [error, setError] = useState<string | null>(null); // 에러 상태
-
-  // 1. 현재 날짜 가져오기
-  const getCurrentDate = (): string => {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleString("en-US", { month: "long" });
-    const year = today.getFullYear();
-    return `Today ${day} ${month} ${year}`;
-  };
+  useEffect(() => {
+    setUserData((prev) => ({
+      ...prev,
+      nickname: nickname ?? '사용자',
+      imgNum: imgNum ?? 1,
+      mainDeviceId: mainDeviceId ?? 0,
+    }));
+  }, [nickname, imgNum, mainDeviceId]);
 
   return (
     <Link
@@ -41,7 +48,7 @@ export const MyUserCard: React.FC = () => {
         />
         {/* 닉네임 */}
         <p className="text-[20px]">
-          <span className="font-pre-bold">{userData.userName}</span>{" "}
+          <span className="font-pre-bold">{userData.nickname}</span>{' '}
           {/* 홍길동만 pre-bold */}
         </p>
       </div>

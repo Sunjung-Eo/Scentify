@@ -18,21 +18,60 @@ export interface DeviceStoreState {
 export const useDeviceStore = create<DeviceStoreState>((set, get) => ({
   devices: [],
 
-  /** ✅ 초기 디바이스 설정 */
   setDevices: (mainDevice: DeviceState, devices: DeviceState[]) => {
-    set({
-      devices: [
-        {
+    set((state) => {
+      const existingDevices = state.devices; // 기존 devices 리스트 가져오기
+      const updatedDevices = [...existingDevices]; // 새로운 devices 배열 생성 -> 이걸로 덮어쓰기 위해
+
+      // 📌 메인 기기 처리
+      // 1) updatedDevices에서 mainDevice의 id와 같은 id 가진 요소 있는 찾음
+      // 일치하면 해당 인덱스 반환
+      // 없으면 -1
+      const mainDeviceIndex = updatedDevices.findIndex(
+        (d) => d.id === mainDevice.id
+      );
+
+      if (mainDeviceIndex !== -1) {
+        // => mainDevice가 기존에 있다! 그럼 업데이트
+        updatedDevices[mainDeviceIndex] = {
+          ...updatedDevices[mainDeviceIndex],
+          ...mainDevice,
+          isRepresentative: true, // 대표 기기로로 설정
+        };
+      } else {
+        // 존재하지 않으면 추가
+        updatedDevices.push({
           ...mainDevice,
           isRepresentative: true,
-          previousScentData: getDefaultScent(mainDevice),
-        },
-        ...devices.map((device) => ({
-          ...device,
-          isRepresentative: false,
-          previousScentData: getDefaultScent(device),
-        })),
-      ],
+        });
+      }
+
+      // 📌 일반 기기 처리
+      // 2) devices(새로운 기기목록 담는 얘) 배열 순회하면서
+      // updatedDevices에서 동일한 id를 가진 기기가 있는 확인
+      devices.forEach((device) => {
+        const existingDeviceIndex = updatedDevices.findIndex(
+          (d) => d.id === device.id
+        );
+
+        if (existingDeviceIndex !== -1) {
+          // 2-1) 기기가 이미 존재 -> 기존 데이터터 업데이트 (isRepresentative 값은 기존 값 유지)
+          updatedDevices[existingDeviceIndex] = {
+            ...updatedDevices[existingDeviceIndex],
+            ...device,
+            isRepresentative:
+              updatedDevices[existingDeviceIndex].id === mainDevice.id, // ✅ 대표 기기인지 확인
+          };
+        } else {
+          // 2-2) 존재하지 않으면 추가 (isRepresentative: false)
+          updatedDevices.push({
+            ...device,
+            isRepresentative: false,
+          });
+        }
+      });
+
+      return { devices: updatedDevices };
     });
   },
 

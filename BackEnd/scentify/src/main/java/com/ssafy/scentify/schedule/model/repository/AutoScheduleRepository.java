@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.*;
 
 import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
+import com.ssafy.scentify.schedule.model.dto.AutoScheduleDto;
 
 @Mapper
 public interface AutoScheduleRepository {
@@ -31,4 +32,9 @@ public interface AutoScheduleRepository {
 	    @Result(column = "mode_on", property = "modeOn")
 	})
 	List<AutoScheduleHomeDto> selectSchedulesByDeviceId(int deviceId);
+	
+	// 자동화 스케줄 수정
+	@Update("UPDATE autoschedule SET combination_id = #{combinationId}, `interval` = #{autoSchedule.interval}, mode_on = #{autoSchedule.modeOn}, "
+			+ "updated_at = NOW() WHERE id = #{autoSchedule.id} AND device_id = #{autoSchedule.deviceId}")
+	boolean updateAutoSchedule(@Param("autoSchedule") AutoScheduleDto autoScheduleDto, Integer combinationId);
 }

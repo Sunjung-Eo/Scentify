@@ -24,11 +24,11 @@ public class CustomScheduleService {
 		return customScheduleRepository.getSchedulesByDeviceId(mainDeviceId);
 	}
 
-	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName) {
+	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, int combinationId, String combinationName) {
 		return customScheduleRepository.createCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}
 
-	public boolean updateCustomSchedule(CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName) {
+	public boolean updateCustomSchedule(CustomScheduleDto customScheduleDto, int combinationId, String combinationName) {
 		return customScheduleRepository.updateCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}
 

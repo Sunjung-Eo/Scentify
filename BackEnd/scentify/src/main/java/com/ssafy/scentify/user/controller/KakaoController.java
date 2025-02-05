@@ -153,12 +153,12 @@ public class KakaoController {
 	            Cookie refreshTokenCookie = tokenProvider.createRefreshTokenCookie(refreshToken);
 	            response.addCookie(refreshTokenCookie);
 		    	
-	            if (updated) {
-	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&provider=kakao");
+	            if (!updated) {
+	            	response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false&provider=kakao");
 	            	return;
 	            }
 	            
-	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&group=false&provider=kakao");
+	            response.sendRedirect("http://localhost:5173/login/social?social=true&status=login&provider=kakao");
 				return;
 		    }
 		    

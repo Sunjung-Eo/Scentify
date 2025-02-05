@@ -31,4 +31,8 @@ public class CombinationService {
 	public CombinationDto getCombinationById(int combinationId) {
 		return combinationRepository.getCombinationById(combinationId);
 	}
+
+	public boolean updateCombination(CombinationDto combination) {
+		return combinationRepository.updateCombination(combination);
+	}
 }

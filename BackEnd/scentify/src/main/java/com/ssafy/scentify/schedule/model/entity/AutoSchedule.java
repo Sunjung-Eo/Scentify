@@ -10,7 +10,6 @@ import lombok.*;
 public class AutoSchedule {
     private Integer id;
     private int deviceId;
-    private String userId;
     private int combinationId;
     private int subMode;
     private Integer type;
@@ -26,13 +25,6 @@ public class AutoSchedule {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
-    }
-    
-    public void setUserId(String userId) {
-        if (userId == null || userId.isBlank() || userId.contains(" ") || userId.length() > 30) {
-            throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-        }
-        this.userId = userId;
     }
 
     public void setCombinationId(int combinationId) {

@@ -22,9 +22,9 @@ public class CombinationService {
 		return combinationId;
 	}
 
-	public Integer createAutoCombination(int choice, int count) {
+	public Integer createAutoCombination(String name, int choice, int count) {
 		int combinationId = UUID.randomUUID().hashCode() & Integer.MAX_VALUE;
-		if (!combinationRepository.createAutoCombination(combinationId, choice, count)) return null;
+		if (!combinationRepository.createAutoCombination(combinationId, name, choice, count)) return null;
 		return combinationId;
 	}
 

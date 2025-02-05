@@ -95,9 +95,17 @@ public class DeviceController {
 	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 	        	        
-//	        // Redis에서 핸드쉐이크 성공 여부 확인
-//	        if (!stateManager.getHandshakeState(registerDto.getSerial())) {
-//	            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 핸드쉐이크 실패 시 반환
+//	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
+//	        int waitTime = 0;
+//	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
+//	        int sleepInterval = 500; // 0.5초마다 체크
+//
+//	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
+//	            if (waitTime >= maxWaitTime) {
+//	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
+//	            }
+//	            Thread.sleep(sleepInterval);
+//	            waitTime += sleepInterval;
 //	        }
 	        
 	        // 성공적으로 처리된 후 ID 반환
@@ -186,12 +194,12 @@ public class DeviceController {
 			};
 			
 			// 자동화 모드 설정 (시용자 행동 기반)
-			Integer exerciseCombinationId = combinationService.createAutoCombination(capsules.get(0), count);
+			Integer exerciseCombinationId = combinationService.createAutoCombination("운동향", capsules.get(0), count);
 			if (exerciseCombinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			if (!autoScheduleService.setMode(deviceId, exerciseCombinationId, 1, 1, 15)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
-			Integer restCombinationId = combinationService.createAutoCombination(capsules.get(1), count);
+			Integer restCombinationId = combinationService.createAutoCombination("휴식향", capsules.get(1), count);
 			if (restCombinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			if(!autoScheduleService.setMode(deviceId, restCombinationId, 1, 2, 15)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }

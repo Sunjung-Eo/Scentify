@@ -18,6 +18,7 @@ import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.DeviceIdRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 
@@ -40,6 +41,30 @@ public class WebSocketController {
 		this.template = template;
 	}
 	
+	// 디바이스 아이디를 송신
+	@MessageMapping("/DeviceInfo/Id")
+	public void sendDeviceId(@Payload DeviceIdRequest request) {
+	    String token = request.getToken();
+	    String serial = "";
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        serial = tokenProvider.getSerial(token);
+	                                                                                                                                                                                                                                                                                                        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        return;
+	    }
+	    
+	    int id = deviceService.selectDeviceIdBySerial(serial);
+	    log.info("Data processed for id: {}", id);
+	    
+	    Map<String, Integer> response = new HashMap<>();
+	    response.put("id", id);
+	    template.convertAndSend("/topic/DeviceInfo/Id/" + serial, response);
+	}
+	
+	
 	// API 15번 : RB 온습도 정보 수신
 	@MessageMapping("/DeviceStatus/Sensor/TempHum")
 	public void handleSensorData(@Payload TempHumRequest request) {
@@ -49,20 +74,22 @@ public class WebSocketController {
 	    try {
 	        tokenProvider.validateJwtToken(token);
 	        id = Integer.parseInt(tokenProvider.getId(token));
-	        
+	                                                                                                                                                                                                                                                                                                        
 	    } catch (ExpiredJwtException e) {
 	        log.info("Token 만료됨");
+	        return;
 	    }
 
 	    deviceService.updateTempHum(id, request);
-	    log.info("Data processed for serial: {}", id);
+	    log.info("Data processed for id: {}", id);
 	}
 	
 	// API 16번 : RB 캡슐 정보 송신
 	public void sendCapsuleInfo(int id, CapsuleInfoRequest infoRequest) {
         // 메시지 전송
         template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + id, infoRequest);
-    }
+        log.info("Data processed for id: {}", id);
+	}
 	
 	// API 17번 : RB 캡슐 잔여량 수신
 	@MessageMapping("/DeviceStatus/Capsule/Remainder")
@@ -72,14 +99,15 @@ public class WebSocketController {
 
 	    try {
 	        tokenProvider.validateJwtToken(token);
-	        id = Integer.parseInt(tokenProvider.getId(token));
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
 	        
 	    } catch (ExpiredJwtException e) {
 	        log.info("Token 만료됨");
+	        return;
 	    }
-
+	    
 	    deviceService.updateCapsuleRemaining(id, request);
-	    log.info("Data processed for serial: {}", id);
+	    log.info("Data processed for id: {}", id);
 	}
 	
 	// API 34번 : 사용자가 custom 스케줄 수정 시 RB에 전송하는 메서드

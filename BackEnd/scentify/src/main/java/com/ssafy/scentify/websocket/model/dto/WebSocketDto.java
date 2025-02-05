@@ -10,6 +10,14 @@ import lombok.Setter;
 public class WebSocketDto {
 	
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class DeviceIdRequest {
+		private String token;
+	}
+	
+	@Data
+	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class ModeChangeRequest {
 	    private String type;  
@@ -21,6 +29,7 @@ public class WebSocketDto {
 	}
 	
 	@Data
+	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class TempHumRequest {
 	    private String token;               
@@ -35,6 +44,7 @@ public class WebSocketDto {
     }
 	
 	@Data
+	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class CapsuleInfoRequest {
         private int slot1;
@@ -44,14 +54,14 @@ public class WebSocketDto {
     }
 	
 	@Data
-	@AllArgsConstructor
-	public static class CapsuleRemainingRequest {
-	    private String token;               
-	    private int slot1RemainingRatio;   
-	    private int slot2RemainingRatio;  
-	    private int slot3RemainingRatio;   
-	    private int slot4RemainingRatio; 
-	}
+    @NoArgsConstructor
+    public static class CapsuleRemainingRequest { 
+        private String token;
+    	private int slot1RemainingRatio;
+        private int slot2RemainingRatio;
+        private int slot3RemainingRatio;
+        private int slot4RemainingRatio;
+    }
 	
 	@Data
 	@NoArgsConstructor

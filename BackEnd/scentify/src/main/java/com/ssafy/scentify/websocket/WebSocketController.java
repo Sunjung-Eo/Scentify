@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
+import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
@@ -177,5 +178,11 @@ public class WebSocketController {
 		
 		// 메시지 전송
         template.convertAndSend("/topic/ModeChange/" + deviceId, modeRequest);
+	}
+	
+	// API 54번 : 즉시 분사
+	public void sendRemoteOperation(int deviceId, CombinationDto combinationDto) {
+		// 메세지 전송
+		template.convertAndSend("/topic/Remote/Operation/" + deviceId, combinationDto);
 	}
 }

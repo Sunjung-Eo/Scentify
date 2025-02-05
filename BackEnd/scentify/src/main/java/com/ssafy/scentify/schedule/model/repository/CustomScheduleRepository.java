@@ -34,13 +34,13 @@ public interface CustomScheduleRepository {
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 
 		    + " VALUES (#{customSchedule.name}, #{customSchedule.deviceId}, #{combinationId}, #{conbinationName}, #{customSchedule.day},"
 			+ " #{customSchedule.startTime}, #{customSchedule.endTime}, #{customSchedule.interval}, #{customSchedule.modeOn}, NOW(), NOW())")
-	boolean createCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, Integer combinationId, String conbinationName);
+	boolean createCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, int combinationId, String conbinationName);
 	
 	// 커스텀 스케줄 수정
 	@Update("UPDATE customschedule SET name = #{customSchedule.name}, combination_id = #{combinationId}, combination_name = CASE WHEN #{combinationName} IS NOT NULL "
 			+ "THEN #{combinationName} ELSE combination_name END, day = #{customSchedule.day}, start_time = #{customSchedule.startTime}, end_time = #{customSchedule.endTime}, "
 			+ "`interval` = #{customSchedule.interval}, mode_on = #{customSchedule.modeOn}, updated_at = NOW() WHERE id = #{customSchedule.id} AND device_id = #{customSchedule.deviceId}")
-	boolean updateCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, Integer combinationId, String combinationName);
+	boolean updateCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, int combinationId, String combinationName);
 	
 	// 커스텀 스케줄 삭제
 	@Delete("DELETE FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")

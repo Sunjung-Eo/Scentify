@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
 
 @Mapper
 public interface CombinationRepository {
@@ -26,6 +27,11 @@ public interface CombinationRepository {
 	@Select("SELECT id, name, choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count " 
 		    + "FROM combination WHERE id = #{combinationId}")
 	CombinationDto getCombinationById(int combinationId);
+	
+	// id로 id와 name을 제외한 조합 정보 반환
+	@Select("SELECT choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count " 
+		    + "FROM combination WHERE id = #{combinationId}")
+	Combination getSocketCombinationById(Integer combinationId);
 	
 	// id로 조합 정보 업데이트
 	@Update("UPDATE combination SET choice1 = #{combination.choice1}, choice1_count = #{combination.choice1Count}, choice2 = #{combination.choice2}, choice2_count = #{combination.choice2Count}, "

@@ -24,6 +24,7 @@
         </association>
     </resultMap>
 
+    <!-- 모든 스케줄 조회 -->
     <select id="selectAllySchedules" resultMap="CustomScheduleRequest">
         SELECT 
             s.id AS schedule_id,
@@ -43,11 +44,12 @@
             c.choice4_count
         FROM customschedule s
         JOIN combination c ON s.combination_id = c.id
-        WHERE (s.day & #{currentBit}) > 0
+        WHERE <![CDATA[(s.day & #{currentBit}) > 0]]>
     </select>
     
+    <!-- 오늘 날짜의 스케줄 조회 -->
     <select id="selectTodaySchedules" resultMap="CustomScheduleRequest">
-    	SELECT 
+        SELECT 
             s.id AS schedule_id,
             s.device_id,
             s.start_time,
@@ -65,7 +67,6 @@
             c.choice4_count
         FROM customschedule s
         JOIN combination c ON s.combination_id = c.id
-        WHERE (s.day & #{currentBit}) > 0 AND device_id = #{deviceId}
+        WHERE <![CDATA[(s.day & #{currentBit}) > 0]]> AND s.device_id = #{deviceId}
     </select>
 </mapper>
-

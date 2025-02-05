@@ -296,7 +296,7 @@ public class WebSocketController {
 	}
 	
 	// API 41번 : 탈취 모드 향기 정보 요청
-	@MessageMapping("/DeviceStatus/Sensor/Stink")
+	@MessageMapping("/DeviceStatus/Sensor")
 	public void sendStinkCombination(@Payload CombinationRequest request) {
 		String token = request.getToken();
 	    Integer id = null;

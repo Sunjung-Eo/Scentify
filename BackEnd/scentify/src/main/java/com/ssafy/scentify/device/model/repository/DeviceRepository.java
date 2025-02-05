@@ -33,7 +33,7 @@ public interface DeviceRepository {
     DeviceGroupInfoDto selectGroupInfoByDeviceId(Integer id);
     
     // 기본향 id 조회 쿼리
-    @Select("SELECT default_combinaion FROM device WHERE id = #{id}")
+    @Select("SELECT default_combination FROM device WHERE id = #{id}")
 	int getDefaultCombinationId(int id);
     
     // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)

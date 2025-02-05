@@ -19,7 +19,7 @@ import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
-import com.ssafy.scentify.websocket.model.dto.WebSocketDto.DeviceIdRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TokenRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TempHumRequest;
 
 
@@ -44,7 +44,7 @@ public class WebSocketController {
 	
 	// 디바이스 아이디를 송신
 	@MessageMapping("/DeviceInfo/Id")
-	public void sendDeviceId(@Payload DeviceIdRequest request) {
+	public void sendDeviceId(@Payload TokenRequest request) {
 	    String token = request.getToken();
 	    String serial = "";
 
@@ -111,6 +111,30 @@ public class WebSocketController {
 	    log.info("Data processed for id: {}", id);
 	}
 	
+	// API 76번 : 스케줄, 자동화 모드 정보 전송
+	@MessageMapping("/Mode")
+	public void sendDeviceMode(@Payload TokenRequest request) {
+		String token = request.getToken();
+	    Integer id = null;
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
+	        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        return;
+	    }
+	    
+	    boolean mode = deviceService.getMode(id);
+	    Map<String, Boolean> response = new HashMap<>();
+	    response.put("mode", mode);
+	    
+	    // 메시지 전송
+        template.convertAndSend("/topic/Mode" + id, response);
+	    log.info("Data processed for id: {}", id);    
+	}
+	
 	// API 34번 : 사용자가 custom 스케줄 수정 시 RB에 전송하는 메서드
 	public void sendCustomScheduleUpdate(CustomScheduleDto scheduleDto) {
 		// 요청 객체 생성
@@ -165,19 +189,19 @@ public class WebSocketController {
             log.info("자정 배치: deviceId={} 에 스케줄 {}개 전송", deviceId, schedules.size());
         });
 	}
-	
+
 	// API 30번 : 모드 변경 시 RB에 정보를 전달하는 메서드
-	public void sendDeviceMode(Map<String, Object> modeInfoMap) {
+	public void sendDeviceModeUpdate(Map<String, Object> modeInfoMap) {
 		// 디바이스 아이디와 모드 추출
 		int deviceId = (int) modeInfoMap.get("deviceId");
-		int mode = (boolean) modeInfoMap.get("mode") ? 1 : 0;
+		boolean mode = (boolean) modeInfoMap.get("mode");
         
         // 요청 객체 생성
-		Map<String, Integer> modeRequest = new HashMap<>();
+		Map<String, Boolean> modeRequest = new HashMap<>();
 		modeRequest.put("mode", mode);
 		
 		// 메시지 전송
-        template.convertAndSend("/topic/ModeChange/" + deviceId, modeRequest);
+        template.convertAndSend("/topic/Mode/Change/" + deviceId, modeRequest);
 	}
 	
 	// API 54번 : 즉시 분사

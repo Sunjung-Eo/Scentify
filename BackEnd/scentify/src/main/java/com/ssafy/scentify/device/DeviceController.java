@@ -298,7 +298,7 @@ public class DeviceController {
 	        if (!deviceService.updateMode(deviceId, mode)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // RB에 전달
-	        socketController.sendDeviceMode(payload);
+	        socketController.sendDeviceModeUpdate(payload);
 	        
 	        return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {

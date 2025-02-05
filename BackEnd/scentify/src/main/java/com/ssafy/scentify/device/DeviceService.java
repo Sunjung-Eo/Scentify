@@ -49,6 +49,10 @@ public class DeviceService {
 	public int getDefaultCombinationId(int deviceId) {
 		return deviceRepository.getDefaultCombinationId(deviceId);
 	}
+	
+	public boolean getMode(int deviceId) {
+		return deviceRepository.getMode(deviceId);
+	}
 
 	public boolean createDevice(RegisterDto registerDto) {
 		if (!deviceRepository.createDevice(registerDto)) return false;
@@ -79,4 +83,5 @@ public class DeviceService {
 	public boolean updateMode(int id, boolean mode) {
 		return deviceRepository.updateMode(id, mode);
 	}
+
 }

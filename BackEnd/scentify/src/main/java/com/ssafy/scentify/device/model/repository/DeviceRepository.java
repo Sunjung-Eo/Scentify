@@ -36,6 +36,10 @@ public interface DeviceRepository {
     @Select("SELECT default_combination FROM device WHERE id = #{id}")
 	int getDefaultCombinationId(int id);
     
+    // 모드 조회 쿼리
+    @Select("SELECT mode FROM device WHERE id = #{id}")
+	boolean getMode(int id);
+    
     // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
    	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
     
@@ -67,5 +71,4 @@ public interface DeviceRepository {
 	// 모드 업데이트
     @Update("UPDATE device SET mode = #{mode} WHERE id = #{id}")
 	boolean updateMode(int id, boolean mode);
-
 }

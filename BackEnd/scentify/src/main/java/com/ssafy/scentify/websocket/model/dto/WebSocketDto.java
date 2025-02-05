@@ -12,7 +12,7 @@ public class WebSocketDto {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class DeviceIdRequest {
+	public static class TokenRequest {
 		private String token;
 	}
 	

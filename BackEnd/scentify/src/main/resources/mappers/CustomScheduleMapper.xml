@@ -23,7 +23,8 @@
             <result property="choice4Count" column="choice4_count" />
         </association>
     </resultMap>
-    <select id="selectAllSchedules" resultMap="CustomScheduleRequest">
+
+    <select id="selectAllySchedules" resultMap="CustomScheduleRequest">
         SELECT 
             s.id AS schedule_id,
             s.device_id,
@@ -31,7 +32,6 @@
             s.end_time,
             s.interval,
             s.mode_on,
-
             c.id AS combination_id, 
             c.choice1,
             c.choice1_count,
@@ -41,8 +41,31 @@
             c.choice3_count,
             c.choice4,
             c.choice4_count
-
         FROM customschedule s
         JOIN combination c ON s.combination_id = c.id
+        WHERE (s.day & #{currentBit}) > 0
+    </select>
+    
+    <select id="selectTodaySchedules" resultMap="CustomScheduleRequest">
+    	SELECT 
+            s.id AS schedule_id,
+            s.device_id,
+            s.start_time,
+            s.end_time,
+            s.interval,
+            s.mode_on,
+            c.id AS combination_id, 
+            c.choice1,
+            c.choice1_count,
+            c.choice2,
+            c.choice2_count,
+            c.choice3,
+            c.choice3_count,
+            c.choice4,
+            c.choice4_count
+        FROM customschedule s
+        JOIN combination c ON s.combination_id = c.id
+        WHERE (s.day & #{currentBit}) > 0 AND device_id = #{deviceId}
     </select>
 </mapper>
+

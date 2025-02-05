@@ -1,5 +1,7 @@
 package com.ssafy.scentify.common.util;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Random;
 import org.springframework.stereotype.Component;
 
@@ -27,4 +29,14 @@ public class CodeProvider {
         }
         return key.toString();
     }
+	 
+	 // 요일 비트 값 반환
+	 public int getCurrentDayBit() {
+	    ZoneId seoulZone = ZoneId.of("Asia/Seoul");  // 한국 시간대 설정
+	    LocalDate koreaDate = LocalDate.now(seoulZone); // 한국 기준 날짜 가져오기
+	    int dayOfWeek = koreaDate.getDayOfWeek().getValue(); // 1=월요일, 7=일요일
+
+	    int[] dayBits = {1, 64, 32, 16, 8, 4, 2}; // 일~토 순서
+	    return dayBits[dayOfWeek % 7]; // 비트 값 반환
+	}
 }

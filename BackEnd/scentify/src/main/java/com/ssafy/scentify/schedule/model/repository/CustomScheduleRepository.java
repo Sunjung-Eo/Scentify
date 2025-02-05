@@ -28,7 +28,10 @@ public interface CustomScheduleRepository {
     List<CustomScheduleHomeDto> getSchedulesByDeviceId(int deviceId);
 	
 	// 배치를 위해 모든 custom 스케줄 조회 (별도의 매퍼에 구현)
-	List<CustomScheduleRequest> selectAllSchedules();
+	List<CustomScheduleRequest> selectAllySchedules(int currentBit);
+	
+	// 당일에 해당하는 스케줄 정보를 조회 (별도의 매퍼에 구현)
+	List<CustomScheduleRequest> selectTodaySchedules(int deviceId, int currentBit);
 	
 	// 커스텀 스케줄 생성
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 

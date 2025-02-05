@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
+import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
@@ -33,12 +34,14 @@ public class WebSocketController {
 	private final DeviceService deviceService;
 	private final CustomScheduleService customScheduleService;
 	private final TokenProvider tokenProvider;
+	private final CodeProvider codeProvider;
 	private final SimpMessagingTemplate template;
 	
-	public WebSocketController(DeviceService deviceService, CustomScheduleService customScheduleService, TokenProvider tokenProvider, SimpMessagingTemplate template) {
+	public WebSocketController(DeviceService deviceService, CustomScheduleService customScheduleService, TokenProvider tokenProvider, CodeProvider codeProvider, SimpMessagingTemplate template) {
 		this.deviceService = deviceService;
 		this.customScheduleService = customScheduleService;
 		this.tokenProvider = tokenProvider;
+		this.codeProvider = codeProvider;
 		this.template = template;
 	}
 	
@@ -65,7 +68,6 @@ public class WebSocketController {
 	    template.convertAndSend("/topic/DeviceInfo/Id/" + serial, response);
 	}
 	
-	
 	// API 15번 : RB 온습도 정보 수신
 	@MessageMapping("/DeviceStatus/Sensor/TempHum")
 	public void handleSensorData(@Payload TempHumRequest request) {
@@ -86,8 +88,23 @@ public class WebSocketController {
 	}
 	
 	// API 16번 : RB 캡슐 정보 송신
-	public void sendCapsuleInfo(int id, CapsuleInfoRequest infoRequest) {
-        // 메시지 전송
+	@MessageMapping("/DeviceStatus/Capsule/Info")
+	public void sendCapsuleInfo(@Payload TokenRequest request) {
+		String token = request.getToken();
+	    Integer id = null;
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
+	        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        return;
+	    }
+	    
+	    CapsuleInfoRequest infoRequest = deviceService.getCapsuleInfo(id);
+		
+		// 메시지 전송
         template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + id, infoRequest);
         log.info("Data processed for id: {}", id);
 	}
@@ -177,17 +194,12 @@ public class WebSocketController {
 	}
 	
 	// API 38번 : 매일 자정 custom 스케줄 배치
-	@Scheduled(cron = "0 0 0 * * ?") 
-	public void sendDailyCustomSchedules() {
-		Map<Integer, List<CustomScheduleRequest>> groupedSchedules = customScheduleService.getGroupedSchedules();
-		
-		groupedSchedules.forEach((deviceId, schedules) -> {
-            String destination = "/topic/Schedule/Initial/" + deviceId;
-            Map<String, Object> message = new HashMap<>();
-            message.put("schedules", schedules);
-            template.convertAndSend(destination, message);
-            log.info("자정 배치: deviceId={} 에 스케줄 {}개 전송", deviceId, schedules.size());
-        });
+	public void sendDailyCustomSchedules(int deviceId, List<CustomScheduleRequest> schedules) {
+		String destination = "/topic/Schedule/Initial/" + deviceId;
+        Map<String, Object> message = new HashMap<>();
+        message.put("schedules", schedules);
+        template.convertAndSend(destination, message);
+        log.info("자정 배치: deviceId={} 에 스케줄 {}개 전송", deviceId, schedules.size());
 	}
 
 	// API 30번 : 모드 변경 시 RB에 정보를 전달하는 메서드
@@ -202,6 +214,33 @@ public class WebSocketController {
 		
 		// 메시지 전송
         template.convertAndSend("/topic/Mode/Change/" + deviceId, modeRequest);
+	}
+	
+	// API 72번 : 커스텀 스케줄 정보 요청
+	@MessageMapping("/Schedule/Initial")
+	public void sendCustomSchedules(@Payload TokenRequest request) {
+		String token = request.getToken();
+	    Integer id = null;
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
+	        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        return;
+	    }
+	    
+	    int currentBit = codeProvider.getCurrentDayBit();
+	    List<CustomScheduleRequest> schedules = customScheduleService.getCustomSchedules(id, currentBit);
+	    
+	    // 요청 객체 생성
+ 		Map<String, List<CustomScheduleRequest>> response = new HashMap<>();
+ 		response.put("schedules", schedules);
+ 		
+ 		// 메시지 전송
+        template.convertAndSend("/topic/Schedule/Initial/" + id, response);
+        log.info("Data processed for id: {}", id); 
 	}
 	
 	// API 54번 : 즉시 분사

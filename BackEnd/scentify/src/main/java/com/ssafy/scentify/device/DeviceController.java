@@ -307,6 +307,7 @@ public class DeviceController {
 			}
 			
 			// 웹소켓 통신으로 combination을 보내야함
+			socketController.sendRemoteOperation(deviceId, combination);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {

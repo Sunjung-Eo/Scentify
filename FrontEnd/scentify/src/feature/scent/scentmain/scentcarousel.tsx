@@ -1,40 +1,47 @@
-import sanderwood from "../../../assets/images/sanderwood.png";
-import lemon from "../../../assets/images/lemon.png";
-import orangeblossom from "../../../assets/images/orangeblossom.png";
-import eucalyptus from "../../../assets/images/eucalyptus.png";
-import cedarwood from "../../../assets/images/cedarwood.png";
-import lavendar from "../../../assets/images/lavendar.png";
-import peppermint from "../../../assets/images/peppermint.png";
-import whitemusk from "../../../assets/images/whitemusk.png";
-import chamomile from "../../../assets/images/chamomile.png";
+import React, { useState } from "react";
+import Modal from "./modal";
+import scentImages from "./scentImages";
+import { ScentCard } from "./scenttypes";
 
-const scentImages = [
-  { src: lemon, alt: "Lemon" },
-  { src: orangeblossom, alt: "Orange Blossom" },
-  { src: sanderwood, alt: "Sandalwood" },
-  { src: eucalyptus, alt: "Eucalyptus" },
-  { src: cedarwood, alt: "Cedarwood" },
-  { src: lavendar, alt: "Lavender" },
-  { src: peppermint, alt: "Peppermint" },
-  { src: whitemusk, alt: "White Musk" },
-  { src: chamomile, alt: "Chamomile" },
-];
 const ScentCarousel = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<ScentCard | null>(null);
+
+  const openModal = (card: ScentCard) => {
+    setSelectedCard(card);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedCard(null);
+    setIsModalOpen(false);
+  };
+
   return (
     <div>
       <div className="overflow-x-scroll scrollbar-hide whitespace-nowrap">
-        {/* 가로 스크롤 여전히 보임, 아직 해결 못함 */}
         <div className="flex gap-[10px]">
-          {scentImages.map((scent, index) => (
+          {scentImages.map((scent) => (
             <img
-              key={index}
-              src={scent.src}
+              key={scent.id}
+              src={scent.cardImage}
               alt={scent.alt}
-              className="w-[70px] h-[150px] rounded-md"
+              onClick={() => openModal(scent)}
+              className="w-[70px] h-[150px] rounded-md cursor-pointer"
             />
           ))}
         </div>
       </div>
+
+      {isModalOpen && selectedCard && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          image={selectedCard.modalImage}
+          title={selectedCard.alt}
+          description={selectedCard.description}
+        />
+      )}
     </div>
   );
 };

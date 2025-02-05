@@ -1,18 +1,6 @@
 import HeartButton from "../../../components/Button/HeartButton";
 import ShareIcon from "../../../assets/icons/shareIcon.svg";
-
-// Combination 데이터 타입 정의
-interface Combination {
-  name: string | null; // 콤비네이션 이름
-  choice1: number;
-  choice1Count: number;
-  choice2: number | null;
-  choice2Count: number | null;
-  choice3: number | null;
-  choice3Count: number | null;
-  choice4: number | null;
-  choice4Count: number | null;
-}
+import { Combination } from "./scenttypes";
 
 // FavoriteScent 컴포넌트 Props 타입 정의
 interface FavoriteScentProps {

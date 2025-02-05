@@ -1,22 +1,6 @@
+import React from "react";
 import FavoriteScent from "./FavoriteScent";
-
-// API에서 반환된 데이터 구조에 맞는 Favorite 타입 정의
-interface Combination {
-  name: string | null; // 콤비네이션 이름
-  choice1: number;
-  choice1Count: number;
-  choice2: number | null;
-  choice2Count: number | null;
-  choice3: number | null;
-  choice3Count: number | null;
-  choice4: number | null;
-  choice4Count: number | null;
-}
-
-interface Favorite {
-  id: string; // 찜 항목의 고유 ID
-  combination: Combination; // 향기 조합 데이터
-}
+import { Favorite } from "./scenttypes";
 
 // FavoritesList 컴포넌트 Props 타입 정의
 //백엔드 API에서 가져온 데이터를 props로 받아와서 렌더링

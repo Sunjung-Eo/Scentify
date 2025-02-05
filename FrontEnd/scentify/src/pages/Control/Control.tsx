@@ -17,6 +17,7 @@ import { useDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
 
 import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
+import { getCombinationById } from "../../apis/control/getCombinationById";
 
 import DeviceSelect from "../../components/Control/DeviceSelect";
 
@@ -31,8 +32,15 @@ const Control = () => {
   const deviceIds = devices
     .map((device) => device.id)
     .filter((id): id is number => id !== undefined);
-  // 선택한 기기(기본값: 대표기기 - 등록순)
+  // 선택한 기기(기본값: 대표기기)
   const [selectedDevice, setSelectedDevice] = useState<number | null>(null);
+  const [defaultScentId, setDefaultScentId] = useState<number | null>(
+    devices[0].defaultCombination
+  );
+  // 기기 선택
+  const handleDeviceChange = (deviceId: number) => {
+    setSelectedDevice(deviceId);
+  };
   useEffect(() => {
     if (devices.length > 0) {
       const deviceId =
@@ -42,12 +50,44 @@ const Control = () => {
       }
     }
   }, [devices]);
+
+  // 기본향 조회
+  const { data: fetchDefaultScentData = {} } = useQuery({
+    queryKey: ["defaultScentData"],
+    queryFn: () => getCombinationById(defaultScentId!, accessToken),
+    enabled: !!defaultScentId && !!accessToken,
+  });
+
   // 예약 관리 컴포넌트로 전달
-  const deviceSelectItems = devices.map((device) => ({
-    deviceId: device.id,
-    name: device.name,
-    isRepresentative: device.isRepresentative,
-  }));
+  const deviceSelectItems = devices.map((device) => {
+    console.log(fetchDefaultScentData);
+    const defaultScentData = fetchDefaultScentData;
+
+    return {
+      deviceId: device.id,
+      name: device.name,
+      roomType: device.roomType,
+      isRepresentative: device.isRepresentative,
+      defaultScentData: {
+        slot1: {
+          slot: defaultScentData.choice1,
+          count: defaultScentData.choice1Count,
+        },
+        slot2: {
+          slot: defaultScentData.choice2,
+          count: defaultScentData.choice2Count,
+        },
+        slot3: {
+          slot: defaultScentData.choice3,
+          count: defaultScentData.choice3Count,
+        },
+        slot4: {
+          slot: defaultScentData.choice4,
+          count: defaultScentData.choice4Count,
+        },
+      },
+    };
+  });
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
@@ -84,11 +124,6 @@ const Control = () => {
   // 모달 창 취소 버튼
   const handleCancel = () => {
     setIsModal(false);
-  };
-
-  // 기기 선택
-  const handleDeviceChange = (deviceId: number) => {
-    setSelectedDevice(deviceId);
   };
 
   return (
@@ -161,7 +196,7 @@ const Control = () => {
           element={
             <CreateReservation
               devices={deviceSelectItems}
-              selectedDevice={selectedDevice}
+              selectedDevice={selectedDevice!}
               onDeviceChange={handleDeviceChange}
             />
           }

@@ -38,30 +38,51 @@ export interface ReservationManagerProps {
   onDeviceChange: (deviceId: number) => void;
 }
 
+// 기본향향
+// type DefaultScentData = {
+//   slot1: { slot: number; count: number };
+//   slot2: { slot: number; count: number };
+//   slot3: { slot: number; count: number };
+//   slot4: { slot: number; count: number };
+// };
+// 예약하기
+// export interface CreateManagerProps {
+//   devices: DeviceSelectItem[];
+//   selectedDevice: number;
+//   onDeviceChange: (deviceId: number) => void;
+//   // defaultScentData: DefaultScentData;
+// }
 // 예약하기 데이터 전송
 export interface Combination {
   name: string;
-  choice1: string;
+  choice1: number;
   choice1Count: number;
-  choice2: string;
+  choice2: number;
   choice2Count: number;
-  choice3: string | null;
-  choice3Count: number | null;
-  choice4: string | null;
-  choice4Count: number | null;
+  choice3: number;
+  choice3Count: number;
+  choice4: number;
+  choice4Count: number;
 }
 
-export interface CustomSchedule {
+// export interface CustomSchedule {
+//   name: string;
+//   deviceId: number;
+//   day: number;
+//   combination: Combination;
+//   startTime: string;
+//   endTime: string;
+//   interval: number;
+//   modeOn: boolean;
+// }
+// 예약하기
+export interface ReservationData {
   name: string;
-  deviceId?: string;
-  user_id?: string;
+  deviceId: number;
   day: number;
   combination: Combination;
   startTime: string;
   endTime: string;
   interval: number;
-}
-
-export interface ReservationData {
-  customSchedule: CustomSchedule;
+  modeOn: boolean;
 }

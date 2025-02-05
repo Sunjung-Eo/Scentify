@@ -183,7 +183,7 @@ export default function ReservationManager({
                     <div className="mt-3">
                       <div>{selectedDays.join(", ")}</div>
                       <div>
-                        {startTime} {startPeriod} ~ {endTime} {endPeriod}
+                        {startPeriod} {startTime} ~ {endPeriod} {endTime}
                       </div>
                     </div>
                     <div className="mt-2">{fragrances}</div>

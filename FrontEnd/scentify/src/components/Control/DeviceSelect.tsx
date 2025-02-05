@@ -4,7 +4,14 @@ import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
 export interface DeviceSelectItem {
   deviceId: number;
   name: string | null;
+  roomType: number | null;
   isRepresentative: boolean;
+  defaultScentData: {
+    slot1: { slot: number | null; count: number };
+    slot2: { slot: number | null; count: number };
+    slot3: { slot: number | null; count: number };
+    slot4: { slot: number | null; count: number };
+  };
 }
 
 export interface DeviceSelectProps {

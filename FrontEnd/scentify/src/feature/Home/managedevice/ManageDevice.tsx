@@ -1,10 +1,6 @@
-import DeviceCard from "./DeviceCard";
+import DeviceCard from './DeviceCard';
 
 function ManageDevice() {
-  return (
-    <div className="content p-4">
-      <DeviceCard></DeviceCard>
-    </div>
-  );
+  return <div className="content p-4">{/* <DeviceCard></DeviceCard> */}</div>;
 }
 export default ManageDevice;

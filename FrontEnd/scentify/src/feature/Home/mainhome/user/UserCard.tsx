@@ -1,17 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { UserData } from './UserTypes';
 import greenLogo from '../../../../assets/userProfiles/green.svg';
+import { useUserStore } from '../../../../stores/useUserStore';
 
-const UserCard = () => {
+const UserCard: React.FC = () => {
+  // ✅ 전역 상태에서 사용자 정보 가져오기
+  const { nickname, imgNum, mainDeviceId } = useUserStore();
+
   const [userData, setUserData] = useState<UserData>({
-    userId: 'aaaa',
-    userName: '홍길동', // 사용자 이름 하드코딩 (백엔드 연동 시 업데이트 가능)
-    imgNum: 1, // 기본 프로필 사진 번호
-    mainDeviceId: 0,
+    nickname: nickname || '사용자', // ✅ 기본값 설정
+    imgNum: imgNum || 1, // ✅ 기본 프로필 이미지 번호
+    mainDeviceId: mainDeviceId ?? 0,
     date: '',
     weatherIcon: '',
     weatherDescription: '',
   });
+
+  // 4. 사용자 정보 업데이트 (전역 상태 변경 시)
+  useEffect(() => {
+    console.log('🔥 업데이트된 상태');
+    console.log('닉네임:', nickname);
+    console.log('이미지 번호:', imgNum);
+    console.log('메인 디바이스 ID:', mainDeviceId);
+
+    setUserData((prev) => ({
+      ...prev,
+      nickname: nickname || '사용자',
+      imgNum: imgNum || 1,
+      mainDeviceId: mainDeviceId ?? 0,
+    }));
+  }, [nickname, imgNum, mainDeviceId]); // ✅ user 상태가 변경될 때 업데이트
 
   const [error, setError] = useState<string | null>(null); // 에러 상태
 
@@ -92,7 +110,6 @@ const UserCard = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-
         const weather = await getWeather(latitude, longitude);
         const date = getCurrentDate();
 
@@ -130,7 +147,7 @@ const UserCard = () => {
           {/* 닉네임 */}
           <div className="">
             <span className="font-pre-bold text-[22px]">
-              {userData.userName}
+              {userData.nickname}
             </span>{' '}
             {/* 홍길동만 pre-bold */}
             <p className="font-pre-light text-[22px] ">님 반갑습니다!</p>

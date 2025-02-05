@@ -86,6 +86,34 @@ public class AutoScheduleController {
 		}
 	}
 	
-	
+	// API 51번 : 단순 탐지 모드 수정
+	@PostMapping("/detection/update")
+	public ResponseEntity<?> updateDetectionMode(@RequestBody AutoScheduleDto autoScheduleDto) {
+		try {
+			// 향 조합을 등록해줌
+			CombinationDto combination = autoScheduleDto.getCombination();
+			combination.setName("탐지향");
+			Integer combinationId = combinationService.createCombination(combination);	
+			if (combinationId  == null) { 
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	
+			}
+			
+			// 탐지 모드 업데이트 (불가능 하다면 400 반환)
+			if (!autoScheduleService.updateAutoSchedule(autoScheduleDto, combinationId)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+			}
+			
+			// 웹 소켓 통신으로 수정되었음을 전달 필요
+			if (autoScheduleDto.isModeChange()) {
+				// 웹소켓 컨트롤러 메서드 실행
+			}
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 }

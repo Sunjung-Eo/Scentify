@@ -54,15 +54,14 @@ public class WebSocketDto {
     }
 	
 	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class CapsuleRemainingRequest {
-	    private String token;               
-	    private int slot1RemainingRatio;   
-	    private int slot2RemainingRatio;  
-	    private int slot3RemainingRatio;   
-	    private int slot4RemainingRatio; 
-	}
+    @NoArgsConstructor
+    public static class CapsuleRemainingRequest { 
+        private String token;
+    	private int slot1RemainingRatio;
+        private int slot2RemainingRatio;
+        private int slot3RemainingRatio;
+        private int slot4RemainingRatio;
+    }
 	
 	@Data
 	@NoArgsConstructor

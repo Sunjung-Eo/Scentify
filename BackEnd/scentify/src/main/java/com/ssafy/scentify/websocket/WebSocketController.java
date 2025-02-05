@@ -81,14 +81,15 @@ public class WebSocketController {
 	    }
 
 	    deviceService.updateTempHum(id, request);
-	    log.info("Data processed for serial: {}", id);
+	    log.info("Data processed for id: {}", id);
 	}
 	
 	// API 16번 : RB 캡슐 정보 송신
 	public void sendCapsuleInfo(int id, CapsuleInfoRequest infoRequest) {
         // 메시지 전송
         template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + id, infoRequest);
-    }
+        log.info("Data processed for id: {}", id);
+	}
 	
 	// API 17번 : RB 캡슐 잔여량 수신
 	@MessageMapping("/DeviceStatus/Capsule/Remainder")
@@ -98,13 +99,13 @@ public class WebSocketController {
 
 	    try {
 	        tokenProvider.validateJwtToken(token);
-	        id = Integer.parseInt(tokenProvider.getId(token));
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
 	        
 	    } catch (ExpiredJwtException e) {
 	        log.info("Token 만료됨");
 	        return;
 	    }
-
+	    
 	    deviceService.updateCapsuleRemaining(id, request);
 	    log.info("Data processed for id: {}", id);
 	}

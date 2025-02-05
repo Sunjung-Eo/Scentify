@@ -95,20 +95,18 @@ public class DeviceController {
 	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 	        	        
-	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
-	        int waitTime = 0;
-	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
-	        int sleepInterval = 500; // 0.5초마다 체크
-
-	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
-	            if (waitTime >= maxWaitTime) {
-	                System.out.println("❌ 핸드셰이킹 실패: Redis 값 없음");
-	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
-	            }
-	            System.out.println("⏳ 핸드셰이킹 대기 중... (" + waitTime + "ms)");
-	            Thread.sleep(sleepInterval);
-	            waitTime += sleepInterval;
-	        }
+//	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
+//	        int waitTime = 0;
+//	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
+//	        int sleepInterval = 500; // 0.5초마다 체크
+//
+//	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
+//	            if (waitTime >= maxWaitTime) {
+//	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
+//	            }
+//	            Thread.sleep(sleepInterval);
+//	            waitTime += sleepInterval;
+//	        }
 	        
 	        // 성공적으로 처리된 후 ID 반환
 	        Map<String, Object> response = new HashMap<>();

@@ -28,7 +28,8 @@ public class AutoScheduleController {
 	public AutoScheduleController(AutoScheduleService autoScheduleService) {
 		this.autoScheduleService = autoScheduleService;
 	}
-
+	
+	// API 39번 : 전체 자동화 모드 조회
 	@PostMapping("/all")
 	public ResponseEntity<?> getAllAutomationModes(@RequestBody Map<String, Integer> deviceIdMap) {
 		try {

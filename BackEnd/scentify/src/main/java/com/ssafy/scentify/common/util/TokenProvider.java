@@ -137,6 +137,25 @@ public class TokenProvider implements InitializingBean {
 		}
 	} 
 	
+	// 토큰에 있는 디바이스 id 정보를 가져오는 메서드
+	public String getDeviceId(String token) {
+	    try {
+	        Object deviceIdObj = Jwts.parserBuilder()
+					                .setSigningKey(secretKey)
+					                .build()
+					                .parseClaimsJws(token)
+					                .getBody()
+					                .get("token"); 
+
+	        String deviceId = (deviceIdObj != null) ? String.valueOf(deviceIdObj) : null;
+
+	        log.info("Extracted deviceId : {}", deviceId);
+	        return deviceId;
+	    } catch (ExpiredJwtException e) {
+	        return e.getClaims().getSubject();
+	    }
+	}
+	
 	// 토큰에 있는 시리얼 정보를 가져오는 메서드
 	public String getSerial(String token) {
 		try {

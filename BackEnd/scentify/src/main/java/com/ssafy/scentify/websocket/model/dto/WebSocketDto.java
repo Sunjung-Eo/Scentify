@@ -92,4 +92,12 @@ public class WebSocketDto {
     	    private Integer choice4Count;
 	    }
 	}
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CombinationRequest {
+		private String token;
+		private int combinationId;
+	}
 }

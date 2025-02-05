@@ -21,6 +21,7 @@ import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleRemainingRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CombinationRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TokenRequest;
@@ -293,4 +294,29 @@ public class WebSocketController {
 		template.convertAndSend("/topic/Auto/Schedule/Initial/" + id, response);
 		log.info("Data processed for id: {}", id);  
 	}
+	
+	// API 41번 : 탈취 모드 향기 정보 요청
+	@MessageMapping("/DeviceStatus/Sensor/Stink")
+	public void sendStinkCombination(@Payload CombinationRequest request) {
+		String token = request.getToken();
+	    Integer id = null;
+
+	    try {
+	        tokenProvider.validateJwtToken(token);
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
+	        
+	    } catch (ExpiredJwtException e) {
+	        log.info("Token 만료됨");
+	        return;
+	    }
+	    
+	    Combination combination = combinationService.getSocketCombinationById(id);
+	    Map<String, Combination> response = new HashMap<>();
+ 		response.put("combination", combination);
+ 		
+ 		// 메세지 전송
+		template.convertAndSend("/topic/Auto/Operation/" + id, response);
+		log.info("Data processed for id: {}", id); 		
+	}
+	
 }

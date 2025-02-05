@@ -44,41 +44,41 @@ public class WebSocketInterceptor implements HandshakeInterceptor, ChannelInterc
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
     	log.info("beforeHandshake called");
     	
-//    	// 헤더에서 Authorization 추출
-//        if (request instanceof ServletServerHttpRequest servletRequest) {
-//            HttpServletRequest httpRequest = servletRequest.getServletRequest();
-//
-//            String authHeader = httpRequest.getHeader("Authorization");
-//            
-//	         // null 체크와 "Bearer " 시작 여부를 분리
-//	         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//	             return false;
-//	         }
-//
-//            String token = authHeader.substring(7); // "Bearer " 이후의 토큰 값 추출
-//            log.info("token : {}" + token);
-//                
-//            // 토큰 검증 로직
-//            try {
-//            	tokenProvider.validateJwtToken(token);
-//            } catch (ExpiredJwtException e) {
-//            	return false;
-//            }
-//            
-//            String serial = tokenProvider.getSerial(token);
-//            log.info("serial : {}" + serial);
-//            
-//            if (!deviceService.selectDeviceBySerial(serial)) {
-//            	response.setStatusCode(HttpStatus.UNAUTHORIZED);
-//                return false;
-//            }
-//            
-//            // 핸드쉐이크 상태를 Redis에 저장 (유효 시간: 300초)
-//            stateManager.setHandshakeState(serial, true, 300);
+    	// 헤더에서 Authorization 추출
+        if (request instanceof ServletServerHttpRequest servletRequest) {
+            HttpServletRequest httpRequest = servletRequest.getServletRequest();
+
+            String authHeader = httpRequest.getHeader("Authorization");
+            
+	         // null 체크와 "Bearer " 시작 여부를 분리
+	         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	             return false;
+	         }
+
+            String token = authHeader.substring(7); // "Bearer " 이후의 토큰 값 추출
+            log.info("token : {}" + token);
+                
+            // 토큰 검증 로직
+            try {
+            	tokenProvider.validateJwtToken(token);
+            } catch (ExpiredJwtException e) {
+            	return false;
+            }
+            
+            String serial = tokenProvider.getSerial(token);
+            log.info("serial : {}" + serial);
+            
+            if (!deviceService.selectDeviceBySerial(serial)) {
+            	response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return false;
+            }
+            
+            // 핸드쉐이크 상태를 Redis에 저장 (유효 시간: 300초)
+            stateManager.setHandshakeState(serial, true, 300);
             return true;
             
-//        }
-//        return false; // ServletServerHttpRequest가 아닌 경우
+        }
+        return false; // ServletServerHttpRequest가 아닌 경우
     }
     
     @Override

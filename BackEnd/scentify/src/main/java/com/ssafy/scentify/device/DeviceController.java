@@ -230,6 +230,28 @@ public class DeviceController {
                   .allMatch(capsules::contains);
 	}	
 	
+	// API 75번 : 기본 향 수정
+	@PostMapping("/set/update")
+	public ResponseEntity<?> updateDefultCombination(@RequestBody CombinationDto combination) {
+		try {
+			// 전달 데이터 검사
+			if (combination == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			// 조합 업데이트 (실패 시 400 반환)
+			if (!combinationService.updateCombination(combination)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	// API 70번 : 기기 정보 반환
 	@PostMapping("/info")
 	public ResponseEntity<?> getDeviceInfo(@RequestBody Map<String, List<Integer>> payload) {

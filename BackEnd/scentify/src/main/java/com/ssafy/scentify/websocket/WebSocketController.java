@@ -184,5 +184,6 @@ public class WebSocketController {
 	public void sendRemoteOperation(int deviceId, CombinationDto combinationDto) {
 		// 메세지 전송
 		template.convertAndSend("/topic/Remote/Operation/" + deviceId, combinationDto);
+		log.info("Data processed for id: {}", deviceId);  
 	}
 }

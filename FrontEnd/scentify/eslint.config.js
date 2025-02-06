@@ -24,7 +24,7 @@ export default [
       "react-refresh": reactRefresh,
       tailwindcss,
     },
-    // extends: ["eslint:recommended", "plugin:prettier/recommended"], // ✅ Prettier 설정 추가
+    extends: ["eslint:recommended", "plugin:prettier/recommended"], // ✅ Prettier 설정 추가
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,

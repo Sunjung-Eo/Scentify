@@ -60,6 +60,11 @@ public class DeviceService {
 		return deviceRepository.getMode(deviceId);
 	}
 	
+
+	public String getDeviceName(int deviceId) {
+		return deviceRepository.getDeviceName(deviceId);
+	}
+	
 	public CapsuleInfoRequest getCapsuleInfo(int deviceId) {
 		return deviceRepository.getCapsuleInfo(deviceId);
 	}

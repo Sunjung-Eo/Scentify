@@ -3,6 +3,8 @@ package com.ssafy.scentify.home.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,7 +13,7 @@ public class HomeDto {
 	@Data
 	public static class HomeResponseDto {
 	    private UserHomeDto user;
-	    private List<Integer> deviceIds;
+	    private Map<Integer, String> deviceIdsAndNames;
 	    private DeviceHomeDto mainDevice;
 	    private List<AutoScheduleHomeDto> autoSchedules;
 	    private List<CustomScheduleHomeDto> customSchedules;

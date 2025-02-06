@@ -49,6 +49,10 @@ public interface DeviceRepository {
     @Select("SELECT slot_1, slot_2, slot_3, slot_4 FROM device WHERE id = #{id}")
 	CapsuleInfoRequest getCapsuleInfo(int id);
     
+    // 기기 이름 조회 쿼리
+    @Select("SELECT name FROM device WHERE id = #{id}")
+	String getDeviceName(int id);
+    
     // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
    	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
     
@@ -84,4 +88,5 @@ public interface DeviceRepository {
     // id에 해당하는 기기 삭제
     @Delete("DELETE FROM device WHERE id = #{id} AND admin_id = #{userId}")
 	boolean deleteDevice(int id, String userId);
+
 }

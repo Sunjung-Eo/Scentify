@@ -19,8 +19,6 @@ const HomeMain = () => {
     staleTime: 0,
   });
 
-  console.log('data: 입니당!', data);
-
   // ✅ API 응답이 있을 때만 상태 업데이트 (무한 렌더링 방지)
   useEffect(() => {
     if (!data?.user) return;
@@ -65,8 +63,6 @@ const HomeMain = () => {
     autoSchedules: data?.autoSchedules || [],
     customSchedules: data?.customSchedules || [],
   };
-
-  console.log('data: 입니당! 투투', data);
 
   return (
     <div className="flex flex-col content px-4 py-1">

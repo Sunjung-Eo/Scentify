@@ -35,7 +35,9 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/my/editnickname") ||
     location.pathname.startsWith("/my/edituserinfo") ||
     location.pathname.startsWith("/my/editpassword") ||
-    location.pathname.startsWith("/my/editprofileimg");
+    location.pathname.startsWith("/my/editprofileimg") ||
+    location.pathname.startsWith("/scent");
+
   const showFinish =
     location.pathname.startsWith("/home/capsule/set") ||
     location.pathname.startsWith("/home/combination/set") ||

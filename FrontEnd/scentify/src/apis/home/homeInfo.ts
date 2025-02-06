@@ -6,8 +6,6 @@ import { AutoSchedule, CustomSchedule } from '../../types/SchedulesType';
 export const homeInfo = async () => {
   try {
     const accessToken = useAuthStore.getState().accessToken;
-
-    console.log('homeinfo로 보내는 acesstoken: ', accessToken);
     const response = await fetch('/v1/home/info', {
       method: 'POST',
       headers: {

@@ -35,6 +35,7 @@ public interface AutoScheduleRepository {
 	List<AutoScheduleHomeDto> selectSchedulesByDeviceId(int deviceId);
 	
 	// 자동화 스케줄 수정
+<<<<<<< Updated upstream
 	@Update("UPDATE autoschedule SET combination_id = #{combinationId}, `interval` = CASE WHEN #{autoSchedule.interval} IS NOT NULL THEN #{autoSchedule.interval} ELSE `interval` END, "
 			+ "mode_on = #{autoSchedule.modeOn}, updated_at = NOW() WHERE id = #{autoSchedule.id} AND device_id = #{autoSchedule.deviceId}")
 	boolean updateAutoSchedule(@Param("autoSchedule") AutoScheduleDto autoScheduleDto, int combinationId);
@@ -43,4 +44,14 @@ public interface AutoScheduleRepository {
 	@Update("UPDATE autoschedule SET `interval` = #{autoSchedule.interval}, mode_on = #{autoSchedule.modeOn}, updated_at = NOW() "
 			+ "WHERE id = #{autoSchedule.id} AND device_id = #{autoSchedule.deviceId}")
 	boolean updateActionSchedule(@Param("autoSchedule") Schedule schedule);
+=======
+	@Update("UPDATE autoschedule SET combination_id = #{combinationId}, `interval` = #{autoSchedule.interval}, mode_on = #{autoSchedule.modeOn}, "
+			+ "updated_at = NOW() WHERE id = #{autoSchedule.id} AND device_id = #{autoSchedule.deviceId}")
+	boolean updateAutoSchedule(@Param("autoSchedule") AutoScheduleDto autoScheduleDto, Integer combinationId);
+	
+	// 자동화 스케줄 중 운동과 휴식 모드 수정
+	@Update("UPDATE autoschedule SET `interval` = #{autoSchedule.interval}, mode_on = #{autoSchedule.modeOn}, "
+			+ "updated_at = NOW() WHERE id = #{autoSchedule.id} AND device_id = #{autoSchedule.deviceId}")
+	boolean updateScheduleMode(@Param("autoSchedule") Schedule scehdule);
+>>>>>>> Stashed changes
 }

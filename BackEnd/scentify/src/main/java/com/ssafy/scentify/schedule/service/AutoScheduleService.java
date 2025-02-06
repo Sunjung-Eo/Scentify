@@ -33,8 +33,16 @@ public class AutoScheduleService {
 	public boolean updateAutoSchedule(AutoScheduleDto autoScheduleDto, Integer combinationId) {
 		return autoScheduleRepository.updateAutoSchedule(autoScheduleDto, combinationId);
 	}
+<<<<<<< Updated upstream
 	
 	public boolean updateActionSchedule(Schedule schedule) {
 		return autoScheduleRepository.updateActionSchedule(schedule);
 	}
+=======
+
+	public boolean updateScheduleMode(Schedule scehdule) {
+		return autoScheduleRepository.updateScheduleMode(scehdule);
+	}
+
+>>>>>>> Stashed changes
 }

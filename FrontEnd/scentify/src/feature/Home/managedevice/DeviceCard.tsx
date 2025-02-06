@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import cuttingdeviceImg from '../../../assets/images/cuttingdevice2.svg';
+import deviceImg from '../../../assets/images/device.svg';
 import crownIcon from '../../../assets/icons/crown-icon.svg';
 import { useUserStore } from '../../../stores/useUserStore';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deviceInfo } from '../../../apis/home/deviceInfo';
+import { deleteDevice } from '../../../apis/home/deleteDevice';
+import { fragranceMap } from '../capsule/utils/fragranceMap';
 
 const DeviceCard = () => {
   const { deviceIds } = useUserStore();
@@ -26,13 +28,27 @@ const DeviceCard = () => {
 
   const devices = data?.devices ?? [];
 
-  // 🔹 삭제 버튼 클릭 핸들러 (React Query 캐시 업데이트)
-  const handleDelete = (deviceId: number) => {
-    queryClient.setQueryData(['deviceInfo', validDeviceIds], (oldData: any) => {
-      if (!oldData) return [];
-      return oldData.filter((d: any) => d.deviceId !== deviceId);
-    });
-  };
+  // 삭제 뮤테이션 추가
+  const deleteMutation = useMutation({
+    mutationFn: deleteDevice,
+    onSuccess: (_, deviceId) => {
+      // API 호출 성공 시 캐시 업데이트
+      queryClient.setQueryData(
+        ['deviceInfo', validDeviceIds],
+        (oldData: any) => {
+          if (!oldData) return { devices: [] };
+          return {
+            ...oldData,
+            devices: oldData.devices.filter((d: any) => d.id !== deviceId),
+          };
+        }
+      );
+    },
+    onError: (error) => {
+      console.error('디바이스 삭제 실패:', error);
+      alert('디바이스 삭제에 실패했습니다.');
+    },
+  });
 
   // 🔹 대표기기 설정 핸들러 (React Query 캐시 업데이트)
   const handleSetRepresentative = (deviceId: number) => {
@@ -51,6 +67,7 @@ const DeviceCard = () => {
   if (isError)
     return <p className="text-red-500">기기 정보를 불러오지 못했습니다.</p>;
 
+  // device는 devices 랑 데이터 같음 [{...}, {...}, {...}]
   return (
     <div className="cards space-y-4">
       {devices.map((device: any, index: number) => (
@@ -61,9 +78,9 @@ const DeviceCard = () => {
           <div className="card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md">
             {/* 디바이스 사진 */}
             <img
-              src={cuttingdeviceImg}
+              src={deviceImg}
               alt="Device Icon"
-              className="absolute -left-11 bottom-0"
+              className="absolute -left-10 bottom-0"
             />
 
             {/* 텍스트 내용 */}
@@ -83,7 +100,9 @@ const DeviceCard = () => {
               {/* 장착된 향 표시 */}
               <div className="text-pre-regular text-[9px] text-gray">
                 <p>
-                  {device.slot1}, {device.slot2}, {device.slot3}, {device.slot4}
+                  {[device.slot1, device.slot2, device.slot3, device.slot4]
+                    .map((slot) => fragranceMap[slot])
+                    .join(', ')}
                 </p>
               </div>
 
@@ -124,20 +143,7 @@ const DeviceCard = () => {
                 대표기기로 설정
               </button>
               <button
-                onClick={() => {
-                  queryClient.setQueryData(
-                    ['deviceInfo', validDeviceIds],
-                    (oldData: any) => {
-                      if (!oldData) return { devices: [] };
-                      return {
-                        ...oldData,
-                        devices: oldData.devices.filter(
-                          (d: any) => d.id !== device.id
-                        ),
-                      };
-                    }
-                  );
-                }}
+                onClick={() => deleteMutation.mutate(device.id)}
                 className="text-pre-medium rounded-lg bg-component px-2 py-1 text-[10px] text-sub"
               >
                 삭제

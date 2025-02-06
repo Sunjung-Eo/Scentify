@@ -16,7 +16,7 @@ import ModifyReservation from "../../feature/control/reservation/ModifyReservati
 
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
-
+import { useUserStore } from "../../stores/useUserStore";
 import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
 import { getCombinationById } from "../../apis/control/getCombinationById";
 
@@ -28,11 +28,13 @@ const Control = () => {
   const accessToken = authStore.accessToken;
 
   // 기기 정보
+  const userstore = useUserStore();
+  const deviceIds = userstore.deviceIds;
   const { mainDevice } = useMainDeviceStore();
   // 기기 id
-  const deviceIds = devices
-    .map((device) => device.id)
-    .filter((id): id is number => id !== undefined);
+  // const deviceIds = devices
+  //   .map((device) => device.id)
+  //   .filter((id): id is number => id !== undefined);
   // 선택한 기기(기본값: 대표기기)
   const devices = mainDevice
     ? [

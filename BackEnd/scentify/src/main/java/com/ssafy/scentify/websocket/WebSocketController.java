@@ -330,4 +330,15 @@ public class WebSocketController {
 		log.info("Data processed for id: {}", deviceId); 	
 	}
 	
+	// API 50번 : 자동화 모드 인터벌 수정 정보 전송
+	public void sendIntervalUpdate(int deviceId, int scheduleId, int interval) {
+		Map<String, Integer> response = new HashMap<>();
+		response.put("id", scheduleId);
+		response.put("interval", interval);
+		
+		// 메세지 전송
+		template.convertAndSend("/topic/Interval/Change/" + deviceId, response);
+		log.info("Data processed for id: {}", deviceId); 
+	}
+	
 }

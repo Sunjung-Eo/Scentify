@@ -26,12 +26,16 @@ public class DeviceService {
 		this.deviceRepository = deviceRepository;
 	}
 	
-	public boolean selectDeviceBySerial(String Serial) {
-		return deviceRepository.existsBySerial(Serial) ? true : false;
+	public boolean selectDeviceBySerial(String serial) {
+		return deviceRepository.existsBySerial(serial) ? true : false;
 	}
 	
-	public int selectDeviceIdBySerial(String Serial) {
-		return deviceRepository.selectDeviceIdBySerial(Serial);
+	public int selectDeviceIdBySerial(String serial) {
+		return deviceRepository.selectDeviceIdBySerial(serial);
+	}
+	
+	public String selectSerialByDeviceId(int deviceId) {
+		return deviceRepository.selectSerialByDeviceId(deviceId);
 	}
 	
 	public DeviceGroupInfoDto selectGroupInfoByDeviceId(Integer id) {

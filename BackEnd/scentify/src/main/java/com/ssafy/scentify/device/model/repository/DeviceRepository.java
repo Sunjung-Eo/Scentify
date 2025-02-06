@@ -25,9 +25,13 @@ public interface DeviceRepository {
     @Select("SELECT COUNT(*) > 0 FROM device WHERE serial = #{serial}")
     boolean existsBySerial(String serial);
     
-    // serial 조회 쿼리
+    // id 조회 쿼리
     @Select("SELECT id FROM device WHERE serial = #{serial}")
     int selectDeviceIdBySerial(String serial);
+    
+    // serial 조회 쿼리
+    @Select("SELECT serial FROM device WHERE id = #{id}")
+	String selectSerialByDeviceId(int id);
     
     // 그룹 정보 조회 쿼리
     @Select("SELECT group_id, admin_id FROM device WHERE id = #{id}")

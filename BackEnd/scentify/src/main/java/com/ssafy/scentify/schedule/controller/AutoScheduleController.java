@@ -13,6 +13,7 @@ import com.ssafy.scentify.schedule.model.dto.UpdateModeDto;
 import com.ssafy.scentify.schedule.model.dto.UpdateModeDto.Schedule;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.websocket.WebSocketController;
+import com.ssafy.scentify.websocket.WebSocketService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,12 +30,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class AutoScheduleController {
 	
-	private final WebSocketController socketController;
+	private final WebSocketService socketService;
 	private final AutoScheduleService autoScheduleService;
 	private final CombinationService combinationService;
 	
-	public AutoScheduleController(WebSocketController socketController, AutoScheduleService autoScheduleService, CombinationService combinationService) {
-		this.socketController = socketController;
+	public AutoScheduleController(WebSocketService socketService, AutoScheduleService autoScheduleService, CombinationService combinationService) {
+		this.socketService = socketService;
 		this.autoScheduleService = autoScheduleService;
 		this.combinationService = combinationService;
 	}
@@ -83,7 +84,7 @@ public class AutoScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
-			socketController.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
+			socketService.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -123,8 +124,8 @@ public class AutoScheduleController {
 		
 		int deviceId = schedule.getDeviceId();
 		int scheduleId = schedule.getId();
-		if (intervalChange) { socketController.sendIntervalUpdate(deviceId, scheduleId, schedule.getInterval());}
-		if (modeChange) { socketController.sendUpdateModeOn(deviceId, scheduleId, schedule.isModeOn()); }
+		if (intervalChange) { socketService.sendIntervalUpdate(deviceId, scheduleId, schedule.getInterval());}
+		if (modeChange) { socketService.sendUpdateModeOn(deviceId, scheduleId, schedule.isModeOn()); }
 		
 		return true;
 	}
@@ -151,7 +152,7 @@ public class AutoScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
-			socketController.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
+			socketService.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {

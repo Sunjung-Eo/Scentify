@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MemberCard from "./MemberCard";
+import { Link } from "react-router-dom";
 
 //임의로 멤버 넣음(멤버카드 CSS만지기 위해서 넣어놓음)
 const members = [
@@ -69,9 +70,11 @@ export const GroupList = () => {
           </div>
 
           {/* 초대하기 버튼 */}
-          <button className="w-[70px] h-[32px] text-[12px] font-pre-light rounded-lg border-0.2 border-lightgray focus:outline-none focus:ring-1 focus:ring-brand">
-            초대하기
-          </button>
+          <Link to="/invite">
+            <button className="w-[70px] h-[32px] text-[12px] font-pre-light rounded-lg border-0.2 border-lightgray focus:outline-none focus:ring-1 focus:ring-brand">
+              초대하기
+            </button>
+          </Link>
         </div>
       </div>
 

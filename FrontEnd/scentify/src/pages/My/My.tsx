@@ -1,15 +1,15 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../stores/useAuthStore';
-import UserCard from '../../feature/Home/mainhome/user/UserCard';
-import { GroupList } from '../../feature/my/components/GroupList';
-import { Routes, Route } from 'react-router-dom';
-import ManageAccount from '../../feature/my/components/ManageAccount';
-import EditNickname from '../../feature/my/components/EditNickname';
-import EditUserinfo from '../../feature/my/components/EdituUserinfo';
-import EditPassword from '../../feature/my/components/EditPassword';
-import EditProfileImg from '../../feature/my/components/EditProgileImg';
-import { useUserStore } from '../../stores/useUserStore';
-import MyUserCard from '../../feature/my/components/MyUserCard';
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/useAuthStore";
+import UserCard from "../../feature/Home/mainhome/user/UserCard";
+import { GroupList } from "../../feature/my/components/GroupList";
+import { Routes, Route } from "react-router-dom";
+import ManageAccount from "../../feature/my/components/ManageAccount";
+import EditNickname from "../../feature/my/components/EditNickname";
+import EditUserinfo from "../../feature/my/components/EdituUserinfo";
+import EditPassword from "../../feature/my/components/EditPassword";
+import EditProfileImg from "../../feature/my/components/EditProgileImg";
+import { useUserStore } from "../../stores/useUserStore";
+import MyUserCard from "../../feature/my/components/MyUserCard";
 
 const My = () => {
   const logout = useAuthStore((state) => state.logout);
@@ -20,9 +20,9 @@ const My = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/auth/login'); // 로그아웃 후 로그인 페이지로 이동
+      navigate("/auth/login"); // 로그아웃 후 로그인 페이지로 이동
     } catch (error) {
-      console.error('로그아웃 실패:', error);
+      console.error("로그아웃 실패:", error);
     }
   };
 
@@ -46,7 +46,7 @@ const My = () => {
                   </button>
                 </div>
                 <MyUserCard
-                  nickname={nickname ?? '사용자'} // 기본값 처리
+                  nickname={nickname ?? "사용자"} // 기본값 처리
                   imgNum={imgNum ?? 1}
                   mainDeviceId={mainDeviceId ?? 0}
                 />
@@ -60,9 +60,11 @@ const My = () => {
               </div>
 
               {/** 가족 초대 */}
-              <button className="text-12 font-pre-light  absolute bottom-10">
-                초대코드로 입력
-              </button>
+              <Link to="/invite/invitecodeinput">
+                <button className="text-12 font-pre-light  absolute bottom-10">
+                  초대코드로 입력
+                </button>
+              </Link>
             </>
           }
         />

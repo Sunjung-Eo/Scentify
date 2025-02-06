@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createInviteCode } from "../../apis/invite/createInviteCode";
 import { useAuthStore } from "../../stores/useAuthStore";
+import { useDeviceStore } from "../../stores/useDeviceStore";
 
 // 초대 코드를 생성하고 화면에 표시하는 컴포넌트
 function Invite() {
@@ -9,11 +10,12 @@ function Invite() {
 
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken; // 사용자 인증 토큰
+  const { devices } = useDeviceStore();
 
   useEffect(() => {
     const fetchInviteCode = async () => {
       try {
-        const deviceId = "your-device-id"; // 실제 디바이스 ID를 가져오는 로직 필요
+        const deviceId = devices[0].id; // 실제 디바이스 ID를 가져오는 로직 필요
         const result = await createInviteCode(deviceId, accessToken);
 
         if (result) {
@@ -33,21 +35,25 @@ function Invite() {
   return (
     <div className="flex flex-col items-center">
       <h1 className="text-20 font-pre-bold mb-12">초대하기</h1>
-      <div className="bg-white p-6 rounded-2xl text-center w-[300px] h-[300px] border-[1px] border-gray">
+      <div className="bg-white p-6 rounded-2xl w-[260px] h-[300px] border-[1px] border-gray flex justify-center items-center">
         {inviteCode ? (
-          <>
+          <div className="text-center">
             {/* 초대 코드가 성공적으로 생성된 경우 */}
-            <p className="text-lg font-pre-medium mb-4">나의 초대 코드</p>
-            <p className="text-3xl font-pre-bold text-gray-700 mb-6">
-              {inviteCode}
+            <p className="font-pre-regular text-12 mb-3 block">
+              나의 초대 코드
             </p>
-          </>
+            <p className="font-pre-regular text-[32px]">{inviteCode}</p>
+          </div>
         ) : error ? (
-          <p className="text-red-500 ">{error}</p>
+          <div className="text-center">
+            <p className="text-red-500 ">{error}</p>
+          </div>
         ) : (
-          <p className="text-lg font-pre-medium">
-            초대 코드를 생성 중입니다...
-          </p>
+          <div className="text-center">
+            <p className="text-lg font-pre-medium">
+              초대 코드를 생성 중입니다...
+            </p>
+          </div>
         )}
       </div>
     </div>

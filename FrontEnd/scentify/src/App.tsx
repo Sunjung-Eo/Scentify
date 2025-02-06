@@ -28,7 +28,6 @@ import SocialRegist from "./feature/user/register/SocialRegist.tsx";
 import Regist from "./feature/user/register/Regist.tsx";
 import SocialLoginCallback from "./feature/user/social/SocialLoginCallback.tsx";
 import InviteCodeInput from "./feature/invite/InviteCodeInput.tsx";
-import LinkInvite from "./feature/invite/LinkInvite.tsx";
 import Invite from "./feature/invite/Invite.tsx";
 
 // 실제 뷰포트 높이를 기준으로 CSS 변수 설정
@@ -86,22 +85,6 @@ function App() {
           }
         />
         */}
-        <Route
-          path="/invite/*"
-          element={
-            <Layout>
-              <Invite />
-            </Layout>
-          }
-        />
-        <Route
-          path="/invite/invitecodeinput"
-          element={
-            <Layout>
-              <InviteCodeInput />
-            </Layout>
-          }
-        />
         {/* 시작 페이지, 로그인 페이지 */}
         <Route path="/" element={<Start />} />
         <Route path="/login" element={<Login />} />
@@ -155,6 +138,22 @@ function App() {
               element={
                 <Layout>
                   <My />
+                </Layout>
+              }
+            />
+            <Route
+              path="/invite/*"
+              element={
+                <Layout>
+                  <Invite />
+                </Layout>
+              }
+            />
+            <Route
+              path="/invite/invitecodeinput"
+              element={
+                <Layout>
+                  <InviteCodeInput />
                 </Layout>
               }
             />

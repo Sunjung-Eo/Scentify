@@ -40,16 +40,17 @@ class MQTTClient:
         topic = message.topic
         payload = message.payload.decode()
 
-        print(f"메시지 수신: {topic} -> {payload}")
+        # print(f"메시지 수신: {topic} -> {payload}")
 
         await self.process_message(topic, payload)
 
     async def subscribe(self):
         if self.client is not None:
             await self.client.subscribe(f"{self.device_id}/Operation")
-            await self.client.subscribe(f"{self.device_id}/ModeInfo")
+            await self.client.subscribe(f"{self.device_id}/SetOperationMode")
             await self.client.subscribe(f"{self.device_id}/CapsuleInfo")
-            await self.client.subscribe(f"{self.device_id}/AutoModeInfo")
+            await self.client.subscribe(f"{self.device_id}/AutoModeInit")
+            await self.client.subscribe(f"{self.device_id}/AutoModeChange")
             print("Complete Subscribe!")
 
     async def publish(self, topic, payload):

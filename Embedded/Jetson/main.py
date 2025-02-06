@@ -96,28 +96,42 @@ class SmartDiffuser:
             # 잔여량 표시
             await self.send_remainder()
 
-        elif topic == f"{self.mqtt_client.device_id}/ModeInfo":
+        elif topic == f"{self.mqtt_client.device_id}/SetOperationMode":
+            print("================OperationMode================")
+            print(self.mode)
+
             payload = json.loads(payload)
             self.mode.operation_mode = int(payload["mode"])
 
-        elif topic == f"{self.mqtt_client.device_id}/AutoModeInfo":
-            payload = json.loads(payload)
-            
-            # print(payload)
+            print("================Updated OperationMode================")
+            print(self.mode)
 
+        elif topic == f"{self.mqtt_client.device_id}/AutoModeInit":
+            payload = json.loads(payload)
             modes = payload["schedules"]
 
             for mode in modes:
                 id = mode["id"]
                 self.mode.auto_operation_mode[id] = AutoDetectionMode(
-                    combination_id = int(mode["combinationId"]),
+                    combinationId = int(mode["combinationId"]),
                     interval = int(mode["interval"]),
-                    mode_on = bool(mode["modeOn"]),
+                    modeOn = bool(mode["modeOn"]),
                     operation_type = mode["type"],
                     sub_mode = int(mode["subMode"])
                 )
+        elif topic == f"{self.mqtt_client.device_id}/AutoModeChange":
+            payload = json.loads(payload)
+            id = payload["id"]
+            del payload["id"]
 
-                # print(self.mode.auto_operation_mode[id])
+            print("=====================Origin Auto Mode=====================")
+            print(self.mode.auto_operation_mode[id])
+
+            key = next(iter(payload))
+            setattr(self.mode.auto_operation_mode[id], key, payload[key])
+
+            print("=====================Updated Auto Mode=====================")
+            print(self.mode.auto_operation_mode[id])
 
         elif topic == f"{self.mqtt_client.device_id}/CapsuleInfo":
             # 캡슐 맵핑
@@ -139,6 +153,7 @@ class SmartDiffuser:
         # 잔여량 전송
         msg = json.dumps(self.capsule_remainder)
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Status/Remainder", msg)
+
 
 async def main():
     smart_diffuser = SmartDiffuser()

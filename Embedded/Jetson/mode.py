@@ -3,11 +3,11 @@ from typing import List, Dict
 
 @dataclass
 class AutoDetectionMode:
-    combination_id : int = -1
+    combinationId : int = -1
     interval : int = -1
     sub_mode : int = -1
     operation_type :int = None
-    mode_on : bool = False
+    modeOn : bool = False
 
 @dataclass
 class Mode:

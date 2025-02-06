@@ -18,7 +18,7 @@ class MQTTClient:
         if not self.__initialized:
             self.__initialized = True  
             self.__url = url
-            self.device_id_list = [1]
+            self.device_id = 1
             self.client = None
             self.process_message = process_message
 
@@ -46,9 +46,10 @@ class MQTTClient:
 
     async def subscribe(self):
         if self.client is not None:
-            await self.client.subscribe(f"{self.device_id_list[0]}/Operation")
-            await self.client.subscribe(f"{self.device_id_list[0]}/ModeInfo")
-            await self.client.subscribe(f"{self.device_id_list[0]}/CapsuleInfo")
+            await self.client.subscribe(f"{self.device_id}/Operation")
+            await self.client.subscribe(f"{self.device_id}/ModeInfo")
+            await self.client.subscribe(f"{self.device_id}/CapsuleInfo")
+            await self.client.subscribe(f"{self.device_id}/AutoModeInfo")
             print("Complete Subscribe!")
 
     async def publish(self, topic, payload):

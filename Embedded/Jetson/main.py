@@ -2,6 +2,8 @@ import os, sys
 import json
 import asyncio
 import re
+
+from mode import *
 from mqtt_client import *
 
 current_dir = os.path.dirname(__file__)  # 현재 파일의 디렉토리
@@ -57,6 +59,14 @@ class SmartDiffuser:
             "slot3RemainingRatio" : 100,
             "slot4RemainingRatio" : 100,
         }
+
+        # 동작 모드
+        self.simple_detection_mode = AutoDetectionMode()
+        self.exercise_detection_mode = AutoDetectionMode()
+        self.relax_detection_mode = AutoDetectionMode()
+        self.stink_detection_mode = AutoDetectionMode()
+
+        self.mode = Mode()
     
     def is_valid_key(self, payload, key):
         return payload[key] is not None
@@ -65,7 +75,7 @@ class SmartDiffuser:
         message = dict()
         topic = topic.value
 
-        if topic == f"{self.mqtt_client.device_id_list[0]}/Operation":
+        if topic == f"{self.mqtt_client.device_id}/Operation":
             # 모터 동작
             payload = json.loads(payload)
             
@@ -86,11 +96,30 @@ class SmartDiffuser:
             # 잔여량 표시
             await self.send_remainder()
 
-        elif topic == f"{self.mqtt_client.device_id_list[0]}/ModeInfo":
-            pass
-            # 내부  모드 설정
+        elif topic == f"{self.mqtt_client.device_id}/ModeInfo":
+            payload = json.loads(payload)
+            self.mode.operation_mode = int(payload["mode"])
 
-        elif topic == f"{self.mqtt_client.device_id_list[0]}/CapsuleInfo":
+        elif topic == f"{self.mqtt_client.device_id}/AutoModeInfo":
+            payload = json.loads(payload)
+            
+            # print(payload)
+
+            modes = payload["schedules"]
+
+            for mode in modes:
+                id = mode["id"]
+                self.mode.auto_operation_mode[id] = AutoDetectionMode(
+                    combination_id = int(mode["combinationId"]),
+                    interval = int(mode["interval"]),
+                    mode_on = bool(mode["modeOn"]),
+                    operation_type = mode["type"],
+                    sub_mode = int(mode["subMode"])
+                )
+
+                # print(self.mode.auto_operation_mode[id])
+
+        elif topic == f"{self.mqtt_client.device_id}/CapsuleInfo":
             # 캡슐 맵핑
             payload = json.loads(payload)
 
@@ -109,7 +138,7 @@ class SmartDiffuser:
     async def send_remainder(self):
         # 잔여량 전송
         msg = json.dumps(self.capsule_remainder)
-        await self.mqtt_client.publish(f"{self.mqtt_client.device_id_list[0]}/Status/Remainder", msg)
+        await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Status/Remainder", msg)
 
 async def main():
     smart_diffuser = SmartDiffuser()

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import deviceImg from '../../../assets/images/device.svg';
 import crownIcon from '../../../assets/icons/crown-icon.svg';
 import { useUserStore } from '../../../stores/useUserStore';
@@ -6,10 +6,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deviceInfo } from '../../../apis/home/deviceInfo';
 import { deleteDevice } from '../../../apis/home/deleteDevice';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
+import { setMainDevice } from '../../../apis/home/setMainDevice';
 
 const DeviceCard = () => {
-  const { deviceIds } = useUserStore();
+  const { deviceIds, mainDeviceId } = useUserStore();
   const queryClient = useQueryClient();
+  const [currentMainDeviceId, setCurrentMainDeviceId] = useState<number | null>(
+    mainDeviceId
+  );
+
+  // mainDeviceId가 변경될 때마다 내부 상태 업데이트
+  useEffect(() => {
+    setCurrentMainDeviceId(mainDeviceId);
+  }, [mainDeviceId]);
 
   const validDeviceIds = deviceIds ?? []; // 가능한 deviceIds
 
@@ -50,17 +59,35 @@ const DeviceCard = () => {
     },
   });
 
-  // 🔹 대표기기 설정 핸들러 (React Query 캐시 업데이트)
-  const handleSetRepresentative = (deviceId: number) => {
-    queryClient.setQueryData(['deviceInfo', validDeviceIds], (oldData: any) => {
-      if (!oldData) return [];
-      return oldData.map((d: any) =>
-        d.deviceId === deviceId
-          ? { ...d, isRepresentative: true }
-          : { ...d, isRepresentative: false }
+  // 대표기기설정 뮤테이션 추가
+  const setMainDeviceMutation = useMutation({
+    mutationFn: setMainDevice,
+    onSuccess: (_, deviceId) => {
+      // 내부 상태 업데이트
+      setCurrentMainDeviceId(deviceId);
+
+      // API 호출 성공 시 캐시 업데이트
+      queryClient.setQueryData(
+        ['deviceInfo', validDeviceIds],
+        (oldData: any) => {
+          if (!oldData) return { devices: [] };
+          return {
+            ...oldData,
+            devices: oldData.devices.map((d: any) => ({
+              ...d,
+              isRepresentative: d.id === deviceId,
+            })),
+          };
+        }
       );
-    });
-  };
+      // 성공 메시지 표시
+      alert('대표기기가 설정되었습니다.');
+    },
+    onError: (error) => {
+      console.error('대표기기 설정 실패:', error);
+      alert('대표기기 설정에 실패했습니다.');
+    },
+  });
 
   if (isLoading)
     return <p className="text-brand">기기 정보를 불러오는 중...</p>;
@@ -88,7 +115,7 @@ const DeviceCard = () => {
               {/* 디바이스 이름 + 왕관 아이콘 */}
               <div className="text-pre-bold text-sm flex items-center gap-1 text-white">
                 {device.name}
-                {device.id === validDeviceIds[0] && (
+                {device.id === currentMainDeviceId && (
                   <img
                     src={crownIcon}
                     alt="Crown Icon"
@@ -118,26 +145,12 @@ const DeviceCard = () => {
             {/* 버튼 영역 */}
             <div className="mt-auto flex justify-end gap-2">
               <button
-                onClick={() => {
-                  queryClient.setQueryData(
-                    ['deviceInfo', validDeviceIds],
-                    (oldData: any) => {
-                      if (!oldData) return { devices: [] };
-                      return {
-                        ...oldData,
-                        devices: oldData.devices.map((d: any) =>
-                          d.id === device.id
-                            ? { ...d, isRepresentative: true }
-                            : { ...d, isRepresentative: false }
-                        ),
-                      };
-                    }
-                  );
-                }}
-                className={`text-pre-medium rounded-lg px-2 py-1 text-[10px] ${
-                  device.isRepresentative
-                    ? 'bg-brand text-white'
-                    : 'border border-brand bg-component text-sub'
+                onClick={() => setMainDeviceMutation.mutate(device.id)}
+                disabled={device.id === currentMainDeviceId}
+                className={`text-pre-medium rounded-lg px-2 py-1 text-[10px] transition-colors ${
+                  device.id === currentMainDeviceId
+                    ? 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                    : 'border border-brand bg-component text-sub hover:bg-brand hover:text-white'
                 }`}
               >
                 대표기기로 설정

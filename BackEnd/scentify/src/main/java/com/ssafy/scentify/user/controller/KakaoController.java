@@ -133,7 +133,7 @@ public class KakaoController {
 		    	
 		    	if (groupId != null && deviceId != null) {	
 			    	// 그룹 멤버 업데이트
-			        String userNickname = userService.getUserNiceNameById(id);
+			        String userNickname = userService.getUserNickNameById(id);
 			        MemberDto memberDto = new MemberDto(groupId, id, userNickname);
 			        
 			        // 멤버 자리가 꽉 찬 경우 false 
@@ -270,7 +270,7 @@ public class KakaoController {
 			// 그룹 등록 로직
 			if (groupId != null && deviceId != null) {
 				 // 그룹 멤버 업데이트
-		        String userNickname = userService.getUserNiceNameById(id);
+		        String userNickname = userService.getUserNickNameById(id);
 		        MemberDto memberDto = new MemberDto(groupId, id, userNickname);
 		       
 		        boolean updated = groupService.updateMember(memberDto);

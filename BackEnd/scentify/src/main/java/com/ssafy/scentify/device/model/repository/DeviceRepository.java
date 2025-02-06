@@ -76,4 +76,8 @@ public interface DeviceRepository {
 	// 모드 업데이트
     @Update("UPDATE device SET mode = #{mode} WHERE id = #{id}")
 	boolean updateMode(int id, boolean mode);
+    
+    // id에 해당하는 기기 삭제
+    @Delete("DELETE FROM device WHERE id = #{id} AND admin_id = #{userId}")
+	boolean deleteDevice(int id, String userId);
 }

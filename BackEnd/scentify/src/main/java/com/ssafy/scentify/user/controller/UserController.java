@@ -250,7 +250,7 @@ public class UserController {
 	    if (groupId == null && deviceId == null) { return HttpStatus.OK; }
         
 	    // 그룹 멤버 업데이트
-        String userNickname = userService.getUserNiceNameById(userId);
+        String userNickname = userService.getUserNickNameById(userId);
         MemberDto memberDto = new MemberDto(groupId, userId, userNickname);
         
         // 멤버 자리가 꽉 찬 경우 409 반환

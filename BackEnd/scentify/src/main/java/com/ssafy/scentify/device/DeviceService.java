@@ -89,4 +89,8 @@ public class DeviceService {
 	public boolean updateMode(int id, boolean mode) {
 		return deviceRepository.updateMode(id, mode);
 	}
+
+	public boolean deleteDevice(int id, String userId) {
+		return deviceRepository.deleteDevice(id, userId);
+	}
 }

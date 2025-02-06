@@ -86,7 +86,7 @@ public class DeviceController {
 	        deviceService.createDevice(registerDto);
 	        
 	        // device의 그룹 생성
-	        String nickname = userService.getUserNiceNameById(userId);
+	        String nickname = userService.getUserNickNameById(userId);
 	        Integer deviceId = registerDto.getId();
 	        CreateDto createDto = groupService.createGroup(deviceId, userId, nickname);
 	        
@@ -337,4 +337,50 @@ public class DeviceController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PostMapping("/delete")
+	public ResponseEntity<?> deleteDevice(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> deviceIdMap) {
+		try {
+			// "Bearer " 제거
+			if (!authorizationHeader.startsWith("Bearer ")) {
+			    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			String token = authorizationHeader.substring(7);
+			
+			// 토큰에서 id 추출
+			String userId = tokenProvider.getId(token);
+			
+			// 유저의 메인 디바이스 id 조회
+			int mainDeviceId = userService.getMainDeviceById(userId);
+			
+			// 삭제 요청한 디바이스 아이디 추출
+			Integer deviceId = deviceIdMap.get("id");
+			if (deviceId == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			// 핸드쉐이킹 해제
+			
+			// 디바이스 삭제 (실패 시 404 반환)
+			if (!deviceService.deleteDevice(deviceId, userId)) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			
+			
+			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
+			if (mainDeviceId == deviceId) {
+				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
+				if (deviceIds != null) {
+					userService.updateMainDeviceId(userId, deviceIds.get(0));
+				}
+			}
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

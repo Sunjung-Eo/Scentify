@@ -14,7 +14,7 @@ from websocket_response_handler import *
 
 class SmartHub():
     def __init__(self, websocket_url, mqtt_url, serial_number, work_queue):
-        self.mqtt_client = MQTTClient(url="localhost", work_queue=work_queue)
+        self.mqtt_client = MQTTClient(url=mqtt_url, work_queue=work_queue)
         self.websocket_response_handler = WebSocketResponseHandler(mqtt_client=self.mqtt_client).handlers
         self.websocket_client = WebSocketClient(
             uri=websocket_url,
@@ -42,6 +42,7 @@ async def main():
     await asyncio.sleep(2)
 
     asyncio.create_task(smart_hub.websocket_client.connection())
+
 
     while True:
         await asyncio.sleep(1)

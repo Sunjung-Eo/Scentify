@@ -21,6 +21,7 @@ class WebSocketResponseHandler:
                 "/topic/DeviceStatus/Sensor/TempHum/": self.hanlder_response_temphum,
                 "/topic/DeviceStatus/Capsule/Info/": self.handler_capsule_initial_info,
                 "/topic/Remote/Operation/" : self.handler_remote_operation,
+                "/topic/Auto/Schedule/Initial/" : self.handler_request_mode_info,
                 "default": self.default_hanlder
             }
 
@@ -36,12 +37,17 @@ class WebSocketResponseHandler:
         print("Handling Capsule Initial Info")
 
     async def handler_remote_operation(self, message):
-        # TODO: 모터 제어를 위한 MQTT Pub 코드 작성
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/Operation",
             message
         )
         print("Handling Remote Operation Motor")
+
+    async def handler_request_mode_info(self, message):
+        await self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/AutoModeInfo",
+            message
+        )
 
     def default_hanlder(self):
         print("There isn't type!!")

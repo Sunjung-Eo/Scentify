@@ -44,7 +44,13 @@ class WebSocketClient:
                 "/topic/DeviceStatus/Sensor/TempHum/",
                 "/topic/DeviceStatus/Capsule/Info/",
                 "/topic/Remote/Operation/",
-                "/topic/DeviceInfo/Id/"
+                "/topic/DeviceInfo/Id/",
+                "/topic/Auto/Schedule/Initial/"
+            ]
+
+            self.initial_request_dest = [
+                "/app/DeviceStatus/Capsule/Info",
+                "/app/Auto/Schedule/Initial"
             ]
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
@@ -105,9 +111,10 @@ class WebSocketClient:
                 await asyncio.sleep(3)
 
     async def init_request(self):
-        msg = {'token' : get_access_token(self.device_id)}
-        json_msg = json.dumps(msg)
-        await self.send_request("/app/DeviceStatus/Capsule/Info", json_msg)
+        token = {'token' : get_access_token(self.device_id)}
+        json_token = json.dumps(token)
+        for dest in self.initial_request_dest:
+            await self.send_request(dest, json_token)
 
     async def send_request(self, topic, msg):
         send_frame = stomper.send(topic, msg, content_type='application/json')       
@@ -160,7 +167,7 @@ class WebSocketClient:
                 handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
                 await handler(message)
 
-            except websockets.exceptions.ConnectionClosed:
+            except websockets.exceptions.ConnectionClosed:  
                 self.websocket = None
 
     async def send_temp_hum(self):

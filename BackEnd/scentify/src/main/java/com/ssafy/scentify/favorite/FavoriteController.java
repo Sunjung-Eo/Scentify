@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -51,6 +52,38 @@ public class FavoriteController {
 			 }
 			 
 			 return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 57번 : 찜 삭제하기
+	@MessageMapping("/delete")
+	public ResponseEntity<?> removeCombinationFromFavorites(@RequestHeader("Authorization") String authorizationHeader, Map<String, Integer> favoriteMap) {
+		try {
+			// "Bearer " 제거
+			if (!authorizationHeader.startsWith("Bearer ")) {
+			    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			String token = authorizationHeader.substring(7);
+			
+			// 토큰에서 id 추출
+			String userId = tokenProvider.getId(token);
+			 
+			// 삭제 요청하는 찜 id
+			Integer favoriteId = favoriteMap.get("id");
+			if (favoriteId == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			 
+			// 찜 삭제 (실패 시 400 반환)
+			if (!favoriteService.deleteFavorite(favoriteId, userId)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리
 			log.error("Exception: ", e);

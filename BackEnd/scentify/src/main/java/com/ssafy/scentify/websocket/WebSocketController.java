@@ -371,4 +371,11 @@ public class WebSocketController {
 			sendUpdateModeOn(deviceId, scheduleId, autoScheduleDto.isModeOn());
 		}
 	}
+	
+	// API 67번 : 웹소켓 통신 종료 요청
+	public void closeConnection(int deviceId) {
+		// 메세지 전송
+		template.convertAndSend("/topic/Connection/Close/" + deviceId, "Close");
+		log.info("Data processed for id: {}", deviceId); 
+	}
 }

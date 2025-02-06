@@ -365,8 +365,7 @@ public class DeviceController {
 			if (!deviceService.deleteDevice(deviceId, userId)) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			
-			
+					
 			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
 			if (mainDeviceId == deviceId) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
@@ -383,4 +382,25 @@ public class DeviceController {
 		}
 	}
 	
+	@PostMapping("/test")
+	public ResponseEntity<?> test(@RequestHeader("Authorization") String authorizationHeader) {
+		try {
+			// "Bearer " 제거
+			if (!authorizationHeader.startsWith("Bearer ")) {
+			    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			String token = authorizationHeader.substring(7);
+			
+			// 토큰에서 id 추출
+			String userId = tokenProvider.getId(token);
+			int mainDeviceId = userService.getMainDeviceById(userId);
+			socketController.closeConnection(mainDeviceId);
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }

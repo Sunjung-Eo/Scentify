@@ -18,6 +18,7 @@ public class AutoScheduleDto {
 	private int deviceId;
 	private CombinationDto combination;
 	private int interval;
+	private boolean intervalChange;
 	private boolean modeOn;
 	private boolean modeChange;
 	

@@ -10,6 +10,7 @@ import com.ssafy.scentify.home.model.dto.HomeDto.AutoSchedulesListResponseDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.AutoScheduleDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
+import com.ssafy.scentify.websocket.WebSocketController;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,10 +27,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class AutoScheduleController {
 	
+	private final WebSocketController socketController;
 	private final AutoScheduleService autoScheduleService;
 	private final CombinationService combinationService;
 	
-	public AutoScheduleController(AutoScheduleService autoScheduleService, CombinationService combinationService) {
+	public AutoScheduleController(WebSocketController socketController, AutoScheduleService autoScheduleService, CombinationService combinationService) {
+		this.socketController = socketController;
 		this.autoScheduleService = autoScheduleService;
 		this.combinationService = combinationService;
 	}
@@ -60,22 +63,38 @@ public class AutoScheduleController {
 	@PostMapping("/deodorization/update")
 	public ResponseEntity<?> updateDeodorizationMode(@RequestBody AutoScheduleDto autoScheduleDto) {
 		try {
-			// 향 조합을 등록해줌
+			// 향 조합에 변경이 없다면 id가 전달됨
 			CombinationDto combination = autoScheduleDto.getCombination();
-			combination.setName("탈취향");
-			Integer combinationId = combinationService.createCombination(combination);	
-			if (combinationId  == null) { 
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	
-			}
+			Integer combinationId = combination.getId();
+			boolean combinationChange = false;
 			
+			// 향 조합이 변경된 경우 향 조합을 등록
+			if (combinationId == null) {
+				combination.setName("탈취향");
+				combinationId = combinationService.createCombination(combination);	
+				if (combinationId  == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }	
+				combinationChange = true;
+			}
+				
 			// 악취 모드 업데이트 (불가능 하다면 400 반환)
 			if (!autoScheduleService.updateAutoSchedule(autoScheduleDto, combinationId)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
 			// 웹 소켓 통신으로 수정되었음을 전달 필요
+			int deviceId = autoScheduleDto.getDeviceId();
+			int scheduleId = autoScheduleDto.getId();
+			
+			if (combinationChange == true) {
+				socketController.sendCombinationUpdate(deviceId, scheduleId, combinationId);
+			}
+			
+			if (autoScheduleDto.isIntervalChange()) {
+				
+			}
+						
 			if (autoScheduleDto.isModeChange()) {
-				// 웹소켓 컨트롤러 메서드 실행
+				
 			}
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨

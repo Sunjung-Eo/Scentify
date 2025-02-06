@@ -19,4 +19,8 @@ public class FavoriteService {
 		return favoriteRepository.addCombinationToFavorites(userId, combinationId);
 	}
 
+	public boolean deleteFavorite(int favoriteId, String userId) {
+		return favoriteRepository.deleteFavorite(favoriteId, userId);
+	}
+
 }

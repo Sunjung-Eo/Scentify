@@ -1,12 +1,12 @@
 import DoneRing from '../../../assets/images/Done_ring_round.svg';
 import { Link, useLocation } from 'react-router-dom';
-import { useDeviceStore } from '../../../stores/useDeviceStore';
+import { useMainDeviceStore } from '../../../stores/useDeviceStore';
 import { useEffect } from 'react';
 
 function ConnectSuccess() {
   const location = useLocation();
   const { id } = location.state || {};
-  const { setMainDevice } = useDeviceStore();
+  const { setMainDevice } = useMainDeviceStore();
 
   // 디바이스 id 전역 상태 업데이트
   useEffect(() => {

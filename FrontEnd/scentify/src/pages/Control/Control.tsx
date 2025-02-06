@@ -1,24 +1,24 @@
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Mode } from "../../feature/control/main/ControlType";
-import ModeToggle from "../../feature/control/main/ModeToggle";
-import ReservationManager from "../../feature/control/reservation/ReservationManager";
-import AutoManager from "../../feature/control/automation/AutoManager";
-import ModeChangeModal from "../../feature/control/main/ModeChangeModal";
-import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
-import DeodorizationSetting from "../../feature/control/automation/DeodorizationSetting";
-import DetectionSetting from "../../feature/control/automation/DetectionSetting";
-import CreateReservation from "../../feature/control/reservation/CreateReservation";
-import "../../styles/global.css";
-import RemoteIcon from "../../assets/icons/remote-icon.svg";
+import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Mode } from '../../feature/control/main/ControlType';
+import ModeToggle from '../../feature/control/main/ModeToggle';
+import ReservationManager from '../../feature/control/reservation/ReservationManager';
+import AutoManager from '../../feature/control/automation/AutoManager';
+import ModeChangeModal from '../../feature/control/main/ModeChangeModal';
+import BehaviorSetting from '../../feature/control/automation/BehaviorSetting';
+import DeodorizationSetting from '../../feature/control/automation/DeodorizationSetting';
+import DetectionSetting from '../../feature/control/automation/DetectionSetting';
+import CreateReservation from '../../feature/control/reservation/CreateReservation';
+import '../../styles/global.css';
+import RemoteIcon from '../../assets/icons/remote-icon.svg';
 
-import { useDeviceStore } from "../../stores/useDeviceStore";
-import { useAuthStore } from "../../stores/useAuthStore";
+import { useMainDeviceStore } from '../../stores/useDeviceStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 
-import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
+import { getAllDevicesMode } from '../../apis/control/getAllDevicesMode';
 
-import DeviceSelect from "../../components/Control/DeviceSelect";
+import DeviceSelect from '../../components/Control/DeviceSelect';
 
 const Control = () => {
   // 인증토큰
@@ -26,34 +26,35 @@ const Control = () => {
   const accessToken = authStore.accessToken;
 
   // 기기 정보
-  const { devices } = useDeviceStore();
+  const { mainDevice } = useMainDeviceStore();
   // 기기 id
-  const deviceIds = devices
-    .map((device) => device.id)
-    .filter((id): id is number => id !== undefined);
+  const devices = mainDevice
+    ? [
+        {
+          deviceId: mainDevice.id,
+          name: mainDevice.name,
+          isRepresentative: true,
+        },
+      ]
+    : [];
+
   // 선택한 기기(기본값: 대표기기 - 등록순)
   const [selectedDevice, setSelectedDevice] = useState<number | null>(null);
   useEffect(() => {
-    if (devices.length > 0) {
-      const deviceId =
-        devices.find((device) => device.isRepresentative)?.id || devices[0].id;
-      if (deviceId) {
-        setSelectedDevice(deviceId);
-      }
+    if (mainDevice) {
+      setSelectedDevice(mainDevice.id);
     }
-  }, [devices]);
-  // 예약 관리 컴포넌트로 전달
-  const deviceSelectItems = devices.map((device) => ({
-    deviceId: device.id,
-    name: device.name,
-    isRepresentative: device.isRepresentative,
-  }));
+  }, [mainDevice]);
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
-    queryKey: ["reservations", deviceIds, accessToken],
-    queryFn: () => getAllDevicesMode(deviceIds, accessToken),
-    enabled: deviceIds.length > 0 && !!accessToken,
+    queryKey: ['reservations', devices.map((d) => d.deviceId), accessToken],
+    queryFn: () =>
+      getAllDevicesMode(
+        devices.map((d) => d.deviceId),
+        accessToken
+      ),
+    enabled: devices.length > 0 && !!accessToken,
   });
   // 선택한 기기의 예약 정보 필터링
   const filteredReservations = selectedDevice
@@ -110,12 +111,12 @@ const Control = () => {
               </div>
               <div
                 className={`font-pre-medium text-20 ${
-                  isFirstRender || !mode ? "mt-14" : "mt-0"
+                  isFirstRender || !mode ? 'mt-14' : 'mt-0'
                 }`}
               >
                 <div className="absolute left-[225px] top-[135px] z-40">
                   <DeviceSelect
-                    devices={deviceSelectItems}
+                    devices={devices}
                     selectedDevice={selectedDevice}
                     onDeviceChange={handleDeviceChange}
                   />

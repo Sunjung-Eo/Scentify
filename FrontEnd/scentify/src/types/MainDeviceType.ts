@@ -1,4 +1,4 @@
-export interface DeviceState {
+export interface MainDeviceState {
   id: number;
   name: string | null;
   groupId: number | null;
@@ -15,11 +15,6 @@ export interface DeviceState {
   temperature: number | null; // 없음
   humidity: number | null; // 없음
   defaultCombination: number | null;
-  isRepresentative: boolean;
-  defaultScentData: {
-    slot1: { slot: number | null; count: number };
-    slot2: { slot: number | null; count: number };
-    slot3: { slot: number | null; count: number };
-    slot4: { slot: number | null; count: number };
-  };
+  setMainDevice: (device: Partial<MainDeviceState>) => void;
+  resetMainDevice: () => void;
 }

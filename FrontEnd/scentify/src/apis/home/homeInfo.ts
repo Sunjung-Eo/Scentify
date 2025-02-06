@@ -1,7 +1,4 @@
 import { useAuthStore } from '../../stores/useAuthStore';
-import { useDeviceStore } from '../../stores/useDeviceStore';
-import { useUserStore } from '../../stores/useUserStore';
-import { AutoSchedule, CustomSchedule } from '../../types/SchedulesType';
 
 export const homeInfo = async () => {
   try {

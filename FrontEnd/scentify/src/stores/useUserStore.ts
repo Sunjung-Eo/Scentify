@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { useDeviceStore } from './useDeviceStore';
+import { useMainDeviceStore } from './useDeviceStore';
 
 export interface UserState {
   nickname: string;
@@ -32,24 +32,6 @@ export const useUserStore = create<UserState>((set) => ({
         ...user,
         deviceIds: user.deviceIds ?? [],
       }; //
-
-      if (user.mainDeviceId !== undefined) {
-        const deviceStore = useDeviceStore.getState();
-
-        // 1) 일반 기기가 없을 경우 mainDevice를 그대로 저장
-        if (deviceStore.devices.length === 0) {
-          deviceStore.setMainDevice(user.mainDeviceId);
-        } else {
-          // 2) devices 배열에서 mainDeviceId와 일치하는 기기 찾음
-          const newMainDevice = deviceStore.devices.find(
-            (device) => device.id === user.mainDeviceId
-          );
-
-          if (newMainDevice) {
-            deviceStore.setMainDevice(newMainDevice.id);
-          }
-        }
-      }
 
       return updatedState;
     });

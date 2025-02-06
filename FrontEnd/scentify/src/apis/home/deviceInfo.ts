@@ -1,6 +1,6 @@
 import { useAuthStore } from '../../stores/useAuthStore';
 
-export const deviceInfo = async (OneDiveIds: string) => {
+export const deviceInfo = async (OneDiveIds: number) => {
   try {
     const accessToken = useAuthStore.getState().accessToken;
     const response = await fetch('/v1/device/info', {

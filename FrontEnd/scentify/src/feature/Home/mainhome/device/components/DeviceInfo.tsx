@@ -1,5 +1,5 @@
 import React from 'react';
-import { DeviceState } from '../../../../../types/DeviceType.ts';
+import { MainDeviceState } from '../../../../../types/MainDeviceType.ts';
 import deviceImg from '../../../../../assets/images/device.svg';
 import PlayBtn from '../../../../../assets/icons/PlayBtn.svg';
 import modifyIcon from '../../../../../assets/icons/modify-icon.svg';
@@ -8,17 +8,18 @@ import { Link } from 'react-router-dom';
 import { mapIntToFragrance } from '../../../../../utils/fragranceUtils.ts';
 
 interface DeviceInfoProps {
-  device: DeviceState;
+  device: MainDeviceState;
+  mainDeviceId: number | null;
 }
 
-const DeviceInfo: React.FC<DeviceInfoProps> = ({ device }) => {
+const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
   return (
     <div className="flex flex-col items-center w-full my-2">
       {/* 기기 이름 + 수정 버튼 */}
       <div className="relative w-full px-5 flex items-center">
         <h2 className="text-[20px] font-pre-bold text-center flex items-center justify-center w-full">
           {device?.name ?? '이름 없음'}
-          {device?.isRepresentative && (
+          {device?.id === mainDeviceId && (
             <img src={crownIcon} alt="Crown Icon" className="ml-1 h-4 w-4" />
           )}
         </h2>
@@ -39,9 +40,10 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device }) => {
         <div className="flex justify-around gap-2.5 mt-8 font-pre-light text-[8px]">
           {[1, 2, 3, 4].map((slot) => {
             const remainingRatio =
-              device?.[`slot${slot}RemainingRatio` as keyof DeviceState] ?? 0;
+              device?.[`slot${slot}RemainingRatio` as keyof MainDeviceState] ??
+              0;
             const fragranceInt = device?.[
-              `slot${slot}` as keyof DeviceState
+              `slot${slot}` as keyof MainDeviceState
             ] as number | null;
             const fragranceName =
               fragranceInt !== null

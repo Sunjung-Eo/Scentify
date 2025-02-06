@@ -70,7 +70,7 @@ export const GroupList = () => {
           </div>
 
           {/* 초대하기 버튼 */}
-          <Link to="/invite">
+          <Link to="/my/invite">
             <button className="w-[70px] h-[32px] text-[12px] font-pre-light rounded-lg border-0.2 border-lightgray focus:outline-none focus:ring-1 focus:ring-brand">
               초대하기
             </button>

@@ -141,22 +141,6 @@ function App() {
                 </Layout>
               }
             />
-            <Route
-              path="/invite/*"
-              element={
-                <Layout>
-                  <Invite />
-                </Layout>
-              }
-            />
-            <Route
-              path="/invite/invitecodeinput"
-              element={
-                <Layout>
-                  <InviteCodeInput />
-                </Layout>
-              }
-            />
           </>
         ) : (
           <Route path="/*" element={<Navigate to="/login" replace />} />

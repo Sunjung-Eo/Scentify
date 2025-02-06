@@ -85,14 +85,14 @@ const InviteCodeInput = () => {
 
       {/* 모달창 */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-[300px] p-6 bg-white rounded-2xl shadow-lg text-center">
+        <div className="fixed inset-0 flex items-center justify-center">
+          <div className="w-[260px] h-[120px] bg-white rounded-2xl border-[1px] border-lightgray flex flex-col items-center justify-center">
             {/* 모달 메시지 */}
-            <p className="text-14 font-pre-regular mb-4">{modalMessage}</p>
+            <p className="text-12 font-pre-regular mb-4">{modalMessage}</p>
             {/* 모달 닫기 버튼 */}
             <button
               onClick={closeModal}
-              className="px-4 py-2 bg-brand text-white rounded-lg focus:outline-none"
+              className="w-[60px] h-[30px] bg-sub font-pre-light text-12 text-white rounded-lg focus:outline-none"
             >
               확인
             </button>

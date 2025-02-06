@@ -10,6 +10,8 @@ import EditPassword from "../../feature/my/components/EditPassword";
 import EditProfileImg from "../../feature/my/components/EditProgileImg";
 import { useUserStore } from "../../stores/useUserStore";
 import MyUserCard from "../../feature/my/components/MyUserCard";
+import Invite from "../../feature/invite/Invite";
+import InviteCodeInput from "../../feature/invite/InviteCodeInput";
 
 const My = () => {
   const logout = useAuthStore((state) => state.logout);
@@ -60,7 +62,7 @@ const My = () => {
               </div>
 
               {/** 가족 초대 */}
-              <Link to="/invite/invitecodeinput">
+              <Link to="/my/invitecodeinput">
                 <button className="text-12 font-pre-light  absolute bottom-10">
                   초대코드로 입력
                 </button>
@@ -72,7 +74,9 @@ const My = () => {
         <Route path="editnickname" element={<EditNickname />} />
         <Route path="edituserinfo" element={<EditUserinfo />} />
         <Route path="editpassword" element={<EditPassword />} />
-        <Route path="editprofileimg" element={<EditProfileImg />} />v
+        <Route path="editprofileimg" element={<EditProfileImg />} />
+        <Route path="invite" element={<Invite />} />
+        <Route path="invitecodeinput" element={<InviteCodeInput />} />
       </Routes>
     </div>
   );

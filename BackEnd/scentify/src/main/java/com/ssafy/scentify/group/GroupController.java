@@ -76,7 +76,7 @@ public class GroupController {
 	        Integer groupId = groupInfoDto.getGroupId(); // 그룹 ID 가져오기
 	        
 	        // 어드민 닉네임 조회
-	        String adminNickname = userService.getUserNiceNameById(userId);
+	        String adminNickname = userService.getUserNickNameById(userId);
 	        
 	        // Redis에 초대 코드와 groupId를 JSON으로 저장 (유효 기간: 30분)
 	        String redisKey = "invite:" + inviteCode;
@@ -179,7 +179,7 @@ public class GroupController {
 	        Integer deviceId = Integer.parseInt(inviteData.get("deviceId"));
 
 	        // 그룹에 사용자 추가 
-	        String nickname = userService.getUserNiceNameById(userId);
+	        String nickname = userService.getUserNickNameById(userId);
 	        MemberDto memberDto = new MemberDto(groupId, userId, nickname);
 	        
 	        // 그룹에 자리가 없으면 409 반환

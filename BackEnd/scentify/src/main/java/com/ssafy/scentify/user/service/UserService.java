@@ -74,8 +74,12 @@ public class UserService {
 		return userRepository.getUserHomeInfoById(id);
 	}
 	
-	public String getUserNiceNameById(String id) {
+	public String getUserNickNameById(String id) {
 		return userRepository.getUserNickNameById(id);
+	}
+	
+	public int getMainDeviceById(String id) {
+		return userRepository.getMainDeviceById(id);
 	}
 
 	public boolean updateUserNickname(String userId, String nickname) {
@@ -111,4 +115,5 @@ public class UserService {
 	public boolean updateMainDeviceIdIfNull(String userId, Integer deviceId) {
 		return userRepository.updateMainDeviceId(userId, deviceId);
 	}
+
 }

@@ -6,8 +6,6 @@ import '../../styles/global.css';
 import { useState } from 'react';
 import Logo from '../../assets/icons/scentify-green-logo.svg';
 import SocialLogoBtn from '../../components/Social/SocialLogoBtn';
-import { useUserStore } from '../../stores/useUserStore';
-import { useDeviceStore } from '../../stores/useDeviceStore';
 
 const Login = () => {
   const { login } = useAuthStore();

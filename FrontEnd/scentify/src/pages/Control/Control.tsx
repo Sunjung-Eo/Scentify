@@ -14,7 +14,7 @@ import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
 import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
 
-import { useDeviceStore } from "../../stores/useDeviceStore";
+import { useMainDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
 
 import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
@@ -28,12 +28,23 @@ const Control = () => {
   const accessToken = authStore.accessToken;
 
   // 기기 정보
-  const { devices } = useDeviceStore();
+  const { mainDevice } = useMainDeviceStore();
   // 기기 id
   const deviceIds = devices
     .map((device) => device.id)
     .filter((id): id is number => id !== undefined);
   // 선택한 기기(기본값: 대표기기)
+  const devices = mainDevice
+    ? [
+        {
+          deviceId: mainDevice.id,
+          name: mainDevice.name,
+          isRepresentative: true,
+        },
+      ]
+    : [];
+
+  // 선택한 기기(기본값: 대표기기 - 등록순)
   const [selectedDevice, setSelectedDevice] = useState<number | null>(null);
   const [defaultScentId, setDefaultScentId] = useState<number | null>(
     devices[0].defaultCombination
@@ -43,12 +54,8 @@ const Control = () => {
     setSelectedDevice(deviceId);
   };
   useEffect(() => {
-    if (devices.length > 0) {
-      const deviceId =
-        devices.find((device) => device.isRepresentative)?.id || devices[0].id;
-      if (deviceId) {
-        setSelectedDevice(deviceId);
-      }
+    if (mainDevice) {
+      setSelectedDevice(mainDevice.id);
     }
   }, [devices]);
 
@@ -150,7 +157,7 @@ const Control = () => {
               >
                 <div className="absolute left-[225px] top-[135px] z-40">
                   <DeviceSelect
-                    devices={deviceSelectItems}
+                    devices={devices}
                     selectedDevice={selectedDevice}
                     onDeviceChange={handleDeviceChange}
                   />

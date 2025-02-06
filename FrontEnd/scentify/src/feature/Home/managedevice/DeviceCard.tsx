@@ -1,83 +1,121 @@
-import React, { useState } from "react";
-import cuttingdeviceImg from "../../../assets/images/cuttingdevice2.svg";
-import crownIcon from "../../../assets/icons/crown-icon.svg";
+import React, { useEffect, useState } from 'react';
+import deviceImg from '../../../assets/images/device.svg';
+import crownIcon from '../../../assets/icons/crown-icon.svg';
+import { useUserStore } from '../../../stores/useUserStore';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deviceInfo } from '../../../apis/home/deviceInfo';
+import { deleteDevice } from '../../../apis/home/deleteDevice';
+import { fragranceMap } from '../capsule/utils/fragranceMap';
+import { setMainDevice } from '../../../apis/home/setMainDevice';
 
-// 초기 더미 데이터
-const initialDevices = [
-  {
-    deviceId: 1,
-    name: "우리 방",
-    slot1: "레몬",
-    slot2: "자스민",
-    slot3: "화이트머스크",
-    slot4: "유칼립투스",
-    isRepresentative: true,
-  },
-  {
-    deviceId: 2,
-    name: "거실",
-    slot1: "라벤더",
-    slot2: "시트러스",
-    slot3: "로즈",
-    slot4: "샌달우드",
-    isRepresentative: false,
-  },
-  {
-    deviceId: 3,
-    name: "침실",
-    slot1: "민트",
-    slot2: "페퍼민트",
-    slot3: "유칼립투스",
-    slot4: "티트리",
-    isRepresentative: false,
-  },
-];
-// useState를 통한 상태관리(초기 devices 데이터는 배열로 저장.삭제 버튼 클릭 시 filter 메서드를 사용해 선택된 deviceId를 제외.)
-//일단 모든 기기의 isRepresentative를 false로 설정. 선택된 기기의 isRepresentative를 true로 업데이트.
-//기기 삭제(handleDelete 함수로 deviceId를 받아 filter로 해당 deviceId를 제외한 새로운 배열을 상태로 저장.)
-
-//cards에서 space-y-4: 카드 컴포넌트간의 수직 간격을 조정.
-//card에서  개별 카드 내부의 자식 요소들 간의 간격을 조정.
-//deviceImg는 map내부에 위치하면서 초록색 박스에 relative를 추가하고 deviceImg에 absolute -left-6적용(경계에 걸쳐보임)
 const DeviceCard = () => {
-  const [devices, setDevices] = useState(initialDevices); // 디바이스 상태 관리
+  const { deviceIds, mainDeviceId } = useUserStore();
+  const queryClient = useQueryClient();
+  const [currentMainDeviceId, setCurrentMainDeviceId] = useState<number | null>(
+    mainDeviceId
+  );
 
-  // 삭제 버튼 클릭 핸들러
-  const handleDelete = (deviceId: number) => {
-    setDevices((prevDevices) =>
-      prevDevices.filter((d) => d.deviceId !== deviceId)
-    );
-  };
+  // mainDeviceId가 변경될 때마다 내부 상태 업데이트
+  useEffect(() => {
+    setCurrentMainDeviceId(mainDeviceId);
+  }, [mainDeviceId]);
 
-  // 대표기기 설정 핸들러
-  const handleSetRepresentative = (deviceId: number) => {
-    setDevices((prevDevices) =>
-      prevDevices.map((d) =>
-        d.deviceId === deviceId
-          ? { ...d, isRepresentative: true }
-          : { ...d, isRepresentative: false }
-      )
-    );
-  };
+  const validDeviceIds = deviceIds ?? []; // 가능한 deviceIds
+
+  // ✅ React Query를 사용하여 현재 선택된 기기의 정보 가져오기
+  const {
+    data, // 빈 배열 선언해서 오류 방지
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['deviceInfo', validDeviceIds],
+    queryFn: () => deviceInfo(validDeviceIds),
+    enabled: validDeviceIds.length > 0,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+  });
+
+  const devices = data?.devices ?? [];
+
+  // 삭제 뮤테이션 추가
+  const deleteMutation = useMutation({
+    mutationFn: deleteDevice,
+    onSuccess: (_, deviceId) => {
+      // API 호출 성공 시 캐시 업데이트
+      queryClient.setQueryData(
+        ['deviceInfo', validDeviceIds],
+        (oldData: any) => {
+          if (!oldData) return { devices: [] };
+          return {
+            ...oldData,
+            devices: oldData.devices.filter((d: any) => d.id !== deviceId),
+          };
+        }
+      );
+    },
+    onError: (error) => {
+      console.error('디바이스 삭제 실패:', error);
+      alert('디바이스 삭제에 실패했습니다.');
+    },
+  });
+
+  // 대표기기설정 뮤테이션 추가
+  const setMainDeviceMutation = useMutation({
+    mutationFn: setMainDevice,
+    onSuccess: (_, deviceId) => {
+      // 내부 상태 업데이트
+      setCurrentMainDeviceId(deviceId);
+
+      // API 호출 성공 시 캐시 업데이트
+      queryClient.setQueryData(
+        ['deviceInfo', validDeviceIds],
+        (oldData: any) => {
+          if (!oldData) return { devices: [] };
+          return {
+            ...oldData,
+            devices: oldData.devices.map((d: any) => ({
+              ...d,
+              isRepresentative: d.id === deviceId,
+            })),
+          };
+        }
+      );
+      // 성공 메시지 표시
+      alert('대표기기가 설정되었습니다.');
+    },
+    onError: (error) => {
+      console.error('대표기기 설정 실패:', error);
+      alert('대표기기 설정에 실패했습니다.');
+    },
+  });
+
+  if (isLoading)
+    return <p className="text-brand">기기 정보를 불러오는 중...</p>;
+  if (isError)
+    return <p className="text-red-500">기기 정보를 불러오지 못했습니다.</p>;
+
+  // device는 devices 랑 데이터 같음 [{...}, {...}, {...}]
   return (
     <div className="cards space-y-4">
-      {devices.map((device) => (
-        // 오른쪽으로 정렬하기 위해 초록색박스와 기기img묶어둠
-        <div key={device.deviceId} className="relative mt-4 flex justify-end">
+      {devices.map((device: any, index: number) => (
+        <div
+          key={device.id || index}
+          className="relative mt-4 flex justify-end"
+        >
           <div className="card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md">
-            {/* 디바이스사진 */}
+            {/* 디바이스 사진 */}
             <img
-              src={cuttingdeviceImg}
+              src={deviceImg}
               alt="Device Icon"
-              className="absolute -left-11 bottom-0"
+              className="absolute -left-10 bottom-0"
             />
 
-            {/* Text and Content묶기*/}
+            {/* 텍스트 내용 */}
             <div className="ml-12 flex flex-col gap-1">
-              {/* 디바이스 이름과 왕관 */}
+              {/* 디바이스 이름 + 왕관 아이콘 */}
               <div className="text-pre-bold text-sm flex items-center gap-1 text-white">
-                {device.name}{" "}
-                {device.isRepresentative && (
+                {device.name}
+                {device.id === currentMainDeviceId && (
                   <img
                     src={crownIcon}
                     alt="Crown Icon"
@@ -86,14 +124,16 @@ const DeviceCard = () => {
                 )}
               </div>
 
-              {/* 디바이스 장착 향 */}
+              {/* 장착된 향 표시 */}
               <div className="text-pre-regular text-[9px] text-gray">
                 <p>
-                  {device.slot1}, {device.slot2}, {device.slot3}, {device.slot4}
+                  {[device.slot1, device.slot2, device.slot3, device.slot4]
+                    .map((slot) => fragranceMap[slot])
+                    .join(', ')}
                 </p>
               </div>
 
-              {/* 예약모드 */}
+              {/* 예약 모드 표시 */}
               <div className="flex items-center">
                 <div className="border flex items-center rounded-full border-component px-3 py-0.5 text-[8px] text-component">
                   예약 모드
@@ -102,20 +142,21 @@ const DeviceCard = () => {
               </div>
             </div>
 
-            {/* 버튼들 */}
+            {/* 버튼 영역 */}
             <div className="mt-auto flex justify-end gap-2">
               <button
-                onClick={() => handleSetRepresentative(device.deviceId)} // 대표기기로 설정
-                className={`text-pre-medium rounded-lg px-2 py-1 text-[10px] ${
-                  device.isRepresentative
-                    ? "bg-brand text-white"
-                    : "border border-brand bg-component text-sub"
+                onClick={() => setMainDeviceMutation.mutate(device.id)}
+                disabled={device.id === currentMainDeviceId}
+                className={`text-pre-medium rounded-lg px-2 py-1 text-[10px] transition-colors ${
+                  device.id === currentMainDeviceId
+                    ? 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                    : 'border border-brand bg-component text-sub hover:bg-brand hover:text-white'
                 }`}
               >
                 대표기기로 설정
               </button>
               <button
-                onClick={() => handleDelete(device.deviceId)} // 삭제
+                onClick={() => deleteMutation.mutate(device.id)}
                 className="text-pre-medium rounded-lg bg-component px-2 py-1 text-[10px] text-sub"
               >
                 삭제

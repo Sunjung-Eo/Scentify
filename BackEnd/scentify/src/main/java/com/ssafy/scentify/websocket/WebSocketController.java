@@ -16,6 +16,7 @@ import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
+import com.ssafy.scentify.schedule.model.dto.AutoScheduleDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
@@ -84,7 +85,7 @@ public class WebSocketController {
 
 	    try {
 	        tokenProvider.validateJwtToken(token);
-	        id = Integer.parseInt(tokenProvider.getId(token));
+	        id = Integer.parseInt(tokenProvider.getDeviceId(token));
 	                                                                                                                                                                                                                                                                                                        
 	    } catch (ExpiredJwtException e) {
 	        log.info("Token 만료됨");
@@ -350,5 +351,24 @@ public class WebSocketController {
 		// 메세지 전송
 		template.convertAndSend("/topic/Mode/Change/" + deviceId, response);
 		log.info("Data processed for id: {}", deviceId); 
+	}
+	
+	// 하나의 메서드에서 정보를 받아와서 분기 처리
+	public void sendAutoModeUpdate(AutoScheduleDto autoScheduleDto, int combinationId, boolean combinationChange) {
+		// 웹 소켓 통신으로 수정되었음을 전달 필요
+		int deviceId = autoScheduleDto.getDeviceId();
+		int scheduleId = autoScheduleDto.getId();
+		
+		if (combinationChange == true) {
+			sendCombinationUpdate(deviceId, scheduleId, combinationId);
+		}
+		
+		if (autoScheduleDto.getIntervalChange() != null && autoScheduleDto.getIntervalChange() == true) {
+			sendIntervalUpdate(deviceId, scheduleId, autoScheduleDto.getInterval());
+		}
+					
+		if (autoScheduleDto.isModeChange()) {
+			sendUpdateModeOn(deviceId, scheduleId, autoScheduleDto.isModeOn());
+		}
 	}
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.AutoScheduleDto;
+import com.ssafy.scentify.schedule.model.dto.UpdateModeDto.Schedule;
 import com.ssafy.scentify.schedule.model.repository.AutoScheduleRepository;
 
 @Service
@@ -32,5 +33,8 @@ public class AutoScheduleService {
 	public boolean updateAutoSchedule(AutoScheduleDto autoScheduleDto, Integer combinationId) {
 		return autoScheduleRepository.updateAutoSchedule(autoScheduleDto, combinationId);
 	}
-
+	
+	public boolean updateActionSchedule(Schedule schedule) {
+		return autoScheduleRepository.updateActionSchedule(schedule);
+	}
 }

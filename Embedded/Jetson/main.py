@@ -1,6 +1,7 @@
 import os, sys
 import json
 import asyncio
+import re
 from mqtt_client import *
 
 current_dir = os.path.dirname(__file__)  # 현재 파일의 디렉토리
@@ -30,10 +31,10 @@ class SmartDiffuser:
 
         # 모터
         self.soleniods = [
-            Solenoid(7, 11),
             Solenoid(16, 18),
             Solenoid(13, 15),
-            Solenoid(35, 37)
+            Solenoid(35, 37),
+            Solenoid(31, 33),
         ] 
 
         # MQTT Client
@@ -57,16 +58,33 @@ class SmartDiffuser:
             "slot4RemainingRatio" : 100,
         }
     
+    def is_valid_key(self, payload, key):
+        return payload[key] is not None
+
     async def process_mqtt_message(self, topic, payload):
         message = dict()
         topic = topic.value
 
         if topic == f"{self.mqtt_client.device_id_list[0]}/Operation":
-            pass
             # 모터 동작
-            # soleniods[0].operate_once()
+            payload = json.loads(payload)
+            
+            cap_slot, cap_cnt = [], []
+            choices = ['choice1', 'choice2', 'choice3', 'choice4']
+            counts = ['choice1Count', 'choice2Count', 'choice3Count', 'choice4Count']
 
+            cap_slot = [self.capsule_to_slot[payload[ch]] for ch in choices if self.is_valid_key(payload, ch)]
+            cap_cnt = [payload[cnt] for cnt in counts if self.is_valid_key(payload, cnt)]
+
+            for (index, slot_num) in enumerate(cap_slot):
+                print(index, slot_num[0])
+                self.soleniods[slot_num[0] - 1].operate_repeat(repeat_num=cap_cnt[index], time_duration=1)
+
+            # 잔여량 계산
+            # self.update_ramainder()
+            
             # 잔여량 표시
+            await self.send_remainder()
 
         elif topic == f"{self.mqtt_client.device_id_list[0]}/ModeInfo":
             pass
@@ -83,11 +101,15 @@ class SmartDiffuser:
             for slot, capsule in self.slot_to_capsule.items():
                 if capsule not in self.capsule_to_slot:
                     self.capsule_to_slot[capsule] = []
-                self.capsule_to_slot[capsule].append(slot)
+                slot_number = int(re.search(r'\d+', slot).group()) 
+                self.capsule_to_slot[capsule].append(slot_number)
 
-            # 잔여량 전송
-            msg = json.dumps(self.capsule_remainder)
-            await self.mqtt_client.publish(f"{self.mqtt_client.device_id_list[0]}/Status/Remainder", msg)
+            await self.send_remainder()
+
+    async def send_remainder(self):
+        # 잔여량 전송
+        msg = json.dumps(self.capsule_remainder)
+        await self.mqtt_client.publish(f"{self.mqtt_client.device_id_list[0]}/Status/Remainder", msg)
 
 async def main():
     smart_diffuser = SmartDiffuser()

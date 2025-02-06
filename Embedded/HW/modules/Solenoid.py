@@ -32,4 +32,4 @@ class Solenoid:
 
 if __name__ == '__main__':
     solenoid = Solenoid(31, 33)
-    solenoid.operate_repeat(repeat_num=3)
+    solenoid.operate_repeat(repeat_num=3, time_duration=3)

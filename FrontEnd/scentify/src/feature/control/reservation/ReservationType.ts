@@ -65,6 +65,18 @@ export interface Combination {
   choice4Count: number;
 }
 
+export interface CustomSchedules {
+  id: number;
+  name: string;
+  combinationId: number;
+  combinationName: string;
+  day: number;
+  starttime: string;
+  endtime: string;
+  interval: number;
+  isFavorite: boolean;
+}
+
 // export interface CustomSchedule {
 //   name: string;
 //   deviceId: number;

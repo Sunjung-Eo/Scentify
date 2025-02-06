@@ -17,10 +17,14 @@ import ModifyReservation from "../../feature/control/reservation/ModifyReservati
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
 import { useUserStore } from "../../stores/useUserStore";
+import { MainDeviceStoreState } from "../../stores/useDeviceStore";
+
 import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
 import { getCombinationById } from "../../apis/control/getCombinationById";
+import { getDeviceInfo } from "../../apis/control/getDeviceInfo";
 
 import DeviceSelect from "../../components/Control/DeviceSelect";
+import { MainDeviceState } from "../../types/MainDeviceType";
 
 const Control = () => {
   // 인증토큰
@@ -29,74 +33,149 @@ const Control = () => {
 
   // 기기 정보
   const userstore = useUserStore();
-  const deviceIds = userstore.deviceIds;
+  const deviceIds = userstore.deviceIds ?? [];
   const { mainDevice } = useMainDeviceStore();
+  const [defaultScentId, setDefaultScentId] = useState<number | null>(
+    mainDevice?.defaultCombination ?? null
+  );
+  // setDefaultScentId(mainDevice?.defaultCombination);
   // 기기 id
   // const deviceIds = devices
   //   .map((device) => device.id)
   //   .filter((id): id is number => id !== undefined);
+  // console.log("메일", mainDevice);
   // 선택한 기기(기본값: 대표기기)
-  const devices = mainDevice
-    ? [
-        {
-          deviceId: mainDevice.id,
-          name: mainDevice.name,
-          isRepresentative: true,
-        },
-      ]
-    : [];
+  // const devices = mainDevice
+  //   ? [
+  //       {
+  //         id: mainDevice.id,
+  //         name: mainDevice.name,
+  //         isRepresentative: true,
+  //         roomType: mainDevice.roomType,
+  //       },
+  //     ]
+  //   : [];
 
+  // const mainDeviceStore = useMainDeviceStore()
+  // const { mainDevice } = useMainDeviceStore()
+  // const [defaultScentId, setDefaultScentId] = mainDeviceStore<MainDeviceStoreState>(null);
   // 선택한 기기(기본값: 대표기기 - 등록순)
-  const [selectedDevice, setSelectedDevice] = useState<number | null>(null);
-  const [defaultScentId, setDefaultScentId] = useState<number | null>(
-    devices[0].defaultCombination
+  const [selectedDevice, setSelectedDevice] = useState<number | null>(
+    mainDevice?.id ?? null
   );
+  // const [defaultScentId, setDefaultScentId] = useState<number | null>(
+  //   devices[0].defaultCombination
+  // );
   // 기기 선택
   const handleDeviceChange = (deviceId: number) => {
+    console.log("선택", deviceId);
     setSelectedDevice(deviceId);
   };
   useEffect(() => {
     if (mainDevice) {
       setSelectedDevice(mainDevice.id);
     }
-  }, [devices]);
+  }, []);
 
   // 기본향 조회
   const { data: fetchDefaultScentData = {} } = useQuery({
-    queryKey: ["defaultScentData"],
+    queryKey: ["defaultScentData", defaultScentId],
     queryFn: () => getCombinationById(defaultScentId!, accessToken),
     enabled: !!defaultScentId && !!accessToken,
   });
 
-  // 예약 관리 컴포넌트로 전달
-  const deviceSelectItems = devices.map((device) => {
-    const defaultScentData = fetchDefaultScentData;
-
-    return {
-      deviceId: device.id,
-      name: device.name,
-      roomType: device.roomType,
-      isRepresentative: device.isRepresentative,
-      defaultScentData: {
-        slot1: {
-          slot: defaultScentData.choice1,
-          count: defaultScentData.choice1Count,
-        },
-        slot2: {
-          slot: defaultScentData.choice2,
-          count: defaultScentData.choice2Count,
-        },
-        slot3: {
-          slot: defaultScentData.choice3,
-          count: defaultScentData.choice3Count,
-        },
-        slot4: {
-          slot: defaultScentData.choice4,
-          count: defaultScentData.choice4Count,
-        },
-      },
-    };
+  // 기기 정보 조회
+  const { data: fetchDeviceData = {} } = useQuery({
+    queryKey: ["deviceInfo"],
+    queryFn: () => getDeviceInfo(deviceIds, accessToken),
   });
+  const devicesInfo = fetchDeviceData;
+  // console.log("aas", devicesInfo);
+
+  // console.log("asdadss", deviceIds);
+  // 예약 관리 컴포넌트로 전달
+  const deviceSelectItems =
+    deviceIds.length === 0 || !devicesInfo?.devices
+      ? []
+      : deviceIds.map((deviceId) => {
+          const deviceInfo = devicesInfo.devices.find(
+            (device: any) => device.id === deviceId
+          );
+          // setDefaultScentId(deviceInfo.defaultCombination);
+          // const defaultScentData = fetchDefaultScentData;
+          // console.log(defaultCombination);
+          // console.log(defaultScentData);
+          // console.log(deviceInfo);
+          return {
+            deviceId: deviceInfo.id,
+            name: deviceInfo.name,
+            roomType: deviceInfo.room_type,
+            isRepresentative: deviceInfo.id === mainDevice?.id ? true : false,
+            defaultScentId: deviceInfo.defaultCombination,
+            // defaultScentData: {
+            //   slot1: {
+            //     slot: defaultScentData.choice1,
+            //     count: defaultScentData.choice1Count,
+            //   },
+            //   slot2: {
+            //     slot: defaultScentData.choice2,
+            //     count: defaultScentData.choice2Count,
+            //   },
+            //   slot3: {
+            //     slot: defaultScentData.choice3,
+            //     count: defaultScentData.choice3Count,
+            //   },
+            //   slot4: {
+            //     slot: defaultScentData.choice4,
+            //     count: defaultScentData.choice4Count,
+            //   },
+            // },
+          };
+        });
+
+  // useEffect(() => {
+  //   if (deviceIds.length > 0 && devicesInfo?.devices) {
+  //     const deviceInfo = devicesInfo.devices.find(
+  //       (device: any) => device.id === deviceIds[0]
+  //     );
+
+  //     if (deviceInfo) {
+  //       setSelectedDevice(deviceInfo.id);
+  //       setDefaultScentId(deviceInfo.defaultCombination); // 상태 업데이트 한 번만 호출
+  //     }
+  //   }
+  // }, [deviceIds, devicesInfo]);
+  // console.log(deviceSelectItems);
+  // const deviceSelectItems = devices.map((device) => {
+  //   const defaultScentData = fetchDefaultScentData;
+
+  //   return {
+  //     deviceId: device.id,
+  //     name: device.name,
+  //     roomType: device.roomType,
+  //     isRepresentative: device.isRepresentative,
+  //     defaultScentData: {
+  //       slot1: {
+  //         slot: defaultScentData.choice1,
+  //         count: defaultScentData.choice1Count,
+  //       },
+  //       slot2: {
+  //         slot: defaultScentData.choice2,
+  //         count: defaultScentData.choice2Count,
+  //       },
+  //       slot3: {
+  //         slot: defaultScentData.choice3,
+  //         count: defaultScentData.choice3Count,
+  //       },
+  //       slot4: {
+  //         slot: defaultScentData.choice4,
+  //         count: defaultScentData.choice4Count,
+  //       },
+  //     },
+  //   };
+  // });
+  // console.log("devices", devices);
+  // console.log("deviceSelectItems", deviceSelectItems);
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
@@ -159,7 +238,8 @@ const Control = () => {
               >
                 <div className="absolute left-[225px] top-[135px] z-40">
                   <DeviceSelect
-                    devices={devices}
+                    reservationData={reservationData}
+                    devices={deviceSelectItems}
                     selectedDevice={selectedDevice}
                     onDeviceChange={handleDeviceChange}
                   />
@@ -204,8 +284,9 @@ const Control = () => {
           path="reservation/create"
           element={
             <CreateReservation
+              reservationData={filteredReservations}
               devices={deviceSelectItems}
-              selectedDevice={selectedDevice!}
+              selectedDevice={selectedDevice}
               onDeviceChange={handleDeviceChange}
             />
           }
@@ -214,8 +295,9 @@ const Control = () => {
           path="reservation/modify"
           element={
             <ModifyReservation
+              reservationData={filteredReservations}
               devices={deviceSelectItems}
-              selectedDevice={selectedDevice!}
+              selectedDevice={selectedDevice}
               onDeviceChange={handleDeviceChange}
             />
           }

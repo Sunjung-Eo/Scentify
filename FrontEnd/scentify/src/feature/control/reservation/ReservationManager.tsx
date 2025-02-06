@@ -55,6 +55,8 @@ export default function ReservationManager({
   });
 
   const handleDeleteClick = (scheduleId: number) => {
+    console.log("scheduleId: ", scheduleId);
+    console.log("selectedDevice: ", selectedDevice);
     setReservationDelete(scheduleId);
     setDeleteModalOpen(true);
   };

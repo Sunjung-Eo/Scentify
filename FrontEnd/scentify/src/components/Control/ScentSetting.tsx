@@ -179,29 +179,28 @@ export default function ScentSetting({
 }: ScentSettingProps) {
   const totalUsage = Object.values(scents).reduce((acc, curr) => acc + curr, 0);
   const availableEnergy = totalEnergy - totalUsage;
-  // console.log("rrrrrrrrrrrr", defaultScentData);
 
-  const memoizedDefaultScentData = useMemo(
-    () => ({
-      slot1: {
-        slot: defaultScentData.slot1.slot,
-        count: defaultScentData.slot1.count,
-      },
-      slot2: {
-        slot: defaultScentData.slot2.slot,
-        count: defaultScentData.slot2.count,
-      },
-      slot3: {
-        slot: defaultScentData.slot3.slot,
-        count: defaultScentData.slot3.count,
-      },
-      slot4: {
-        slot: defaultScentData.slot4.slot,
-        count: defaultScentData.slot4.count,
-      },
-    }),
-    [defaultScentData]
-  );
+  // const memoizedDefaultScentData = useMemo(
+  //   () => ({
+  //     slot1: {
+  //       slot: defaultScentData.slot1.slot,
+  //       count: defaultScentData.slot1.count,
+  //     },
+  //     slot2: {
+  //       slot: defaultScentData.slot2.slot,
+  //       count: defaultScentData.slot2.count,
+  //     },
+  //     slot3: {
+  //       slot: defaultScentData.slot3.slot,
+  //       count: defaultScentData.slot3.count,
+  //     },
+  //     slot4: {
+  //       slot: defaultScentData.slot4.slot,
+  //       count: defaultScentData.slot4.count,
+  //     },
+  //   }),
+  //   [defaultScentData]
+  // );
   // 향 설정값 변경
   const handleScentChange = (scentKey: string, value: number) => {
     const newScents = { ...scents, [scentKey]: value };
@@ -216,14 +215,14 @@ export default function ScentSetting({
     }
   };
   // 디폴트: 기본향으로 설정
-  useEffect(() => {
-    setScents((prevScents) => ({
-      scent1: prevScents.scent1 || memoizedDefaultScentData.slot1.count,
-      scent2: prevScents.scent2 || memoizedDefaultScentData.slot2.count,
-      scent3: prevScents.scent3 || memoizedDefaultScentData.slot3.count,
-      scent4: prevScents.scent4 || memoizedDefaultScentData.slot4.count,
-    }));
-  }, []);
+  // useEffect(() => {
+  //   setScents((prevScents) => ({
+  //     scent1: prevScents.scent1 || memoizedDefaultScentData.slot1.count,
+  //     scent2: prevScents.scent2 || memoizedDefaultScentData.slot2.count,
+  //     scent3: prevScents.scent3 || memoizedDefaultScentData.slot3.count,
+  //     scent4: prevScents.scent4 || memoizedDefaultScentData.slot4.count,
+  //   }));
+  // }, []);
 
   return (
     <div className="flex justify-center">

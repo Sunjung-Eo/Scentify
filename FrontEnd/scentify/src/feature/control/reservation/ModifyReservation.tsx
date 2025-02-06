@@ -14,6 +14,7 @@ import { getCombinationById } from "../../../apis/control/getCombinationById";
 import { updateCustomSchedule } from "../../../apis/control/updateCustomSchedule";
 
 export default function ModifyReservation({
+  reservationData,
   devices,
   selectedDevice,
   onDeviceChange,
@@ -108,6 +109,57 @@ export default function ModifyReservation({
     (device) => device.deviceId === selectedDevice
   );
 
+  // 기본향 설정
+  const [defaultScentId, setDefaultScentId] = useState(
+    devices.find((device) => device.deviceId === selectedDevice)?.defaultScentId
+  );
+  const [defaultScentData, setDefaultScentData] = useState({
+    slot1: { slot: 0, count: 0 },
+    slot2: { slot: 0, count: 0 },
+    slot3: { slot: 0, count: 0 },
+    slot4: { slot: 0, count: 0 },
+  });
+  useEffect(() => {
+    const newDefaultScentId = devices.find(
+      (device) => device.deviceId === selectedDevice
+    )?.defaultScentId;
+    setDefaultScentId(newDefaultScentId);
+  }, [selectedDevice, devices]);
+  useEffect(() => {
+    const fetchCombination = async () => {
+      if (defaultScentId) {
+        try {
+          const combination = await getCombinationById(
+            defaultScentId,
+            accessToken
+          );
+          setDefaultScentData({
+            slot1: {
+              slot: combination.choice1,
+              count: combination.choice1Count,
+            },
+            slot2: {
+              slot: combination.choice2,
+              count: combination.choice2Count,
+            },
+            slot3: {
+              slot: combination.choice3,
+              count: combination.choice3Count,
+            },
+            slot4: {
+              slot: combination.choice4,
+              count: combination.choice4Count,
+            },
+          });
+        } catch (error) {
+          console.error("기본향 조합 데이터 가져오기 실패:", error);
+        }
+      }
+    };
+
+    fetchCombination();
+  }, [defaultScentId, accessToken]);
+
   // 향 설정
   const [scentName, setScentName] = useState<string>(schedule.combinationName);
   // 현재
@@ -181,13 +233,13 @@ export default function ModifyReservation({
     // 향 수정 여부
     const isScentsChanged = () => {
       const currentScents = {
-        choice1: selectedDeviceData?.defaultScentData.slot1.slot,
+        choice1: defaultScentData.slot1.slot,
         choice1Count: scents.scent1,
-        choice2: selectedDeviceData?.defaultScentData.slot2.slot,
+        choice2: defaultScentData.slot2.slot,
         choice2Count: scents.scent2,
-        choice3: selectedDeviceData?.defaultScentData.slot3.slot,
+        choice3: defaultScentData.slot3.slot,
         choice3Count: scents.scent3,
-        choice4: selectedDeviceData?.defaultScentData.slot4.slot,
+        choice4: defaultScentData.slot4.slot,
         choice4Count: scents.scent4,
       };
       console.log("현재", currentScents);
@@ -216,13 +268,13 @@ export default function ModifyReservation({
       combination: isScentsChanged()
         ? {
             name: scentName,
-            choice1: selectedDeviceData?.defaultScentData.slot1.slot!,
+            choice1: defaultScentData.slot1.slot!,
             choice1Count: scents.scent1,
-            choice2: selectedDeviceData?.defaultScentData.slot2.slot!,
+            choice2: defaultScentData.slot2.slot!,
             choice2Count: scents.scent2,
-            choice3: selectedDeviceData?.defaultScentData.slot3.slot!,
+            choice3: defaultScentData.slot3.slot!,
             choice3Count: scents.scent3,
-            choice4: selectedDeviceData?.defaultScentData.slot4.slot!,
+            choice4: defaultScentData.slot4.slot!,
             choice4Count: scents.scent4,
           }
         : { id: schedule.combinationId },
@@ -353,6 +405,7 @@ export default function ModifyReservation({
         </label>
         <div className="absolute top-[-9px] left-[63px] z-50">
           <DeviceSelect
+            reservationData={reservationData}
             devices={devices}
             selectedDevice={selectedDevice}
             onDeviceChange={onDeviceChange}
@@ -530,24 +583,32 @@ export default function ModifyReservation({
           scents={scents}
           setScents={setScents}
           totalEnergy={totalEnergy}
-          defaultScentData={{
-            slot1: {
-              slot: previousScentData.choice1,
-              count: previousScentData.choice1Count,
-            },
-            slot2: {
-              slot: previousScentData.choice2,
-              count: previousScentData.choice2Count,
-            },
-            slot3: {
-              slot: previousScentData.choice3,
-              count: previousScentData.choice3Count,
-            },
-            slot4: {
-              slot: previousScentData.choice4,
-              count: previousScentData.choice4Count,
-            },
-          }}
+          defaultScentData={
+            defaultScentData || {
+              slot1: { slot: 0, count: 0 },
+              slot2: { slot: 0, count: 0 },
+              slot3: { slot: 0, count: 0 },
+              slot4: { slot: 0, count: 0 },
+            }
+          }
+          // defaultScentData={{
+          //   slot1: {
+          //     slot: previousScentData.choice1,
+          //     count: previousScentData.choice1Count,
+          //   },
+          //   slot2: {
+          //     slot: previousScentData.choice2,
+          //     count: previousScentData.choice2Count,
+          //   },
+          //   slot3: {
+          //     slot: previousScentData.choice3,
+          //     count: previousScentData.choice3Count,
+          //   },
+          //   slot4: {
+          //     slot: previousScentData.choice4,
+          //     count: previousScentData.choice4Count,
+          //   },
+          // }}
         />
         {formErrors.scents && (
           <p className="absolute mt-[217px] ml-[70px] text-red-500 text-10">

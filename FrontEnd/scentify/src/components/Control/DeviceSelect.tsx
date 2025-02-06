@@ -1,20 +1,29 @@
 import { useState } from "react";
 import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
+import { CustomSchedules } from "../../feature/control/reservation/ReservationType";
+
 // 기기 선택 타입
 export interface DeviceSelectItem {
   deviceId: number;
   name: string | null;
   roomType: number | null;
   isRepresentative: boolean;
-  defaultScentData: {
-    slot1: { slot: number | null; count: number };
-    slot2: { slot: number | null; count: number };
-    slot3: { slot: number | null; count: number };
-    slot4: { slot: number | null; count: number };
-  };
+  defaultScentId: number;
+  // defaultScentData: {
+  //   slot1: { slot: number | null; count: number };
+  //   slot2: { slot: number | null; count: number };
+  //   slot3: { slot: number | null; count: number };
+  //   slot4: { slot: number | null; count: number };
+  // };
+}
+
+interface reservationData {
+  deviceId: number;
+  reservations: CustomSchedules[];
 }
 
 export interface DeviceSelectProps {
+  reservationData: reservationData[];
   devices: DeviceSelectItem[];
   selectedDevice: number | null;
   onDeviceChange: (deviceId: number) => void;
@@ -22,6 +31,7 @@ export interface DeviceSelectProps {
 
 // 기기 선택
 export default function DeviceSelect({
+  reservationData,
   devices,
   selectedDevice,
   onDeviceChange,

@@ -11,8 +11,10 @@ import { ReservationData } from "./ReservationType";
 import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 import { createCustomSchedule } from "../../../apis/control/createCustomSchedule";
+import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 export default function CreateReservation({
+  reservationData,
   devices,
   selectedDevice,
   onDeviceChange,
@@ -86,6 +88,57 @@ export default function CreateReservation({
     (device) => device.deviceId === selectedDevice
   );
 
+  // 기본향 설정
+  const [defaultScentId, setDefaultScentId] = useState(
+    devices.find((device) => device.deviceId === selectedDevice)?.defaultScentId
+  );
+  const [defaultScentData, setDefaultScentData] = useState({
+    slot1: { slot: 0, count: 0 },
+    slot2: { slot: 0, count: 0 },
+    slot3: { slot: 0, count: 0 },
+    slot4: { slot: 0, count: 0 },
+  });
+  useEffect(() => {
+    const newDefaultScentId = devices.find(
+      (device) => device.deviceId === selectedDevice
+    )?.defaultScentId;
+    setDefaultScentId(newDefaultScentId);
+  }, [selectedDevice, devices]);
+  useEffect(() => {
+    const fetchCombination = async () => {
+      if (defaultScentId) {
+        try {
+          const combination = await getCombinationById(
+            defaultScentId,
+            accessToken
+          );
+          setDefaultScentData({
+            slot1: {
+              slot: combination.choice1,
+              count: combination.choice1Count,
+            },
+            slot2: {
+              slot: combination.choice2,
+              count: combination.choice2Count,
+            },
+            slot3: {
+              slot: combination.choice3,
+              count: combination.choice3Count,
+            },
+            slot4: {
+              slot: combination.choice4,
+              count: combination.choice4Count,
+            },
+          });
+        } catch (error) {
+          console.error("기본향 조합 데이터 가져오기 실패:", error);
+        }
+      }
+    };
+
+    fetchCombination();
+  }, [defaultScentId, accessToken]);
+
   // 향 설정
   const [scentName, setScentName] = useState<string>("");
   const [scents, setScents] = useState({
@@ -105,7 +158,7 @@ export default function CreateReservation({
     }
   };
   const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
-  console.log("da", selectedDeviceData?.defaultScentData);
+  // console.log("da", selectedDeviceData?.defaultScentData);
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -151,14 +204,14 @@ export default function CreateReservation({
       day: getDaysBitMask(selectedDays),
       combination: {
         name: scentName,
-        choice1: selectedDeviceData?.defaultScentData.slot1.slot!,
-        choice1Count: selectedDeviceData?.defaultScentData.slot1.count!,
-        choice2: selectedDeviceData?.defaultScentData.slot2.slot!,
-        choice2Count: selectedDeviceData?.defaultScentData.slot2.count!,
-        choice3: selectedDeviceData?.defaultScentData.slot3.slot!,
-        choice3Count: selectedDeviceData?.defaultScentData.slot3.count!,
-        choice4: selectedDeviceData?.defaultScentData.slot4.slot!,
-        choice4Count: selectedDeviceData?.defaultScentData.slot4.count!,
+        choice1: defaultScentData.slot1.slot!,
+        choice1Count: scents.scent1,
+        choice2: defaultScentData.slot2.slot!,
+        choice2Count: scents.scent2,
+        choice3: defaultScentData.slot3.slot!,
+        choice3Count: scents.scent3,
+        choice4: defaultScentData.slot4.slot!,
+        choice4Count: scents.scent4,
       },
       startTime: convertTo24Hour(startHour, startMinute, startPeriod),
       endTime: convertTo24Hour(endHour, endMinute, endPeriod),
@@ -219,6 +272,7 @@ export default function CreateReservation({
         </label>
         <div className="absolute top-[-9px] left-[63px] z-50">
           <DeviceSelect
+            reservationData={reservationData}
             devices={devices}
             selectedDevice={selectedDevice}
             onDeviceChange={onDeviceChange}
@@ -398,7 +452,7 @@ export default function CreateReservation({
           setScents={setScents}
           totalEnergy={totalEnergy}
           defaultScentData={
-            selectedDeviceData?.defaultScentData || {
+            defaultScentData || {
               slot1: { slot: 0, count: 0 },
               slot2: { slot: 0, count: 0 },
               slot3: { slot: 0, count: 0 },

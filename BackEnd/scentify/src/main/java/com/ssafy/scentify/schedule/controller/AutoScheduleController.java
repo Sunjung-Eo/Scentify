@@ -9,6 +9,8 @@ import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.AutoSchedulesListResponseDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.AutoScheduleDto;
+import com.ssafy.scentify.schedule.model.dto.UpdateModeDto;
+import com.ssafy.scentify.schedule.model.dto.UpdateModeDto.Schedule;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.websocket.WebSocketController;
 
@@ -81,20 +83,30 @@ public class AutoScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
-			// 웹 소켓 통신으로 수정되었음을 전달 필요
-			int deviceId = autoScheduleDto.getDeviceId();
-			int scheduleId = autoScheduleDto.getId();
+			socketController.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
 			
-			if (combinationChange == true) {
-				socketController.sendCombinationUpdate(deviceId, scheduleId, combinationId);
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 46번 : 운동, 휴식 모드 수정
+	@PostMapping("/exercise/rest/update")
+	public ResponseEntity<?> updateExerciseAndRestMode(@RequestBody UpdateModeDto modeDto) {
+		try {
+			// 운동 모드 수정
+			Schedule exerciseSchedule = modeDto.getExerciseScehdule();
+			if (!updateActionSchedule(exerciseSchedule, modeDto.isExerciseIntervalChange(), modeDto.isExerciseModeChange())) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-			if (autoScheduleDto.isIntervalChange()) {
-				
-			}
-						
-			if (autoScheduleDto.isModeChange()) {
-				
+			// 휴식 모드 수정
+			Schedule restSchedule = modeDto.getRestScehdule();
+			if (!updateActionSchedule(restSchedule, modeDto.isRestIntervalChange(), modeDto.isRestModeChange())) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
@@ -105,16 +117,33 @@ public class AutoScheduleController {
 		}
 	}
 	
+	// 동작 모드 DB 업데이트 및 RB 정보 전달
+	public boolean updateActionSchedule(Schedule schedule, boolean intervalChange, boolean modeChange) {
+		if (!autoScheduleService.updateActionSchedule(schedule)) { return false; }
+		
+		int deviceId = schedule.getDeviceId();
+		int scheduleId = schedule.getId();
+		if (intervalChange) { socketController.sendIntervalUpdate(deviceId, scheduleId, schedule.getInterval());}
+		if (modeChange) { socketController.sendUpdateModeOn(deviceId, scheduleId, schedule.isModeOn()); }
+		
+		return true;
+	}
+	
 	// API 51번 : 단순 탐지 모드 수정
 	@PostMapping("/detection/update")
 	public ResponseEntity<?> updateDetectionMode(@RequestBody AutoScheduleDto autoScheduleDto) {
 		try {
-			// 향 조합을 등록해줌
+			// 향 조합에 변경이 없다면 id가 전달됨
 			CombinationDto combination = autoScheduleDto.getCombination();
-			combination.setName("탐지향");
-			Integer combinationId = combinationService.createCombination(combination);	
-			if (combinationId  == null) { 
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	
+			Integer combinationId = combination.getId();
+			boolean combinationChange = false;
+			
+			// 향 조합이 변경된 경우 향 조합을 등록
+			if (combinationId == null) {
+				combination.setName("탐지향");
+				combinationId = combinationService.createCombination(combination);	
+				if (combinationId  == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	}
+				combinationChange = true;
 			}
 			
 			// 탐지 모드 업데이트 (불가능 하다면 400 반환)
@@ -122,10 +151,7 @@ public class AutoScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
-			// 웹 소켓 통신으로 수정되었음을 전달 필요
-			if (autoScheduleDto.isModeChange()) {
-				// 웹소켓 컨트롤러 메서드 실행
-			}
+			socketController.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {

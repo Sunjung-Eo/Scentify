@@ -1,8 +1,14 @@
 import { useAuthStore } from '../../stores/useAuthStore';
 
-export const deviceInfo = async (OneDiveIds: number) => {
+export const deviceInfo = async (OneDiveIds: number | number[]) => {
   try {
     const accessToken = useAuthStore.getState().accessToken;
+    const formattedDeviceIds = Array.isArray(OneDiveIds)
+      ? OneDiveIds
+      : [OneDiveIds];
+
+    console.log('🔹 요청 JSON:', JSON.stringify({ OneDiveIds }));
+
     const response = await fetch('/v1/device/info', {
       method: 'POST',
       headers: {
@@ -10,9 +16,12 @@ export const deviceInfo = async (OneDiveIds: number) => {
         Authorization: `Bearer ${accessToken}`, // 토큰 추가
       },
       body: JSON.stringify({
-        deviceIds: [OneDiveIds],
+        deviceIds: formattedDeviceIds,
       }),
     });
+
+    // 🚀 응답 상태 코드 확인
+    console.log('🔹 서버 응답 상태:', response.status);
 
     if (!response.ok) {
       throw new Error('디바이스 정보를 가져올 수 없습니다');

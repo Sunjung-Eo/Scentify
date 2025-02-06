@@ -341,4 +341,14 @@ public class WebSocketController {
 		log.info("Data processed for id: {}", deviceId); 
 	}
 	
+	// API 51번 : 자동화 모드 modeOn 수정 정보 전송
+	public void sendUpdateModeOn(int deviceId, int scheduleId, boolean modeOn) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("id", scheduleId);
+		response.put("modeOn", modeOn);
+		
+		// 메세지 전송
+		template.convertAndSend("/topic/Mode/Change/" + deviceId, response);
+		log.info("Data processed for id: {}", deviceId); 
+	}
 }

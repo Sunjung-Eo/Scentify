@@ -9,6 +9,7 @@ class SIMPLEYOLO:
         self.model = YOLO('yolov8s.pt', verbose=False)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model.to(self.device)
+        self.th_conf_score = 0.7
         print("Load Yolo Model Module")
 
     def person_detect(self, frame):
@@ -20,7 +21,7 @@ class SIMPLEYOLO:
         confidence_scores = results[0].boxes.conf.tolist()  
 
         for cls, conf in zip(detected_classes, confidence_scores):
-            if cls == 0 and conf > 0.8:  # 클래스 ID 0 == 사람(person)
+            if cls == 0 and conf >= self.th_conf_score:  # 클래스 ID 0 == 사람(person)
                 return True
 
         return False 

@@ -12,6 +12,7 @@ import DetectionSetting from "../../feature/control/automation/DetectionSetting"
 import CreateReservation from "../../feature/control/reservation/CreateReservation";
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
+import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
 
 import { useDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
@@ -60,7 +61,6 @@ const Control = () => {
 
   // 예약 관리 컴포넌트로 전달
   const deviceSelectItems = devices.map((device) => {
-    console.log(fetchDefaultScentData);
     const defaultScentData = fetchDefaultScentData;
 
     return {
@@ -195,6 +195,16 @@ const Control = () => {
           path="reservation/create"
           element={
             <CreateReservation
+              devices={deviceSelectItems}
+              selectedDevice={selectedDevice!}
+              onDeviceChange={handleDeviceChange}
+            />
+          }
+        />
+        <Route
+          path="reservation/modify"
+          element={
+            <ModifyReservation
               devices={deviceSelectItems}
               selectedDevice={selectedDevice!}
               onDeviceChange={handleDeviceChange}

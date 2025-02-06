@@ -86,3 +86,16 @@ export interface ReservationData {
   interval: number;
   modeOn: boolean;
 }
+
+// 예약 수정
+export interface UpdateReservationData {
+  id: number;
+  name: string;
+  deviceId: number;
+  day: number;
+  combination: Combination;
+  startTime: string;
+  endTime: string;
+  interval: number;
+  modeOn: boolean;
+}

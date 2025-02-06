@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useControlStore } from "../../../stores/useControlStore";
 import { useAuthStore } from "../../../stores/useAuthStore";
@@ -85,7 +85,6 @@ export default function CreateReservation({
   const selectedDeviceData = devices.find(
     (device) => device.deviceId === selectedDevice
   );
-  // console.log("12313123", selectedDeviceData?.defaultScentData.slot1.slot);
 
   // 향 설정
   const [scentName, setScentName] = useState<string>("");
@@ -106,6 +105,7 @@ export default function CreateReservation({
     }
   };
   const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
+  console.log("da", selectedDeviceData?.defaultScentData);
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({

@@ -70,7 +70,7 @@ export default function ReservationManager({
     setReservationDelete(null);
   };
 
-  // 요일 비스마스크 변환
+  // 요일 비트마스크 변환
   const getDaysFromBitMask = (bitmask: number): string[] => {
     return Object.entries(DAYS_BIT)
       .filter(([_, bit]) => (bitmask & bit) > 0)
@@ -118,6 +118,7 @@ export default function ReservationManager({
       {customSchedules.length > 0 ? (
         <div className="mt-5 pb-3 max-h-96 overflow-y-auto">
           {customSchedules.map((schedule) => {
+            // console.log(schedule);
             const selectedDays = getDaysFromBitMask(schedule.day);
             const [startTime, startPeriod] = convertTo12Hour(
               schedule.startTime
@@ -170,7 +171,9 @@ export default function ReservationManager({
                           /> */}
                       <button
                         onClick={() =>
-                          navigate(`/modify-reservation/${schedule}`)
+                          navigate("/control/reservation/modify", {
+                            state: { schedule },
+                          })
                         }
                       >
                         <img src={ModifyIcon} alt="수정 이미지" />

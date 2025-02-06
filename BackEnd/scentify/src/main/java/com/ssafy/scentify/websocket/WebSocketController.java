@@ -295,7 +295,7 @@ public class WebSocketController {
 		log.info("Data processed for id: {}", id);  
 	}
 	
-	// API 41번 : 탈취 모드 향기 정보 요청
+	// API 41번 : 자동화 모드 향기 정보 요청
 	@MessageMapping("/DeviceStatus/Sensor")
 	public void sendCombination(@Payload CombinationRequest request) {
 		String token = request.getToken();
@@ -317,6 +317,17 @@ public class WebSocketController {
  		// 메세지 전송
 		template.convertAndSend("/topic/Auto/Operation/" + id, response);
 		log.info("Data processed for id: {}", id); 		
+	}
+	
+	// API 45번 : 자동화 모드 조합 수정 정보 전송
+	public void sendCombinationUpdate(int deviceId, int scheduleId, int combinatonId) {
+		Map<String, Integer> response = new HashMap<>();
+		response.put("id", scheduleId);
+		response.put("combinationId", combinatonId);
+		
+		// 메세지 전송
+		template.convertAndSend("/topic/Combination/Change/" + deviceId, response);
+		log.info("Data processed for id: {}", deviceId); 	
 	}
 	
 }

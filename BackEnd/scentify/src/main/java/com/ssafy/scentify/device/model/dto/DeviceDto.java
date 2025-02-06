@@ -135,7 +135,7 @@ public class DeviceDto {
 	    private int id;
 	    private String name;
 	    private int groupId;
-	    private int room_type;
+	    private int roomType;
 	    private int slot1;
 	    private int slot1RemainingRatio;
 	    private Integer slot2;

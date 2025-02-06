@@ -42,6 +42,8 @@ public class FavoriteController {
 			
 			 // 토큰에서 id 추출
 			 String userId = tokenProvider.getId(token);
+			 
+			 // 찜할 조합 리스트를 추출
 			 List<Integer> combinationIds = combinationIdsMap.get("combinationIds");
 			 
 			 // 찜 리스트에 추가
@@ -60,8 +62,28 @@ public class FavoriteController {
 	}
 	
 	// API 56번 : 찜 리스트 전체 조회
-	
-	
+	@PostMapping("/all")
+	public ResponseEntity<?> getAllFavorites(@RequestHeader("Authorization") String authorizationHeader) {
+		try {
+			// "Bearer " 제거
+			if (!authorizationHeader.startsWith("Bearer ")) {
+			    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			String token = authorizationHeader.substring(7);
+			
+			// 토큰에서 id 추출
+			String userId = tokenProvider.getId(token);
+			
+			// 찜 리스트 DB 조회
+			
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	// API 57번 : 찜 삭제하기
 	@MessageMapping("/delete")

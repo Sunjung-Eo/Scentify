@@ -51,10 +51,14 @@ public class WebSocketService {
 	    Combination combination = getCombination(scheduleDto);
 
 	    // 요청 객체 생성
-	    CustomScheduleRequest scheduleRequest 
-	    = new CustomScheduleRequest(scheduleDto.getId(), scheduleDto.getDeviceId(), scheduleDto.getStartTime(), 
-	    							scheduleDto.getEndTime(), scheduleDto.getInterval(), scheduleDto.isModeOn(), 
-	    							combination);
+	    CustomScheduleRequest scheduleRequest = new CustomScheduleRequest();
+	    scheduleRequest.setId(scheduleDto.getId());
+	    scheduleRequest.setDeviceId(scheduleDto.getDeviceId());
+	    scheduleRequest.setStartTime(scheduleDto.getStartTime());
+	    scheduleRequest.setEndTime(scheduleDto.getEndTime());
+	    scheduleRequest.setInterval(scheduleDto.getInterval());
+	    scheduleRequest.setModeOn(scheduleDto.isModeOn());
+	    scheduleRequest.setCombination(combination);
 
 	    // 메시지 전송
 	    template.convertAndSend("/topic/Schedule/Change/" + deviceId, scheduleRequest);
@@ -65,12 +69,16 @@ public class WebSocketService {
 	    Integer combinationId = scheduleDto.getCombination().getId();
 
 	    if (combinationId == null) {
-	        return new Combination(
-	            scheduleDto.getCombination().getChoice1(), scheduleDto.getCombination().getChoice1Count(),
-	            scheduleDto.getCombination().getChoice2(), scheduleDto.getCombination().getChoice2Count(),
-	            scheduleDto.getCombination().getChoice3(), scheduleDto.getCombination().getChoice3Count(),
-	            scheduleDto.getCombination().getChoice4(), scheduleDto.getCombination().getChoice4Count()
-	        );
+	        Combination combination = new Combination();
+	        combination.setChoice1(scheduleDto.getCombination().getChoice1());
+	        combination.setChoice1(scheduleDto.getCombination().getChoice1Count());
+	        combination.setChoice2(scheduleDto.getCombination().getChoice2());
+	        combination.setChoice2(scheduleDto.getCombination().getChoice2Count());
+	        combination.setChoice3(scheduleDto.getCombination().getChoice3());
+	        combination.setChoice3(scheduleDto.getCombination().getChoice3Count());
+	        combination.setChoice4(scheduleDto.getCombination().getChoice4());
+	        combination.setChoice4(scheduleDto.getCombination().getChoice4Count());
+	    	return combination;
 	    }
 
 	    Combination combination = combinationService.getSocketCombinationById(combinationId);

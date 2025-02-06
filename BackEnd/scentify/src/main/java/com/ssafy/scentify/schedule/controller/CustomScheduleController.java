@@ -17,7 +17,6 @@ import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
-import com.ssafy.scentify.websocket.WebSocketController;
 import com.ssafy.scentify.websocket.WebSocketService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 

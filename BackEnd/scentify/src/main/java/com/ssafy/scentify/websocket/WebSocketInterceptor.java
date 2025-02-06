@@ -1,6 +1,7 @@
 package com.ssafy.scentify.websocket;
 
 import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
@@ -67,6 +68,7 @@ public class WebSocketInterceptor implements HandshakeInterceptor, ChannelInterc
             
             String serial = tokenProvider.getSerial(token);
             log.info("serial : {}" + serial);
+            attributes.put("serial", serial);
             
             if (!deviceService.selectDeviceBySerial(serial)) {
             	response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -82,10 +84,15 @@ public class WebSocketInterceptor implements HandshakeInterceptor, ChannelInterc
     }
     
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-    	
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, 
+                               WebSocketHandler wsHandler, Exception exception) {
+        log.info("afterHandshake called");
+
+        if (exception != null) {
+            log.error("WebSocket handshake failed", exception);
+        }
     }
-    
+   
     // Heartbeat를 체크하고 만약 연결이 끊어졌다면 제거
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {

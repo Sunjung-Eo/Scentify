@@ -59,6 +59,10 @@ public class FavoriteController {
 		}
 	}
 	
+	// API 56번 : 찜 리스트 전체 조회
+	
+	
+	
 	// API 57번 : 찜 삭제하기
 	@MessageMapping("/delete")
 	public ResponseEntity<?> removeCombinationFromFavorites(@RequestHeader("Authorization") String authorizationHeader, Map<String, Integer> favoriteMap) {

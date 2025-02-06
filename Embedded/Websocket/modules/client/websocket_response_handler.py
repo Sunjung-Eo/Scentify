@@ -31,13 +31,16 @@ class WebSocketResponseHandler:
     async def handler_capsule_initial_info(self, message):
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/CapsuleInfo",
-            json.dumps(message)
+            message
         )
         print("Handling Capsule Initial Info")
 
-    async def handler_remote_operation(self):
+    async def handler_remote_operation(self, message):
         # TODO: 모터 제어를 위한 MQTT Pub 코드 작성
-        pass
+        await self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/Operation",
+            message
+        )
         print("Handling Remote Operation Motor")
 
     def default_hanlder(self):

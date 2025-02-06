@@ -49,6 +49,7 @@ class WebSocketClient:
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
             self.device_id = None
+            self.is_initial_connection = True
 
     # 연결 테스트 코드
     async def connection(self, ):
@@ -74,13 +75,19 @@ class WebSocketClient:
                     await self.subcribe_websocket()
 
                     # websocket response handler 키 업데이트 (맨 뒤에 id 추가)
-                    original_key = {}
-                    for key, value in self.websocket_response_hanlder.items():
-                        if key == "default":
-                            original_key[key] = value
-                        original_key[f'{key}{self.device_id}'] = value
-                    self.websocket_response_hanlder = {}
-                    self.websocket_response_hanlder = original_key
+                    if self.is_initial_connection:
+                        original_key = {}
+                        for key, value in self.websocket_response_hanlder.items():
+                            if key == "default":
+                                original_key[key] = value
+                                continue
+                            original_key[f'{key}{self.device_id}'] = value
+                        self.websocket_response_hanlder = {}
+                        self.websocket_response_hanlder = original_key
+                        self.is_initial_connection = False
+
+                    await self.init_request()
+                    await self.send_temp_hum()
 
                     receive_task = asyncio.create_task(self.receive_messages())
                     send_task = asyncio.create_task(self.send_message())
@@ -97,13 +104,21 @@ class WebSocketClient:
                 print(f"Exception for Websocket Connection.. : {e}")
                 await asyncio.sleep(3)
 
+    async def init_request(self):
+        msg = {'token' : get_access_token(self.device_id)}
+        json_msg = json.dumps(msg)
+        await self.send_request("/app/DeviceStatus/Capsule/Info", json_msg)
+
+    async def send_request(self, topic, msg):
+        send_frame = stomper.send(topic, msg, content_type='application/json')       
+        await self.websocket.send(send_frame)
+
     async def set_device_id(self):
         subscribe_frame = get_subscribe_frame(0, f"/topic/DeviceInfo/Id/{self.__serial_number}")
         await self.websocket.send(subscribe_frame)
 
         serial_msg = json.dumps({'token' : get_access_token(self.__serial_number)})
-        send_frame = stomper.send('/app/DeviceInfo/Id', serial_msg, content_type='application/json')                    
-        await self.websocket.send(send_frame)      
+        await self.send_request('/app/DeviceInfo/Id', serial_msg)
 
         while True:
             res = await self.websocket.recv()
@@ -133,29 +148,30 @@ class WebSocketClient:
         while self.websocket is not None:
             try:
                 message = {}
+                header = {}
                 while True:
                     res = await self.websocket.recv()
-                    header, body = parse_stomp_message(res)
-                    if len(body) <= 1:
+                    header, message = parse_stomp_message(res)
+                    if len(message) <= 1:
                         continue
-
-                    message = json.loads(body)
-                    """
-                    print(header, message)
-                    {'destination': '/topic/Remote/Operation/1903711731', 'content-type': 'application/json', 'subscription': '3', 'message-id': 'da2278bd-9287-3a42-0f78-21edd7c285d6-11', 'content-length': '145'} {'id': 1296837941, 'name': None, 'choice1': 0, 'choice1Count': 3, 'choice2': 0, 'choice2Count': 0, 'choice3': 0, 'choice3Count': 0, 'choice4': 0, 'choice4Count': 0}
-                    pub! topic : 1/CapsuleInfo, payload : 
-                    """
-                    print(header, message)
                     break
 
-                # TODO: Header에서 Type 갖고 오는 코드 작성하기!
-                # msg_type = message.get("type")
-                msg_type = "/topic/DeviceStatus/Capsule/Info/1903711731"
+                msg_type = header['destination']
                 handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
                 await handler(message)
 
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
+
+    async def send_temp_hum(self):
+        temp, hum = get_temp_and_hum()
+        data = {
+            "type" : "DeviceStatus/Sensor/TempHum",
+            "temperature" : temp,
+            "humidity" : hum,
+        }
+
+        await self.message_queue.put(data)
 
     async def send_message(self):
         while self.websocket is not None:
@@ -173,6 +189,7 @@ class WebSocketClient:
             
             json_msg = json.dumps(message)
             send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')
+            print(send_frame)
             await self.websocket.send(send_frame)       
         
 

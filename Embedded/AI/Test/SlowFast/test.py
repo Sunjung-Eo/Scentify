@@ -10,7 +10,7 @@ from utils import num_classes, test_transform
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test Model on Webcam Video')
-    parser.add_argument('--model_path', default='slow_fast_lr=5e-4.pth', type=str, help='Model path')
+    parser.add_argument('--model_path', default='./model/slow_fast.pth', type=str, help='Model path')
     parser.add_argument('--duration', default=3, type=int, help='Clip duration in seconds')
     
     opt = parser.parse_args()
@@ -58,7 +58,7 @@ if __name__ == '__main__':
             # Display Recording message on screen
             frame_disp = cv2.putText(frame.copy(), "Recording...", (50, 50), 
                                      cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.imshow("Webcam", frame_disp)
+            #cv2.imshow("Webcam", frame_disp)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 cap.release()
                 cv2.destroyAllWindows()

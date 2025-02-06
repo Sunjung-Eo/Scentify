@@ -11,6 +11,7 @@ parent_dir = os.path.abspath(os.path.join(current_dir, ".."))  # 상위 디렉�
 
 os.chdir(parent_dir)
 sys.path.append(os.path.abspath("HW/modules"))
+
 from Solenoid import *
 from LoadCell import *
 from GSAT_P110 import *
@@ -18,11 +19,16 @@ from GSAT_P110 import *
 os.chdir(parent_dir)
 sys.path.append(os.path.abspath("AI/modules"))
 
-os.chdir(parent_dir)
+from camera import *
+# from slowfast import *
+from yolo import *
 
 class SmartDiffuser:
     def __init__(self):
         # AI 모델
+        # self.camera = Camera()
+        # self.yolo = SIMPLEYOLO()
+        # self.slowfast = SlowFast()
 
         # HW
         # 악취 감지 센서
@@ -97,14 +103,19 @@ class SmartDiffuser:
             await self.send_remainder()
 
         elif topic == f"{self.mqtt_client.device_id}/SetOperationMode":
+            old_operation_mode = self.mode.operation_mode
             print("================OperationMode================")
-            print(self.mode)
+            print(self.mode.operation_mode)
 
             payload = json.loads(payload)
             self.mode.operation_mode = int(payload["mode"])
 
             print("================Updated OperationMode================")
-            print(self.mode)
+            print(self.mode.operation_mode)
+
+            if old_operation_mode == 0 and self.mode.operation_mode == 1:
+                # 자동화 모드 정보 요청
+                await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/AutoModeInfo", "0")
 
         elif topic == f"{self.mqtt_client.device_id}/AutoModeInit":
             payload = json.loads(payload)
@@ -119,6 +130,7 @@ class SmartDiffuser:
                     operation_type = mode["type"],
                     sub_mode = int(mode["subMode"])
                 )
+
         elif topic == f"{self.mqtt_client.device_id}/AutoModeChange":
             payload = json.loads(payload)
             id = payload["id"]

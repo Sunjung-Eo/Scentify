@@ -16,38 +16,60 @@ class WebSocketResponseHandler:
         if not self.__initialized:
             self.__initialized = True  
             self.mqtt_client = mqtt_client
+            self.print_log = False
 
             self.handlers = {
-                "/topic/DeviceStatus/Sensor/TempHum/": self.hanlder_response_temphum,
                 "/topic/DeviceStatus/Capsule/Info/": self.handler_capsule_initial_info,
                 "/topic/Remote/Operation/" : self.handler_remote_operation,
                 "/topic/Auto/Schedule/Initial/" : self.handler_request_mode_info,
+                "/topic/Combination/Change/" : self.handler_automode_change,
+                "/topic/Interval/Change/" : self.handler_automode_change,
+                "/topic/Auto/Mode/Change/" : self.handler_automode_change,
+                "/topic/Mode/" : self.handler_set_operation_mode,
+                "/topic/Mode/Change/" : self.handler_set_operation_mode,
+                "/topic/Schedule/Initial/" : self.handler_schedule_init,
                 "default": self.default_hanlder
             }
-
-    async def hanlder_response_temphum(self):
-        pass
-        print("Handling Temperature & Humidity data")
 
     async def handler_capsule_initial_info(self, message):
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/CapsuleInfo",
             message
         )
-        print("Handling Capsule Initial Info")
+        if self.print_log:
+            print("Handling Capsule Initial Info")
 
     async def handler_remote_operation(self, message):
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/Operation",
             message
         )
-        print("Handling Remote Operation Motor")
+        if self.print_log:
+            print("Handling Remote Operation Motor")
 
     async def handler_request_mode_info(self, message):
         await self.mqtt_client.publish(
-            f"{self.mqtt_client.device_id_list[0]}/AutoModeInfo",
+            f"{self.mqtt_client.device_id_list[0]}/AutoModeInit",
             message
         )
+        if self.print_log:
+            print("Handling Request Mode Info")
+
+    async def handler_automode_change(self, message):
+        await self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/AutoModeChange",
+            message
+        )
+
+    async def handler_set_operation_mode(self, message):
+        await self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/SetOperationMode",
+            message
+        )
+
+    async def handler_schedule_init(self, message):
+        print("Handling Schedule Init")
+        pass
 
     def default_hanlder(self):
         print("There isn't type!!")

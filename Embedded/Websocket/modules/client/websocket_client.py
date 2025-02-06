@@ -45,17 +45,29 @@ class WebSocketClient:
                 "/topic/DeviceStatus/Capsule/Info/",
                 "/topic/Remote/Operation/",
                 "/topic/DeviceInfo/Id/",
-                "/topic/Auto/Schedule/Initial/"
+                "/topic/Auto/Schedule/Initial/",
+                "/topic/Combination/Change/",
+                "/topic/Interval/Change/",
+                "/topic/Auto/Mode/Change/",
+                "/topic/Connection/Close/",
+                "/topic/Mode/",
+                "/topic/Schedule/Initial/"
+                "/topic/Mode/Change/",
+                ""
             ]
 
             self.initial_request_dest = [
                 "/app/DeviceStatus/Capsule/Info",
-                "/app/Auto/Schedule/Initial"
+                "/app/Auto/Schedule/Initial",
+                "/app/Mode",
+                # "/app/Schedule/Initial",
             ]
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
             self.device_id = None
             self.is_initial_connection = True
+            self.disconnected = False
+            self.disconnection_event = asyncio.Event()
 
     # 연결 테스트 코드
     async def connection(self, ):
@@ -99,6 +111,15 @@ class WebSocketClient:
                     send_task = asyncio.create_task(self.send_message())
                     
                     await asyncio.gather(receive_task, send_task)
+
+                    print("Before Disconnect")
+
+                    self.disconnect()
+
+                    # 서버에서 disconnection 했을 때, reconnect
+                    await asyncio.sleep(10)
+                    print("Reconnection....")
+                    await self.connection()
 
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
@@ -152,7 +173,7 @@ class WebSocketClient:
             await self.websocket.send(subscribe_frame)
 
     async def receive_messages(self):
-        while self.websocket is not None:
+        while self.websocket is not None and not self.disconnection_event.is_set():
             try:
                 message = {}
                 header = {}
@@ -162,6 +183,13 @@ class WebSocketClient:
                     if len(message) <= 1:
                         continue
                     break
+
+                if message == "Close":
+                    print("Close!!!")
+                    self.disconnection_event.set()
+                    break
+
+                print(message)
 
                 msg_type = header['destination']
                 handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
@@ -181,19 +209,22 @@ class WebSocketClient:
         await self.message_queue.put(data)
 
     async def send_message(self):
-        while self.websocket is not None:
+        while self.websocket is not None and not self.disconnection_event.is_set():
             if self.message_queue.empty():
                 await asyncio.sleep(0.5)
                 continue
 
             # message는 항상 type과 payload 키를 가지는 딕셔너리 형태!
             message = await self.message_queue.get()
+            print(message)
             topic = message['type']
             del message['type']
             payload = message
+            print(payload)
 
             message = self.make_message(dict_data=payload)
-            
+            print(message)
+
             json_msg = json.dumps(message)
             send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')
             print(send_frame)
@@ -205,6 +236,18 @@ class WebSocketClient:
         dict_token = {'token' : get_access_token(self.device_id)}
         merge_dict.update(dict_token)
         return merge_dict
+    
+    def disconnect(self):
+        self.disconnection_event = asyncio.Event()
+        self.device_id = None
+        self.websocket = None
+        self.disconnected = True
+        while not self.message_queue.empty():
+            try:
+                self.message_queue.get_nowait()  
+                self.message_queue.task_done()   
+            except asyncio.QueueEmpty:
+                break  
 
 
 # if __name__ == '__main__':

@@ -56,6 +56,9 @@ class MQTTClient:
                 key = key.strip()
                 message[key] = value
 
+        elif topic == f"{self.device_id_list[0]}/Request/AutoModeInfo":
+            message["type"] = "Auto/Schedule/Initial"
+
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
             # 사람 단순 감지
             if payload == '1':
@@ -72,16 +75,15 @@ class MQTTClient:
         elif topic == f"{self.device_id_list[0]}/Setting":
             pass
         
-        print(message)
-        
         await self.work_queue.put(message)
 
     async def subscribe(self):
         if self.client is not None:
             await self.client.subscribe(f"{self.device_id_list[0]}/Status/Remainder")
-            await self.client.subscribe(f"{self.device_id_list[0]}/Status/DetectionResult")
-            await self.client.subscribe(f"{self.device_id_list[0]}/Status/Stink")
-            await self.client.subscribe(f"{self.device_id_list[0]}/Setting")
+            await self.client.subscribe(f"{self.device_id_list[0]}/Request/AutoModeInfo")
+            # await self.client.subscribe(f"{self.device_id_list[0]}/Status/DetectionResult")
+            # await self.client.subscribe(f"{self.device_id_list[0]}/Status/Stink")
+            # await self.client.subscribe(f"{self.device_id_list[0]}/Setting")
             print("Complete Subscribe!")
 
     async def publish(self, topic, payload):

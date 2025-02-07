@@ -6,6 +6,8 @@ import modifyIcon from '../../../../../assets/icons/modify-icon.svg';
 import crownIcon from '../../../../../assets/icons/crown-icon.svg';
 import { Link } from 'react-router-dom';
 import { mapIntToFragrance } from '../../../../../utils/fragranceUtils.ts';
+import { useMutation } from '@tanstack/react-query';
+import { sprayNow } from '../../../../../apis/home/schedule/sparyNow';
 
 interface DeviceInfoProps {
   device: MainDeviceState;
@@ -13,6 +15,26 @@ interface DeviceInfoProps {
 }
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
+  // 즉시분사 뮤테이션 추가
+  const sprayMutation = useMutation({
+    mutationFn: sprayNow,
+    onSuccess: () => {
+      alert('분사가 시작되었습니다.');
+    },
+    onError: () => {
+      alert('분사에 실패했습니다.');
+    },
+  });
+
+  // 즉시분사 핸들러
+  const handleSprayClick = () => {
+    if (!device?.id) {
+      alert('기기 정보를 찾을 수 없습니다.');
+      return;
+    }
+    sprayMutation.mutate(device.id);
+  };
+
   return (
     <div className="flex flex-col items-center w-full my-2">
       {/* 기기 이름 + 수정 버튼 */}
@@ -35,6 +57,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
             src={PlayBtn}
             alt="btn"
             className="absolute -bottom-4 -right-4 w-[60px] h-[60px]"
+            onClick={handleSprayClick}
           />
         </div>
         <div className="flex justify-around gap-2.5 mt-8 font-pre-light text-[8px]">

@@ -7,13 +7,26 @@ import { deviceInfo } from '../../../apis/home/deviceInfo';
 import { deleteDevice } from '../../../apis/home/deleteDevice';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
 import { setMainDevice } from '../../../apis/home/setMainDevice';
+interface Device {
+  id: number;
+  name: string;
+  slot1: string;
+  slot2: string;
+  slot3: string;
+  slot4: string;
+  isRepresentative?: boolean;
+}
 
 const DeviceCard = () => {
-  const { deviceIds, mainDeviceId } = useUserStore();
+  const { deviceIdsAndNames, mainDeviceId } = useUserStore();
   const queryClient = useQueryClient();
   const [currentMainDeviceId, setCurrentMainDeviceId] = useState<number | null>(
     mainDeviceId
   );
+
+  const deviceIds = deviceIdsAndNames
+    ? Object.keys(deviceIdsAndNames).map(Number)
+    : [];
 
   // mainDeviceId가 변경될 때마다 내부 상태 업데이트
   useEffect(() => {
@@ -36,6 +49,15 @@ const DeviceCard = () => {
   });
 
   const devices = data?.devices ?? [];
+
+  // 기기 정렬 함수 추가
+  const sortedDevices = [...devices].sort((a: Device, b: Device) => {
+    // null 체크 추가
+    if (!currentMainDeviceId) return 0;
+    if (Number(a.id) === currentMainDeviceId) return -1;
+    if (Number(b.id) === currentMainDeviceId) return 1;
+    return 0;
+  });
 
   // 삭제 뮤테이션 추가
   const deleteMutation = useMutation({
@@ -97,13 +119,23 @@ const DeviceCard = () => {
   // device는 devices 랑 데이터 같음 [{...}, {...}, {...}]
   return (
     <div className="cards space-y-4">
-      {devices.map((device: any, index: number) => (
+      {sortedDevices.map((device: any, index: number) => (
         <div
           key={device.id || index}
-          className="relative mt-4 flex justify-end"
+          className="relative mt-4 flex justify-end transition-all duration-700 ease-in-out"
+          style={{
+            transform: `translateY(${device.id === currentMainDeviceId ? '0' : '0'}px)`,
+            opacity:
+              deleteMutation.isPending && deleteMutation.variables === device.id
+                ? 0
+                : 1,
+          }}
         >
-          <div className="card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md">
-            {/* 디바이스 사진 */}
+          <div
+            className={`card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md transition-all duration-500 ${
+              device.id === currentMainDeviceId ? 'ring-2 ring-brand' : ''
+            }`}
+          >
             <img
               src={deviceImg}
               alt="Device Icon"

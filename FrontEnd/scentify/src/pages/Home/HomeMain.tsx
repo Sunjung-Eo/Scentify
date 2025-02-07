@@ -8,13 +8,24 @@ import { useUserStore } from "../../stores/useUserStore.ts";
 
 const HomeMain = () => {
   const { setMainDevice, mainDevice } = useMainDeviceStore();
-  const { setUser, deviceIds } = useUserStore();
+  const { setUser, deviceIdsAndNames } = useUserStore();
   const queryClient = useQueryClient();
 
-  // React Query로 homeInfo() 호출
+  const deviceIds = deviceIdsAndNames
+    ? Object.keys(deviceIdsAndNames).map(Number)
+    : [];
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["homeInfo"],
-    queryFn: homeInfo,
+    queryKey: ['homeInfo'],
+    // queryFn: homeInfo,
+    queryFn: async () => {
+      try {
+        const response = await homeInfo();
+        return response; // 성공 시 정상 데이터 반환
+      } catch (error) {
+        return null; // 실패 시 null 반환
+      }
+    },
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
@@ -33,7 +44,7 @@ const HomeMain = () => {
       nickname: data.user.nickname,
       imgNum: data.user.imgNum || 0,
       mainDeviceId: data.user.mainDeviceId || null,
-      deviceIds: deviceIds || [],
+      deviceIdsAndNames: data.deviceIdsAndNames || null, // deviceIds 대신 deviceIdsAndNames 사용
     });
 
     if (data.mainDevice) {
@@ -56,7 +67,7 @@ const HomeMain = () => {
   // DeviceCarousel에 전달할 데이터
   const exampleData = {
     mainDeviceId: mainDevice?.id || null,
-    deviceIds: deviceIds || [], // ✅ deviceIds 추가 (기본값 빈 배열)
+    deviceIds: deviceIds.length > 0 ? deviceIds : [], // deviceIds가 비어있는지 확인
     devices: mainDevice ? [mainDevice] : [],
     autoSchedules: data?.autoSchedules || [],
     customSchedules: data?.customSchedules || [],

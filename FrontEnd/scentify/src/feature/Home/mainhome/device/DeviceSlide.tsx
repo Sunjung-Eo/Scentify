@@ -39,10 +39,25 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
     refetch,
   } = useQuery({
     queryKey: ['deviceInfo', deviceIds[currentIndex]],
-    queryFn: () => deviceInfo(deviceIds[currentIndex]),
+    //queryFn: () => deviceInfo(deviceIds[currentIndex]),
+
+    queryFn: async () => {
+      // deviceIds가 비어있거나 currentIndex가 유효하지 않은 경우
+      if (!deviceIds.length || deviceIds[currentIndex] === undefined) {
+        return { devices: [] };
+      }
+      try {
+        const response = await deviceInfo(deviceIds[currentIndex]);
+        return response;
+      } catch (error) {
+        console.log('디바이스 정보 조회 실패');
+        return { devices: [] }; // 에러 발생시 빈 devices 배열 반환
+      }
+    },
     enabled: deviceIds.length > 0,
     staleTime: 0,
     refetchOnWindowFocus: false,
+    retry: false, // 에러 발생 시 재시도하지 않음
   });
 
   // 기기 변경 감지

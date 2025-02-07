@@ -40,7 +40,7 @@ class MQTTClient:
         topic = message.topic
         payload = message.payload.decode()
 
-        # print(f"메시지 수신: {topic} -> {payload}")
+        print(f"메시지 수신: {topic} -> {payload}")
 
         await self.process_message(topic, payload)
 

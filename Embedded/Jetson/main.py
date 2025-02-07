@@ -20,15 +20,17 @@ os.chdir(parent_dir)
 sys.path.append(os.path.abspath("AI/modules"))
 
 from camera import *
-# from slowfast import *
+from slowfast import *
 from yolo import *
 
 class SmartDiffuser:
     def __init__(self):
         # AI 모델
-        # self.camera = Camera()
-        # self.yolo = SIMPLEYOLO()
-        # self.slowfast = SlowFast()
+        self.camera = Camera()
+        self.yolo = SIMPLEYOLO()
+        self.slowfast = SlowFast()
+
+        # self.frame = None
 
         # HW
         # 악취 감지 센서
@@ -39,10 +41,10 @@ class SmartDiffuser:
 
         # 모터
         self.soleniods = [
+            Solenoid(31, 33),
             Solenoid(16, 18),
             Solenoid(13, 15),
             Solenoid(35, 37),
-            Solenoid(31, 33),
         ] 
 
         # MQTT Client
@@ -66,13 +68,16 @@ class SmartDiffuser:
             "slot4RemainingRatio" : 100,
         }
 
-        # 동작 모드
-        self.simple_detection_mode = AutoDetectionMode()
-        self.exercise_detection_mode = AutoDetectionMode()
-        self.relax_detection_mode = AutoDetectionMode()
-        self.stink_detection_mode = AutoDetectionMode()
+        self.mode_type = AutoModeType()
 
+        # 동작 모드
         self.mode = Mode()
+        self.type_to_id = {
+            self.mode_type.simple_detect : 0,
+            self.mode_type.exercise_detect : 1,
+            self.mode_type.relax_detect : 2,
+            self.mode_type.stink_detect : 3,
+        }
     
     def is_valid_key(self, payload, key):
         return payload[key] is not None
@@ -130,6 +135,7 @@ class SmartDiffuser:
                     operation_type = mode["type"],
                     sub_mode = int(mode["subMode"])
                 )
+            self.mapping_id_to_type()
 
         elif topic == f"{self.mqtt_client.device_id}/AutoModeChange":
             payload = json.loads(payload)
@@ -149,7 +155,6 @@ class SmartDiffuser:
             # 캡슐 맵핑
             payload = json.loads(payload)
 
-
             for key in self.slot_to_capsule.keys():
                 self.slot_to_capsule[key] = payload[key]
             
@@ -161,17 +166,58 @@ class SmartDiffuser:
 
             await self.send_remainder()
 
+    def mapping_id_to_type(self,):
+        for value in self.mode.auto_operation_mode.values():
+            if value.sub_mode == 0:
+                self.type_to_id[self.mode_type.simple_detect] = value.id
+            elif value.sub_mode == 1:
+                if value.type == 1:
+                    self.type_to_id[self.mode_type.exercise_detect] = value.id
+                elif value.type == 2:
+                    self.type_to_id[self.mode_type.relax_detect] = value.id
+            elif value.sub_mode == 2:
+                self.type_to_id[self.mode_type.stink_detect] = value.id
+
     async def send_remainder(self):
         # 잔여량 전송
         msg = json.dumps(self.capsule_remainder)
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Status/Remainder", msg)
 
+    async def operate_simple_detect(self):
+        while True:
+            frame = await self.camera.get_one_frame()
+            person_detect = self.yolo.person_detect(frame)
+            if person_detect:
+                # Operation
+                msg = {
+                    "combinationId" : self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].combinationId
+                }
+                await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/Combination", json.dumps(msg))
+                await asyncio.sleep(60 * self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].interval)
+
+    async def operate_action_detect(self):
+        while (self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn or
+            self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn):
+            
+            frames = await self.camera.get_frames(self.slowfast.required_frames_num)
+            ret = self.slowfast.analyze_action(frames)
+            if ret == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
+                pass
+            if ret == 2 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
+                pass
+
+    async def operate_stink_detect(self):
+        pass    
+
 
 async def main():
     smart_diffuser = SmartDiffuser()
     asyncio.create_task(smart_diffuser.mqtt_client.connect())
+    await asyncio.sleep(2)
+    # asyncio.create_task(smart_diffuser.operate_simple_detect())
     while True:
         await asyncio.sleep(1)
+        
 
 asyncio.run(main())
     

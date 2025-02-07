@@ -339,6 +339,7 @@ public class DeviceController {
 		}
 	}
 	
+	// API 66번 : 기기 삭제
 	@PostMapping("/delete")
 	public ResponseEntity<?> deleteDevice(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> deviceIdMap) {
 		try {
@@ -372,7 +373,7 @@ public class DeviceController {
 			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
 			if (mainDeviceId == deviceId) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
-				if (deviceIds != null) {
+				if (deviceIds.get(0) != null) {
 					userService.updateMainDeviceId(userId, deviceIds.get(0));
 				}
 			}

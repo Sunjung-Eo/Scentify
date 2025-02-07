@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListDto;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListResponseDto;
 import com.ssafy.scentify.favorite.model.repository.FavoriteRepository;
 
 @Service
@@ -21,6 +23,10 @@ public class FavoriteService {
 
 	public boolean deleteFavorite(int favoriteId, String userId) {
 		return favoriteRepository.deleteFavorite(favoriteId, userId);
+	}
+
+	public List<FavoriteListDto> getAllFavorites(String userId) {
+		return favoriteRepository.getAllFavorites(userId);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.ssafy.scentify.favorite;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.combination.CombinationController;
+import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.common.util.TokenProvider;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListDto;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListResponseDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,9 +79,11 @@ public class FavoriteController {
 			String userId = tokenProvider.getId(token);
 			
 			// 찜 리스트 DB 조회
+			FavoriteListResponseDto response = new FavoriteListResponseDto();
+			List<FavoriteListDto> favorites = favoriteService.getAllFavorites(userId);
+			response.setFavorites(favorites);
 			
-			
-			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+			return new ResponseEntity<>(response, HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리
 			log.error("Exception: ", e);

@@ -9,9 +9,9 @@ import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (a
 
 const ManageAccount = () => {
   const navigate = useNavigate();
-  const { id, nickname, imgNum } = useUserStore();
+  const { nickname, imgNum } = useUserStore();
 
-  console.log("현재 상태 확인:", { id, nickname, imgNum }); // 상태 확인
+  console.log("현재 상태 확인:", { nickname, imgNum }); // 상태 확인
 
   const { accessToken } = useAuthStore(); // 토큰 가져오기
 
@@ -89,7 +89,6 @@ const ManageAccount = () => {
         />
         <div>
           <p className="text-16 font-pre-medium">{nickname}</p>
-          <p className="text-12 text-gray font-pre-light">ID:{id}</p>
         </div>
       </div>
 

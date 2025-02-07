@@ -60,13 +60,6 @@ const My = () => {
                 <div className="py-4 font-pre-medium text-20">그룹 관리</div>
                 <GroupList />
               </div>
-
-              {/** 가족 초대 */}
-              <Link to="/my/invitecodeinput">
-                <button className="text-12 font-pre-light  absolute bottom-10">
-                  초대코드로 입력
-                </button>
-              </Link>
             </>
           }
         />

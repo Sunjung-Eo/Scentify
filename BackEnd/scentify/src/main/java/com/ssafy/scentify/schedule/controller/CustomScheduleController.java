@@ -108,6 +108,7 @@ public class CustomScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
+
 //			socketService.sendCustomScheduleUpdate(customScheduleDto);
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨

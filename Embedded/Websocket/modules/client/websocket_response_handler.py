@@ -24,7 +24,8 @@ class WebSocketResponseHandler:
 
                 # 분사 관련
                 "/topic/Remote/Operation/" : self.handler_remote_operation,
-                "/topic/Auto/Opeation/" : self.handler_remote_operation,
+                # 이거 상황 보고 handler 나눠야 할 수도 있음.
+                "/topic/Auto/Operation/" : self.handler_auto_operation,
 
                 # 모드 관리
                 "/topic/Combination/Change/" : self.handler_automode_change,
@@ -53,6 +54,18 @@ class WebSocketResponseHandler:
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/Operation",
             message
+        )
+        if self.print_log:
+            print("Handling Remote Operation Motor")
+
+    async def handler_auto_operation(self, message):
+        payload = json.loads(message)
+        combination = payload["combination"]
+        
+        payload = json.dumps(combination)
+        await self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/Operation",
+            combination
         )
         if self.print_log:
             print("Handling Remote Operation Motor")

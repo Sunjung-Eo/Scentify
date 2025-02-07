@@ -40,61 +40,46 @@ async def main():
 
     asyncio.create_task(smart_hub.mqtt_client.connect())
     await asyncio.sleep(2)
+    # asyncio.create_task(smart_hub.websocket_client.connection())
 
-    asyncio.create_task(smart_hub.websocket_client.connection())
-
-    await asyncio.sleep(2)
-
-    dummy_data = dict()
-    dummy_data = {
-        "mode" : 0,    
+    msg = {
+        "schedules" : [
+            {
+                "id" : 2,
+                "combinationId" : 1,
+                "subMode" : 0,
+                "type" : None,
+                "interval" : 15,
+                "modeOn" : True
+            },
+            {
+                "id" : 3,
+                "combinationId" : 5,
+                "subMode" : 1,
+                "type" : 1,
+                "interval" : 15,
+                "modeOn" : True
+            },
+            {
+                "id" : 3,
+                "combinationId" : 5,
+                "subMode" : 1,
+                "type" : 2,
+                "interval" : 15,
+                "modeOn" : True
+            },
+            {
+                "id" : 4,
+                "combinationId" : 7,
+                "subMode" : 2,
+                "type" : None,
+                "interval" : 15,
+                "modeOn" : True
+            },
+        ]
     }
-    json_data = json.dumps(dummy_data)
-    await smart_hub.mqtt_client.publish(
-        f"{smart_hub.mqtt_client.device_id_list[0]}/SetOperationMode", json_data
-    )
-
-    await asyncio.sleep(2)
-
-    dummy_data = dict()
-    dummy_data = {
-        "mode" : 1,    
-    }
-    json_data = json.dumps(dummy_data)
-    await smart_hub.mqtt_client.publish(
-        f"{smart_hub.mqtt_client.device_id_list[0]}/SetOperationMode", json_data
-    )
-
-    # dummy_data = {
-    #     "id" : 12,
-    #     "combinationId" : 100,    
-    # }
-
-    # json_data = json.dumps(dummy_data)
-    # await smart_hub.mqtt_client.publish(
-    #     f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeChange", json_data
-    # )
-
-    # dummy_data = {
-    #     "id" : 12,
-    #     "interval" : 100,    
-    # }
-
-    # json_data = json.dumps(dummy_data)
-    # await smart_hub.mqtt_client.publish(
-    #     f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeChange", json_data
-    # )
-
-    # dummy_data = {
-    #     "id" : 12,
-    #     "modeOn" :1,    
-    # }
-
-    # json_data = json.dumps(dummy_data)
-    # await smart_hub.mqtt_client.publish(
-    #     f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeChange", json_data
-    # )
-
+    json_msg = json.dumps(msg)
+    await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeInit", json_msg)
 
 
     while True:

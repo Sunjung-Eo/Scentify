@@ -70,7 +70,9 @@ class WebSocketClient:
                 "/app/Auto/Schedule/Initial",
                 "/app/Mode",
                 "/app/Schedule/Initial",
+                "/app/DeviceStatus/Sensor",
             ]
+
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
             self.device_id = None
@@ -144,6 +146,12 @@ class WebSocketClient:
         token = {'token' : get_access_token(self.device_id)}
         json_token = json.dumps(token)
         for dest in self.initial_request_dest:
+            await self.send_request(dest, json_token)
+
+    async def temp_request(self):
+        token = {'token' : get_access_token(self.device_id)}
+        json_token = json.dumps(token)
+        for dest in self.temp_request_dest:
             await self.send_request(dest, json_token)
 
     async def send_request(self, topic, msg):

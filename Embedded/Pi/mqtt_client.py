@@ -58,6 +58,11 @@ class MQTTClient:
 
         elif topic == f"{self.device_id_list[0]}/Request/AutoModeInfo":
             message["type"] = "Auto/Schedule/Initial"
+        
+        elif topic == f"{self.device_id_list[0]}/Request/Combination":
+            data = json.loads(payload)
+            message["type"] = "DeviceStatus/Sensor"
+            message["combinationId"] = data["combinationId"]
 
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
             # 사람 단순 감지
@@ -81,6 +86,7 @@ class MQTTClient:
         if self.client is not None:
             await self.client.subscribe(f"{self.device_id_list[0]}/Status/Remainder")
             await self.client.subscribe(f"{self.device_id_list[0]}/Request/AutoModeInfo")
+            await self.client.subscribe(f"{self.device_id_list[0]}/Request/Combination")
             # await self.client.subscribe(f"{self.device_id_list[0]}/Status/DetectionResult")
             # await self.client.subscribe(f"{self.device_id_list[0]}/Status/Stink")
             # await self.client.subscribe(f"{self.device_id_list[0]}/Setting")

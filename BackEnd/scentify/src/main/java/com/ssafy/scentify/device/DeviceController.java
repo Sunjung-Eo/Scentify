@@ -354,6 +354,7 @@ public class DeviceController {
 			
 			// 유저의 메인 디바이스 id 조회
 			int mainDeviceId = userService.getMainDeviceById(userId);
+			System.out.println(mainDeviceId);
 			
 			// 삭제 요청한 디바이스 아이디 추출
 			Integer deviceId = deviceIdMap.get("id");
@@ -372,8 +373,10 @@ public class DeviceController {
 					
 			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
 			if (mainDeviceId == deviceId) {
+				System.out.println("오잉 이거 찍히냐?");
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
-				if (deviceIds.get(0) != null) {
+				if (deviceIds.size() != 0) {
+					System.out.println("오잉 이거 되냐??");
 					userService.updateMainDeviceId(userId, deviceIds.get(0));
 				}
 			}

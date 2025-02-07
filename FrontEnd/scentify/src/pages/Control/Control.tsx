@@ -1,31 +1,27 @@
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Mode } from "../../feature/control/main/ControlType";
-import ModeToggle from "../../feature/control/main/ModeToggle";
-import ReservationManager from "../../feature/control/reservation/ReservationManager";
-import AutoManager from "../../feature/control/automation/AutoManager";
-import ModeChangeModal from "../../feature/control/main/ModeChangeModal";
-import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
-import DeodorizationSetting from "../../feature/control/automation/DeodorizationSetting";
-import DetectionSetting from "../../feature/control/automation/DetectionSetting";
-import CreateReservation from "../../feature/control/reservation/CreateReservation";
-import "../../styles/global.css";
-import RemoteIcon from "../../assets/icons/remote-icon.svg";
-import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
+import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Mode } from '../../feature/control/main/ControlType';
+import ModeToggle from '../../feature/control/main/ModeToggle';
+import ReservationManager from '../../feature/control/reservation/ReservationManager';
+import AutoManager from '../../feature/control/automation/AutoManager';
+import ModeChangeModal from '../../feature/control/main/ModeChangeModal';
+import BehaviorSetting from '../../feature/control/automation/BehaviorSetting';
+import DeodorizationSetting from '../../feature/control/automation/DeodorizationSetting';
+import DetectionSetting from '../../feature/control/automation/DetectionSetting';
+import CreateReservation from '../../feature/control/reservation/CreateReservation';
+import '../../styles/global.css';
+import RemoteIcon from '../../assets/icons/remote-icon.svg';
+import ModifyReservation from '../../feature/control/reservation/ModifyReservation';
 
-import { useMainDeviceStore } from "../../stores/useDeviceStore";
-import { useAuthStore } from "../../stores/useAuthStore";
-import { useUserStore } from "../../stores/useUserStore";
-import { MainDeviceStoreState } from "../../stores/useDeviceStore";
+import { useMainDeviceStore } from '../../stores/useDeviceStore';
+import { useAuthStore } from '../../stores/useAuthStore';
+import { useUserStore } from '../../stores/useUserStore';
+import { getAllDevicesMode } from '../../apis/control/getAllDevicesMode';
+import { getDeviceInfo } from '../../apis/control/getDeviceInfo';
+import { switchMode } from '../../apis/control/switchMode';
 
-import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
-import { getCombinationById } from "../../apis/control/getCombinationById";
-import { getDeviceInfo } from "../../apis/control/getDeviceInfo";
-import { switchMode } from "../../apis/control/switchMode";
-
-import DeviceSelect from "../../components/Control/DeviceSelect";
-import { MainDeviceState } from "../../types/MainDeviceType";
+import DeviceSelect from '../../components/Control/DeviceSelect';
 
 const Control = () => {
   // 인증토큰
@@ -33,18 +29,22 @@ const Control = () => {
   const accessToken = authStore.accessToken;
 
   // 기기 정보
-  const userstore = useUserStore();
-  const deviceIds = userstore.deviceIds ?? [];
-  const { mainDevice, deviceIdsAndNames } = useMainDeviceStore();
+  const { deviceIdsAndNames } = useUserStore();
+  const { mainDevice } = useMainDeviceStore();
+
+  const deviceIds = deviceIdsAndNames
+    ? Object.keys(deviceIdsAndNames).map(Number)
+    : [];
+
+  // const deviceIds = userstore.deviceIds ?? [];
+
   // const deviceIds: string[] = deviceIdsAndNames
   //   ? Object.keys(deviceIdsAndNames)
   //   : [];
   // useEffect(() => {
   //   console.log("deviceIds 변경:", deviceIds);
   // }, [deviceIds]);
-  const [defaultScentId, setDefaultScentId] = useState<number | null>(
-    mainDevice?.defaultCombination ?? null
-  );
+
   // setDefaultScentId(mainDevice?.defaultCombination);
   // 기기 id
   // const deviceIds = devices
@@ -93,7 +93,7 @@ const Control = () => {
 
   // 기기 정보 조회
   const { data: fetchDeviceData = {} } = useQuery({
-    queryKey: ["deviceInfo"],
+    queryKey: ['deviceInfo'],
     queryFn: () => getDeviceInfo(deviceIds, accessToken),
   });
   const devicesInfo = fetchDeviceData;
@@ -187,7 +187,7 @@ const Control = () => {
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
-    queryKey: ["reservations"],
+    queryKey: ['reservations'],
     queryFn: () => getAllDevicesMode(deviceIds, accessToken),
     enabled: deviceIds.length > 0 && !!accessToken,
   });
@@ -204,7 +204,7 @@ const Control = () => {
         ?.automations || []
     : [];
   // console.log("선택기기", selectedDevice);
-  console.log("데이터", reservationData);
+  console.log('데이터', reservationData);
   // console.log("예약", filteredReservations);
   // console.log("자동화", filteredAutomations);
 
@@ -237,7 +237,7 @@ const Control = () => {
     setIsModal(false);
   };
   useEffect(() => {
-    console.log("현재모드", mode);
+    console.log('현재모드', mode);
   }, [mode]);
   // 모달 창 취소 버튼
   const handleCancel = () => {
@@ -263,7 +263,7 @@ const Control = () => {
               </div>
               <div
                 className={`font-pre-medium text-20 ${
-                  !mode ? "mt-14" : "mt-0"
+                  !mode ? 'mt-14' : 'mt-0'
                 }`}
               >
                 <div className="absolute left-[225px] top-[135px] z-40">

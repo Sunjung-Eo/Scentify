@@ -17,7 +17,15 @@ const HomeMain = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['homeInfo'],
-    queryFn: homeInfo,
+    // queryFn: homeInfo,
+    queryFn: async () => {
+      try {
+        const response = await homeInfo();
+        return response; // 성공 시 정상 데이터 반환
+      } catch (error) {
+        return null; // 실패 시 null 반환
+      }
+    },
     refetchOnWindowFocus: false,
     staleTime: 0,
   });
@@ -56,7 +64,7 @@ const HomeMain = () => {
   // DeviceCarousel에 전달할 데이터
   const exampleData = {
     mainDeviceId: mainDevice?.id || null,
-    deviceIds: deviceIds || [], // ✅ deviceIds 추가 (기본값 빈 배열)
+    deviceIds: deviceIds.length > 0 ? deviceIds : [], // deviceIds가 비어있는지 확인
     devices: mainDevice ? [mainDevice] : [],
     autoSchedules: data?.autoSchedules || [],
     customSchedules: data?.customSchedules || [],

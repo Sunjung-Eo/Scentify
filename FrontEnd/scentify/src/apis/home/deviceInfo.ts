@@ -2,12 +2,16 @@ import { useAuthStore } from '../../stores/useAuthStore';
 
 export const deviceInfo = async (OneDiveIds: number | number[]) => {
   try {
-    const accessToken = useAuthStore.getState().accessToken;
     const formattedDeviceIds = Array.isArray(OneDiveIds)
       ? OneDiveIds
       : [OneDiveIds];
 
-    console.log('🔹 요청 JSON:', JSON.stringify({ OneDiveIds }));
+    // deviceIds가 비어있으면 빈 배열 반환
+    if (formattedDeviceIds.length === 0) {
+      return [];
+    }
+
+    const accessToken = useAuthStore.getState().accessToken;
 
     const response = await fetch('/v1/device/info', {
       method: 'POST',

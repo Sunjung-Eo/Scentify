@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.scentify.favorite.model.repository.FavoriteRepository">
+	<resultMap id="FavoriteListDto" type="com.ssafy.scentify.favorite.model.dto.FavoriteDto$FavoriteListDto">
+        <id property="id" column="favorite_id" /> 
+        <association property="combination"
+                     javaType="com.ssafy.scentify.combination.model.dto.CombinationDto">
+            <result property="id" column="combination_id" />
+            <result property="name" column="name" />
+            <result property="choice1" column="choice1" />
+            <result property="choice1Count" column="choice1_count" />
+            <result property="choice2" column="choice2" />
+            <result property="choice2Count" column="choice2_count" />
+            <result property="choice3" column="choice3" />
+            <result property="choice3Count" column="choice3_count" />
+            <result property="choice4" column="choice4" />
+            <result property="choice4Count" column="choice4_count" />
+        </association>
+    </resultMap>
+
+	<select id="getAllFavorites" resultMap="FavoriteListDto">
+        SELECT 
+            f.id AS favorite_id,
+            c.id AS combination_id, 
+            c.name,
+            c.choice1,
+            c.choice1_count,
+            c.choice2,
+            c.choice2_count,
+            c.choice3,
+            c.choice3_count,
+            c.choice4,
+            c.choice4_count
+        FROM favorite f
+        JOIN combination c ON f.combination_id = c.id
+        WHERE f.user_id = #{userId}
+    </select>
+</mapper>

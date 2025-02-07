@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { useMainDeviceStore } from './useDeviceStore';
+import { create } from "zustand";
+import { useMainDeviceStore } from "./useDeviceStore";
 
 export interface UserState {
   nickname: string;
@@ -15,12 +15,12 @@ export interface UserState {
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  nickname: '',
-  email: '',
+  nickname: "",
+  email: "",
   imgNum: 0,
   socialType: 0,
   gender: 0,
-  birth: '',
+  birth: "",
   mainDeviceId: null,
   deviceIds: [],
 
@@ -39,13 +39,29 @@ export const useUserStore = create<UserState>((set) => ({
 
   resetUser: () =>
     set({
-      nickname: '',
-      email: '',
+      nickname: "",
+      email: "",
       imgNum: 0,
       socialType: 0,
       gender: 0,
-      birth: '',
+      birth: "",
       mainDeviceId: null,
       deviceIds: [],
     }),
 }));
+// setUser: (user) => {
+//   set((state) => {
+//     const deviceIdsAndNames = useMainDeviceStore.getState().deviceIdsAndNames;
+//     const extractedDeviceIds = deviceIdsAndNames
+//       ? Object.keys(deviceIdsAndNames).map((id) => parseInt(id))
+//       : [];
+//     console.log("확인해보자", deviceIdsAndNames);
+//     const updatedState = {
+//       ...state,
+//       ...user,
+//       deviceIds: extractedDeviceIds,
+//     }; //
+
+//     return updatedState;
+//   });
+// },

@@ -13,7 +13,7 @@ export const createCustomSchedule = async (
     },
     body: JSON.stringify(reservationData),
   });
-  console.log(reservationData);
+  console.log("reservationData:", reservationData);
 
   return response.status;
 };

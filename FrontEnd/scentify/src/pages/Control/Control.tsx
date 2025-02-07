@@ -22,6 +22,7 @@ import { MainDeviceStoreState } from "../../stores/useDeviceStore";
 import { getAllDevicesMode } from "../../apis/control/getAllDevicesMode";
 import { getCombinationById } from "../../apis/control/getCombinationById";
 import { getDeviceInfo } from "../../apis/control/getDeviceInfo";
+import { switchMode } from "../../apis/control/switchMode";
 
 import DeviceSelect from "../../components/Control/DeviceSelect";
 import { MainDeviceState } from "../../types/MainDeviceType";
@@ -34,7 +35,13 @@ const Control = () => {
   // 기기 정보
   const userstore = useUserStore();
   const deviceIds = userstore.deviceIds ?? [];
-  const { mainDevice } = useMainDeviceStore();
+  const { mainDevice, deviceIdsAndNames } = useMainDeviceStore();
+  // const deviceIds: string[] = deviceIdsAndNames
+  //   ? Object.keys(deviceIdsAndNames)
+  //   : [];
+  // useEffect(() => {
+  //   console.log("deviceIds 변경:", deviceIds);
+  // }, [deviceIds]);
   const [defaultScentId, setDefaultScentId] = useState<number | null>(
     mainDevice?.defaultCombination ?? null
   );
@@ -68,7 +75,7 @@ const Control = () => {
   // );
   // 기기 선택
   const handleDeviceChange = (deviceId: number) => {
-    console.log("선택", deviceId);
+    // console.log("선택", deviceId);
     setSelectedDevice(deviceId);
   };
   useEffect(() => {
@@ -77,12 +84,12 @@ const Control = () => {
     }
   }, []);
 
-  // 기본향 조회
-  const { data: fetchDefaultScentData = {} } = useQuery({
-    queryKey: ["defaultScentData", defaultScentId],
-    queryFn: () => getCombinationById(defaultScentId!, accessToken),
-    enabled: !!defaultScentId && !!accessToken,
-  });
+  // // 기본향 조회
+  // const { data: fetchDefaultScentData = {} } = useQuery({
+  //   queryKey: ["defaultScentData", defaultScentId],
+  //   queryFn: () => getCombinationById(defaultScentId!, accessToken),
+  //   enabled: !!defaultScentId && !!accessToken,
+  // });
 
   // 기기 정보 조회
   const { data: fetchDeviceData = {} } = useQuery({
@@ -91,6 +98,7 @@ const Control = () => {
   });
   const devicesInfo = fetchDeviceData;
   // console.log("aas", devicesInfo);
+  // console.log("패치!", fetchDeviceData);
 
   // console.log("asdadss", deviceIds);
   // 예약 관리 컴포넌트로 전달
@@ -183,17 +191,35 @@ const Control = () => {
     queryFn: () => getAllDevicesMode(deviceIds, accessToken),
     enabled: deviceIds.length > 0 && !!accessToken,
   });
+  // console.log(data);
   // 선택한 기기의 예약 정보 필터링
   const filteredReservations = selectedDevice
     ? reservationData.find((data) => data.deviceId === selectedDevice)
         ?.reservations || []
     : [];
 
-  // mode - 어떤 모드인지 백엔드에 전달할 것
-  const [mode, setMode] = useState<Mode>(false); // 백엔드에 전달한 현재 모드 상태
+  // 선택한 기기의 자동화 모드 정보 필터링
+  const filteredAutomations = selectedDevice
+    ? reservationData.find((data) => data.deviceId === selectedDevice)
+        ?.automations || []
+    : [];
+  // console.log("선택기기", selectedDevice);
+  console.log("데이터", reservationData);
+  // console.log("예약", filteredReservations);
+  // console.log("자동화", filteredAutomations);
+
+  // 모드
+  const selectedDeviceData = devicesInfo?.devices?.find(
+    (device: any) => device.id === selectedDevice
+  );
+  const [mode, setMode] = useState(selectedDeviceData?.mode ?? false);
+  useEffect(() => {
+    setMode(selectedDeviceData?.mode ?? false);
+  }, [selectedDeviceData]);
+
   const [isModal, setIsModal] = useState<boolean>(false); // 모달 활성화
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
-  const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 처음 디폴트 모드 (예약 모드)
+  // const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 처음 디폴트 모드 (예약 모드)
 
   // 다른 모드 클릭 시 모달 표시
   const handleModeChange = (newMode: Mode) => {
@@ -203,12 +229,16 @@ const Control = () => {
     }
   };
   // 모달 창 확인 버튼
-  // 확인 눌렀을 때 백엔드에 전달하는 추가 로직 필요
   const handleConfirm = () => {
-    setMode(nextMode);
+    if (selectedDevice) {
+      switchMode(selectedDevice, nextMode, accessToken);
+    }
+    setMode(nextMode); // 여기서 nextMode를 바로 반영
     setIsModal(false);
-    setIsFirstRender(false);
   };
+  useEffect(() => {
+    console.log("현재모드", mode);
+  }, [mode]);
   // 모달 창 취소 버튼
   const handleCancel = () => {
     setIsModal(false);
@@ -233,7 +263,7 @@ const Control = () => {
               </div>
               <div
                 className={`font-pre-medium text-20 ${
-                  isFirstRender || !mode ? "mt-14" : "mt-0"
+                  !mode ? "mt-14" : "mt-0"
                 }`}
               >
                 <div className="absolute left-[225px] top-[135px] z-40">
@@ -244,7 +274,7 @@ const Control = () => {
                     onDeviceChange={handleDeviceChange}
                   />
                 </div>
-                {isFirstRender || !mode ? (
+                {!mode ? (
                   selectedDevice !== null && (
                     <ReservationManager
                       reservationData={filteredReservations}
@@ -258,10 +288,12 @@ const Control = () => {
                     <div className="h-[130px] mt-5 mb-10 p-4 bg-component rounded-lg">
                       <p>자동화 모드 설명 ~~~</p>
                     </div>
-                    {/* <AutoManager
+                    <AutoManager
+                      automationData={filteredAutomations}
+                      devices={deviceSelectItems}
                       selectedDevice={selectedDevice}
                       onDeviceChange={handleDeviceChange}
-                    /> */}
+                    />
                   </div>
                 )}
               </div>
@@ -276,7 +308,17 @@ const Control = () => {
             </div>
           }
         />
-        {/* <Route index element={<AutoManager />} /> */}
+        <Route
+          index
+          element={
+            <AutoManager
+              automationData={filteredAutomations}
+              devices={deviceSelectItems}
+              selectedDevice={selectedDevice}
+              onDeviceChange={handleDeviceChange}
+            />
+          }
+        />
         <Route path="auto/behavior" element={<BehaviorSetting />} />
         <Route path="auto/deodorize" element={<DeodorizationSetting />} />
         <Route path="auto/detect" element={<DetectionSetting />} />

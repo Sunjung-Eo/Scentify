@@ -197,7 +197,6 @@ export default function CreateReservation({
     if (!isValid) {
       return;
     }
-
     const reservationData: ReservationData = {
       name: reservationName,
       deviceId: selectedDevice!,

@@ -19,15 +19,25 @@ class WebSocketResponseHandler:
             self.print_log = False
 
             self.handlers = {
+                # 캡슐 관련
                 "/topic/DeviceStatus/Capsule/Info/": self.handler_capsule_initial_info,
+
+                # 분사 관련
                 "/topic/Remote/Operation/" : self.handler_remote_operation,
-                "/topic/Auto/Schedule/Initial/" : self.handler_request_mode_info,
+                "/topic/Auto/Opeation/" : self.handler_remote_operation,
+
+                # 모드 관리
                 "/topic/Combination/Change/" : self.handler_automode_change,
                 "/topic/Interval/Change/" : self.handler_automode_change,
                 "/topic/Auto/Mode/Change/" : self.handler_automode_change,
                 "/topic/Mode/" : self.handler_set_operation_mode,
                 "/topic/Mode/Change/" : self.handler_set_operation_mode,
+
+                # 스케줄 관리
+                "/topic/Auto/Schedule/Initial/" : self.handler_request_mode_info,
                 "/topic/Schedule/Initial/" : self.handler_schedule_init,
+                
+                # 디폴트
                 "default": self.default_hanlder
             }
 

@@ -41,26 +41,35 @@ class WebSocketClient:
 
             self.websocket = None
             self.subscribe_list = [
-                "/topic/DeviceStatus/Sensor/TempHum/",
-                "/topic/DeviceStatus/Capsule/Info/",
-                "/topic/Remote/Operation/",
+                # 웹 소켓 연결
                 "/topic/DeviceInfo/Id/",
-                "/topic/Auto/Schedule/Initial/",
+                "/topic/Connection/Close/",
+
+                # 캡슐 관련
+                "/topic/DeviceStatus/Capsule/Info/",
+
+                # 분사 관련
+                "/topic/Remote/Operation/",
+                "/topic/Auto/Operation/",
+
+                # 모드 관리
+                "/topic/Mode/",
+                "/topic/Mode/Change/",
                 "/topic/Combination/Change/",
                 "/topic/Interval/Change/",
                 "/topic/Auto/Mode/Change/",
-                "/topic/Connection/Close/",
-                "/topic/Mode/",
-                "/topic/Schedule/Initial/"
-                "/topic/Mode/Change/",
-                ""
+
+                # 스케줄
+                "/topic/Auto/Schedule/Initial/",
+                "/topic/Schedule/Initial/",
+                # "",
             ]
 
             self.initial_request_dest = [
                 "/app/DeviceStatus/Capsule/Info",
                 "/app/Auto/Schedule/Initial",
                 "/app/Mode",
-                # "/app/Schedule/Initial",
+                "/app/Schedule/Initial",
             ]
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
@@ -153,7 +162,7 @@ class WebSocketClient:
             header, body = parse_stomp_message(res)
             if len(body) <= 1:
                 continue
-            
+
             message = ast.literal_eval(body)
             if "id" in message:
                 self.device_id = message["id"]

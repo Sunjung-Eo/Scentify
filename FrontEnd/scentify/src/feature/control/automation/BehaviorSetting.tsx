@@ -1,23 +1,30 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useControlStore } from '../../../stores/useControlStore';
-import SprayIntervalSelector from '../../../components/Control/SprayIntervalSelector';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useControlStore } from "../../../stores/useControlStore";
+import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { behaviorData } from "./AutoModeType";
+import { updateBehavior } from "../../../apis/control/updateBehavior";
 
 export default function BehaviorSetting() {
   const navigate = useNavigate();
   const location = useLocation();
+  const scheduleExercise = location.state.schedule1;
+  const scheduleRest = location.state.schedule2;
+  const defaultScentData = location.state.defaultScentData;
+  const deviceId = location.state.deviceId;
+  const accessToken = location.state.accessToken;
 
   // API통해 모드 활성화 여부 결정
-  const [focus, setFocus] = useState(location.state.focus);
-  const [rest, setRest] = useState(location.state.rest);
+  const [exercise, setExercise] = useState(scheduleExercise.modeOn);
+  const [rest, setRest] = useState(scheduleRest.modeOn);
   // 모드 변했으면 1, 그대로면 0
-  const [focusModeOn, setFocusModeOn] = useState<boolean>(false);
+  const [exerciseModeOn, setExerciseModeOn] = useState<boolean>(false);
   const [restModeOn, setRestModeOn] = useState<boolean>(false);
   // 집중 모드 토글
-  const toggleFocus = () => {
-    setFocus((prev: any) => {
+  const toggleExercise = () => {
+    setExercise((prev: any) => {
       const newState = !prev;
-      setFocusModeOn(newState != focus);
+      setExerciseModeOn(newState != exercise);
       return newState;
     });
   };
@@ -31,36 +38,75 @@ export default function BehaviorSetting() {
   };
 
   // 분사주기 드롭박스 초기값
-  const [selectedTime, setSelectedTime] = useState('15분');
+  const [exerciseSelectedTime, setExerciseSelectedTime] = useState(
+    scheduleExercise.interval
+  );
+  const [restSelectedTime, setRestSelectedTime] = useState(
+    scheduleRest.interval
+  );
   // 분사주기 선택
-  const handleSelectTime = (time: string) => {
-    setSelectedTime(time);
+  const handleExerciseSelectTime = (time: string | number) => {
+    setExerciseSelectedTime(time.toString());
   };
+  const handleRestSelectTime = (time: string | number) => {
+    setRestSelectedTime(time.toString());
+  };
+  const previousExerciseSelectedTime = scheduleExercise.interval;
+  const previousRestSelectedTime = scheduleRest.interval;
 
-  // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
-    navigate('/control', {
-      state: { focus, rest },
+    const behaviorData: behaviorData = {
+      exerciseSchedule: {
+        id: scheduleExercise.id,
+        deviceId: deviceId,
+        interval: parseInt(String(exerciseSelectedTime).replace(/[^0-9]/g, "")),
+        modeOn: exercise,
+      },
+      exerciseModeChange: exerciseModeOn,
+      exerciseIntervalChange:
+        previousExerciseSelectedTime === exerciseSelectedTime ? false : true,
+      restSchedule: {
+        id: scheduleRest.id,
+        deviceId: deviceId,
+        interval: parseInt(String(restSelectedTime).replace(/[^0-9]/g, "")),
+        modeOn: rest,
+      },
+      restModeChange: restModeOn,
+      restIntervalChange:
+        previousRestSelectedTime === restSelectedTime ? false : true,
+    };
+
+    console.log("최종 behaviorData:", behaviorData);
+
+    updateBehavior(behaviorData, accessToken);
+    navigate("/control", {
+      state: { exercise, rest, exerciseSelectedTime, restSelectedTime },
     });
   };
+
   useEffect(() => {
+    // 완료 핸들러 등록
     setCompleteHandler(handleComplete);
-    return () => setCompleteHandler(null);
-  }, [focus, rest]);
+
+    return () => {
+      // 컴포넌트 언마운트 시 핸들러 초기화
+      setCompleteHandler(null);
+    };
+  }, [exercise, rest, exerciseSelectedTime, restSelectedTime]);
 
   return (
     <div className="content p-0">
       <div className="relative">
         <div className="flex flex-col w-[320px] h-[130px] p-5 ml-5 bg-sub text-white rounded-xl">
           <div className="flex justify-between">
-            <h3 className="font-pre-medium text-20">집중</h3>
-            <div onClick={() => toggleFocus()}>
+            <h3 className="font-pre-medium text-20">운동동</h3>
+            <div onClick={() => toggleExercise()}>
               <div
-                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${focus ? '' : 'bg-lightgray'}`}
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${exercise ? "" : "bg-lightgray"}`}
               >
                 <div
-                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${focus ? 'translate-x-full' : 'translate-x-0'}`}
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${exercise ? "translate-x-full" : "translate-x-0"}`}
                 ></div>
               </div>
             </div>
@@ -69,8 +115,8 @@ export default function BehaviorSetting() {
             <div className="flex items-center">
               <p className="p-2">분사 주기</p>
               <SprayIntervalSelector
-                selectedTime={selectedTime}
-                onTimeSelect={handleSelectTime}
+                selectedTime={exerciseSelectedTime}
+                onTimeSelect={handleExerciseSelectTime}
               />
             </div>
           </div>
@@ -82,10 +128,10 @@ export default function BehaviorSetting() {
             <h3 className="font-pre-medium text-20">휴식</h3>
             <div onClick={() => toggleRest()}>
               <div
-                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? '' : 'bg-lightgray'}`}
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? "" : "bg-lightgray"}`}
               >
                 <div
-                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? 'translate-x-full' : 'translate-x-0'}`}
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? "translate-x-full" : "translate-x-0"}`}
                 ></div>
               </div>
             </div>
@@ -94,8 +140,8 @@ export default function BehaviorSetting() {
             <div className="flex items-center">
               <p className="p-2">분사 주기</p>
               <SprayIntervalSelector
-                selectedTime={selectedTime}
-                onTimeSelect={handleSelectTime}
+                selectedTime={restSelectedTime}
+                onTimeSelect={handleRestSelectTime}
               />
             </div>
           </div>

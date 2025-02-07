@@ -1,33 +1,52 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useControlStore } from "../../../stores/useControlStore";
+import { useAuthStore } from "../../../stores/useAuthStore";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import DeviceSelect from "../../../components/Control/DeviceSelect";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { ReservationManagerProps, ReservationData } from "./ReservationType";
+import { ReservationData } from "./ReservationType";
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
+import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+import { createCustomSchedule } from "../../../apis/control/createCustomSchedule";
+import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 export default function CreateReservation({
+  reservationData,
+  devices,
+  selectedDevice,
   onDeviceChange,
-}: ReservationManagerProps) {
+}: DeviceSelectProps) {
   const navigate = useNavigate();
+
+  // 인증토큰
+  const authStore = useAuthStore();
+  const accessToken = authStore.accessToken;
+
+  // 예약하기 - react query
+  const queryClient = useQueryClient();
+  const createMutation = useMutation({
+    mutationFn: (data: ReservationData) =>
+      createCustomSchedule(data, accessToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reservations"] });
+      navigate("/control", { state: { reservationCreated: true } });
+    },
+    onError: (error) => {
+      console.error("예약 생성 실패:", error);
+    },
+  });
+
+  // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
 
   // 예약 이름
   const [reservationName, setReservationName] = useState<string>("");
 
-  // 기기선택 임시값
-  const [selectedDevice, setSeletecdDevice] = useState("기기A");
-  const devices = ["기기A", "기기B", "기기C"];
-  const handleDeviceChange = (device) => {
-    setSeletecdDevice(device);
-    if (onDeviceChange) {
-      onDeviceChange(device);
-    }
-  };
-
   // 요일 설정
-  const [selectedDays, setSelectedDays] = useState<string[]>([]); //요일 배열
-  const [selectWeek, setSelectedWeek] = useState<boolean>(true); // onoff토글
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const handleDaySelect = (day: string) => {
     if (selectedDays.includes(day)) {
       setSelectedDays(selectedDays.filter((d) => d !== day));
@@ -35,21 +54,19 @@ export default function CreateReservation({
       setSelectedDays([...selectedDays, day]);
     }
   };
-  const toggleWeek = () => {
-    setSelectedWeek((prev) => !prev);
+
+  // onoff 토글
+  const [modeOn, setModeOn] = useState<boolean>(true);
+  const modeOnToggle = () => {
+    setModeOn((prev) => !prev);
   };
+
   // 요일 비트마스크
-  const DAYS_BIT = {
-    월: 1 << 6, // 64
-    화: 1 << 5, // 32
-    수: 1 << 4, // 16
-    목: 1 << 3, // 8
-    금: 1 << 2, // 4
-    토: 1 << 1, // 2
-    일: 1, // 1
-  };
-  const getDaysBitMask = (selectedDays) => {
-    return selectedDays.reduce((mask, day) => mask | DAYS_BIT[day], 0);
+  const getDaysBitMask = (selectedDays: string[]) => {
+    return selectedDays.reduce(
+      (mask, day) => mask | DAYS_BIT[day as keyof typeof DAYS_BIT],
+      0
+    );
   };
 
   // 시간 설정
@@ -59,22 +76,68 @@ export default function CreateReservation({
   const [endHour, setEndHour] = useState("10");
   const [endMinute, setEndMinute] = useState("00");
   const [endPeriod, setEndPeriod] = useState<"AM" | "PM">("AM");
-  // 시간 변환
-  const convertTo24Hour = (hour, minute, period) => {
-    let hours = parseInt(hour);
-    if (period === "PM" && hours !== 12) {
-      hours += 12;
-    } else if (period === "AM" && hours === 12) {
-      hours = 0;
-    }
-    return `${hours.toString().padStart(2, "0")}:${minute}:00`;
-  };
 
   // 분사주기 드롭박스 초기값
   const [spraySelectedTime, setSpraySelectedTime] = useState("15분");
   const handleSelectTime = (time: string) => {
     setSpraySelectedTime(time);
   };
+
+  // 선택한 기기의 데이터
+  const selectedDeviceData = devices.find(
+    (device) => device.deviceId === selectedDevice
+  );
+
+  // 기본향 설정
+  const [defaultScentId, setDefaultScentId] = useState(
+    devices.find((device) => device.deviceId === selectedDevice)?.defaultScentId
+  );
+  const [defaultScentData, setDefaultScentData] = useState({
+    slot1: { slot: 0, count: 0 },
+    slot2: { slot: 0, count: 0 },
+    slot3: { slot: 0, count: 0 },
+    slot4: { slot: 0, count: 0 },
+  });
+  useEffect(() => {
+    const newDefaultScentId = devices.find(
+      (device) => device.deviceId === selectedDevice
+    )?.defaultScentId;
+    setDefaultScentId(newDefaultScentId);
+  }, [selectedDevice, devices]);
+  useEffect(() => {
+    const fetchCombination = async () => {
+      if (defaultScentId) {
+        try {
+          const combination = await getCombinationById(
+            defaultScentId,
+            accessToken
+          );
+          setDefaultScentData({
+            slot1: {
+              slot: combination.choice1,
+              count: combination.choice1Count,
+            },
+            slot2: {
+              slot: combination.choice2,
+              count: combination.choice2Count,
+            },
+            slot3: {
+              slot: combination.choice3,
+              count: combination.choice3Count,
+            },
+            slot4: {
+              slot: combination.choice4,
+              count: combination.choice4Count,
+            },
+          });
+        } catch (error) {
+          console.error("기본향 조합 데이터 가져오기 실패:", error);
+        }
+      }
+    };
+
+    fetchCombination();
+  }, [defaultScentId, accessToken]);
 
   // 향 설정
   const [scentName, setScentName] = useState<string>("");
@@ -84,7 +147,18 @@ export default function CreateReservation({
     scent3: 0,
     scent4: 0,
   });
-  const [totalEnergy, setTotalEnergy] = useState<number>(3);
+  // 방 크기 별 에너지
+  const getTotalEnergy = (roomType: number) => {
+    switch (roomType) {
+      case 1:
+        return 6;
+      case 0:
+      default:
+        return 3;
+    }
+  };
+  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
+  // console.log("da", selectedDeviceData?.defaultScentData);
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -93,7 +167,7 @@ export default function CreateReservation({
     scents: "",
   });
   // 완료 버튼 누를 시 유효성 검사
-  const handleComplete = useCallback(() => {
+  const handleComplete = () => {
     const errors = {
       reservationName: "",
       scentName: "",
@@ -109,6 +183,7 @@ export default function CreateReservation({
       errors.scentName = "향 이름을 입력해주세요.";
       isValid = false;
     }
+
     const totalUsage = Object.values(scents).reduce(
       (sum, value) => sum + value,
       0
@@ -120,42 +195,44 @@ export default function CreateReservation({
 
     setFormErrors(errors);
     if (!isValid) {
-      console.log("유효성 검사 실패", errors);
       return;
     }
-    // 전송할 데이터
     const reservationData: ReservationData = {
-      customSchedule: {
-        name: reservationName,
-        // deviceId: selectedDevice, // devicename 말고 deviceId로
-        // user_id: "사용자id", // 사용자 인증 정보에서 가져와야 함
-        day: getDaysBitMask(selectedDays),
-        combination: {
-          name: scentName,
-          choice1: "scent1",
-          choice1Count: scents.scent1,
-          choice2: "scent2",
-          choice2Count: scents.scent2,
-          choice3: "scent3",
-          choice3Count: scents.scent3,
-          choice4: "scent4",
-          choice4Count: scents.scent4,
-        },
-        startTime: convertTo24Hour(startHour, startMinute, startPeriod),
-        endTime: convertTo24Hour(endHour, endMinute, endPeriod),
-        interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, "")), // 숫자만 가져오기
+      name: reservationName,
+      deviceId: selectedDevice!,
+      day: getDaysBitMask(selectedDays),
+      combination: {
+        name: scentName,
+        choice1: defaultScentData.slot1.slot!,
+        choice1Count: scents.scent1,
+        choice2: defaultScentData.slot2.slot!,
+        choice2Count: scents.scent2,
+        choice3: defaultScentData.slot3.slot!,
+        choice3Count: scents.scent3,
+        choice4: defaultScentData.slot4.slot!,
+        choice4Count: scents.scent4,
       },
+      startTime: convertTo24Hour(startHour, startMinute, startPeriod),
+      endTime: convertTo24Hour(endHour, endMinute, endPeriod),
+      interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, "")),
+      modeOn: modeOn,
     };
-    console.log("예약 데이터:", reservationData);
-    // API 호출 추가
-    navigate("/control", { state: { reservationCreated: true } });
+
+    createMutation.mutate(reservationData);
+  };
+
+  useEffect(() => {
+    setCompleteHandler(handleComplete);
+    return () => {
+      setCompleteHandler(null);
+    };
   }, [
     reservationName,
     scentName,
     scents,
     selectedDevice,
     selectedDays,
-    selectWeek,
+    modeOn,
     startHour,
     startMinute,
     startPeriod,
@@ -163,12 +240,8 @@ export default function CreateReservation({
     endMinute,
     endPeriod,
     spraySelectedTime,
+    selectedDeviceData,
   ]);
-
-  useEffect(() => {
-    setCompleteHandler(handleComplete);
-    return () => setCompleteHandler(null);
-  }, [handleComplete]);
 
   return (
     <div className="content p-0 font-pre-medium text-12">
@@ -198,9 +271,10 @@ export default function CreateReservation({
         </label>
         <div className="absolute top-[-9px] left-[63px] z-50">
           <DeviceSelect
+            reservationData={reservationData}
             devices={devices}
             selectedDevice={selectedDevice}
-            onDeviceChange={handleDeviceChange}
+            onDeviceChange={onDeviceChange}
           />
         </div>
       </div>
@@ -233,13 +307,13 @@ export default function CreateReservation({
         </div>
         <div className="flex mb-[10px] justify-end items-center">
           <p className="m-2 font-pre-light text-12 text-gray">on / off</p>
-          <div onClick={toggleWeek}>
+          <div onClick={modeOnToggle}>
             <div
-              className={`relative w-[50px] h-[25px] rounded-full cursor-pointer bg-brand ${selectWeek ? "" : "bg-lightgray"}`}
+              className={`relative w-[50px] h-[25px] rounded-full cursor-pointer bg-brand ${modeOn ? "" : "bg-lightgray"}`}
             >
               <div
                 className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${
-                  selectWeek ? "translate-x-full" : "translate-x-0"
+                  modeOn ? "translate-x-full" : "translate-x-0"
                 }`}
               ></div>
             </div>
@@ -376,6 +450,14 @@ export default function CreateReservation({
           scents={scents}
           setScents={setScents}
           totalEnergy={totalEnergy}
+          defaultScentData={
+            defaultScentData || {
+              slot1: { slot: 0, count: 0 },
+              slot2: { slot: 0, count: 0 },
+              slot3: { slot: 0, count: 0 },
+              slot4: { slot: 0, count: 0 },
+            }
+          }
         />
         {formErrors.scents && (
           <p className="absolute mt-[217px] ml-[70px] text-red-500 text-10">

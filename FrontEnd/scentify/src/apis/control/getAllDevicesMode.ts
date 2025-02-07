@@ -64,12 +64,16 @@ export const getAllDevicesMode = async (
     const deviceData = await Promise.all(
       deviceIds.map(async (id) => {
         const reservations = await fetchReservations(id, accessToken);
+        const automations = await fetchAutomations(id, accessToken);
         return {
           deviceId: id,
           reservations,
+          automations,
         };
       })
     );
+    // console.log("기기호출", deviceIds);
+    console.log("기기호출데이터", deviceData);
     return deviceData;
   } catch (error) {
     console.error("기기 데이터 가져오기 실패:", error);

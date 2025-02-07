@@ -32,6 +32,8 @@ const Header = ({
   const handleBackClick = () => {
     if (location.pathname === 'home/managedevice') {
       navigate('/home');
+    } else if (location.pathname === '/user/regist/social') {
+      navigate('/login');
     } else if (window.history.length > 1) {
       navigate(-1); // 기본적으로 이전 페이지로 이동
     } else {

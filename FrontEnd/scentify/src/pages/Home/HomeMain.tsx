@@ -8,10 +8,13 @@ import { useUserStore } from '../../stores/useUserStore.ts';
 
 const HomeMain = () => {
   const { setMainDevice, mainDevice } = useMainDeviceStore();
-  const { setUser, deviceIds } = useUserStore();
+  const { setUser, deviceIdsAndNames } = useUserStore();
   const queryClient = useQueryClient();
 
-  // React Query로 homeInfo() 호출
+  const deviceIds = deviceIdsAndNames
+    ? Object.keys(deviceIdsAndNames).map(Number)
+    : [];
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['homeInfo'],
     queryFn: homeInfo,
@@ -30,7 +33,7 @@ const HomeMain = () => {
       nickname: data.user.nickname,
       imgNum: data.user.imgNum || 0,
       mainDeviceId: data.user.mainDeviceId || null,
-      deviceIds: data.deviceIds || [],
+      deviceIdsAndNames: data.deviceIdsAndNames || null, // deviceIds 대신 deviceIdsAndNames 사용
     });
 
     if (data.mainDevice) {

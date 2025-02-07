@@ -9,11 +9,15 @@ import { fragranceMap } from '../capsule/utils/fragranceMap';
 import { setMainDevice } from '../../../apis/home/setMainDevice';
 
 const DeviceCard = () => {
-  const { deviceIds, mainDeviceId } = useUserStore();
+  const { deviceIdsAndNames, mainDeviceId } = useUserStore();
   const queryClient = useQueryClient();
   const [currentMainDeviceId, setCurrentMainDeviceId] = useState<number | null>(
     mainDeviceId
   );
+
+  const deviceIds = deviceIdsAndNames
+    ? Object.keys(deviceIdsAndNames).map(Number)
+    : [];
 
   // mainDeviceId가 변경될 때마다 내부 상태 업데이트
   useEffect(() => {

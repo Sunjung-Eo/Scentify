@@ -99,13 +99,13 @@ public class AutoScheduleController {
 	public ResponseEntity<?> updateExerciseAndRestMode(@RequestBody UpdateModeDto modeDto) {
 		try {
 			// 운동 모드 수정
-			Schedule exerciseSchedule = modeDto.getExerciseScehdule();
+			Schedule exerciseSchedule = modeDto.getExerciseSchedule();
 			if (!updateActionSchedule(exerciseSchedule, modeDto.isExerciseIntervalChange(), modeDto.isExerciseModeChange())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
 			// 휴식 모드 수정
-			Schedule restSchedule = modeDto.getRestScehdule();
+			Schedule restSchedule = modeDto.getRestSchedule();
 			if (!updateActionSchedule(restSchedule, modeDto.isRestIntervalChange(), modeDto.isRestModeChange())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}

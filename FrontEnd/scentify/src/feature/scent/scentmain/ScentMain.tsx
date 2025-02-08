@@ -1,14 +1,14 @@
-import ScentCarousel from "./scentcarousel";
-import FavoritesList from "./FavoritesList";
-import bookmarkIcon from "../../../assets/icons/Bookmark.svg";
-import { removeCombinationFromFavorites } from "../../../apis/scent/favorite";
+import ScentCarousel from './scentcarousel';
+import FavoritesList from './FavoritesList';
+import bookmarkIcon from '../../../assets/icons/bookmark.svg';
+import { removeCombinationFromFavorites } from '../../../apis/scent/favorite';
 
 // 찜한 향기 데이터
 const favoritesData = [
   {
-    id: "1",
+    id: '1',
     combination: {
-      name: "아침에 맡고 싶은 향",
+      name: '아침에 맡고 싶은 향',
       choice1: 1,
       choice1Count: 0,
       choice2: 2,
@@ -20,9 +20,9 @@ const favoritesData = [
     },
   },
   {
-    id: "2",
+    id: '2',
     combination: {
-      name: "밤의 포근한 향",
+      name: '밤의 포근한 향',
       choice1: 4,
       choice1Count: 2,
       choice2: 5,
@@ -34,9 +34,9 @@ const favoritesData = [
     },
   },
   {
-    id: "3",
+    id: '3',
     combination: {
-      name: "봄날의 상쾌함",
+      name: '봄날의 상쾌함',
       choice1: 6,
       choice1Count: 2,
       choice2: 7,
@@ -56,11 +56,11 @@ const ScentMain = () => {
       const response = await removeCombinationFromFavorites(id);
 
       if (response === 200) {
-        alert("찜한 향기 조합이 삭제되었습니다.");
+        alert('찜한 향기 조합이 삭제되었습니다.');
         console.log(`Deleted favorite combination: ${id}`);
       }
     } catch (error) {
-      alert("삭제 중 오류가 발생했습니다.");
+      alert('삭제 중 오류가 발생했습니다.');
     }
   };
   // 공유 버튼 클릭 함수(id는 공유할 향기의 ID)

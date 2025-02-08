@@ -1,0 +1,40 @@
+/* Tailwind 기본 적용 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 모바일에서 실제 높이를 계산한 값 적용 */
+:root {
+  --vh: 100%;
+}
+
+/* 전역 스타일 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 전체 페이지 기본 스타일 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.start-container {
+  max-width: 360px;
+  width: 100%;
+  height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
+  margin: 0 auto;
+  background-image: url("../../assets/images/start-page.png");
+  background-size: cover; /* 이미지를 화면에 꽉 차게 조정 */
+  background-position: center; /* 중앙 정렬 */
+  background-repeat: no-repeat; /* 이미지 반복 없음 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  min-height: 600px;
+}

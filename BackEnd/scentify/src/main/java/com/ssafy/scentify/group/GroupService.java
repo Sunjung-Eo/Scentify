@@ -31,6 +31,11 @@ public class GroupService {
 	public List<Integer> getDeviceIdByUserId(String userId) {
 		return groupRepository.getDeviceIdByUserId(userId);
 	}
+	
+
+	public Group getGroup(int mainDeviceId) {
+		return groupRepository.getGroup(mainDeviceId);
+	}
 
 	public boolean updateMember(MemberDto memberDto) {
 		return groupRepository.updateMember(memberDto);

@@ -25,6 +25,7 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
 import com.ssafy.scentify.group.GroupService;
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
+import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.user.service.UserService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
@@ -96,18 +97,18 @@ public class DeviceController {
 	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 	        	        
-//	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
-//	        int waitTime = 0;
-//	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
-//	        int sleepInterval = 500; // 0.5초마다 체크
-//
-//	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
-//	            if (waitTime >= maxWaitTime) {
-//	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
-//	            }
-//	            Thread.sleep(sleepInterval);
-//	            waitTime += sleepInterval;
-//	        }
+	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
+	        int waitTime = 0;
+	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
+	        int sleepInterval = 500; // 0.5초마다 체크
+
+	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
+	            if (waitTime >= maxWaitTime) {
+	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
+	            }
+	            Thread.sleep(sleepInterval);
+	            waitTime += sleepInterval;
+	        }
 	        
 	        // 성공적으로 처리된 후 ID 반환
 	        Map<String, Object> response = new HashMap<>();
@@ -351,62 +352,62 @@ public class DeviceController {
 			
 			// 토큰에서 id 추출
 			String userId = tokenProvider.getId(token);
-			
-			// 유저의 메인 디바이스 id 조회
-			int mainDeviceId = userService.getMainDeviceById(userId);
-			
+
 			// 삭제 요청한 디바이스 아이디 추출
 			Integer deviceId = deviceIdMap.get("id");
 			if (deviceId == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-			// 핸드쉐이킹 해제
+			// 디바이스 id에 해당하는 그룹 정보 조회
+			Group group = groupService.getGroup(deviceId);
+
+			// 디바이스 삭제 권한 없음
+			if (!userId.equals(group.getAdminId())) {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			
+			// 핸드쉐이킹 해제를 위해 시리얼은 미리 받아 옴
 			String serial = deviceService.selectSerialByDeviceId(deviceId);
-			socketService.closeConnection(deviceId, serial);
 			
 			// 디바이스 삭제 (실패 시 404 반환)
 			if (!deviceService.deleteDevice(deviceId, userId)) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-					
+			
+			//핸드쉐이킹 해제
+			socketService.closeConnection(deviceId, serial);
+			
+			// 그룹 모두의 메인 디바이스 업데이트
+			autoUpdateMainDevice(group, deviceId);
+			
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	public void autoUpdateMainDevice(Group group, int deviceId) {
+		List<String> memberList = new ArrayList<>();
+		memberList.add(group.getAdminId());
+		if (group.getMember1Id() != null) { memberList.add(group.getMember1Id()); }
+		if (group.getMember2Id() != null) { memberList.add(group.getMember2Id()); }
+		if (group.getMember3Id() != null) { memberList.add(group.getMember3Id()); }
+		if (group.getMember4Id() != null) { memberList.add(group.getMember4Id()); }
+		
+		for (String userId : memberList) {
+			// 유저의 메인 디바이스 id 조회
+			int mainDeviceId = userService.getMainDeviceById(userId);
+			
 			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
 			if (mainDeviceId == deviceId) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
-				if (deviceIds.size() != 0) {
+				if (deviceIds != null) {
 					userService.updateMainDeviceId(userId, deviceIds.get(0));
 				}
 			}
-			
-			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
-		} catch (Exception e) {
-			 // 예기치 않은 에러 처리
-			log.error("Exception: ", e);
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	@PostMapping("/test")
-	public ResponseEntity<?> test(@RequestHeader("Authorization") String authorizationHeader) {
-		try {
-			// "Bearer " 제거
-			if (!authorizationHeader.startsWith("Bearer ")) {
-			    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-			}
-			String token = authorizationHeader.substring(7);
-			
-			// 토큰에서 id 추출
-			String userId = tokenProvider.getId(token);
-			int mainDeviceId = userService.getMainDeviceById(userId);
-			String serial = deviceService.selectSerialByDeviceId(mainDeviceId);
-			socketService.closeConnection(mainDeviceId, serial);
-			
-			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
-		} catch (Exception e) {
-			 // 예기치 않은 에러 처리
-			log.error("Exception: ", e);
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
 }

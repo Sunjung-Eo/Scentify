@@ -104,6 +104,7 @@ public class KakaoController {
 		    String[] userInfo = kakaoService.getKakaoUserInfo(accessToken);
 			String id = userInfo[0];
 			String email = userInfo[1];
+			System.out.println(email);
 			
 			// 이메일 중복 확인
 			SocialLoginDto existingUserInfo = userService.getUserIdByEmail(email);

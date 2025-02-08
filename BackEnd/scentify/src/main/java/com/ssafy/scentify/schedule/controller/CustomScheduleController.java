@@ -17,7 +17,7 @@ import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
-import com.ssafy.scentify.websocket.WebSocketController;
+import com.ssafy.scentify.websocket.WebSocketService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class CustomScheduleController {
 	
-	private final WebSocketController socketController;
+	private final WebSocketService socketService;
 	private final CombinationService combinationService;
 	private final CustomScheduleService customScheduleService;
 	private final CodeProvider codeProvider;
 	
-	public CustomScheduleController(WebSocketController socketController, CombinationService combinationService, CustomScheduleService customScheduleService, CodeProvider codeProvider) {
-		this.socketController = socketController;
+	public CustomScheduleController(WebSocketService socketService, CombinationService combinationService, CustomScheduleService customScheduleService, CodeProvider codeProvider) {
+		this.socketService = socketService;
 		this.combinationService = combinationService;
 		this.customScheduleService = customScheduleService;
 		this.codeProvider =codeProvider;
@@ -108,7 +108,8 @@ public class CustomScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-//			socketController.sendCustomScheduleUpdate(customScheduleDto);
+
+//			socketService.sendCustomScheduleUpdate(customScheduleDto);
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -182,7 +183,7 @@ public class CustomScheduleController {
 			int currentBit = codeProvider.getCurrentDayBit();
 			Map<Integer, List<CustomScheduleRequest>> groupedSchedules = customScheduleService.getGroupedSchedules(currentBit);
 			groupedSchedules.forEach((deviceId, schedules) -> {
-				socketController.sendDailyCustomSchedules(deviceId, schedules);
+				socketService.sendDailyCustomSchedules(deviceId, schedules);
         	});
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리

@@ -65,7 +65,6 @@ public class WebSocketDto {
 	
 	@Data
 	@NoArgsConstructor
-	@AllArgsConstructor
 	public static class CustomScheduleRequest {
 		private int id;
 		private int deviceId;
@@ -76,7 +75,6 @@ public class WebSocketDto {
 	    private Combination combination; 
 	    
 	    @Data
-	    @AllArgsConstructor
 	    public static class Combination {
 	    	private int choice1; // NOT NULL
     	    @Setter

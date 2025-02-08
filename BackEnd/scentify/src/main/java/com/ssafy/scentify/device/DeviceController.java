@@ -30,6 +30,7 @@ import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.user.service.UserService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
 import com.ssafy.scentify.websocket.WebSocketController;
+import com.ssafy.scentify.websocket.WebSocketService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DeviceController {
 	
 	private final UserService userService;
-	private final WebSocketController socketController;
+	private final WebSocketService socketService;
 	private final DeviceService deviceService;
 	private final GroupService groupService;
 	private final CombinationService combinationService;
@@ -50,9 +51,9 @@ public class DeviceController {
 	private final HandshakeStateManager stateManager;
 	private final TokenProvider tokenProvider;
 	
-	public DeviceController(UserService userService, WebSocketController socketController, DeviceService deviceService, GroupService groupService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+	public DeviceController(UserService userService, WebSocketService socketService, DeviceService deviceService, GroupService groupService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
 		this.userService = userService;
-		this.socketController = socketController;
+		this.socketService = socketService;
 		this.deviceService = deviceService;
 		this.groupService = groupService;
 		this.combinationService = combinationService;
@@ -298,7 +299,7 @@ public class DeviceController {
 	        if (!deviceService.updateMode(deviceId, mode)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // RB에 전달
-	        socketController.sendDeviceModeUpdate(payload);
+	        socketService.sendDeviceModeUpdate(payload);
 	        
 	        return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -329,7 +330,7 @@ public class DeviceController {
 			}
 			
 			// 웹소켓 통신으로 combination을 보내야함
-			socketController.sendRemoteOperation(deviceId, combination);
+			socketService.sendRemoteOperation(deviceId, combination);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -339,6 +340,7 @@ public class DeviceController {
 		}
 	}
 	
+	// API 66번 : 기기 삭제
 	@PostMapping("/delete")
 	public ResponseEntity<?> deleteDevice(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> deviceIdMap) {
 		try {

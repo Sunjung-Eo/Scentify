@@ -15,10 +15,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateModeDto {
-	private Schedule exerciseScehdule;
+	private Schedule exerciseSchedule;
 	private boolean exerciseModeChange;
 	private boolean exerciseIntervalChange;
-	private Schedule restScehdule;
+	private Schedule restSchedule;
 	private boolean restModeChange;
 	private boolean restIntervalChange;
 	

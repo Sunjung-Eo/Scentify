@@ -25,9 +25,13 @@ public interface DeviceRepository {
     @Select("SELECT COUNT(*) > 0 FROM device WHERE serial = #{serial}")
     boolean existsBySerial(String serial);
     
-    // serial 조회 쿼리
+    // id 조회 쿼리
     @Select("SELECT id FROM device WHERE serial = #{serial}")
     int selectDeviceIdBySerial(String serial);
+    
+    // serial 조회 쿼리
+    @Select("SELECT serial FROM device WHERE id = #{id}")
+	String selectSerialByDeviceId(int id);
     
     // 그룹 정보 조회 쿼리
     @Select("SELECT group_id, admin_id FROM device WHERE id = #{id}")
@@ -44,6 +48,10 @@ public interface DeviceRepository {
     // 캡슐 정보 조회 쿼리
     @Select("SELECT slot_1, slot_2, slot_3, slot_4 FROM device WHERE id = #{id}")
 	CapsuleInfoRequest getCapsuleInfo(int id);
+    
+    // 기기 이름 조회 쿼리
+    @Select("SELECT name FROM device WHERE id = #{id}")
+	String getDeviceName(int id);
     
     // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
    	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
@@ -80,4 +88,5 @@ public interface DeviceRepository {
     // id에 해당하는 기기 삭제
     @Delete("DELETE FROM device WHERE id = #{id} AND admin_id = #{userId}")
 	boolean deleteDevice(int id, String userId);
+
 }

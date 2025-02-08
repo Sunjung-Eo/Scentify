@@ -23,8 +23,6 @@
             <result property="choice4Count" column="choice4_count" />
         </association>
     </resultMap>
-
-    <!-- 모든 스케줄 조회 -->
     <select id="selectAllySchedules" resultMap="CustomScheduleRequest">
         SELECT 
             s.id AS schedule_id,
@@ -45,9 +43,7 @@
         FROM customschedule s
         JOIN combination c ON s.combination_id = c.id
         WHERE <![CDATA[(s.day & #{currentBit}) > 0]]>
-    </select>
-    
-    <!-- 오늘 날짜의 스케줄 조회 -->
+    </select>    
     <select id="selectTodaySchedules" resultMap="CustomScheduleRequest">
         SELECT 
             s.id AS schedule_id,

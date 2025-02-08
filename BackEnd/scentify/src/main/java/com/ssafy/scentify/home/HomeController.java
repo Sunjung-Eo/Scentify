@@ -18,7 +18,9 @@ import com.ssafy.scentify.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +67,13 @@ public class HomeController {
 	        
 	        // 사용자가 속해있는 그룹 아이디를 조회해옴
 	        List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
+	        Map<Integer, String> deviceIdsAndNames = new HashMap<>();
+	        if (deviceIds != null) {
+	        	for (int deviceId : deviceIds) {
+	        		String deviceName = deviceService.getDeviceName(deviceId);
+	        		deviceIdsAndNames.put(deviceId, deviceName);
+	        	}
+	        }
 	        
 	        // 메인 디바이스가 설정되어 있으면 정보 가져오기
 	        DeviceHomeDto deviceHomeDto = new DeviceHomeDto(); 
@@ -82,7 +91,7 @@ public class HomeController {
 	        // 응답 DTO 생성
 	        HomeResponseDto response = new HomeResponseDto();
 	        response.setUser(userHomeDto);
-	        response.setDeviceIds(deviceIds);
+	        response.setDeviceIdsAndNames(deviceIdsAndNames);
 	        response.setMainDevice(deviceHomeDto);
 	        response.setAutoSchedules(autoSchedules);
 	        response.setCustomSchedules(customSchedules);

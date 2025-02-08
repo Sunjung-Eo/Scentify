@@ -161,82 +161,6 @@ public class WebSocketController {
 	    log.info("Data processed for id: {}", id);    
 	}
 	
-	// API 34번 : 사용자가 custom 스케줄 수정 시 RB에 전송하는 메서드
-	public void sendCustomScheduleUpdate(CustomScheduleDto scheduleDto) {
-	    int deviceId = scheduleDto.getDeviceId();
-
-	    // 현재 요일의 스케줄만 전송
-	    int currentBit = codeProvider.getCurrentDayBit();
-	    if ((scheduleDto.getDay() & currentBit) == 0) {
-	        return; // 현재 요일이 포함되지 않으면 전송 안 함
-	    }
-
-	    // Combination 생성
-	    Combination combination = getCombination(scheduleDto);
-
-	    // 요청 객체 생성
-	    CustomScheduleRequest scheduleRequest 
-	    = new CustomScheduleRequest(scheduleDto.getId(), scheduleDto.getDeviceId(), scheduleDto.getStartTime(), 
-	    							scheduleDto.getEndTime(), scheduleDto.getInterval(), scheduleDto.isModeOn(), 
-	    							combination);
-
-	    // 메시지 전송
-	    template.convertAndSend("/topic/Schedule/Change/" + deviceId, scheduleRequest);
-	}
-
-	// Combination 객체 생성 메서드
-	private Combination getCombination(CustomScheduleDto scheduleDto) {
-	    Integer combinationId = scheduleDto.getCombination().getId();
-
-	    if (combinationId == null) {
-	        return new Combination(
-	            scheduleDto.getCombination().getChoice1(), scheduleDto.getCombination().getChoice1Count(),
-	            scheduleDto.getCombination().getChoice2(), scheduleDto.getCombination().getChoice2Count(),
-	            scheduleDto.getCombination().getChoice3(), scheduleDto.getCombination().getChoice3Count(),
-	            scheduleDto.getCombination().getChoice4(), scheduleDto.getCombination().getChoice4Count()
-	        );
-	    }
-
-	    Combination combination = combinationService.getSocketCombinationById(combinationId);
-	    return combination;
-	}
-
-	// API 36번 : 사용자가 custom 스케줄 삭제 시 RB에 전송하는 메서드
-	public void sendCustomScheduleDelete(Map<String, Integer> deleteScheduleMap) {
-		// 요청 객체 생성
-		int deviceId = deleteScheduleMap.get("deviceId");
-		Map<String, Integer> scheduleRequest = new HashMap<>();
-		scheduleRequest.put("scheduleId", deleteScheduleMap.get("id"));
-		
-		// 메시지 전송
-        template.convertAndSend("/topic/Schedule/Delete/" + deviceId, scheduleRequest);
-	}
-	
-	
-	// API 38번 : 매일 자정 custom 스케줄 배치
-	public void sendDailyCustomSchedules(int deviceId, List<CustomScheduleRequest> schedules) {
-		String destination = "/topic/Schedule/Initial/" + deviceId;
-        Map<String, Object> message = new HashMap<>();
-        message.put("schedules", schedules);
-        template.convertAndSend(destination, message);
-        log.info("자정 배치: deviceId={} 에 스케줄 {}개 전송", deviceId, schedules.size());
-	}
-
-	
-	// API 30번 : 모드 변경 시 RB에 정보를 전달하는 메서드
-	public void sendDeviceModeUpdate(Map<String, Object> modeInfoMap) {
-		// 디바이스 아이디와 모드 추출
-		int deviceId = (int) modeInfoMap.get("deviceId");
-		boolean mode = (boolean) modeInfoMap.get("mode");
-        
-        // 요청 객체 생성
-		Map<String, Boolean> modeRequest = new HashMap<>();
-		modeRequest.put("mode", mode);
-		
-		// 메시지 전송
-        template.convertAndSend("/topic/Mode/Change/" + deviceId, modeRequest);
-	}
-	
 	// API 72번 : 커스텀 스케줄 정보 요청
 	@MessageMapping("/Schedule/Initial")
 	public void sendCustomSchedules(@Payload TokenRequest request) {
@@ -263,13 +187,6 @@ public class WebSocketController {
  		// 메시지 전송
         template.convertAndSend("/topic/Schedule/Initial/" + id, response);
         log.info("Data processed for id: {}", id); 
-	}
-	
-	// API 54번 : 즉시 분사
-	public void sendRemoteOperation(int deviceId, CombinationDto combinationDto) {
-		// 메세지 전송
-		template.convertAndSend("/topic/Remote/Operation/" + deviceId, combinationDto);
-		log.info("Data processed for id: {}", deviceId);  
 	}
 	
 	// API 74번 : 자동화 스케줄 정보 요청
@@ -318,57 +235,5 @@ public class WebSocketController {
  		// 메세지 전송
 		template.convertAndSend("/topic/Auto/Operation/" + id, response);
 		log.info("Data processed for id: {}", id); 		
-	}
-	
-	// API 45번 : 자동화 모드 조합 수정 정보 전송
-	public void sendCombinationUpdate(int deviceId, int scheduleId, int combinatonId) {
-		Map<String, Integer> response = new HashMap<>();
-		response.put("id", scheduleId);
-		response.put("combinationId", combinatonId);
-		
-		// 메세지 전송
-		template.convertAndSend("/topic/Combination/Change/" + deviceId, response);
-		log.info("Data processed for id: {}", deviceId); 	
-	}
-	
-	// API 50번 : 자동화 모드 인터벌 수정 정보 전송
-	public void sendIntervalUpdate(int deviceId, int scheduleId, int interval) {
-		Map<String, Integer> response = new HashMap<>();
-		response.put("id", scheduleId);
-		response.put("interval", interval);
-		
-		// 메세지 전송
-		template.convertAndSend("/topic/Interval/Change/" + deviceId, response);
-		log.info("Data processed for id: {}", deviceId); 
-	}
-	
-	// API 51번 : 자동화 모드 modeOn 수정 정보 전송
-	public void sendUpdateModeOn(int deviceId, int scheduleId, boolean modeOn) {
-		Map<String, Object> response = new HashMap<>();
-		response.put("id", scheduleId);
-		response.put("modeOn", modeOn);
-		
-		// 메세지 전송
-		template.convertAndSend("/topic/Mode/Change/" + deviceId, response);
-		log.info("Data processed for id: {}", deviceId); 
-	}
-	
-	// 하나의 메서드에서 정보를 받아와서 분기 처리
-	public void sendAutoModeUpdate(AutoScheduleDto autoScheduleDto, int combinationId, boolean combinationChange) {
-		// 웹 소켓 통신으로 수정되었음을 전달 필요
-		int deviceId = autoScheduleDto.getDeviceId();
-		int scheduleId = autoScheduleDto.getId();
-		
-		if (combinationChange == true) {
-			sendCombinationUpdate(deviceId, scheduleId, combinationId);
-		}
-		
-		if (autoScheduleDto.getIntervalChange() != null && autoScheduleDto.getIntervalChange() == true) {
-			sendIntervalUpdate(deviceId, scheduleId, autoScheduleDto.getInterval());
-		}
-					
-		if (autoScheduleDto.isModeChange()) {
-			sendUpdateModeOn(deviceId, scheduleId, autoScheduleDto.isModeOn());
-		}
 	}
 }

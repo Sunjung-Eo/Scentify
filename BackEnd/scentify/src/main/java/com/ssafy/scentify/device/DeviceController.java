@@ -404,7 +404,7 @@ public class DeviceController {
 			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
 			if (mainDeviceId == deviceId) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
-				if (deviceIds != null) {
+				if (deviceIds.size() > 0) {
 					userService.updateMainDeviceId(userId, deviceIds.get(0));
 				}
 			}

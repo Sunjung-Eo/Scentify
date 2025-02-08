@@ -148,17 +148,17 @@ public class UserController {
 	        // 현재 사용자의 세션을 가져옴 (세션이 없는 경우 null)
 	        HttpSession session = request.getSession(false);
 
-	        // 세션이 없거나 세션에 저장된 사용자 ID와 요청의 ID가 다를 경우
-	        if (session == null || session.getAttribute("id").equals("") 
-	                || session.getAttribute("id") == null || !user.getId().equals(session.getAttribute("id"))) {
-	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	        }
-
-	        // 세션에 저장된 이메일과 요청의 이메일이 다를 경우
-	        if (session.getAttribute("email").equals("") || session.getAttribute("email") == null
-	                || !user.getEmail().equals(session.getAttribute("email"))) {
-	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	        }
+//	        // 세션이 없거나 세션에 저장된 사용자 ID와 요청의 ID가 다를 경우
+//	        if (session == null || session.getAttribute("id").equals("") 
+//	                || session.getAttribute("id") == null || !user.getId().equals(session.getAttribute("id"))) {
+//	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//	        }
+//
+//	        // 세션에 저장된 이메일과 요청의 이메일이 다를 경우
+//	        if (session.getAttribute("email").equals("") || session.getAttribute("email") == null
+//	                || !user.getEmail().equals(session.getAttribute("email"))) {
+//	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//	        }
 
 	        // 비밀번호가 지정된 패턴을 따르지 않은 경우
 	        if (!passwordPattern.matcher(user.getPassword()).matches()) {

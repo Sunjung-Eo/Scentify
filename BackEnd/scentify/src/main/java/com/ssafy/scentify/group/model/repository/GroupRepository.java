@@ -28,6 +28,10 @@ public interface GroupRepository {
 	@Select("SELECT * FROM `group` WHERE id = #{id}")
 	Group selectGroupById(Integer id);
 	
+	// 디바이스 id에 해당하는 그룹 정보 반환
+	@Select("SELECT * FROM `group` WHERE device_id = #{mainDeviceId}")
+	Group getGroup(int mainDeviceId);
+	
 	// 유저가 속해있는 그룹의 디바이스 아이디 반환
 	@Select("SELECT device_id FROM `group` WHERE admin_id = #{userId}"
 			+ "OR member_1_id = #{userId} OR member_2_id = #{userId}"

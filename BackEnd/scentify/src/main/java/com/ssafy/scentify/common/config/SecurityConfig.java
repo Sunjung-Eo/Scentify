@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ssafy.scentify.common.util.TokenFilter;
 
@@ -33,6 +36,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+        	//.cors(cors -> cors.configurationSource(corsConfigurationSource())) 
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
             		.requestMatchers("/v1/ws/device").permitAll()
             		.requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
@@ -40,10 +45,22 @@ public class SecurityConfig {
             		.requestMatchers("/v1/auth/kakao/**").permitAll()
             		.requestMatchers("/v1/group/verify-link").permitAll()
             		.anyRequest().authenticated())
-            .csrf(csrf -> csrf.disable())
             .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+    
+    // nginX 사용시 cors 설정 필요 없음
+//	@Bean
+//	public CorsConfigurationSource corsConfigurationSource() {
+//	    CorsConfiguration configuration = new CorsConfiguration();
+//	    configuration.addAllowedOriginPattern("*"); 
+//	    configuration.addAllowedMethod("*"); 
+//	    configuration.addAllowedHeader("*"); 
+//	    configuration.setAllowCredentials(true);
+//	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//	    source.registerCorsConfiguration("/**", configuration);
+//	    return source;
+//	}
     
     @Bean
     public PasswordEncoder passwordEncoder() {

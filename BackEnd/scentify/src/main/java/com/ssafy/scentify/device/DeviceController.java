@@ -357,9 +357,6 @@ public class DeviceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-<<<<<<< Updated upstream
-			// 핸드쉐이킹 해제
-=======
 			// 디바이스 id에 해당하는 그룹 정보 조회
 			Group group = groupService.getGroup(deviceId);
 
@@ -371,15 +368,11 @@ public class DeviceController {
 			// 핸드쉐이킹 해제를 위해 시리얼은 미리 받아 옴
 			String serial = deviceService.selectSerialByDeviceId(deviceId);
 			
->>>>>>> Stashed changes
-			
 			// 디바이스 삭제 (실패 시 404 반환)
 			if (!deviceService.deleteDevice(deviceId, userId)) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			
-<<<<<<< Updated upstream
-=======
 			//핸드쉐이킹 해제
 			socketService.closeConnection(deviceId, serial);
 			
@@ -406,8 +399,6 @@ public class DeviceController {
 			// 유저의 메인 디바이스 id 조회
 			int mainDeviceId = userService.getMainDeviceById(userId);
 			
->>>>>>> Stashed changes
-			
 			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
 			if (mainDeviceId == deviceId) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
@@ -417,5 +408,4 @@ public class DeviceController {
 			}
 		}
 	}
-	
 }

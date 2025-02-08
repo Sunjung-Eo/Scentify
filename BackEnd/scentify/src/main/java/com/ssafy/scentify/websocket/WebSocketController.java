@@ -228,7 +228,7 @@ public class WebSocketController {
 	        return;
 	    }
 	    
-	    Combination combination = combinationService.getSocketCombinationById(id);
+	    Combination combination = combinationService.getSocketCombinationById(request.getCombinationId());
 	    Map<String, Combination> response = new HashMap<>();
  		response.put("combination", combination);
  		

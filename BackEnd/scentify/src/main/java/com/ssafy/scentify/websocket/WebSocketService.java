@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
@@ -14,9 +15,12 @@ import com.ssafy.scentify.common.util.CodeProvider;
 import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.schedule.model.dto.AutoScheduleDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CapsuleInfoRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
+import com.ssafy.scentify.websocket.model.dto.WebSocketDto.TokenRequest;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest.Combination;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -35,6 +39,13 @@ public class WebSocketService {
 		this.deviceService = deviceService;
 		this.template = template;
 		this.codeProvider = codeProvider;
+	}
+	
+	// 기기 등록 시 캡슐 정보 자동으로 보내줌
+	public void sendCapsuleInfo(int deviceId, CapsuleInfoRequest infoRequest) {	    
+		// 메시지 전송
+        template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + deviceId, infoRequest);
+        log.info("Data processed for id: {}", deviceId);
 	}
 	
 	// API 34번 : 사용자가 custom 스케줄 수정 시 RB에 전송하는 메서드

@@ -68,9 +68,9 @@ class WebSocketClient:
             self.initial_request_dest = [
                 "/app/DeviceStatus/Capsule/Info",
                 "/app/Auto/Schedule/Initial",
-                "/app/Mode",
                 "/app/Schedule/Initial",
                 "/app/DeviceStatus/Sensor",
+                "/app/Mode",
             ]
 
             self.message_queue = work_queue
@@ -113,7 +113,7 @@ class WebSocketClient:
                             original_key[f'{key}{self.device_id}'] = value
                         self.websocket_response_hanlder = {}
                         self.websocket_response_hanlder = original_key
-                        self.is_initial_connection = False
+                        await self.get_capsule_info()
 
                     await self.init_request()
                     await self.send_temp_hum()
@@ -122,6 +122,9 @@ class WebSocketClient:
                     send_task = asyncio.create_task(self.send_message())
                     
                     await asyncio.gather(receive_task, send_task)
+
+                    if self.is_initial_connection:
+                        self.is_initial_connection=False
 
                     print("Before Disconnect")
 
@@ -145,18 +148,29 @@ class WebSocketClient:
     async def init_request(self):
         token = {'token' : get_access_token(self.device_id)}
         json_token = json.dumps(token)
-        for dest in self.initial_request_dest:
-            await self.send_request(dest, json_token)
-
-    async def temp_request(self):
-        token = {'token' : get_access_token(self.device_id)}
-        json_token = json.dumps(token)
-        for dest in self.temp_request_dest:
+        for idx, dest in enumerate(self.initial_request_dest):
             await self.send_request(dest, json_token)
 
     async def send_request(self, topic, msg):
         send_frame = stomper.send(topic, msg, content_type='application/json')       
         await self.websocket.send(send_frame)
+
+    async def get_capsule_info(self):
+        message = {}
+        header = {}
+        while True:
+            res = await self.websocket.recv()
+            header, message = parse_stomp_message(res)
+            if len(message) <= 1:
+                continue
+            break
+        msg_type = header['destination']
+        if msg_type != f"/topic/DeviceStatus/Capsule/Info/{self.device_id}":
+            print("Error : this msg isn't capsule info msg : ", msg_type)
+            return
+        
+        handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
+        await handler(message)
 
     async def set_device_id(self):
         subscribe_frame = get_subscribe_frame(0, f"/topic/DeviceInfo/Id/{self.__serial_number}")
@@ -185,6 +199,10 @@ class WebSocketClient:
 
     async def subcribe_websocket(self):
         for (idx, topic) in enumerate(self.subscribe_list):
+            # 첫 연결 때에는 capsule 정보 요청 하지 않기.
+            if self.is_initial_connection and idx==0:
+                continue
+            
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
             print(subscribe_frame)
             await self.websocket.send(subscribe_frame)
@@ -202,7 +220,6 @@ class WebSocketClient:
                     break
 
                 if message == "Close":
-                    print("Close!!!")
                     self.disconnection_event.set()
                     break
 
@@ -245,8 +262,7 @@ class WebSocketClient:
             json_msg = json.dumps(message)
             send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')
             print(send_frame)
-            await self.websocket.send(send_frame)       
-        
+            await self.websocket.send(send_frame)      
 
     def make_message(self, dict_data):
         merge_dict = dict_data.copy()

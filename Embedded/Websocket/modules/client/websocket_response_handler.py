@@ -17,6 +17,7 @@ class WebSocketResponseHandler:
             self.__initialized = True  
             self.mqtt_client = mqtt_client
             self.print_log = False
+            self.opeation_mode = 0
 
             self.handlers = {
                 # 캡슐 관련
@@ -87,6 +88,9 @@ class WebSocketResponseHandler:
             print("Handling Auto Mode Change ")
 
     async def handler_set_operation_mode(self, message):
+        msg = json.loads(message)
+        self.opeation_mode = msg["mode"]
+        
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/SetOperationMode",
             message

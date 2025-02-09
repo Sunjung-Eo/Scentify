@@ -21,12 +21,12 @@ const GeneralRegist = () => {
       />
       <main className="content flex flex-grow justify-center">
         <div className="flex flex-col items-center justify-between">
-          <div className="top-4 pt-4 font-pre-bold text-20">일반 회원가입</div>
+          <div className="top-4 p-4 font-pre-bold text-20">일반 회원가입</div>
           <RegistForm onRegist={handleRegistrationComplete} />
           <button
             type="submit"
             form="registForm"
-            className="mb-8 h-12 w-full rounded-lg bg-brand text-white"
+            className=" h-12 w-full rounded-lg bg-brand text-white text-20 font-pre-medium"
           >
             Scentify 시작하기
           </button>

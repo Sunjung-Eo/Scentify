@@ -1,6 +1,7 @@
 import { checkId } from '../../../../apis/user/checkId';
 import { getEmailCode } from '../../../../apis/user/getEmailCode';
 import { checkEmailCode } from '../../../../apis/user/checkEmailCode';
+import { validateId } from '../../../../utils/validation';
 
 /**
  * 성별 선택 핸들러
@@ -26,6 +27,13 @@ export const handleCheckDuplicate = async (
     return;
   }
 
+  // ID 유효성 검사 추가
+  const idValidationError = validateId(id);
+  if (idValidationError) {
+    setErrors((prev) => ({ ...prev, id: idValidationError }));
+    return;
+  }
+
   try {
     const result = await checkId(id);
     setErrors((prev) => ({
@@ -33,7 +41,7 @@ export const handleCheckDuplicate = async (
       id: result ? result : '사용 가능한 아이디입니다.',
     }));
   } catch {
-    setErrors((prev) => ({ ...prev, id: '서버 오류가 발생했습니다.' }));
+    setErrors((prev) => ({ ...prev, id: '사용할 수 없는 아이디입니다.' }));
   }
 };
 

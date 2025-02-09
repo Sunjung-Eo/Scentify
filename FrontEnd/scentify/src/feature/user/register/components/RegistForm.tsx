@@ -39,8 +39,13 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
     let newErrors: { [key: string]: string } = {};
 
     // 유효성 검사 적용
-    const idError = validateId(formData.id);
-    if (idError) newErrors.id = idError;
+    // const idError = validateId(formData.id);
+    // if (idError) newErrors.id = idError;
+
+    // ID 중복 체크가 완료되지 않은 경우
+    if (!errors.id || errors.id !== '사용 가능한 아이디입니다.') {
+      newErrors.id = '아이디 중복 확인이 필요합니다.';
+    }
 
     if (!formData.nickname.trim()) {
       newErrors.nickname = '닉네임을 입력해주세요.';
@@ -103,7 +108,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       id="registForm"
       onSubmit={handleSubmit}
       noValidate
-      className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12"
+      className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12 min-h-[400px] overflow-y-auto p-[2px]"
     >
       {/* 아이디 */}
       <div className="flex items-center gap-2 ">
@@ -152,7 +157,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       </div>
 
       {/* 비밀번호 */}
-      <div className="flex items-center gap-2 ">
+      <div className="flex items-center gap-2">
         <label htmlFor="password">비밀번호</label>
         <input
           id="password"
@@ -163,6 +168,11 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
           className={inputStyles}
         />
       </div>
+      {errors.password && (
+        <p className="text-[12px] text-red-500 break-words whitespace-pre-line ">
+          {errors.password}
+        </p>
+      )}
 
       {/* 비밀번호 확인 */}
       <div className="flex items-center gap-2 ">
@@ -183,7 +193,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
 
       {/* 생년월일 */}
       <fieldset id="birth" className="flex items-center gap-2">
-        <legend className="flex text-12">생년월일</legend>
+        <label className="flex text-12">생년월일</label>
 
         <input
           type="text"

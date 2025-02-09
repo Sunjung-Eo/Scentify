@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.auth.TokenService;
-import com.ssafy.scentify.auth.model.dto.TokenDto;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.group.GroupService;
 import com.ssafy.scentify.group.model.dto.GroupDto.MemberDto;

@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/useAuthStore';
+import { useUserStore } from '../../../stores/useUserStore';
 
 const SocialLoginCallback = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams(); // useSearchParams로 URL의 쿼리 파라미터 처리
   const loginWithSocial = useAuthStore((state) => state.loginWithSocial);
+  const setUser = useUserStore((state) => state.setUser); // useUse
 
   useEffect(() => {
     const handleLogin = async () => {
@@ -14,8 +16,17 @@ const SocialLoginCallback = () => {
       const social = searchParams.get('social');
       const status = searchParams.get('status');
       const email = searchParams.get('email');
+      const id = searchParams.get('id');
+      const group = searchParams.get('group');
 
-      console.log('Parsed Params:', { social, status, email, provider });
+      console.log('Parsed Params:', {
+        social,
+        status,
+        email,
+        provider,
+        id,
+        group,
+      });
 
       if (!provider || (provider !== 'kakao' && provider !== 'google')) {
         console.error('잘못된 소셜 로그인 제공자:', provider);
@@ -40,6 +51,13 @@ const SocialLoginCallback = () => {
         try {
           const token = await loginWithSocial(provider as 'kakao' | 'google');
           if (token) {
+            if (group === 'false') {
+              alert('그룹의 멤버 정원이 초과되었습니다.');
+              navigate('/home');
+            }
+            if (id) {
+              setUser({ id }); // 로그인 성공시 id 저장
+            }
             navigate('/home');
           } else {
             navigate('/login');
@@ -71,7 +89,7 @@ const SocialLoginCallback = () => {
     };
 
     handleLogin();
-  }, [searchParams, navigate, loginWithSocial]);
+  }, [searchParams, navigate, loginWithSocial, setUser]);
 
   return (
     <div className="flex justify-center items-center h-screen">

@@ -5,6 +5,15 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "types": ["vite/client"]
-  }
+    "types": ["vite/client"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "assets/*": ["./src/assets/*"]
+    }
+  },
+
+  // TypeScript 체크에서 제외할 파일들
+  "exclude": ["node_modules", "dist", "build"]
 }

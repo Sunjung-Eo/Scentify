@@ -13,7 +13,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const data = await loginUser(id, password);
       set({ accessToken: data.accessToken, isAuthenticated: true });
-      // useUserStore.getState().setUser({ id });
+      useUserStore.getState().setUser({ id });
     } catch (error) {
       console.log('로그인 실패: ', error);
       throw error;

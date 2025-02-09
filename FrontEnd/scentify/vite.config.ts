@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 import svgr from 'vite-plugin-svgr';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react(), svgr()],
@@ -21,5 +22,15 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/v1/, '/v1'), // 경로 유지
       },
     },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      assets: path.resolve(__dirname, './src/assets'),
+    },
+  },
+  esbuild: {
+    // TypeScript 체크 비활성화
+    logOverride: { 'this-is-undefined-in-esm': 'silent' },
   },
 });

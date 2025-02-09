@@ -1,6 +1,8 @@
 package com.ssafy.scentify.group;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -270,7 +272,20 @@ public class GroupController {
  			
 	 		// 해당 멤버 자리를 null로 변경
 	 		if (!groupService.updateGroupMemberById(groupId, memberPosition)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-		
+	 		
+	 		// 삭제 멤버의 메인 디바이스 id 조회
+			int mainDeviceId = userService.getMainDeviceById(memberId);
+			
+			// 만약 삭제 요청 기기가 해당 멤버의 메인 디바이스라면 정보를 업데이트 해주기
+			if (mainDeviceId == group.getDeviceId()) {
+				List<Integer> deviceIds = groupService.getDeviceIdByUserId(memberId);
+				if (deviceIds.size() > 0) {
+					userService.updateMainDeviceId(memberId, deviceIds.get(0));
+				} else {
+					userService.updateMainDeviceId(memberId, null);
+				}
+			}
+	 		
 	        return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 	        // 예기치 않은 에러 처리
@@ -307,6 +322,28 @@ public class GroupController {
 			// 모든 그룹 멤버를 null로 만듦 (수행 되지 않았을 경우 400 반환)
 			if (!groupService.updateGroupAllMemberById(groupId)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
+			// 그룹 멤버들의 메인 디바이스 기기 업데이트
+			List<String> memberList = new ArrayList<>();
+			if (group.getMember1Id() != null) { memberList.add(group.getMember1Id()); }
+			if (group.getMember2Id() != null) { memberList.add(group.getMember2Id()); }
+			if (group.getMember3Id() != null) { memberList.add(group.getMember3Id()); }
+			if (group.getMember4Id() != null) { memberList.add(group.getMember4Id()); }
+			
+			for (String memberId : memberList) {
+				// 유저의 메인 디바이스 id 조회
+				int mainDeviceId = userService.getMainDeviceById(memberId);
+				
+				// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
+				if (mainDeviceId == group.getDeviceId()) {
+					List<Integer> deviceIds = groupService.getDeviceIdByUserId(memberId);
+					if (deviceIds.size() > 0) {
+						userService.updateMainDeviceId(memberId, deviceIds.get(0));
+					} else {
+						userService.updateMainDeviceId(memberId, null);
+					}
+				}
+			}
+					
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 	        // 예기치 않은 에러 처리

@@ -6,6 +6,8 @@ export const getGroupByDeviceId = async (
   accessToken: string
 ): Promise<GroupInfoResponse> => {
   try {
+    // Device ID 확인용 로그 추가
+    console.log("🔹 [getGroupByDeviceId] 요청된 deviceId:", deviceId);
     const response = await fetch("/v1/group/info", {
       method: "POST",
       headers: {

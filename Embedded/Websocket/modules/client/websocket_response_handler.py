@@ -84,13 +84,15 @@ class WebSocketResponseHandler:
             message
         )
         if self.print_log:
-            print("Handling Request ")
+            print("Handling Auto Mode Change ")
 
     async def handler_set_operation_mode(self, message):
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/SetOperationMode",
             message
         )
+        if self.print_log:
+            print("Handling Set Operation Mode")
 
     async def handler_schedule_init(self, message):
         print("Handling Schedule Init")

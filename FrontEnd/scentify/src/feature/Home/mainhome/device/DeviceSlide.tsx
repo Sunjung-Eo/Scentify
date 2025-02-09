@@ -7,6 +7,7 @@ import { MainDeviceState } from '../../../../types/MainDeviceType.ts';
 import leftarrow from '../../../../assets/icons/leftarrow-icon.svg';
 import rightarrow from '../../../../assets/icons/rightarrow-icon.svg';
 import DeviceInfo from './components/DeviceInfo.tsx';
+import NoDeviceInfo from './components/NoDeviceInfo.tsx';
 import DeviceSchedule from './components/DeviceSchedule.tsx';
 import { deviceInfo } from '../../../../apis/home/deviceInfo.ts';
 import { useQuery } from '@tanstack/react-query';
@@ -85,9 +86,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   return (
     <div className="relative flex flex-col items-center h-[460px] justify-between">
       {deviceIds.length === 0 ? (
-        <p className="text-brand font-pre-regular text-xs mt-24">
-          현재 등록된 기기가 없습니다.
-        </p>
+        <NoDeviceInfo />
       ) : isLoading ? (
         <p className="text-brand font-pre-regular text-xs mt-24">
           기기 정보를 불러오는 중...

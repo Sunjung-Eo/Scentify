@@ -44,7 +44,7 @@ public class UserController {
     static final Pattern emailpattern = Pattern.compile(emailRegex);
     
     // 영어 대소문자 중 1개, 숫자 중 1개, 특수문자 중 1개, 8글자 이상
-    static final String passwordRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=:<>?])[A-Za-z0-9!@#$%^&*()_+\\-=:<>?]{8,}$";
+    static final String passwordRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=:<>?])[A-Za-z0-9!@#$%^&*()_+\\-=:<>?]{8,20}$";
     static final Pattern passwordPattern = Pattern.compile(passwordRegex);
 
 	public UserController(UserService userService, EmailService emailService, GroupService groupService, TokenService tokenService, CodeProvider codeProvider, TokenProvider tokenProvider) {

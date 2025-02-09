@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import DeviceSelect from "../../../components/Control/DeviceSelect";
+import { useNavigate } from "react-router-dom";
+
 import { useAuthStore } from "../../../stores/useAuthStore";
-import { AutoManagerProps } from "./AutoModeType";
+
 import { getCombinationById } from "../../../apis/control/getCombinationById";
+
+import { AutoManagerProps } from "./AutoModeType";
+
 import AutoIcon from "../../../assets/icons/auto-icon.svg";
 import SettingIcon from "../../../assets/icons/setting-icon.svg";
 
@@ -11,96 +14,15 @@ export default function AutoManager({
   automationData,
   devices,
   selectedDevice,
-  onDeviceChange,
 }: AutoManagerProps) {
   const navigate = useNavigate();
-  const location = useLocation();
+
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
-  // 자동화모드 데이터 관리리
-  const [autoData, setAutoData] = useState(automationData);
-  console.log("자동화!", automationData);
-  useEffect(() => {
-    setAutoData(structuredClone(automationData));
-  }, [selectedDevice, automationData]);
-
-  // 하위 컴포넌트 데이터 가져오기
-  const deodorize = location.state?.deodorize;
-  const deodorizeInterval = location.state?.selectedTime;
-  const detect = location.state?.detect;
-  const exercise = location.state?.exercise;
-  const exerciseInterval = location.state?.exerciseSelectedTime;
-  const rest = location.state?.rest;
-  const restInterval = location.state?.restSelectedTime;
-
-  // useEffect(() => {
-  //   setAutoData(automationData);
-  // }, [automationData]);
-
-  useEffect(() => {
-    if (deodorize !== undefined || deodorizeInterval !== undefined) {
-      setAutoData((prev) => ({
-        ...prev,
-        autoSchedules: [...prev.autoSchedules].map((schedule, index) =>
-          index === 0
-            ? {
-                ...schedule,
-                ...(deodorize !== undefined && { modeOn: deodorize }),
-                ...(deodorizeInterval !== undefined && {
-                  interval: deodorizeInterval,
-                }),
-              }
-            : schedule
-        ),
-      }));
-    }
-  }, [deodorize, deodorizeInterval, location.state]);
-
-  useEffect(() => {
-    if (
-      exercise !== undefined ||
-      exerciseInterval !== undefined ||
-      rest !== undefined ||
-      restInterval !== undefined
-    ) {
-      setAutoData((prev) => ({
-        ...prev,
-        autoSchedules: [...prev.autoSchedules].map((schedule, index) =>
-          index === 1
-            ? {
-                ...schedule,
-                ...(exercise !== undefined && { modeOn: exercise }),
-                ...(exerciseInterval !== undefined && {
-                  interval: exerciseInterval,
-                }),
-                ...(rest !== undefined && { modeOn: rest }),
-                ...(restInterval !== undefined && {
-                  interval: restInterval,
-                }),
-              }
-            : schedule
-        ),
-      }));
-    }
-  }, [exercise, rest, exerciseInterval, restInterval, location.state]);
-
-  useEffect(() => {
-    if (detect !== undefined) {
-      setAutoData((prev) => ({
-        ...prev,
-        autoSchedules: [...prev.autoSchedules].map((schedule, index) =>
-          index === 1
-            ? {
-                ...schedule,
-                ...(detect !== undefined && { modeOn: detect }),
-              }
-            : schedule
-        ),
-      }));
-    }
-  }, [detect, location.state]);
+  // 기기 한개의 자동화 데이터 저장
+  const autoSchedules = automationData?.autoSchedules || [];
 
   // 기본향 설정
   const [defaultScentId, setDefaultScentId] = useState(
@@ -153,6 +75,15 @@ export default function AutoManager({
     fetchCombination();
   }, [defaultScentId, accessToken]);
 
+  // 공간 크기
+  const [roomType, setRoomType] = useState<number>(0);
+  useEffect(() => {
+    const newRoomType = devices.find(
+      (device) => device.deviceId === selectedDevice
+    )?.roomType;
+    setRoomType(newRoomType ?? 0);
+  }, [selectedDevice, devices]);
+
   // 자동화 모드 세부 설정 버튼 클릭
   const handleSettingClick = (autoType: number) => {
     if (autoType === 0) {
@@ -162,6 +93,7 @@ export default function AutoManager({
           defaultScentData: defaultScentData,
           deviceId: selectedDevice,
           accessToken: accessToken,
+          roomType: roomType,
         },
       });
     } else if (autoType === 1) {
@@ -181,6 +113,7 @@ export default function AutoManager({
           defaultScentData: defaultScentData,
           deviceId: selectedDevice,
           accessToken: accessToken,
+          roomType: roomType,
         },
       });
     }
@@ -193,13 +126,7 @@ export default function AutoManager({
           <img src={AutoIcon} alt="자동화 이미지" />
           <h2>자동화 모드 설정</h2>
         </div>
-        <div className="absolute top-[-4px] left-[209px] z-40">
-          {/* <DeviceSelect
-            devices={devices}
-            selectedDevice={selectedDevice}
-            onDeviceChange={onDeviceChange}
-          /> */}
-        </div>
+        <div className="absolute top-[-4px] left-[209px] z-40"></div>
       </div>
       <div className="flex flex-col mt-5 gap-4">
         {/* 탈취 모드 */}
@@ -207,11 +134,9 @@ export default function AutoManager({
           <div className="flex justify-between items-center w-full">
             <div>탈취 모드</div>
             <div className="flex items-center gap-2">
-              <p>{autoData.autoSchedules[0].modeOn === 1 ? "ON" : "OFF"}</p>
+              <p>{autoSchedules[0].modeOn === 1 ? "ON" : "OFF"}</p>
               <button
-                onClick={() =>
-                  handleSettingClick(autoData.autoSchedules[0].subMode)
-                }
+                onClick={() => handleSettingClick(autoSchedules[0].subMode)}
               >
                 <img src={SettingIcon} alt="세팅 이미지" />
               </button>
@@ -226,17 +151,11 @@ export default function AutoManager({
             <div className="flex flex-col gap-2">
               <div className="flex">
                 <div className="flex flex-col pr-2 items-center gap-1 font-pre-light text-10">
-                  <p>
-                    운동 {autoData.autoSchedules[2].modeOn === 1 ? "ON" : "OFF"}
-                  </p>
-                  <p>
-                    휴식 {autoData.autoSchedules[3].modeOn === 1 ? "ON" : "OFF"}
-                  </p>
+                  <p>운동 {autoSchedules[2].modeOn === 1 ? "ON" : "OFF"}</p>
+                  <p>휴식 {autoSchedules[3].modeOn === 1 ? "ON" : "OFF"}</p>
                 </div>
                 <button
-                  onClick={() =>
-                    handleSettingClick(autoData.autoSchedules[2].subMode)
-                  }
+                  onClick={() => handleSettingClick(autoSchedules[2].subMode)}
                 >
                   <img src={SettingIcon} alt="세팅 이미지" />
                 </button>
@@ -250,11 +169,9 @@ export default function AutoManager({
           <div className="flex justify-between items-center w-full">
             <div>탐지 모드</div>
             <div className="flex items-center gap-2">
-              <p>{autoData.autoSchedules[1].modeOn === 1 ? "ON" : "OFF"}</p>
+              <p>{autoSchedules[1].modeOn === 1 ? "ON" : "OFF"}</p>
               <button
-                onClick={() =>
-                  handleSettingClick(autoData.autoSchedules[1].subMode)
-                }
+                onClick={() => handleSettingClick(autoSchedules[1].subMode)}
               >
                 <img src={SettingIcon} alt="세팅 이미지" />
               </button>

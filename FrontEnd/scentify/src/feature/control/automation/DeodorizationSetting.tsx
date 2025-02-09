@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useControlStore } from "../../../stores/useControlStore";
+
+import { updateDeodorization } from "../../../apis/control/updataDeodorization";
+import { getCombinationById } from "../../../apis/control/getCombinationById";
+
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { updateDeodorization } from "../../../apis/control/updataDeodorization";
 import { deodorizationData } from "./AutoModeType";
 
 export default function DeodorizationSetting() {
@@ -13,9 +18,23 @@ export default function DeodorizationSetting() {
   const defaultScentData = location.state.defaultScentData;
   const deviceId = location.state.deviceId;
   const accessToken = location.state.accessToken;
+  const roomType = location.state.roomType;
 
-  console.log(schedule);
-  // API통해 모드 활성화 여부 결정
+  // react query
+  const queryClient = useQueryClient();
+  const updateMutation = useMutation({
+    mutationFn: (data: deodorizationData) =>
+      updateDeodorization(data, accessToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["automations"] });
+      navigate("/control", { state: { deodorize, selectedTime } });
+    },
+    onError: (error) => {
+      console.error("탈취 모드 업데이트 실패:", error);
+    },
+  });
+
+  // 모드 활성화 여부
   const [deodorize, setDeodorize] = useState(schedule.modeOn);
   // 모드 변했으면 1, 그대로면 0
   const [deodorizeModeOn, setDeodorizeModeOn] = useState<boolean>(false);
@@ -29,94 +48,135 @@ export default function DeodorizationSetting() {
     });
   };
 
-  // 향 설정
-  const [scentName, setScentName] = useState<string>("");
-  const [scents, setScents] = useState({
-    scent1: 0,
-    scent2: 0,
-    scent3: 0,
-    scent4: 0,
-  });
-  // 기존 향
+  // 기존 향 설정
+  const [previousScentId, setPreviousScentId] = useState(
+    schedule.combinationId
+  );
   const [previousScentData, setPreviousScentData] = useState({
-    choice1: 0,
-    choice1Count: 0,
-    choice2: 0,
-    choice2Count: 0,
-    choice3: 0,
-    choice3Count: 0,
-    choice4: 0,
-    choice4Count: 0,
+    slot1: { slot: 0, count: 0 },
+    slot2: { slot: 0, count: 0 },
+    slot3: { slot: 0, count: 0 },
+    slot4: { slot: 0, count: 0 },
   });
+  useEffect(() => {
+    const fetchCombination = async () => {
+      if (previousScentId) {
+        try {
+          const combination = await getCombinationById(
+            previousScentId,
+            accessToken
+          );
+          setPreviousScentData({
+            slot1: {
+              slot: combination.choice1,
+              count: combination.choice1Count,
+            },
+            slot2: {
+              slot: combination.choice2,
+              count: combination.choice2Count,
+            },
+            slot3: {
+              slot: combination.choice3,
+              count: combination.choice3Count,
+            },
+            slot4: {
+              slot: combination.choice4,
+              count: combination.choice4Count,
+            },
+          });
+        } catch (error) {
+          console.error("기본향 조합 데이터 가져오기 실패:", error);
+        }
+      }
+    };
+
+    fetchCombination();
+  }, [previousScentId, accessToken]);
+
+  // 향 설정
+  const [scents, setScents] = useState({
+    scent1: previousScentData?.slot1?.count,
+    scent2: previousScentData?.slot2?.count,
+    scent3: previousScentData?.slot3?.count,
+    scent4: previousScentData?.slot4?.count,
+  });
+  useEffect(() => {
+    setScents({
+      scent1: previousScentData.slot1.count,
+      scent2: previousScentData.slot2.count,
+      scent3: previousScentData.slot3.count,
+      scent4: previousScentData.slot4.count,
+    });
+  }, [previousScentData]);
+
   // 향 수정 여부
   const isScentsChanged = () => {
-    const currentScents = {
-      choice1: defaultScentData.slot1.slot,
-      choice1Count: scents.scent1,
-      choice2: defaultScentData.slot2.slot,
-      choice2Count: scents.scent2,
-      choice3: defaultScentData.slot3.slot,
-      choice3Count: scents.scent3,
-      choice4: defaultScentData.slot4.slot,
-      choice4Count: scents.scent4,
-    };
-    return JSON.stringify(currentScents) !== JSON.stringify(previousScentData);
+    return (
+      scents.scent1 !== previousScentData.slot1.count ||
+      scents.scent2 !== previousScentData.slot2.count ||
+      scents.scent3 !== previousScentData.slot3.count ||
+      scents.scent4 !== previousScentData.slot4.count
+    );
   };
 
-  const [totalEnergy, setTotalEnergy] = useState<number>(3);
+  // 공간 크기에 따른 에너지
+  const [totalEnergy, setTotalEnergy] = useState<number>(
+    roomType === 0 ? 3 : 6
+  );
+  useEffect(() => {
+    setTotalEnergy(roomType === 0 ? 3 : 6);
+  }, [roomType]);
+  console.log(roomType);
 
   // 분사주기 드롭박스 초기값
-  const [selectedTime, setSelectedTime] = useState(schedule.interval);
+  const [selectedTime, setSelectedTime] = useState(`${schedule.interval}분`);
+  // 기존 분사주기
   const previousSelectedTime = schedule.interval;
   // 분사주기 선택
   const handleSelectTime = (time: string | number) => {
-    setSelectedTime(time.toString());
+    const formattedTime = typeof time === "number" ? `${time}분` : time;
+    setSelectedTime(formattedTime);
   };
 
-  // 완료 버튼 누를 시 API 호출, 현재는 모드 상태 임시 전달
+  // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
-  // 완료 버튼 클릭 시 호출되는 함수
   const handleComplete = () => {
     const deodorizationData: deodorizationData = {
       id: schedule.id,
       deviceId: deviceId,
       combination: isScentsChanged()
         ? {
-            choice1: defaultScentData.slot1.slot!,
+            choice1: previousScentData.slot1.slot,
             choice1Count: scents.scent1,
-            choice2: defaultScentData.slot2.slot!,
+            choice2: previousScentData.slot2.slot,
             choice2Count: scents.scent2,
-            choice3: defaultScentData.slot3.slot!,
+            choice3: previousScentData.slot3.slot,
             choice3Count: scents.scent3,
-            choice4: defaultScentData.slot4.slot!,
+            choice4: previousScentData.slot4.slot,
             choice4Count: scents.scent4,
           }
         : { id: schedule.combinationId },
       modeOn: deodorize,
       modeChange: deodorizeModeOn,
-      // interval: parseInt(selectedTime.replace("분", ""), 10),
-      // interval: parseInt(selectedTime.replace(/[^0-9]/g, "")),
       interval: parseInt(String(selectedTime).replace(/[^0-9]/g, "")),
       intervalChange: previousSelectedTime === selectedTime ? false : true,
     };
 
     console.log("최종 deodorizationData:", deodorizationData);
 
-    updateDeodorization(deodorizationData, accessToken);
+    updateMutation.mutate(deodorizationData);
     navigate("/control", {
       state: { deodorize, selectedTime },
     });
   };
 
   useEffect(() => {
-    // 완료 핸들러 등록
     setCompleteHandler(handleComplete);
 
     return () => {
-      // 컴포넌트 언마운트 시 핸들러 초기화
       setCompleteHandler(null);
     };
-  }, [deodorize]);
+  }, [deodorize, scents, selectedTime]);
 
   return (
     <div className="content p-0">

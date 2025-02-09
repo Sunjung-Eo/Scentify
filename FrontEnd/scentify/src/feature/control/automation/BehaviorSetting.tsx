@@ -1,25 +1,44 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useControlStore } from "../../../stores/useControlStore";
+
+import { updateBehavior } from "../../../apis/control/updateBehavior";
+
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
 import { behaviorData } from "./AutoModeType";
-import { updateBehavior } from "../../../apis/control/updateBehavior";
 
 export default function BehaviorSetting() {
   const navigate = useNavigate();
   const location = useLocation();
   const scheduleExercise = location.state.schedule1;
   const scheduleRest = location.state.schedule2;
-  const defaultScentData = location.state.defaultScentData;
   const deviceId = location.state.deviceId;
   const accessToken = location.state.accessToken;
 
-  // API통해 모드 활성화 여부 결정
+  // react query
+  const queryClient = useQueryClient();
+  const updateMutation = useMutation({
+    mutationFn: (data: behaviorData) => updateBehavior(data, accessToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["automations"] });
+      navigate("/control", {
+        state: { exercise, rest, exerciseSelectedTime, restSelectedTime },
+      });
+    },
+    onError: (error) => {
+      console.error("동작 모드 업데이트 실패:", error);
+    },
+  });
+
+  // 모드 활성화 여부
   const [exercise, setExercise] = useState(scheduleExercise.modeOn);
   const [rest, setRest] = useState(scheduleRest.modeOn);
   // 모드 변했으면 1, 그대로면 0
   const [exerciseModeOn, setExerciseModeOn] = useState<boolean>(false);
   const [restModeOn, setRestModeOn] = useState<boolean>(false);
+
   // 집중 모드 토글
   const toggleExercise = () => {
     setExercise((prev: any) => {
@@ -39,21 +58,25 @@ export default function BehaviorSetting() {
 
   // 분사주기 드롭박스 초기값
   const [exerciseSelectedTime, setExerciseSelectedTime] = useState(
-    scheduleExercise.interval
+    `${scheduleExercise.interval}분`
   );
   const [restSelectedTime, setRestSelectedTime] = useState(
-    scheduleRest.interval
+    `${scheduleRest.interval}분`
   );
-  // 분사주기 선택
-  const handleExerciseSelectTime = (time: string | number) => {
-    setExerciseSelectedTime(time.toString());
-  };
-  const handleRestSelectTime = (time: string | number) => {
-    setRestSelectedTime(time.toString());
-  };
+  // 기존 분사주기
   const previousExerciseSelectedTime = scheduleExercise.interval;
   const previousRestSelectedTime = scheduleRest.interval;
+  // 분사주기 선택
+  const handleExerciseSelectTime = (time: string | number) => {
+    const formattedTime = typeof time === "number" ? `${time}분` : time;
+    setExerciseSelectedTime(formattedTime);
+  };
+  const handleRestSelectTime = (time: string | number) => {
+    const formattedTime = typeof time === "number" ? `${time}분` : time;
+    setRestSelectedTime(formattedTime);
+  };
 
+  // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
     const behaviorData: behaviorData = {
@@ -79,18 +102,16 @@ export default function BehaviorSetting() {
 
     console.log("최종 behaviorData:", behaviorData);
 
-    updateBehavior(behaviorData, accessToken);
+    updateMutation.mutate(behaviorData);
     navigate("/control", {
       state: { exercise, rest, exerciseSelectedTime, restSelectedTime },
     });
   };
 
   useEffect(() => {
-    // 완료 핸들러 등록
     setCompleteHandler(handleComplete);
 
     return () => {
-      // 컴포넌트 언마운트 시 핸들러 초기화
       setCompleteHandler(null);
     };
   }, [exercise, rest, exerciseSelectedTime, restSelectedTime]);

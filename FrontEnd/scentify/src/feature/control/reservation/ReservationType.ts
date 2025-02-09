@@ -1,5 +1,3 @@
-import { DeviceSelectItem } from "../../../components/Control/DeviceSelect";
-
 // 예약 목록 관련 타입
 export interface Reservations {
   [key: string]: string[];
@@ -33,25 +31,9 @@ export interface ReservationManagerProps {
   reservationData: {
     customSchedules: Reservation[];
   };
-  devices: DeviceSelectItem[];
   selectedDevice: number;
-  onDeviceChange: (deviceId: number) => void;
 }
 
-// 기본향향
-// type DefaultScentData = {
-//   slot1: { slot: number; count: number };
-//   slot2: { slot: number; count: number };
-//   slot3: { slot: number; count: number };
-//   slot4: { slot: number; count: number };
-// };
-// 예약하기
-// export interface CreateManagerProps {
-//   devices: DeviceSelectItem[];
-//   selectedDevice: number;
-//   onDeviceChange: (deviceId: number) => void;
-//   // defaultScentData: DefaultScentData;
-// }
 // 예약하기 데이터 전송
 export interface Combination {
   name: string;
@@ -77,16 +59,6 @@ export interface CustomSchedules {
   isFavorite: boolean;
 }
 
-// export interface CustomSchedule {
-//   name: string;
-//   deviceId: number;
-//   day: number;
-//   combination: Combination;
-//   startTime: string;
-//   endTime: string;
-//   interval: number;
-//   modeOn: boolean;
-// }
 // 예약하기
 export interface ReservationData {
   name: string;

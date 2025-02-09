@@ -147,6 +147,15 @@ export default function CreateReservation({
     scent3: 0,
     scent4: 0,
   });
+  useEffect(() => {
+    setScents({
+      scent1: defaultScentData.slot1.count,
+      scent2: defaultScentData.slot2.count,
+      scent3: defaultScentData.slot3.count,
+      scent4: defaultScentData.slot4.count,
+    });
+  }, [defaultScentData]);
+
   // 방 크기 별 에너지
   const getTotalEnergy = (roomType: number) => {
     switch (roomType) {
@@ -158,7 +167,6 @@ export default function CreateReservation({
     }
   };
   const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
-  // console.log("da", selectedDeviceData?.defaultScentData);
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -203,13 +211,13 @@ export default function CreateReservation({
       day: getDaysBitMask(selectedDays),
       combination: {
         name: scentName,
-        choice1: defaultScentData.slot1.slot!,
+        choice1: defaultScentData.slot1.slot,
         choice1Count: scents.scent1,
-        choice2: defaultScentData.slot2.slot!,
+        choice2: defaultScentData.slot2.slot,
         choice2Count: scents.scent2,
-        choice3: defaultScentData.slot3.slot!,
+        choice3: defaultScentData.slot3.slot,
         choice3Count: scents.scent3,
-        choice4: defaultScentData.slot4.slot!,
+        choice4: defaultScentData.slot4.slot,
         choice4Count: scents.scent4,
       },
       startTime: convertTo24Hour(startHour, startMinute, startPeriod),

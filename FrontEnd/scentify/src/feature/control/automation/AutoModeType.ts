@@ -24,7 +24,6 @@ export interface AutoManagerProps {
   };
   devices: DeviceSelectItem[];
   selectedDevice: number | null;
-  onDeviceChange: (device: number) => void;
 }
 
 interface Combination {
@@ -38,11 +37,15 @@ interface Combination {
   choice4Count: number;
 }
 
+interface CombinationId {
+  id: number;
+}
+
 // 탈취 모드
 export interface deodorizationData {
   id: number;
   deviceId: number;
-  combination: Combination;
+  combination: Combination | CombinationId;
   modeOn: boolean;
   modeChange: boolean;
   interval: number;
@@ -52,7 +55,7 @@ export interface deodorizationData {
 export interface detectionData {
   id: number;
   deviceId: number;
-  combination: Combination;
+  combination: Combination | CombinationId;
   modeOn: boolean;
   modeChange: boolean;
 }

@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Group {
     private Integer id;
+    private Integer deviceId;
     private String adminId;
     private String adminNickname;
     private String member1Id;

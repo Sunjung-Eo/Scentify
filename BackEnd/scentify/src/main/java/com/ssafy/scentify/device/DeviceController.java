@@ -407,7 +407,7 @@ public class DeviceController {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
 				if (deviceIds.size() > 0) {
 					userService.updateMainDeviceId(userId, deviceIds.get(0));
-				}
+				} 
 			}
 		}
 	}

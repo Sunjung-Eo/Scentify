@@ -104,6 +104,8 @@ public class DeviceController {
 
 	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
 	            if (waitTime >= maxWaitTime) {
+	            	// 디바이스 삭제
+	            	deviceService.deleteDevice(deviceId, userId);
 	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
 	            }
 	            Thread.sleep(sleepInterval);

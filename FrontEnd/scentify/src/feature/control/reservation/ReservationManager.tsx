@@ -1,26 +1,27 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useAuthStore } from "../../../stores/useAuthStore";
+
 import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
-import AlarmIcon from "../../../assets/icons/alarm-icon.svg";
-import ModifyIcon from "../../../assets/icons/modify-icon.svg";
-import HeartButton from "../../../components/Button/HeartButton";
+
 import DeleteConfirmModal from "./DeleteReservationModal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 import {
-  // Reservations,
   // HeartStatus,
   ReservationManagerProps,
 } from "./ReservationType";
 
+import AlarmIcon from "../../../assets/icons/alarm-icon.svg";
+import ModifyIcon from "../../../assets/icons/modify-icon.svg";
+import HeartButton from "../../../components/Button/HeartButton";
+
 export default function ReservationManager({
   reservationData,
-  devices,
   selectedDevice,
-  onDeviceChange,
 }: ReservationManagerProps) {
   const navigate = useNavigate();
 
@@ -53,20 +54,17 @@ export default function ReservationManager({
       console.error("예약 삭제 실패:", error);
     },
   });
-
+  // 삭제 버튼 핸들러
   const handleDeleteClick = (scheduleId: number) => {
-    console.log("scheduleId: ", scheduleId);
-    console.log("selectedDevice: ", selectedDevice);
     setReservationDelete(scheduleId);
     setDeleteModalOpen(true);
   };
-
+  // 삭제 모달창
   const handleDeleteConfirm = () => {
     if (reservationDelete) {
       deleteMutation.mutate(reservationDelete);
     }
   };
-
   const handleDeleteCancel = () => {
     setDeleteModalOpen(false);
     setReservationDelete(null);
@@ -120,7 +118,6 @@ export default function ReservationManager({
       {customSchedules.length > 0 ? (
         <div className="mt-5 pb-3 max-h-96 overflow-y-auto">
           {customSchedules.map((schedule) => {
-            // console.log(schedule);
             const selectedDays = getDaysFromBitMask(schedule.day);
             const [startTime, startPeriod] = convertTo12Hour(
               schedule.startTime

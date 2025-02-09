@@ -1,5 +1,6 @@
 import { detectionData } from "../../feature/control/automation/AutoModeType";
-// 탈취 모드
+
+// 탐지 모드
 export const updateDetection = async (
   deodorizationData: detectionData,
   accessToken: string

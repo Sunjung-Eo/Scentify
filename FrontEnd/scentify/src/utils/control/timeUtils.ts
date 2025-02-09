@@ -11,18 +11,16 @@ export const convertTo12Hour = (time24: string): [string, "오전" | "오후"] =
 };
 // AM/PM -> 24시간
 export const convertTo24Hour = (
-  hour: string,
-  minute: string,
-  period: "AM" | "PM"
+  hour: number,
+  minute: number,
+  period: string
 ) => {
-  let hours = parseInt(hour);
-  let minutes = parseInt(minute);
-  if (period === "PM" && hours !== 12) {
-    hours += 12;
-  } else if (period === "AM" && hours === 12) {
-    hours = 0;
+  if (period === "PM" && hour !== 12) {
+    hour += 12;
+  } else if (period === "AM" && hour === 12) {
+    hour = 0;
   }
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
+  return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
 };
 
 // 요일 비트마스크

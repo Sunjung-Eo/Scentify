@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useControlStore } from "../../../stores/useControlStore";
 import { useAuthStore } from "../../../stores/useAuthStore";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import DeviceSelect from "../../../components/Control/DeviceSelect";
-import ScentSetting from "../../../components/Control/ScentSetting";
-import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { ReservationData } from "./ReservationType";
-import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
-import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 import { createCustomSchedule } from "../../../apis/control/createCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 
+import DeviceSelect from "../../../components/Control/DeviceSelect";
+import ScentSetting from "../../../components/Control/ScentSetting";
+import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
+import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+import { ReservationData } from "./ReservationType";
+
 export default function CreateReservation({
-  reservationData,
   devices,
   selectedDevice,
   onDeviceChange,
@@ -147,6 +148,15 @@ export default function CreateReservation({
     scent3: 0,
     scent4: 0,
   });
+  useEffect(() => {
+    setScents({
+      scent1: defaultScentData.slot1.count,
+      scent2: defaultScentData.slot2.count,
+      scent3: defaultScentData.slot3.count,
+      scent4: defaultScentData.slot4.count,
+    });
+  }, [defaultScentData]);
+
   // 방 크기 별 에너지
   const getTotalEnergy = (roomType: number) => {
     switch (roomType) {
@@ -157,8 +167,7 @@ export default function CreateReservation({
         return 3;
     }
   };
-  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
-  // console.log("da", selectedDeviceData?.defaultScentData);
+  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType ?? 0);
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -197,23 +206,28 @@ export default function CreateReservation({
     if (!isValid) {
       return;
     }
+
     const reservationData: ReservationData = {
       name: reservationName,
-      deviceId: selectedDevice!,
+      deviceId: selectedDevice,
       day: getDaysBitMask(selectedDays),
       combination: {
         name: scentName,
-        choice1: defaultScentData.slot1.slot!,
+        choice1: defaultScentData.slot1.slot,
         choice1Count: scents.scent1,
-        choice2: defaultScentData.slot2.slot!,
+        choice2: defaultScentData.slot2.slot,
         choice2Count: scents.scent2,
-        choice3: defaultScentData.slot3.slot!,
+        choice3: defaultScentData.slot3.slot,
         choice3Count: scents.scent3,
-        choice4: defaultScentData.slot4.slot!,
+        choice4: defaultScentData.slot4.slot,
         choice4Count: scents.scent4,
       },
-      startTime: convertTo24Hour(startHour, startMinute, startPeriod),
-      endTime: convertTo24Hour(endHour, endMinute, endPeriod),
+      startTime: convertTo24Hour(
+        Number(startHour),
+        Number(startMinute),
+        startPeriod
+      ),
+      endTime: convertTo24Hour(Number(endHour), Number(endMinute), endPeriod),
       interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, "")),
       modeOn: modeOn,
     };
@@ -271,7 +285,6 @@ export default function CreateReservation({
         </label>
         <div className="absolute top-[-9px] left-[63px] z-50">
           <DeviceSelect
-            reservationData={reservationData}
             devices={devices}
             selectedDevice={selectedDevice}
             onDeviceChange={onDeviceChange}
@@ -450,14 +463,7 @@ export default function CreateReservation({
           scents={scents}
           setScents={setScents}
           totalEnergy={totalEnergy}
-          defaultScentData={
-            defaultScentData || {
-              slot1: { slot: 0, count: 0 },
-              slot2: { slot: 0, count: 0 },
-              slot3: { slot: 0, count: 0 },
-              slot4: { slot: 0, count: 0 },
-            }
-          }
+          defaultScentData={defaultScentData}
         />
         {formErrors.scents && (
           <p className="absolute mt-[217px] ml-[70px] text-red-500 text-10">

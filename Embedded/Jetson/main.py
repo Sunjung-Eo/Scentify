@@ -2,6 +2,7 @@ import os, sys
 import json
 import asyncio
 import re
+import math
 
 from mode import *
 from mqtt_client import *
@@ -97,9 +98,20 @@ class SmartDiffuser:
             cap_slot = [self.capsule_to_slot[payload[ch]] for ch in choices if self.is_valid_key(payload, ch)]
             cap_cnt = [payload[cnt] for cnt in counts if self.is_valid_key(payload, cnt)]
 
+            # choice가 동일한 것이 있다면 슬롯에 대해서 균일하게 분사.
+            num_operate_for_slot = [0] * 4
+    
             for (index, slot_num) in enumerate(cap_slot):
-                print(index, slot_num[0])
-                self.soleniods[slot_num[0] - 1].operate_repeat(repeat_num=cap_cnt[index], time_duration=1)
+                cnt = cap_cnt[index]
+                slot_idx = 0
+                # cnt만큼 뿌릴 건데, 그 향에 해당하는 슬롯에 돌아가면서 cnt를 1씩 증가시켜준다.
+                for _ in range(cnt):
+                    slot_idx %= len(slot_num)
+                    num_operate_for_slot[slot_num[slot_idx]] += 1
+                    slot_idx += 1
+
+            for (index, value) in enumerate(num_operate_for_slot):
+                self.soleniods[index].operate_repeat(repeat_num=value, time_duration=1)
 
             # 잔여량 계산
             # self.update_ramainder()

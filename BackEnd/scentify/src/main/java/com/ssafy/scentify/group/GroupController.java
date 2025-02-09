@@ -280,9 +280,9 @@ public class GroupController {
 			if (mainDeviceId == group.getDeviceId()) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(memberId);
 				if (deviceIds.size() > 0) {
-					userService.updateMainDeviceId(userId, deviceIds.get(0));
+					userService.updateMainDeviceId(memberId, deviceIds.get(0));
 				} else {
-					userService.updateMainDeviceId(userId, null);
+					userService.updateMainDeviceId(memberId, null);
 				}
 			}
 	 		

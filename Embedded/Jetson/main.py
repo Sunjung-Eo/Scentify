@@ -84,7 +84,6 @@ class SmartDiffuser:
         return payload[key] is not None
 
     async def process_mqtt_message(self, topic, payload):
-        message = dict()
         topic = topic.value
 
         if topic == f"{self.mqtt_client.device_id}/Operation":
@@ -153,6 +152,10 @@ class SmartDiffuser:
             payload = json.loads(payload)
             id = payload["id"]
             del payload["id"]
+
+            if id in self.mode.auto_operation_mode:
+                print("Not Exist Id for Auto Mode Operation")
+                return
 
             print("=====================Origin Auto Mode=====================")
             print(self.mode.auto_operation_mode[id])

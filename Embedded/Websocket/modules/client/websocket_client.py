@@ -70,7 +70,7 @@ class WebSocketClient:
                 "/app/Auto/Schedule/Initial",
                 "/app/Schedule/Initial",
                 "/app/DeviceStatus/Sensor",
-                "/app/Mode",
+                # "/app/Mode",
             ]
 
             self.message_queue = work_queue

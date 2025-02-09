@@ -11,10 +11,18 @@ import { getGroupByDeviceId } from "../../../apis/group/getGroupByDeviceId"; // 
 import { deleteGroupMember } from "../../../apis/group/deleteGroupMember"; // 개별 멤버 삭제 API
 import { deleteGroup } from "../../../apis/group/deleteGroup"; // 그룹 삭제 API
 import { Link } from "react-router-dom";
+import { useMemo } from "react"; //객체 사용시 불필요한 렌더링 막기 위함
+import { useNavigate } from "react-router-dom";
 
 export const GroupList = () => {
   // 사용자가 소유한 기기 ID 목록 가져오기 (등록된 디바이스가 없을 경우 빈 배열 사용)
-  const deviceIds = useUserStore((state) => state.deviceIds ?? []);
+  // deviceIdsAndName는 객체로, 리액트는 객체가 같은 값이어도 새로운 객체가 생성되면 다른 것으로 인식해서 불필요한 리렌더링을 함. 이를 막히위해 useMemo()사용
+  const deviceIdsAndNames = useUserStore((state) => state.deviceIdsAndNames);
+  const memoizedDeviceIdsAndNames = useMemo(
+    () => deviceIdsAndNames ?? {},
+    [deviceIdsAndNames]
+  );
+
   // 사용자의 대표(메인) 기기 ID 가져오기
   const mainDeviceId = useUserStore((state) => state.mainDeviceId);
   //  선택된 기기 ID (초기값: 메인 기기)
@@ -35,6 +43,8 @@ export const GroupList = () => {
   // 그룹의 관리자(Admin ID)정보
   const [adminId, setAdminId] = useState<string>("");
 
+  const navigate = useNavigate();
+
   // 선택한 기기의 그룹 정보를 불러오는 함수
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -46,11 +56,6 @@ export const GroupList = () => {
           accessToken
         );
         const { group } = response;
-
-        // 그룹 ID 저장
-        setGroupId(group.id);
-        // 그룹의 관리자 ID 저장
-        setAdminId(group.adminId);
 
         // 멤버 목록을 객체 배열로 변환(각 멤버의 ID및 닉네임 저장)
         const formattedMembers = [
@@ -127,6 +132,13 @@ export const GroupList = () => {
     }
   };
 
+  // 초대하기 버튼 클릭 시 Invite 페이지로 이동하면서 selectedDeviceId 전달
+  const handleInvite = () => {
+    if (selectedDeviceId) {
+      navigate("/my/invite", { state: { deviceId: selectedDeviceId } }); // ✅ 상태로 전달
+    }
+  };
+
   // 오류 발생 시 오류 메시지 표시
   if (error) {
     return <div className="font-pre-light text-12">{error}</div>;
@@ -142,10 +154,10 @@ export const GroupList = () => {
           className="px-3 py-2 rounded-lg border border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
           defaultValue={mainDeviceId || ""}
         >
-          {deviceIds.length > 0 ? (
-            deviceIds.map((id) => (
+          {Object.entries(memoizedDeviceIdsAndNames).length > 0 ? (
+            Object.entries(memoizedDeviceIdsAndNames).map(([id, name]) => (
               <option key={id} value={id}>
-                {id}
+                {name}
               </option>
             ))
           ) : (
@@ -155,13 +167,14 @@ export const GroupList = () => {
           )}
         </select>
         {/* 초대하기 버튼 */}
-        {adminId && (
-          <Link to="/my/invite">
-            <button className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand">
-              초대하기
-            </button>
-          </Link>
-        )}
+        {/* {adminId && ( */}
+        <button
+          onClick={handleInvite} // 버튼 클릭 시 Invite 페이지로 이동
+          className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
+        >
+          초대하기
+        </button>
+        {/* )} */}
       </div>
 
       {/* 멤버 리스트 */}

@@ -78,7 +78,7 @@ const LoginForm = ({
         {/* 로그인 버튼 */}
         <button
           type="submit"
-          className="h-[44px] w-[320px] rounded-lg bg-brand text-white hover:bg-sub focus:outline-none"
+          className="h-[44px] w-[320px] rounded-lg bg-brand text-white hover:bg-sub focus:outline-none font-pre-light text-16"
         >
           로그인하기
         </button>

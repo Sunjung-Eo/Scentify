@@ -55,6 +55,8 @@ public class CustomScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
+			// 설정 날짜가 오늘이면 RB에 스케줄 보내주기
+			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
 			 // 예기치 않은 에러 처리

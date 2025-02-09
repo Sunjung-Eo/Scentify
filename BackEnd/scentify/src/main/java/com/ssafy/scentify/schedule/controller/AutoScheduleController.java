@@ -84,7 +84,7 @@ public class AutoScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
-			socketService.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
+//			socketService.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -124,8 +124,8 @@ public class AutoScheduleController {
 		
 		int deviceId = schedule.getDeviceId();
 		int scheduleId = schedule.getId();
-		if (intervalChange) { socketService.sendIntervalUpdate(deviceId, scheduleId, schedule.getInterval());}
-		if (modeChange) { socketService.sendUpdateModeOn(deviceId, scheduleId, schedule.isModeOn()); }
+//		if (intervalChange) { socketService.sendIntervalUpdate(deviceId, scheduleId, schedule.getInterval());}
+//		if (modeChange) { socketService.sendUpdateModeOn(deviceId, scheduleId, schedule.isModeOn()); }
 		
 		return true;
 	}
@@ -152,7 +152,7 @@ public class AutoScheduleController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
 			}
 			
-			socketService.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
+//			socketService.sendAutoModeUpdate(autoScheduleDto, combinationId, combinationChange);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {

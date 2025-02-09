@@ -3,7 +3,7 @@ import {
   DeleteMemberRequest,
   DeleteGroupRequest,
 } from "../groupTypes";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MemberCard from "./MemberCard";
 import { useUserStore } from "../../../stores/useUserStore"; // 유저 상태 관리(사용자 기기정보)
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 정보 관리(토큰)
@@ -26,9 +26,19 @@ export const GroupList = () => {
 
   // 사용자의 대표(메인) 기기 ID 가져오기
   const mainDeviceId = useUserStore((state) => state.mainDeviceId);
-
-  const userId = useUserStore((state) => state.id); // 현재 로그인한 유저 ID
+  // 현재 로그인한 유저 ID
+  const userId = useUserStore((state) => state.id);
   console.log("현재 로그인한 유저 ID:", userId);
+
+  // 기기 옵션 배열 (id는 number)
+  const deviceOptions = useMemo(
+    () =>
+      Object.entries(memoizedDeviceIdsAndNames).map(([id, name]) => ({
+        id: Number(id),
+        name,
+      })),
+    [memoizedDeviceIdsAndNames]
+  );
 
   //  선택된 기기 ID (초기값: 메인 기기)
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(
@@ -54,6 +64,28 @@ export const GroupList = () => {
   console.log("현재 관리자ID:", adminId);
 
   const navigate = useNavigate();
+
+  // 커스텀 드롭다운 열림 상태
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  // dropdownRef: 드롭다운 영역의 DOM 요소에 접근하기 위한 Ref.s
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 드롭다운 영역 외부 클릭 시 닫기 처리(드롭다운 영역 밖을 클릭하면 드롭다운을 닫기 위해 이벤트를 등록)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      //이벤트 발생 위치가 드롭다운 내부가 아니면 드롭다운을 닫음
+      if (
+        dropdownRef.current && // 드롭다운 ref가 존재하고
+        !dropdownRef.current.contains(event.target as Node) // 클릭한 요소가 드롭다운 내부가 아니면 닫음
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    // document의 mousedown 이벤트에 핸들러를 추가하여 외부 클릭을 감지
+    document.addEventListener("mousedown", handleClickOutside);
+    // 클린업: 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // 선택한 기기의 그룹 정보를 불러오는 함수
   useEffect(() => {
@@ -163,6 +195,10 @@ export const GroupList = () => {
     }
   };
 
+  // 현재 선택된 기기의 이름
+  const selectedDeviceName =
+    deviceOptions.find((option) => option.id === selectedDeviceId)?.name || "-";
+
   return (
     <div className="flex flex-col">
       {/* 멤버 목록과 기기 선택 드롭다운 + 초대하기 버튼 묶음 */}
@@ -171,7 +207,7 @@ export const GroupList = () => {
 
         {/* 기기 선택 드롭다운 + 초대하기 버튼 */}
         <div className="flex flex-row items-center gap-x-5">
-          {/* 기기 선택 드롭다운 */}
+          {/* 기기 선택 드롭다운
           <select
             onChange={handleDeviceChange}
             className="w-auto min-w-[88px] max-w-[130px] h-[25px] text-center text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
@@ -188,7 +224,49 @@ export const GroupList = () => {
                 -
               </option>
             )}
-          </select>
+          </select> */}
+          <div className="relative inline-block" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              className="w-auto min-w-[88px] max-w-[130px] h-[25px] text-center text-12 font-pre-light rounded-lg  border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand flex items-center justify-center"
+            >
+              {selectedDeviceId === mainDeviceId && (
+                <img
+                  src={crownIcon}
+                  alt="Crown Icon"
+                  className="mr-1 w-4 h-4"
+                />
+              )}
+              <span>{selectedDeviceName}</span>
+            </button>
+            {dropdownOpen && (
+              <div className="absolute z-10 mt-1 w-full bg-white border-[1px] border-lightgray rounded-lg shadow-lg text-12 font-pre-light">
+                {deviceOptions.length > 0 ? (
+                  deviceOptions.map((option) => (
+                    <div
+                      key={option.id}
+                      onClick={() => {
+                        setSelectedDeviceId(option.id);
+                        setDropdownOpen(false);
+                      }}
+                      className="px-3 py-2 hover:bg-brand hover:text-white flex items-center justify-between"
+                    >
+                      {option.id === mainDeviceId && (
+                        <img
+                          src={crownIcon}
+                          alt="Crown Icon"
+                          className="w-4 h-4 mr-1"
+                        />
+                      )}
+                      <span>{option.name}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-2 text-center text-gray">-</div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* 초대하기 버튼 */}
           {userId === adminId && (

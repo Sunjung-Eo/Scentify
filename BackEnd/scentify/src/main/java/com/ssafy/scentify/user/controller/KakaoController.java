@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -45,6 +46,10 @@ public class KakaoController {
 	@Value("${kakao.redirect.url}")
 	private String kakaoRedirectUrl;
 	
+	// 영어 대소문자 중 1개, 숫자 중 1개, 특수문자 중 1개, 8글자 이상
+	static final String passwordRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=:<>?])[A-Za-z0-9!@#$%^&*()_+\\-=:<>?]{8,}$";
+	static final Pattern passwordPattern = Pattern.compile(passwordRegex);
+
 	private final UserService userService;
 	private final KakaoService kakaoService;
 	private final GroupService groupService;
@@ -252,6 +257,11 @@ public class KakaoController {
 			// 정보가 없는 경우
 			if (id == null || id.isEmpty() || socialType == null 
 					|| email == null || email.isEmpty()) { return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); }
+			
+			// 비밀번호가 지정된 패턴을 따르지 않은 경우
+	        if (!passwordPattern.matcher(socialUser.getPassword()).matches()) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
 			
 			// 데이터 유효성 검사
 			User user = new User();

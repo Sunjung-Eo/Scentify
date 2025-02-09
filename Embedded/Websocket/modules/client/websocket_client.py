@@ -76,6 +76,7 @@ class WebSocketClient:
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
             self.device_id = None
+            self.temp_hum_period = 15
             self.is_initial_connection = True
             self.disconnected = False
             self.disconnection_event = asyncio.Event()
@@ -116,12 +117,12 @@ class WebSocketClient:
                         await self.get_capsule_info()
 
                     await self.init_request()
-                    await self.send_temp_hum()
 
                     receive_task = asyncio.create_task(self.receive_messages())
                     send_task = asyncio.create_task(self.send_message())
+                    send_temp_hum_task = asyncio.create_task(self.send_temp_hum())
                     
-                    await asyncio.gather(receive_task, send_task)
+                    await asyncio.gather(receive_task, send_task, send_temp_hum_task)
 
                     if self.is_initial_connection:
                         self.is_initial_connection=False
@@ -202,7 +203,7 @@ class WebSocketClient:
             # 첫 연결 때에는 capsule 정보 요청 하지 않기.
             if self.is_initial_connection and idx==0:
                 continue
-            
+
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
             print(subscribe_frame)
             await self.websocket.send(subscribe_frame)
@@ -233,14 +234,19 @@ class WebSocketClient:
                 self.websocket = None
 
     async def send_temp_hum(self):
-        temp, hum = get_temp_and_hum()
-        data = {
-            "type" : "DeviceStatus/Sensor/TempHum",
-            "temperature" : temp,
-            "humidity" : hum,
-        }
+        while True:
+            try:
+                temp, hum = get_temp_and_hum()
+                data = {
+                    "type" : "DeviceStatus/Sensor/TempHum",
+                    "temperature" : temp,
+                    "humidity" : hum,
+                }
 
-        await self.message_queue.put(data)
+                await self.message_queue.put(data)
+                await asyncio.sleep(60 * self.temp_hum_period)
+            except:
+                print("Error : Cannot Send Temperature Humandity Data")
 
     async def send_message(self):
         while self.websocket is not None and not self.disconnection_event.is_set():

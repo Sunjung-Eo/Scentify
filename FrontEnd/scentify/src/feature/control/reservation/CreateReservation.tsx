@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useControlStore } from "../../../stores/useControlStore";
 import { useAuthStore } from "../../../stores/useAuthStore";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import DeviceSelect from "../../../components/Control/DeviceSelect";
-import ScentSetting from "../../../components/Control/ScentSetting";
-import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { ReservationData } from "./ReservationType";
-import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
-import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 import { createCustomSchedule } from "../../../apis/control/createCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 
+import DeviceSelect from "../../../components/Control/DeviceSelect";
+import ScentSetting from "../../../components/Control/ScentSetting";
+import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
+import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+import { ReservationData } from "./ReservationType";
+
 export default function CreateReservation({
-  reservationData,
   devices,
   selectedDevice,
   onDeviceChange,
@@ -166,7 +167,7 @@ export default function CreateReservation({
         return 3;
     }
   };
-  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
+  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType ?? 0);
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -205,9 +206,10 @@ export default function CreateReservation({
     if (!isValid) {
       return;
     }
+
     const reservationData: ReservationData = {
       name: reservationName,
-      deviceId: selectedDevice!,
+      deviceId: selectedDevice,
       day: getDaysBitMask(selectedDays),
       combination: {
         name: scentName,
@@ -220,8 +222,12 @@ export default function CreateReservation({
         choice4: defaultScentData.slot4.slot,
         choice4Count: scents.scent4,
       },
-      startTime: convertTo24Hour(startHour, startMinute, startPeriod),
-      endTime: convertTo24Hour(endHour, endMinute, endPeriod),
+      startTime: convertTo24Hour(
+        Number(startHour),
+        Number(startMinute),
+        startPeriod
+      ),
+      endTime: convertTo24Hour(Number(endHour), Number(endMinute), endPeriod),
       interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, "")),
       modeOn: modeOn,
     };
@@ -279,7 +285,6 @@ export default function CreateReservation({
         </label>
         <div className="absolute top-[-9px] left-[63px] z-50">
           <DeviceSelect
-            reservationData={reservationData}
             devices={devices}
             selectedDevice={selectedDevice}
             onDeviceChange={onDeviceChange}
@@ -458,14 +463,7 @@ export default function CreateReservation({
           scents={scents}
           setScents={setScents}
           totalEnergy={totalEnergy}
-          defaultScentData={
-            defaultScentData || {
-              slot1: { slot: 0, count: 0 },
-              slot2: { slot: 0, count: 0 },
-              slot3: { slot: 0, count: 0 },
-              slot4: { slot: 0, count: 0 },
-            }
-          }
+          defaultScentData={defaultScentData}
         />
         {formErrors.scents && (
           <p className="absolute mt-[217px] ml-[70px] text-red-500 text-10">

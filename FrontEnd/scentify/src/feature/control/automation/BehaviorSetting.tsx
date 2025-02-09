@@ -100,8 +100,6 @@ export default function BehaviorSetting() {
         previousRestSelectedTime === restSelectedTime ? false : true,
     };
 
-    console.log("최종 behaviorData:", behaviorData);
-
     updateMutation.mutate(behaviorData);
     navigate("/control", {
       state: { exercise, rest, exerciseSelectedTime, restSelectedTime },

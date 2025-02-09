@@ -1,13 +1,4 @@
 import { DeviceSelectItem } from "../../../components/Control/DeviceSelect";
-// 자동화 모드 설정 관련 타입
-// export type AutoMode = {
-//   탈취: boolean;
-//   동작: {
-//     집중: boolean;
-//     휴식: boolean;
-//   };
-//   탐지: boolean;
-// };
 
 export interface AutoSchedule {
   combinationId: number;
@@ -60,13 +51,13 @@ export interface detectionData {
   modeChange: boolean;
 }
 
+// 동작 모드
 interface behaviorSchedule {
   id: number;
   deviceId: number;
   interval: number;
   modeOn: boolean;
 }
-// 동작 모드
 export interface behaviorData {
   exerciseSchedule: behaviorSchedule;
   exerciseModeChange: boolean;

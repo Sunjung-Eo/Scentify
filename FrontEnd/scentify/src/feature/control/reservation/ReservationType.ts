@@ -46,6 +46,9 @@ export interface Combination {
   choice4: number;
   choice4Count: number;
 }
+interface CombinationId {
+  id: number;
+}
 
 export interface CustomSchedules {
   id: number;
@@ -62,11 +65,11 @@ export interface CustomSchedules {
 // 예약하기
 export interface ReservationData {
   name: string;
-  deviceId: number;
+  deviceId: number | null;
   day: number;
-  combination: Combination;
+  combination: Combination | CombinationId;
   startTime: string;
-  endTime: string;
+  endTime: string | null;
   interval: number;
   modeOn: boolean;
 }
@@ -75,9 +78,9 @@ export interface ReservationData {
 export interface UpdateReservationData {
   id: number;
   name: string;
-  deviceId: number;
+  deviceId: number | null;
   day: number;
-  combination: Combination;
+  combination: Combination | CombinationId;
   startTime: string;
   endTime: string;
   interval: number;

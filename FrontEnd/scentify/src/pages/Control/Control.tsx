@@ -163,7 +163,6 @@ const Control = () => {
               >
                 <div className="absolute left-[225px] top-[135px] z-40">
                   <DeviceSelect
-                    reservationData={reservationData}
                     devices={deviceSelectItems}
                     selectedDevice={selectedDevice}
                     onDeviceChange={handleDeviceChange}
@@ -217,7 +216,6 @@ const Control = () => {
           path="reservation/create"
           element={
             <CreateReservation
-              reservationData={filteredReservations}
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
               onDeviceChange={handleDeviceChange}
@@ -228,7 +226,6 @@ const Control = () => {
           path="reservation/modify"
           element={
             <ModifyReservation
-              reservationData={filteredReservations}
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
               onDeviceChange={handleDeviceChange}

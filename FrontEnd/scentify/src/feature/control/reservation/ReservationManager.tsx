@@ -56,8 +56,6 @@ export default function ReservationManager({
   });
   // 삭제 버튼 핸들러
   const handleDeleteClick = (scheduleId: number) => {
-    console.log("scheduleId: ", scheduleId);
-    console.log("selectedDevice: ", selectedDevice);
     setReservationDelete(scheduleId);
     setDeleteModalOpen(true);
   };

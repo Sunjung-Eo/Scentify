@@ -125,9 +125,32 @@ export default function DetectionSetting() {
     setTotalEnergy(roomType === 0 ? 3 : 6);
   }, [roomType]);
 
+  // 폼 유효성 검사
+  const [formErrors, setFormErrors] = useState({
+    scents: "",
+  });
   // 완료 버튼
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
+    // 유효성 검사
+    const errors = {
+      scents: "",
+    };
+    let isValid = true;
+    const totalUsage = Object.values(scents).reduce(
+      (sum, value) => sum + value,
+      0
+    );
+    if (totalUsage !== totalEnergy) {
+      errors.scents = "향을 전부 선택해주세요.";
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    if (!isValid) {
+      return;
+    }
+
     const detectionData: detectionData = {
       id: schedule.id,
       deviceId: deviceId,
@@ -146,8 +169,6 @@ export default function DetectionSetting() {
       modeOn: detect,
       modeChange: detectModeOn,
     };
-
-    console.log("최종 detectModeOn:", detectModeOn);
 
     updateMutation.mutate(detectionData);
     navigate("/control", {
@@ -182,8 +203,13 @@ export default function DetectionSetting() {
           scents={scents}
           setScents={setScents}
           totalEnergy={totalEnergy}
-          defaultScentData={defaultScentData}
+          defaultScentData={previousScentData}
         />
+        {formErrors.scents && (
+          <p className="absolute ml-[70px] text-red-500 text-10">
+            {formErrors.scents}
+          </p>
+        )}
       </div>
     </div>
   );

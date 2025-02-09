@@ -42,45 +42,8 @@ async def main():
     await asyncio.sleep(2)
     # asyncio.create_task(smart_hub.websocket_client.connection())
 
-    msg = {
-        "schedules" : [
-            {
-                "id" : 2,
-                "combinationId" : 1,
-                "subMode" : 0,
-                "type" : None,
-                "interval" : 15,
-                "modeOn" : True
-            },
-            {
-                "id" : 3,
-                "combinationId" : 5,
-                "subMode" : 1,
-                "type" : 1,
-                "interval" : 15,
-                "modeOn" : True
-            },
-            {
-                "id" : 3,
-                "combinationId" : 5,
-                "subMode" : 1,
-                "type" : 2,
-                "interval" : 15,
-                "modeOn" : True
-            },
-            {
-                "id" : 4,
-                "combinationId" : 7,
-                "subMode" : 2,
-                "type" : None,
-                "interval" : 15,
-                "modeOn" : True
-            },
-        ]
-    }
     json_msg = json.dumps(msg)
     await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeInit", json_msg)
-
 
     while True:
         await asyncio.sleep(1)

@@ -174,7 +174,7 @@ public class KakaoController {
 		    	session.setAttribute("deviceId", deviceId);
 		    }
 		    
-			response.sendRedirect("http://localhost:80/login/social?social=true&status=regist&email=" + email + "&provider=kakao");
+			response.sendRedirect("http://3.38.99.86:80/login/social?social=true&status=regist&email=" + email + "&provider=kakao");
 			return;
 	    
 	    } catch (Exception e) {

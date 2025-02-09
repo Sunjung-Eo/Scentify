@@ -28,6 +28,8 @@ nest_asyncio.apply()
 
 class SmartDiffuser:
     def __init__(self):
+        self.print_log = True
+
         # AI 모델
         self.camera = Camera()
         self.yolo = SIMPLEYOLO()
@@ -124,14 +126,16 @@ class SmartDiffuser:
 
         elif topic == f"{self.mqtt_client.device_id}/SetOperationMode":
             old_operation_mode = self.mode.operation_mode
-            print("================OperationMode================")
-            print(self.mode.operation_mode)
+            if self.print_log:
+                print("================OperationMode================")
+                print(self.mode.operation_mode)
 
             payload = json.loads(payload)
             self.mode.operation_mode = int(payload["mode"])
 
-            print("================Updated OperationMode================")
-            print(self.mode.operation_mode)
+            if self.print_log:
+                print("================Updated OperationMode================")
+                print(self.mode.operation_mode)
 
             if old_operation_mode == 0 and self.mode.operation_mode == 1:
                 # 자동화 모드 정보 요청
@@ -160,38 +164,41 @@ class SmartDiffuser:
             id = payload["id"]
             del payload["id"]
 
-            print(id)
-            print(self.mode.auto_operation_mode)
-
             if id not in self.mode.auto_operation_mode:
                 print("Not Exist Id for Auto Mode Operation")
                 return
 
-            print("=====================Origin Auto Mode=====================")
-            print(self.mode.auto_operation_mode[id])
+            if self.print_log:
+                print("=====================Origin Auto Mode=====================")
+                print(self.mode.auto_operation_mode[id])
 
             key = next(iter(payload))
             setattr(self.mode.auto_operation_mode[id], key, payload[key])
 
-            print("=====================Updated Auto Mode=====================")
-            print(self.mode.auto_operation_mode[id])
+            if self.print_log:
+                print("=====================Updated Auto Mode=====================")
+                print(self.mode.auto_operation_mode[id])
 
             # key가 modeOn을 수정하는 거라면, 해당하는 함수 호출
             if key == "modeOn" and bool(payload[key]) == True:
                 if self.type_to_id[self.mode_type.simple_detect] == id:
-                    print("Run Simple Detect")
+                    if self.print_log:
+                        print("Run Simple Detect")
                     asyncio.create_task(self.operate_simple_detect())
 
                 elif self.type_to_id[self.mode_type.exercise_detect] == id:
-                    print("Run Exercise Detect")
+                    if self.print_log:
+                        print("Run Exercise Detect")
                     asyncio.create_task(self.operate_action_detect())
                 
                 elif self.type_to_id[self.mode_type.relax_detect] == id:
-                    print("Run Relax Detect")
+                    if self.print_log:
+                        print("Run Relax Detect")
                     asyncio.create_task(self.operate_action_detect())
                     
                 elif self.type_to_id[self.mode_type.stink_detect] == id:
-                    print("Run Stink Detect")
+                    if self.print_log:
+                        print("Run Stink Detect")
                     asyncio.create_task(self.operate_stink_detect())
 
         elif topic == f"{self.mqtt_client.device_id}/CapsuleInfo":
@@ -220,9 +227,6 @@ class SmartDiffuser:
                     self.type_to_id[self.mode_type.relax_detect] = key
             elif value.sub_mode == 2:
                 self.type_to_id[self.mode_type.stink_detect] = key
-        
-        for key, value in self.type_to_id.items():
-            print(f"{key} : {value}")
 
     async def send_remainder(self):
         # 잔여량 전송
@@ -243,10 +247,12 @@ class SmartDiffuser:
             frame = await self.camera.get_one_frame()
             person_detect = self.yolo.person_detect(frame)
             if person_detect:
-                print("Person Detect!")
+                if self.print_log:    
+                    print("Person Detect!")
                 await self.process_detect_auto_mode(self.mode_type.simple_detect)
             else:
-                print("Person Not Detect!")
+                if self.print_log:
+                    print("Person Not Detect!")
 
     async def operate_action_detect(self):
         while (self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn or
@@ -258,11 +264,13 @@ class SmartDiffuser:
                 frames = await self.camera.get_frames(self.slowfast.required_frames_num)
                 ret = self.slowfast.analyze_action(frames)
                 if ret.value == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
-                    print("Exercise Detect!!")
+                    if self.print_log:
+                        print("Exercise Detect!!")
                     await self.process_detect_auto_mode(self.mode_type.exercise_detect)
 
                 elif ret.value == 2 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
-                    print("Exercise Relax!!")
+                    if self.print_log:
+                        print("Exercise Relax!!")
                     await self.process_detect_auto_mode(self.mode_type.relax_detect)
 
     async def operate_stink_detect(self):

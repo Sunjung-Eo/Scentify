@@ -12,6 +12,8 @@ import { deleteGroupMember } from "../../../apis/group/deleteGroupMember"; // �
 import { deleteGroup } from "../../../apis/group/deleteGroup"; // 그룹 삭제 API
 import { useMemo } from "react"; //객체 사용시 불필요한 렌더링 막기 위함
 import { Link, useNavigate } from "react-router-dom";
+import rigtarrowIcon from "../../../assets/icons/rightarrow-icon.svg";
+import crownIcon from "../../../assets/icons/crown-icon.svg";
 
 export const GroupList = () => {
   // 사용자가 소유한 기기 ID 목록 가져오기 (등록된 디바이스가 없을 경우 빈 배열 사용)
@@ -63,7 +65,6 @@ export const GroupList = () => {
           selectedDeviceId,
           accessToken
         );
-        console.log("API 응답 데이터:", response);
 
         const { group } = response;
 
@@ -231,9 +232,16 @@ export const GroupList = () => {
       <div className="absolute bottom-[33px] w-full flex flex-row items-center justify-between">
         {/* 초대코드입력 버튼 */}
         <Link to="/my/invitecodeinput">
-          <button className="text-12 font-pre-light border-lightgray border rounded-lg py-1 focus:outline-none focus:ring-1 focus:ring-brand">
-            초대코드 입력
-          </button>
+          <div>
+            <span className="text-12 font-pre-light flex items-center">
+              초대코드 입력
+              <img
+                src={rigtarrowIcon}
+                alt="초대 코드 입력"
+                className="w-4 h-4 ml-1"
+              />
+            </span>
+          </div>
         </Link>
 
         {/* 그룹 삭제 버튼 */}

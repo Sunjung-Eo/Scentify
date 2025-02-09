@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { UserData } from '../../../feature/Home/mainhome/user/UserTypes';
-import GreenProfile from '../../../assets/userProfiles/green.svg';
-import navigateIcon from '../../../assets/icons/navigatewhite.svg';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { UserData } from "../../../feature/Home/mainhome/user/UserTypes";
+import GreenProfile from "../../../assets/userProfiles/green.svg";
+import navigateIcon from "../../../assets/icons/navigatewhite.svg";
+import { Link } from "react-router-dom";
 
 interface MyUserCardProps {
   nickname: string;
@@ -19,15 +19,15 @@ const MyUserCard: React.FC<MyUserCardProps> = ({
     nickname: nickname, // 사용자 이름 하드코딩 (백엔드 연동 시 업데이트 가능)
     imgNum: imgNum, // 기본 프로필 사진 번호
     mainDeviceId: mainDeviceId ?? 0,
-    date: '',
-    weatherIcon: '',
-    weatherDescription: '',
+    date: "",
+    weatherIcon: "",
+    weatherDescription: "",
   });
 
   useEffect(() => {
     setUserData((prev) => ({
       ...prev,
-      nickname: nickname ?? '사용자',
+      nickname: nickname ?? "사용자",
       imgNum: imgNum ?? 1,
       mainDeviceId: mainDeviceId ?? 0,
     }));
@@ -48,7 +48,7 @@ const MyUserCard: React.FC<MyUserCardProps> = ({
         />
         {/* 닉네임 */}
         <p className="text-[20px]">
-          <span className="font-pre-bold">{userData.nickname}</span>{' '}
+          <span className="font-pre-bold">{userData.nickname}</span>{" "}
           {/* 홍길동만 pre-bold */}
         </p>
       </div>

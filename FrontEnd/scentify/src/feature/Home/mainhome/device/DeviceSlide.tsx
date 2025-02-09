@@ -25,63 +25,73 @@ interface DeviceSlideProps {
 const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   const { mainDeviceId, deviceIds, customSchedules, autoSchedules } = data;
   const { mainDevice } = useMainDeviceStore();
+
+  // deviceIds 배열을 정렬하여 mainDeviceId가 첫 번째로 오도록 함
+  const sortedDeviceIds = React.useMemo(() => {
+    if (!mainDeviceId || !deviceIds.length) return deviceIds;
+    return [mainDeviceId, ...deviceIds.filter((id) => id !== mainDeviceId)];
+  }, [deviceIds, mainDeviceId]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // 현재 선택된 기기 상태
-  const [currentDevice, setCurrentDevice] = useState<MainDeviceState | null>(
-    null
-  );
-
-  // ✅ React Query를 사용하여 현재 선택된 기기의 정보 가져오기
+  // React Query 사용 시 정렬된 deviceIds 사용
   const {
     data: deviceData,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['deviceInfo', deviceIds[currentIndex]],
-    //queryFn: () => deviceInfo(deviceIds[currentIndex]),
-
+    queryKey: ['deviceInfo', sortedDeviceIds[currentIndex]],
     queryFn: async () => {
-      // deviceIds가 비어있거나 currentIndex가 유효하지 않은 경우
-      if (!deviceIds.length || deviceIds[currentIndex] === undefined) {
+      if (
+        !sortedDeviceIds.length ||
+        sortedDeviceIds[currentIndex] === undefined
+      ) {
         return { devices: [] };
       }
       try {
-        const response = await deviceInfo(deviceIds[currentIndex]);
+        const response = await deviceInfo(sortedDeviceIds[currentIndex]);
         return response;
       } catch (error) {
         console.log('디바이스 정보 조회 실패');
-        return { devices: [] }; // 에러 발생시 빈 devices 배열 반환
+        return { devices: [] };
       }
     },
-    enabled: deviceIds.length > 0,
+    enabled: sortedDeviceIds.length > 0,
     staleTime: 0,
     refetchOnWindowFocus: false,
-    retry: false, // 에러 발생 시 재시도하지 않음
+    retry: false,
   });
 
   // 기기 변경 감지
   useEffect(() => {
     if (mainDevice) {
-      setCurrentDevice(mainDevice);
       refetch();
     }
   }, [mainDevice, refetch]);
 
-  // ✅ 다음 기기로 변경
+  // 다음 기기로 변경
   const handleNext = () => {
-    if (currentIndex < deviceIds.length - 1) {
+    if (currentIndex < sortedDeviceIds.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
     }
   };
 
-  // ✅ 이전 기기로 변경
+  // 이전 기기로 변경
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
     }
   };
+
+  if (isLoading) return <div>로딩 중...</div>;
+  if (isError) return <div>에러가 발생했습니다.</div>;
+
+  if (!sortedDeviceIds.length) {
+    return <NoDeviceInfo />;
+  }
+
+  const device = deviceData?.devices?.[0];
 
   return (
     <div className="relative flex flex-col items-center h-[460px] justify-between">
@@ -97,17 +107,12 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
         </p>
       ) : (
         <>
-          {/* ✅ API에서 받아온 데이터를 DeviceInfo에 전달 */}
-          <DeviceInfo
-            device={deviceData?.devices?.[0] || currentDevice}
-            mainDeviceId={mainDeviceId}
-          />
+          <DeviceInfo device={device} mainDeviceId={mainDeviceId} />
           <DeviceSchedule
-            deviceId={currentDevice?.id || 0}
+            deviceId={sortedDeviceIds[currentIndex]}
             customSchedules={customSchedules}
             autoSchedules={autoSchedules}
           />
-          {/* 🔹 슬라이드 버튼 (기기가 2개 이상일 때만 활성화) */}
           {deviceIds.length > 1 && (
             <div className="absolute inset-y-1/2 left-0 right-0 flex justify-between transform -translate-y-1/2">
               <button
@@ -127,7 +132,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
             </div>
           )}
           <div className="mt-2">
-            <p className="text-[10px]">{`기기 ID: ${currentDevice?.id || '없음'} (슬라이드 ${currentIndex + 1}/${deviceIds.length})`}</p>
+            <p className="text-[10px]">{`기기 ID: ${sortedDeviceIds[currentIndex] || '없음'} (슬라이드 ${currentIndex + 1}/${deviceIds.length})`}</p>
           </div>
         </>
       )}

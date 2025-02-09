@@ -132,6 +132,9 @@ class SmartDiffuser:
             if old_operation_mode == 0 and self.mode.operation_mode == 1:
                 # 자동화 모드 정보 요청
                 await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/AutoModeInfo", "0")
+            elif old_operation_mode == 1 and self.mode.opration_mode == 0:
+                # 스케줄 모드 정보 요청
+                pass
 
         elif topic == f"{self.mqtt_client.device_id}/AutoModeInit":
             payload = json.loads(payload)
@@ -166,6 +169,17 @@ class SmartDiffuser:
             print("=====================Updated Auto Mode=====================")
             print(self.mode.auto_operation_mode[id])
 
+            # key가 modeOn을 수정하는 거라면, 해당하는 함수 호출
+            if key == "modeOn" and bool(payload[key]) == True:
+                if self.type_to_id[self.mode_type.simple_detect] == id:
+                    asyncio.run(self.operate_simple_detect())
+                elif self.type_to_id[self.mode_type.exercise_detect] == id:
+                    asyncio.run(self.operate_action_detect())
+                elif self.type_to_id[self.mode_type.relax_detect] == id:
+                    asyncio.run(self.operate_action_detect())
+                elif self.type_to_id[self.mode_type.stink_detect] == id:
+                    asyncio.run(self.operate_stink_detect())
+
         elif topic == f"{self.mqtt_client.device_id}/CapsuleInfo":
             # 캡슐 맵핑
             payload = json.loads(payload)
@@ -198,28 +212,31 @@ class SmartDiffuser:
         msg = json.dumps(self.capsule_remainder)
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Status/Remainder", msg)
 
+    async def process_detect_auto_mode(self, mode_type):
+        msg = {"combinationId" : self.mode.auto_operation_mode[self.type_to_id[mode_type]].combinationId}
+        await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/Combination", json.dumps(msg))
+        await asyncio.sleep(60 * self.mode.auto_operation_mode[self.type_to_id[mode_type]].interval)
+
+
     async def operate_simple_detect(self):
-        while True:
+        while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].modeOn:
+            await asyncio.sleep(1)
             frame = await self.camera.get_one_frame()
             person_detect = self.yolo.person_detect(frame)
             if person_detect:
-                # Operation
-                msg = {
-                    "combinationId" : self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].combinationId
-                }
-                await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/Combination", json.dumps(msg))
-                await asyncio.sleep(60 * self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].interval)
+                await self.process_detect_auto_mode(self.mode_type.simple_detect)
 
     async def operate_action_detect(self):
         while (self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn or
             self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn):
-            
+            await asyncio.sleep(1)
             frames = await self.camera.get_frames(self.slowfast.required_frames_num)
             ret = self.slowfast.analyze_action(frames)
             if ret == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
-                pass
-            if ret == 2 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
-                pass
+                await self.process_detect_auto_mode(self.mode_type.exercise_detect)
+
+            elif ret == 2 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
+                await self.process_detect_auto_mode(self.mode_type.relax_detect)
 
     async def operate_stink_detect(self):
         pass    

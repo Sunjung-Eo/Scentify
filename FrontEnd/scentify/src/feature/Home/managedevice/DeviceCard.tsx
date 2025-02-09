@@ -7,9 +7,11 @@ import { deviceInfo } from '../../../apis/home/deviceInfo';
 import { deleteDevice } from '../../../apis/home/deleteDevice';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
 import { setMainDevice } from '../../../apis/home/setMainDevice';
+import NoDeviceCard from './components/NoDeviceCard';
 interface Device {
   id: number;
   name: string;
+
   slot1: string;
   slot2: string;
   slot3: string;
@@ -116,6 +118,12 @@ const DeviceCard = () => {
   if (isError)
     return <p className="text-red-500">기기 정보를 불러오지 못했습니다.</p>;
 
+  // devices가 비어있을 때 NoDeviceCard 표시
+  if (devices.length === 0) {
+    return <NoDeviceCard />;
+  }
+
+  // devices가 있을 때
   // device는 devices 랑 데이터 같음 [{...}, {...}, {...}]
   return (
     <div className="cards space-y-4">

@@ -15,7 +15,7 @@ const SpaceTab = ({
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="font-pre-regular text-[12px]">공간 크기</h2>
+        <h2 className="font-pre-light text-12">공간 크기</h2>
         <div className="flex space-x-2">
           <button
             onClick={() => handleTabChange('small')}

@@ -35,7 +35,8 @@ class SmartDiffuser:
 
         # HW
         # 악취 감지 센서
-        # self.stink_sensor = StinkSensor()
+        self.stink_sensor = StinkSensor()
+        self.th_stink_value = 0
 
         # 무게 감지 센서
         # self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
@@ -239,7 +240,11 @@ class SmartDiffuser:
                 await self.process_detect_auto_mode(self.mode_type.relax_detect)
 
     async def operate_stink_detect(self):
-        pass    
+        while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].modeOn:
+            await asyncio.sleep(1)
+            value = self.stink_sensor.read_avg_data()
+            if value > self.th_stink_value:
+                await self.process_detect_auto_mode(self.mode_type.stink_detect)   
 
 
 async def main():

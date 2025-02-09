@@ -1,6 +1,6 @@
 import os, sys
 import json
-import asyncio
+import asyncio, nest_asyncio
 import re
 import math
 
@@ -24,12 +24,15 @@ from camera import *
 from slowfast import *
 from yolo import *
 
+nest_asyncio.apply()
+
 class SmartDiffuser:
     def __init__(self):
         # AI 모델
         self.camera = Camera()
         self.yolo = SIMPLEYOLO()
         self.slowfast = SlowFast()
+        self.slowfast.print_log = True
 
         # self.frame = None
 
@@ -157,7 +160,10 @@ class SmartDiffuser:
             id = payload["id"]
             del payload["id"]
 
-            if id in self.mode.auto_operation_mode:
+            print(id)
+            print(self.mode.auto_operation_mode)
+
+            if id not in self.mode.auto_operation_mode:
                 print("Not Exist Id for Auto Mode Operation")
                 return
 
@@ -173,13 +179,20 @@ class SmartDiffuser:
             # key가 modeOn을 수정하는 거라면, 해당하는 함수 호출
             if key == "modeOn" and bool(payload[key]) == True:
                 if self.type_to_id[self.mode_type.simple_detect] == id:
-                    asyncio.run(self.operate_simple_detect())
+                    print("Run Simple Detect")
+                    asyncio.create_task(self.operate_simple_detect())
+
                 elif self.type_to_id[self.mode_type.exercise_detect] == id:
-                    asyncio.run(self.operate_action_detect())
+                    print("Run Exercise Detect")
+                    asyncio.create_task(self.operate_action_detect())
+                
                 elif self.type_to_id[self.mode_type.relax_detect] == id:
-                    asyncio.run(self.operate_action_detect())
+                    print("Run Relax Detect")
+                    asyncio.create_task(self.operate_action_detect())
+                    
                 elif self.type_to_id[self.mode_type.stink_detect] == id:
-                    asyncio.run(self.operate_stink_detect())
+                    print("Run Stink Detect")
+                    asyncio.create_task(self.operate_stink_detect())
 
         elif topic == f"{self.mqtt_client.device_id}/CapsuleInfo":
             # 캡슐 맵핑
@@ -197,16 +210,19 @@ class SmartDiffuser:
             await self.send_remainder()
 
     def mapping_id_to_type(self,):
-        for value in self.mode.auto_operation_mode.values():
+        for key, value in self.mode.auto_operation_mode.items():
             if value.sub_mode == 0:
-                self.type_to_id[self.mode_type.simple_detect] = value.id
+                self.type_to_id[self.mode_type.simple_detect] = key
             elif value.sub_mode == 1:
-                if value.type == 1:
-                    self.type_to_id[self.mode_type.exercise_detect] = value.id
-                elif value.type == 2:
-                    self.type_to_id[self.mode_type.relax_detect] = value.id
+                if value.operation_type == 1:
+                    self.type_to_id[self.mode_type.exercise_detect] = key
+                elif value.operation_type == 2:
+                    self.type_to_id[self.mode_type.relax_detect] = key
             elif value.sub_mode == 2:
-                self.type_to_id[self.mode_type.stink_detect] = value.id
+                self.type_to_id[self.mode_type.stink_detect] = key
+        
+        for key, value in self.type_to_id.items():
+            print(f"{key} : {value}")
 
     async def send_remainder(self):
         # 잔여량 전송
@@ -218,26 +234,36 @@ class SmartDiffuser:
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/Combination", json.dumps(msg))
         await asyncio.sleep(60 * self.mode.auto_operation_mode[self.type_to_id[mode_type]].interval)
 
+    # TODO: 각 감지 모드의 인터벌 말고, Operation 자체의 인터벌도 생각하기!
 
     async def operate_simple_detect(self):
+        print(self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]])
         while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].modeOn:
             await asyncio.sleep(1)
             frame = await self.camera.get_one_frame()
             person_detect = self.yolo.person_detect(frame)
             if person_detect:
+                print("Person Detect!")
                 await self.process_detect_auto_mode(self.mode_type.simple_detect)
+            else:
+                print("Person Not Detect!")
 
     async def operate_action_detect(self):
         while (self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn or
             self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn):
             await asyncio.sleep(1)
-            frames = await self.camera.get_frames(self.slowfast.required_frames_num)
-            ret = self.slowfast.analyze_action(frames)
-            if ret == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
-                await self.process_detect_auto_mode(self.mode_type.exercise_detect)
+            frame = await self.camera.get_one_frame()
+            person_detect = self.yolo.person_detect(frame)
+            if person_detect:
+                frames = await self.camera.get_frames(self.slowfast.required_frames_num)
+                ret = self.slowfast.analyze_action(frames)
+                if ret.value == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
+                    print("Exercise Detect!!")
+                    await self.process_detect_auto_mode(self.mode_type.exercise_detect)
 
-            elif ret == 2 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
-                await self.process_detect_auto_mode(self.mode_type.relax_detect)
+                elif ret.value == 2 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
+                    print("Exercise Relax!!")
+                    await self.process_detect_auto_mode(self.mode_type.relax_detect)
 
     async def operate_stink_detect(self):
         while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].modeOn:
@@ -253,7 +279,7 @@ async def main():
     await asyncio.sleep(2)
     # asyncio.create_task(smart_diffuser.operate_simple_detect())
     while True:
-        await asyncio.sleep(1)
+        await asyncio.sleep(2)
         
 
 asyncio.run(main())

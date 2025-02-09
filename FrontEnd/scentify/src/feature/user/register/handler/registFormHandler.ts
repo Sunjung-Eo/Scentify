@@ -1,7 +1,7 @@
 import { checkId } from '../../../../apis/user/checkId';
 import { getEmailCode } from '../../../../apis/user/getEmailCode';
 import { checkEmailCode } from '../../../../apis/user/checkEmailCode';
-import { validateId } from '../../../../utils/validation';
+import { validateEmail, validateId } from '../../../../utils/validation';
 
 /**
  * 성별 선택 핸들러
@@ -50,19 +50,29 @@ export const handleCheckDuplicate = async (
  */
 export const handleGetEmailCode = async (
   email: string,
-  setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>
+  setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>,
+  setShowAlert: (message: string) => void
 ) => {
+  // 에러 메시지 초기화
+  setErrors((prev) => ({ ...prev, email: '' }));
+
   if (!email) {
     setErrors((prev) => ({ ...prev, email: '이메일을 입력해주세요.' }));
     return;
   }
 
+  // 이메일 유효성 검사 추가
+  const emailValidationError = validateEmail(email);
+  if (emailValidationError) {
+    setErrors((prev) => ({ ...prev, email: emailValidationError }));
+    return;
+  }
+
   try {
     await getEmailCode(email);
-    alert('인증 코드가 전송되었습니다.');
-    setErrors((prev) => ({ ...prev, email: '' }));
+    setShowAlert('인증 코드가 전송되었습니다.');
   } catch {
-    alert('서버에 문제가 발생했습니다.');
+    setShowAlert('현재 인증 코드를 발송할 수 없습니다.');
   }
 };
 
@@ -71,7 +81,8 @@ export const handleGetEmailCode = async (
  */
 export const handleEmailVerification = async (
   code: string,
-  setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>
+  setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>,
+  setShowAlert: (message: string) => void
 ) => {
   if (!code) {
     setErrors((prev) => ({
@@ -83,13 +94,12 @@ export const handleEmailVerification = async (
 
   try {
     const result = await checkEmailCode(code);
+
     setErrors((prev) => ({
       ...prev,
-      verificationCode: result
-        ? '인증이 완료되었습니다.'
-        : '잘못된 인증번호입니다.',
+      verificationCode: result === '200' ? '인증이 완료되었습니다.' : result,
     }));
-  } catch {
-    alert('서버에 문제가 발생했습니다.');
+  } catch (error) {
+    setShowAlert('현재 인증이 불가합니다. 잠시 후 다시 인증 바랍니다.');
   }
 };

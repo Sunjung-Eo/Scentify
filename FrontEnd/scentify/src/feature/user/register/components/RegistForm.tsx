@@ -6,6 +6,7 @@ import {
 } from '../handler/registFormHandler';
 import { registUser } from '../../../../apis/user/regist';
 import { validatePassword, validateId } from '../../../../utils/validation';
+import Alert from '../../../../components/Alert/Alert';
 
 const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
   // 단순 상태 객체로 변경
@@ -22,6 +23,11 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
     verificationCode: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [alertMessage, setAlertMessage] = useState<string>('');
+
+  const setShowAlert = (message: string) => {
+    setAlertMessage(message);
+  };
 
   // 입력 변경 핸들러
   const handleChange = (
@@ -34,13 +40,15 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
   // 폼 제출 핸들러
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('1. 폼 제출 시작');
     setErrors({}); // 에러 초기화
 
     let newErrors: { [key: string]: string } = {};
 
-    // 유효성 검사 적용
-    const idError = validateId(formData.id);
-    if (idError) newErrors.id = idError;
+    // ID 중복 확인만 체크 (유효성 검사는 중복 확인 시 이미 완료)
+    if (!errors.id || errors.id !== '사용 가능한 아이디입니다.') {
+      newErrors.id = '아이디 중복 확인이 필요합니다.';
+    }
 
     if (!formData.nickname.trim()) {
       newErrors.nickname = '닉네임을 입력해주세요.';
@@ -83,12 +91,20 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       mainDeviceId: 0, // 기본값 0
     };
 
+    console.log('3. 회원가입 데이터:', userData);
+
     try {
-      // 회원가입 API 호출
-      await registUser(userData);
-      onRegist();
-    } catch (error) {
-      setErrors({ server: '서버에 문제가 발생했습니다.' });
+      console.log('4. API 호출 시작');
+      const result = await registUser(userData);
+      console.log('5. API 호출 결과:', result);
+      onRegist(); // 성공 시 부모 컴포넌트의 핸들러 호출
+    } catch (error: any) {
+      console.error('회원가입 에러:', error);
+      const errorMessage =
+        error.response?.data?.message ||
+        '회원가입 처리 중 오류가 발생했습니다.';
+      setAlertMessage(errorMessage); // 실패 시에만 RegistForm에서 alert 표시
+      setErrors({ server: errorMessage });
     }
   };
 
@@ -99,203 +115,227 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
     'h-9 px-4 rounded-lg border-0.5 focus:outline-none focus:ring-2 focus:ring-brand';
 
   return (
-    <form
-      id="registForm"
-      onSubmit={handleSubmit}
-      noValidate
-      className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12"
-    >
-      {/* 아이디 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="id">아이디</label>
-        <input
-          id="id"
-          type="text"
-          name="id"
-          value={formData.id}
-          onChange={handleChange}
-          placeholder="아이디"
-          className={inputStyles}
-        />
-        <button
-          type="button"
-          className={miniBtnStyles}
-          onClick={() => handleCheckDuplicate(formData.id, setErrors)}
-        >
-          중복 확인
-        </button>
-      </div>
-      {errors.id && (
-        <p
-          className={`text-[12px] ${
-            errors.id === '사용 가능한 아이디입니다.'
-              ? 'text-brand'
-              : 'text-red-500'
-          }`}
-        >
-          {errors.id}
-        </p>
-      )}
-
-      {/* 닉네임 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="nickname">닉네임</label>
-        <input
-          id="nickname"
-          type="text"
-          name="nickname"
-          value={formData.nickname}
-          onChange={handleChange}
-          placeholder="닉네임"
-          className={inputStyles}
-        />
-      </div>
-
-      {/* 비밀번호 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="password">비밀번호</label>
-        <input
-          id="password"
-          type="password"
-          name="password"
-          onChange={handleChange}
-          placeholder="비밀번호"
-          className={inputStyles}
-        />
-      </div>
-
-      {/* 비밀번호 확인 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="confirmPassword">비밀번호 확인</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          placeholder="비밀번호 확인"
-          className={inputStyles}
-        />
-      </div>
-      {errors.confirmPassword && (
-        <p className="text-[12px] text-red-500">{errors.confirmPassword}</p>
-      )}
-
-      {/* 생년월일 */}
-      <fieldset id="birth" className="flex items-center gap-2">
-        <legend className="flex text-12">생년월일</legend>
-
-        <input
-          type="text"
-          name="birthYear"
-          value={formData.birthYear}
-          placeholder="년(4자)"
-          maxLength={4}
-          onChange={handleChange}
-          className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-        />
-        <select
-          id="birthMonth"
-          name="birthMonth"
-          value={formData.birthMonth}
-          onChange={handleChange}
-          className={inputStyles}
-        >
-          <option value="">월</option>
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-              {i + 1}월
-            </option>
-          ))}
-        </select>
-        <input
-          id="birthDay"
-          type="text"
-          name="birthDay"
-          value={formData.birthDay}
-          placeholder="일"
-          maxLength={2}
-          onChange={handleChange}
-          className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-        />
-      </fieldset>
-      {errors.birth && (
-        <p className="text-[12px] text-red-500">{errors.birth}</p>
-      )}
-
-      {/* 성별 선택 */}
-      <div className="flex items-center gap-2">
-        <p className="">성별</p>
-        {[
-          { label: '남성', value: '0' },
-          { label: '여성', value: '1' },
-          { label: '선택하지 않음', value: '2' },
-        ].map((gender) => (
+    <>
+      <form
+        id="registForm"
+        onSubmit={handleSubmit}
+        noValidate
+        className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12 min-h-[400px] overflow-y-auto p-[2px]"
+      >
+        {/* 아이디 */}
+        <div className="flex items-center gap-2 ">
+          <label htmlFor="id">아이디</label>
+          <input
+            id="id"
+            type="text"
+            name="id"
+            value={formData.id}
+            onChange={handleChange}
+            placeholder="아이디"
+            className={inputStyles}
+          />
           <button
-            key={gender.value}
             type="button"
-            onClick={() =>
-              setFormData((prev) => ({ ...prev, gender: gender.value }))
-            }
-            className={`h-9 rounded-lg px-4 border-brand border-0.5 ${
-              formData.gender === gender.value ? 'bg-sub text-white' : 'bg-bg'
+            className={miniBtnStyles}
+            onClick={() => handleCheckDuplicate(formData.id, setErrors)}
+          >
+            중복 확인
+          </button>
+        </div>
+        {errors.id && (
+          <p
+            className={`text-[12px] ${
+              errors.id === '사용 가능한 아이디입니다.'
+                ? 'text-brand'
+                : 'text-red-500'
             }`}
           >
-            {gender.label}
+            {errors.id}
+          </p>
+        )}
+
+        {/* 닉네임 */}
+        <div className="flex items-center gap-2 ">
+          <label htmlFor="nickname">닉네임</label>
+          <input
+            id="nickname"
+            type="text"
+            name="nickname"
+            value={formData.nickname}
+            onChange={handleChange}
+            placeholder="닉네임"
+            className={inputStyles}
+          />
+        </div>
+
+        {/* 비밀번호 */}
+        <div className="flex items-center gap-2">
+          <label htmlFor="password">비밀번호</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            onChange={handleChange}
+            placeholder="비밀번호"
+            className={inputStyles}
+          />
+        </div>
+        {errors.password && (
+          <p className="text-[12px] text-red-500 break-words whitespace-pre-line">
+            {errors.password}
+          </p>
+        )}
+
+        {/* 비밀번호 확인 */}
+        <div className="flex items-center gap-2 ">
+          <label htmlFor="confirmPassword">비밀번호 확인</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="비밀번호 확인"
+            className={inputStyles}
+          />
+        </div>
+        {errors.confirmPassword && (
+          <p className="text-[12px] text-red-500">{errors.confirmPassword}</p>
+        )}
+
+        {/* 생년월일 */}
+        <fieldset id="birth" className="flex items-center gap-2">
+          <label className="flex text-12">생년월일</label>
+          <input
+            type="text"
+            name="birthYear"
+            value={formData.birthYear}
+            placeholder="년(4자)"
+            maxLength={4}
+            onChange={handleChange}
+            className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+          />
+          <select
+            id="birthMonth"
+            name="birthMonth"
+            value={formData.birthMonth}
+            onChange={handleChange}
+            className={inputStyles}
+          >
+            <option value="">월</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                {i + 1}월
+              </option>
+            ))}
+          </select>
+          <input
+            id="birthDay"
+            type="text"
+            name="birthDay"
+            value={formData.birthDay}
+            placeholder="일"
+            maxLength={2}
+            onChange={handleChange}
+            className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+          />
+        </fieldset>
+        {errors.birth && (
+          <p className="text-[12px] text-red-500">{errors.birth}</p>
+        )}
+
+        {/* 성별 선택 */}
+        <div className="flex items-center gap-2">
+          <p className="">성별</p>
+          {[
+            { label: '남성', value: '0' },
+            { label: '여성', value: '1' },
+            { label: '선택하지 않음', value: '2' },
+          ].map((gender) => (
+            <button
+              key={gender.value}
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, gender: gender.value }))
+              }
+              className={`h-9 rounded-lg px-4 border-brand border-0.5 ${
+                formData.gender === gender.value ? 'bg-sub text-white' : 'bg-bg'
+              }`}
+            >
+              {gender.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 이메일 인증번호 요청 */}
+        <div className="flex items-center gap-2">
+          <label htmlFor="email">이메일</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="이메일"
+            className={inputStyles}
+          />
+          <button
+            type="button"
+            className={miniBtnStyles}
+            onClick={() =>
+              handleGetEmailCode(formData.email, setErrors, setShowAlert)
+            }
+          >
+            인증하기
           </button>
-        ))}
-      </div>
+        </div>
+        {errors.email && (
+          <p className="text-[12px] text-red-500">{errors.email}</p>
+        )}
 
-      {/* 이메일 인증번호 요청 */}
-      <div className="flex items-center gap-2">
-        <label htmlFor="email">이메일</label>
-        <input
-          id="email"
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="이메일"
-          className="border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-        />
-        <button
-          type="button"
-          className={miniBtnStyles}
-          onClick={() => handleGetEmailCode(formData.email, setErrors)}
-        >
-          인증하기
-        </button>
-      </div>
-      {errors.email && (
-        <p className="text-[12px] text-red-500">{errors.email}</p>
-      )}
+        {/* 인증번호 검증하기 */}
+        <div className="flex items-center gap-2">
+          <label htmlFor="verificationCode">인증 번호</label>
+          <input
+            id="verificationCode"
+            type="text"
+            name="verificationCode"
+            value={formData.verificationCode}
+            onChange={handleChange}
+            placeholder="인증번호"
+            className={inputStyles}
+          />
+          <button
+            type="button"
+            className={miniBtnStyles}
+            onClick={() =>
+              handleEmailVerification(
+                formData.verificationCode,
+                setErrors,
+                setShowAlert
+              )
+            }
+          >
+            확인
+          </button>
+        </div>
+        {errors.verificationCode && (
+          <p
+            className={`text-[12px] ${
+              errors.verificationCode === '인증이 완료되었습니다.'
+                ? 'text-brand'
+                : 'text-red-500'
+            }`}
+          >
+            {errors.verificationCode}
+          </p>
+        )}
+      </form>
 
-      {/* 인증번호 검증하기 */}
-      <div className="flex items-center gap-2">
-        <label htmlFor="verificationCode">인증 번호</label>
-        <input
-          id="verificationCode"
-          type="text"
-          name="verificationCode"
-          value={formData.verificationCode}
-          onChange={handleChange}
-          placeholder="인증번호"
-          className={inputStyles}
-        />
-        <button
-          type="button"
-          className={miniBtnStyles}
-          onClick={() =>
-            handleEmailVerification(formData.verificationCode, setErrors)
-          }
-        >
-          확인
-        </button>
-      </div>
-      {errors.verificationCode && (
-        <p className="text-[12px] text-red-500">{errors.verificationCode}</p>
+      {alertMessage && (
+        <Alert message={alertMessage} onClose={() => setAlertMessage('')} />
       )}
-    </form>
+    </>
   );
 };
 

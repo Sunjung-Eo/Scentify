@@ -43,6 +43,7 @@ public class SecurityConfig {
             		.requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
             		.requestMatchers("/v1/user/login", "/v1/user/check-id", "/v1/user/email/send-code", "/v1/user/email/verify-code","/v1/user/regist").permitAll()
             		.requestMatchers("/v1/auth/kakao/**").permitAll()
+            		.requestMatchers("/v1/auth/google/**").permitAll()
             		.requestMatchers("/v1/group/verify-link").permitAll()
             		.anyRequest().authenticated())
             .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);

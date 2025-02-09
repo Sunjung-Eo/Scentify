@@ -35,7 +35,7 @@ class WebSocketResponseHandler:
                 "/topic/Mode/Change/" : self.handler_set_operation_mode,
 
                 # 스케줄 관리
-                "/topic/Auto/Schedule/Initial/" : self.handler_request_mode_info,
+                "/topic/Auto/Schedule/Initial/" : self.handler_automode_init,
                 "/topic/Schedule/Initial/" : self.handler_schedule_init,
                 
                 # 디폴트
@@ -70,19 +70,21 @@ class WebSocketResponseHandler:
         if self.print_log:
             print("Handling Remote Operation Motor")
 
-    async def handler_request_mode_info(self, message):
+    async def handler_automode_init(self, message):
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/AutoModeInit",
             message
         )
         if self.print_log:
-            print("Handling Request Mode Info")
+            print("Handling Auto Mode Init")
 
     async def handler_automode_change(self, message):
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/AutoModeChange",
             message
         )
+        if self.print_log:
+            print("Handling Request ")
 
     async def handler_set_operation_mode(self, message):
         await self.mqtt_client.publish(

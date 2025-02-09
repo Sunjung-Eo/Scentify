@@ -64,6 +64,7 @@ export const GroupList = () => {
           accessToken
         );
         console.log("API 응답 데이터:", response);
+
         const { group } = response;
 
         // adminId와 groupIdsms API응답 데이터를 가져와 상태로 저장하므로 setAdminId와 setGroupId를 명시적으로 호출해야함.
@@ -118,6 +119,7 @@ export const GroupList = () => {
         setMembers(filteredMembers); // 멤버 리스트 업데이트
       } catch (err: any) {
         setError(err.message); // 에러 발생 시 메시지 저장
+        setMembers([]); // 오류 시 멤버 상태 초기화
       }
     };
 
@@ -188,12 +190,14 @@ export const GroupList = () => {
           </select>
 
           {/* 초대하기 버튼 */}
-          <button
-            onClick={handleInvite}
-            className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand -ml-1"
-          >
-            초대하기
-          </button>
+          {userId === adminId && (
+            <button
+              onClick={handleInvite}
+              className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand -ml-1"
+            >
+              초대하기
+            </button>
+          )}
         </div>
       </div>
 

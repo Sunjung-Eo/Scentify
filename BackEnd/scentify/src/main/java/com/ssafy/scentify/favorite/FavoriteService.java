@@ -29,4 +29,8 @@ public class FavoriteService {
 		return favoriteRepository.getAllFavorites(userId);
 	}
 
+	public boolean existsByCombinationId(String userId, int combinationId) {
+		return favoriteRepository.existsByCombinationId(userId, combinationId);
+	}
+
 }

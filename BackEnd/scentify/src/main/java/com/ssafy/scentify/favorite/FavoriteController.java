@@ -52,6 +52,10 @@ public class FavoriteController {
 			 
 			 // 찜 리스트에 추가
 			 for (int combinationId : combinationIds) {
+				if (favoriteService.existsByCombinationId(userId, combinationId)) {
+					continue;
+				}
+				 
 				if (!favoriteService.addCombinationToFavorites(userId, combinationId)) {
 					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 				}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListDto;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListResponseDto;
@@ -23,4 +24,7 @@ public interface FavoriteRepository {
 	// 별도의 매퍼에 구현
 	List<FavoriteListDto> getAllFavorites(String userId);
 	
+	// 이미 찜 등록된 combination id인지 검사
+	@Select("SELECT COUNT(*) > 0 FROM favorite WHERE user_id = #{userId} AND combination_id = #{combinationId}")
+	boolean existsByCombinationId(String userId, int combinationId);	
 }

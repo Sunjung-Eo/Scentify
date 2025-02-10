@@ -44,6 +44,10 @@ public interface UserRepository {
 	@Select("SELECT nickname FROM user WHERE id = #{id}")
 	String getUserNickNameById(String id);
 	
+	// id로 유저 이메일 가져오기
+	@Select("SELECT email FROM user WHERE id = #{id}")
+	String getUserEmailById(String id);
+	
 	// id로 유저 메인 디바이스 가져오기
 	@Select("SELECT main_device_id FROM user WHERE id = #{id}")
 	int getMainDeviceById(String id);

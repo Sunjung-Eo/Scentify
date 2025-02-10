@@ -78,6 +78,10 @@ public class UserService {
 		return userRepository.getUserNickNameById(id);
 	}
 	
+	public String getUserEmailById(String id) {
+		return userRepository.getUserEmailById(id);
+	}
+	
 	public int getMainDeviceById(String id) {
 		return userRepository.getMainDeviceById(id);
 	}

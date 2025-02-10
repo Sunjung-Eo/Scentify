@@ -531,4 +531,43 @@ public class UserController {
 		}
 	}
 	
+	// API 2번 : email 중복확인 후 인증 코드 전송
+	@PostMapping("/reset/password/send-code")
+	public ResponseEntity<?> sendEmailCodeForPassword(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
+		try {
+			// 입력값에서 아이디와 이메일 추출
+			String id = requestMap.get("id");
+			if (id == null || id.isBlank() || id.contains(" ") || id.length() > 30) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // id가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			String email = requestMap.get("email");
+			if (email == null || email.equals("") || !emailpattern.matcher(email).matches() || email.contains(" ")) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // email가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			// id에 등록한 이메일과 같은지 확인
+			String userEmail = userService.getUserEmailById(id);
+			if (!userEmail.equals(email)) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 사용자 등록 정보와 일치하지 않는 이메일
+	        }
+	        
+	        // 8자리 인증 코드 생성
+	        String verifyCode = codeProvider.generateVerificationCode();
+	        emailService.sendVerificationEmail(email, verifyCode);
+	        
+	        // 세션에 email과 발송 인증코드 저장
+	        HttpSession session = request.getSession();
+	        session.setAttribute("id", id);
+			session.setAttribute("email", email);
+			session.setAttribute("verifyCode", verifyCode);
+	        
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			// 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

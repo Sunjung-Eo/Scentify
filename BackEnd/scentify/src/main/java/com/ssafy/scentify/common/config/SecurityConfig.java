@@ -42,6 +42,7 @@ public class SecurityConfig {
             		.requestMatchers("/v1/ws/device").permitAll()
             		.requestMatchers( "/error", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
             		.requestMatchers("/v1/user/login", "/v1/user/check-id", "/v1/user/email/send-code", "/v1/user/email/verify-code","/v1/user/regist").permitAll()
+            		.requestMatchers("/v1/user/reset/password/**").permitAll()
             		.requestMatchers("/v1/auth/kakao/**").permitAll()
             		.requestMatchers("/v1/auth/google/**").permitAll()
             		.requestMatchers("/v1/group/verify-link").permitAll()

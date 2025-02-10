@@ -205,7 +205,7 @@ public class GoogleController {
  			// 쿠키에서 Refresh Token 추출
              String refreshToken = getRefreshTokenFromCookies(request.getCookies());
  			
-             // Refrsh Tokne에서 userId 추출
+             // Refrsh Token에서 userId 추출
              String userId = tokenProvider.getId(refreshToken);
              
              // 응답 헤더 생성

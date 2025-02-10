@@ -15,6 +15,7 @@ class AutoModeType:
     exercise_detect : str = "exercise_detect"
     relax_detect : str = "relax_detect"
     stink_detect : str = "stink_detect"
+    no_running : str = "no_running"
 
 @dataclass
 class Mode:

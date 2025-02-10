@@ -84,7 +84,16 @@ class SmartDiffuser:
             self.mode_type.stink_detect : 3,
         }
 
-        self.last_operation = None
+        # 동작 우선 순위
+        self.operation_priority = {
+            self.mode_type.stink_detect : 0,
+            self.mode_type.exercise_detect : 1,
+            self.mode_type.relax_detect : 1,
+            self.mode_type.simple_detect : 2,
+            self.mode_type.no_running : 3
+        }
+
+        self.running_state = self.operation_priority[self.mode_type.no_running]
     
     def is_valid_key(self, payload, key):
         return payload[key] is not None
@@ -152,7 +161,7 @@ class SmartDiffuser:
                 id = mode["id"]
                 self.mode.auto_operation_mode[id] = AutoDetectionMode(
                     combinationId = int(mode["combinationId"]),
-                    interval = int(mode["interval"]),
+                    interval = int(mode["interval"]) if mode["interval"] is not None else 0,
                     modeOn = bool(mode["modeOn"]),
                     operation_type = mode["type"],
                     sub_mode = int(mode["subMode"])
@@ -234,9 +243,24 @@ class SmartDiffuser:
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Status/Remainder", msg)
 
     async def process_detect_auto_mode(self, mode_type):
+        if self.running_state < self.operation_priority[mode_type]:
+            return
+        
+        # 현재 작동중인 상태 업데이트
+        self.running_state = self.operation_priority[mode_type]
+
+        if self.print_log:
+            print(f"current running state is {mode_type}")
+        
         msg = {"combinationId" : self.mode.auto_operation_mode[self.type_to_id[mode_type]].combinationId}
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/Combination", json.dumps(msg))
+        if self.print_log:
+            print("Sending Data!!!!!")
         await asyncio.sleep(60 * self.mode.auto_operation_mode[self.type_to_id[mode_type]].interval)
+
+        # 인터벌 후 상태 초기화
+        self.running_state = self.operation_priority[self.mode_type.no_running]
+        # Mode On이 되어 있는 자동화 태스크 실행.
 
     # TODO: 각 감지 모드의 인터벌 말고, Operation 자체의 인터벌도 생각하기!
 
@@ -256,14 +280,15 @@ class SmartDiffuser:
 
     async def operate_action_detect(self):
         while (self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn or
-            self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn):
+            self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn) and self.running_state == self.mode_type.no_running:
+
             await asyncio.sleep(1)
             frame = await self.camera.get_one_frame()
             person_detect = self.yolo.person_detect(frame)
-            if person_detect:
+            if True:
                 frames = await self.camera.get_frames(self.slowfast.required_frames_num)
                 ret = self.slowfast.analyze_action(frames)
-                if ret.value == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
+                if ret.value == 1 and self.mode.auto_operation_mode[sel.type_to_id[self.mode_type.exercise_detect]].modeOn:
                     if self.print_log:
                         print("Exercise Detect!!")
                     await self.process_detect_auto_mode(self.mode_type.exercise_detect)
@@ -274,7 +299,7 @@ class SmartDiffuser:
                     await self.process_detect_auto_mode(self.mode_type.relax_detect)
 
     async def operate_stink_detect(self):
-        while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].modeOn:
+        while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].modeOn and self.running_state == self.mode_type.no_running:
             await asyncio.sleep(1)
             value = self.stink_sensor.read_avg_data()
             if value > self.th_stink_value:
@@ -284,6 +309,7 @@ class SmartDiffuser:
 async def main():
     smart_diffuser = SmartDiffuser()
     asyncio.create_task(smart_diffuser.mqtt_client.connect())
+    # 처음에 킬 때 모드에 따라서 정보 받아가기.
     await asyncio.sleep(2)
     # asyncio.create_task(smart_diffuser.operate_simple_detect())
     while True:

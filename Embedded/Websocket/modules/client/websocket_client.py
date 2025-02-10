@@ -234,7 +234,7 @@ class WebSocketClient:
                 self.websocket = None
 
     async def send_temp_hum(self):
-        while True:
+        while self.websocket is not None and not self.disconnection_event.is_set():
             try:
                 temp, hum = get_temp_and_hum()
                 data = {

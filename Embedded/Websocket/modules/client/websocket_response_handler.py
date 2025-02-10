@@ -40,6 +40,7 @@ class WebSocketResponseHandler:
                 "/topic/Auto/Schedule/Initial/" : self.handler_automode_init,
                 "/topic/Schedule/Initial/" : self.handler_schedule_init,
                 "/topic/Schedule/Change/" : self.handler_schedule_change,
+                "/topic/Schedule/Delete/" : self.handler_schedule_delete,
                 
                 # 디폴트
                 "default": self.default_hanlder
@@ -100,7 +101,9 @@ class WebSocketResponseHandler:
         self.opeation_mode = msg["mode"]
 
         if self.operation_mode == 0:
-            asyncio.create_task()
+            asyncio.create_task(self.handler_schedule())
+        elif self.operation_mode:
+            self.schedules = dict()
         
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/SetOperationMode",
@@ -115,10 +118,7 @@ class WebSocketResponseHandler:
         for value in list_schedules:
             value["startTime"] = datetime.strptime(value["startTime"], "%H:%M:%S").time()
             value["endTime"] = datetime.strptime(value["endTime"], "%H:%M:%S").time()
-            self.schedules[value.id] = value
-
-        # 시작 시간에 대해서 정렬
-        # self.schedules = dict(sorted(self.schedules.items(), key=lambda item : item["startTime"]))
+            self.schedules[value["id"]] = value
         
         if self.print_log:
             print("Handling Schedule Initial Operation")
@@ -129,17 +129,42 @@ class WebSocketResponseHandler:
         schedule["startTime"] = datetime.strptime(schedule["startTime"], "%H:%M:%S").time()
         schedule["endTime"] = datetime.strptime(schedule["endTime"], "%H:%M:%S").time()
         self.schedules[schedule["id"]] = schedule
-        
-        # 시작 시간에 대해서 정렬
-        # self.schedules = dict(sorted(self.schedules.items(), key=lambda item : item["startTime"]))
 
-    async def wait_schedule(self, ):
-        pass
-        # TODO: 타이머를 활용해서 시작 알람 및 종료 알람을 어떻게 구현할건지
+    def handler_schedule_delete(self, message):
+        payload = json.loads(message)
+        schedule_id = payload["scheduleId"]
+
+        if schedule_id in self.schedules:
+            del self.schedules[schedule_id]
+
+    async def schedule_operation_loop(self, schedule_id):
+        if schedule_id not in self.schedules:
+            return
+
+        # 동작 모드일 때에만 수행
+        while self.schedules[schedule_id]["modeOn"]:
+            now = datetime.now().strftime("%H:%M:%S")
+            # 수행 시간이 끝나면 break
+            if now > self.schedules[schedule_id]["endTime"] or now < self.schedules[schedule_id]["startTime"]:
+                break
+
+            # 스케줄이 삭제되면 break
+            if schedule_id not in self.schedules:
+                break
+
+            # combination에 해당하는 조합 분사
+            self.handler_remote_operation(self.schedules[schedule_id]["combination"])
+            await asyncio.sleep(60 * self.schedules[schedule_id]["interval"])
 
     async def handler_schedule(self):
-        pass
-        # TODO: 우선순위를 어떻게 정하고 interval에 따른 실행을 어떤식으로 진행할 건지
+        while not self.operation_mode:
+            now = datetime.now().strftime("%H:%M:%S")
+
+            for (key, value) in self.schedules.items():
+                if value["startTime"] > now and value["endTime"] < now:
+                    asyncio.create_task(self.schedule_operation_loop(key))
+
+            await asyncio.sleep(10)
             
 
     def default_hanlder(self):

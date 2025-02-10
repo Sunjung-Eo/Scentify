@@ -47,13 +47,30 @@ public class OpenAIService {
          this.restTemplate = restTemplateBuilder.build();
     }
 
-    public ImageGenerationResponse makeImages(CombinationDto combination){
+    public ImageGenerationResponse makeImages(CombinationDto combination){  	
+    	List<String> scentName = new ArrayList<>();
+    	scentName.add(scentMap.get(combination.getChoice1())); 
+    	if (combination.getChoice2() != null) { scentName.add(scentMap.get(combination.getChoice2())); }
+    	if (combination.getChoice3() != null) { scentName.add(scentMap.get(combination.getChoice3())); }
+    	if (combination.getChoice4() != null) { scentName.add(scentMap.get(combination.getChoice4())); }
     	
-    	List<Integer> scentNum = new ArrayList<>();
+    	StringBuilder comment = new StringBuilder("Draw a cocktail picture using ");
+
+    	for (String name : scentName) {
+    		comment.append(" ").append(name).append(",");
+    	}
+
+    	// 마지막 문자 제거 (반점 삭제)
+    	if (comment.charAt(comment.length() - 1) == ',') {
+    		comment.deleteCharAt(comment.length() - 1);
+    	}
     	
-    	
-    	String comment = "Draw a cocktail with" + "Line drawing. Make sure to add color";
-    	
+    	comment.append(". There should never be any English or text in the picture.");
+    	comment.append(" The cocktail glass in the picture must be in the middle.");
+    	comment.append(" You must draw only one cocktail glass in the picture.");
+    	comment.append(" The cocktail glass in the picture should be visible from top to bottom.");
+    	comment.append(" The size of the picture cannot exceed 525 pixels * 525 pixels.");
+    	comment.append(" The color of the painting must be painted.");
     	
     	CommentRequest commentRequest = new CommentRequest();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -61,18 +78,17 @@ public class OpenAIService {
         httpHeaders.add(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + openaiApiKey);
 
         ImageGenerationRequest imageGenerationRequest = ImageGenerationRequest.builder()
-                																.prompt(commentRequest.getComment())
+                																.prompt(comment.toString())
                 																.n(ChatGptConfig.IMAGE_COUNT)
                 																.size(ChatGptConfig.IMAGE_SIZE)
                 																.build();
-
         HttpEntity<ImageGenerationRequest> requestHttpEntity = new HttpEntity<>(imageGenerationRequest, httpHeaders);
 
         ResponseEntity<ImageGenerationResponse> responseEntity = restTemplate.postForEntity(
-                ChatGptConfig.IMAGE_URL,
-                requestHttpEntity,
-                ImageGenerationResponse.class
-        );
+																	                ChatGptConfig.IMAGE_URL,
+																	                requestHttpEntity,
+																	                ImageGenerationResponse.class
+																	        	);
         return responseEntity.getBody();
     }
 }

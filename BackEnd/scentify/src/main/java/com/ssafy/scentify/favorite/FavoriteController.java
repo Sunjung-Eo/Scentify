@@ -1,5 +1,6 @@
 package com.ssafy.scentify.favorite;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -9,6 +10,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,8 +24,9 @@ import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.favorite.model.dto.CommentRequest;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListDto;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListResponseDto;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ShareCombination;
 import com.ssafy.scentify.favorite.model.dto.ImageGenerationResponse;
-import com.ssafy.scentify.favorite.model.dto.ImageGenerationResponse.ImageURL;
+import com.ssafy.scentify.favorite.model.dto.ImageGenerationResponse.ImageData;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -141,20 +144,64 @@ public class FavoriteController {
 		}
 	}
 	
-	
+	// API 58번 : 찜 조합 공유
 	@PostMapping("/share")
-	public ResponseEntity<?>  sendComment(Locale locale, HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, Integer> combinationIdMap) {
-        Integer combinationId = combinationIdMap.get("combinationId");
-        if (combinationId == null) {
-        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+	public ResponseEntity<?>  shareFavoriteCombination(@RequestBody Map<String, Integer> combinationIdMap) {
+       try {
+			// combination id 추출 및 검사
+			Integer combinationId = combinationIdMap.get("combinationId");
+	        if (combinationId == null) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // 조합 DB에서 가져오기
+	        CombinationDto combination = combinationService.getCombinationById(combinationId);
+	        if (combination == null) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // open ai 키를 활용하여 이미지 생성
+	        ImageGenerationResponse imageResponse = aiService.makeImages(combination);
+	        
+	        // s3 버킷에 업로드 후 링크 반환
+	        List<String> s3Urls = new ArrayList();
+	        for (ImageData imageData : imageResponse.getData()) {
+	            try {
+	                String s3Url = s3Service.downloadAndUploadImage(imageData.getUrl());
+	                s3Urls.add(s3Url);
+	                
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	            }
+	        }
+	        
+	        ShareCombination shareCombination = new ShareCombination();
+	        shareCombination.setCombination(combination);
+	        
+	        // s3 url을 넣어줌
+	        String s3Url = s3Urls.get(0);
+	        shareCombination.setS3Url(s3Url);
+	        
+	        // s3에 업로드된 이미지 이름을 넣어줌
+	        String imageName = s3Url.substring(s3Url.lastIndexOf("/") + 1);
+	        String shareUrl = "http://localhost:5170/favorite/share/read/combinationId=" + combinationId + "&imageName=" + imageName;
+	        shareCombination.setShareUrl(shareUrl);
+	        
+	        return ResponseEntity.ok(shareCombination);
+	        
+       } catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+    }
+	
+	// API 82번 : 공유된 찜 조합 조회
+	@GetMapping("/share/read")
+	public ResponseEntity<?>  readShareFavorite() {
+		
         
-        CombinationDto combination = combinationService.getCombinationById(combinationId);
-        if (combination == null) {
-        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        
-        ImageGenerationResponse imageGenerationResponse = aiService.makeImages(combination);
-        return ResponseEntity.ok(imageGenerationResponse.getData());
+    	return new ResponseEntity<>(HttpStatus.OK);
     }
 }

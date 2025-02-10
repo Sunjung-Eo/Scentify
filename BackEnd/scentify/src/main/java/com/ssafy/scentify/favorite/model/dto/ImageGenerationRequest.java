@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-//OpenAI에 요청할 DTO Format('response_format' 추가하셔도됩니다.)
 public class ImageGenerationRequest implements Serializable {
     private String prompt;
     private int n;

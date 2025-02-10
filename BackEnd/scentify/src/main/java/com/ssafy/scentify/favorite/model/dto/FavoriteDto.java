@@ -27,6 +27,7 @@ public class FavoriteDto {
 	@Data
 	public static class ShareCombination {
 		CombinationDto combination;
+		String S3Url;
 		String shareUrl;
 	}
 }

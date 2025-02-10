@@ -8,15 +8,13 @@ import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
-//요청에 대한 응답을 받을 DTO
 public class ImageGenerationResponse {
-
     private long created;
-    private List<ImageURL> data;
-
+    private List<ImageData> data; 
+    
     @Getter
     @Setter
-    public static class ImageURL {
+    public static class ImageData {
         private String url;
     }
 }

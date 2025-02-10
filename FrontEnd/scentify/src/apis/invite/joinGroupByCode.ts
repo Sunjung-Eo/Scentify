@@ -27,6 +27,7 @@ export const joinGroupByCode = async (
     console.log("API 응답 상태 코드:", response.status);
 
     if (response.ok) {
+      console.log("초대 코드 검증 성공:", inviteCode);
       return { success: true };
     }
 

@@ -12,6 +12,8 @@ import { useUserStore } from "../../stores/useUserStore";
 import MyUserCard from "../../feature/my/components/MyUserCard";
 import Invite from "../../feature/invite/Invite";
 import InviteCodeInput from "../../feature/invite/InviteCodeInput";
+import manageaccountIcon from "../../assets/icons/manageaccount.svg";
+import managegroupsIcon from "../../assets/icons/managegroups.svg";
 
 const My = () => {
   const logout = useAuthStore((state) => state.logout);
@@ -39,7 +41,14 @@ const My = () => {
               {/** 계정 관리 */}
               <div>
                 <div className="flex flex-row justify-between items-center text-center">
-                  <div className="py-4 font-pre-medium text-20">계정 관리</div>
+                  <div className="flex items-center py-4 font-pre-medium text-20">
+                    <img
+                      src={manageaccountIcon}
+                      alt="계정 관리 아이콘"
+                      className="w-6 h-6 mr-2"
+                    />
+                    <span>계정 관리</span>
+                  </div>
                   <button
                     className="w-[70px] h-[32px] text-[12px] font-pre-light border-0.2 border-lightgray rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
                     onClick={handleLogout}
@@ -57,7 +66,14 @@ const My = () => {
 
               {/** 그룹 관리 */}
               <div>
-                <div className="py-4 font-pre-medium text-20">그룹 관리</div>
+                <div className="flex items-center py-4 font-pre-medium text-20">
+                  <img
+                    src={managegroupsIcon}
+                    alt="그룹 관리 아이콘"
+                    className="w-6 h-6 mr-2"
+                  />
+                  <span>그룹 관리</span>
+                </div>
                 <GroupList />
               </div>
             </>

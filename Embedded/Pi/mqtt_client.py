@@ -63,6 +63,7 @@ class MQTTClient:
             data = json.loads(payload)
             message["type"] = "DeviceStatus/Sensor"
             message["combinationId"] = data["combinationId"]
+            print(message)
 
         elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
             # 사람 단순 감지

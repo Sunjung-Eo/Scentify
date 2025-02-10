@@ -69,7 +69,7 @@ class WebSocketClient:
                 "/app/DeviceStatus/Capsule/Info",
                 "/app/Auto/Schedule/Initial",
                 "/app/Schedule/Initial",
-                "/app/DeviceStatus/Sensor",
+                # "/app/DeviceStatus/Sensor",
                 # "/app/Mode",
             ]
 
@@ -114,7 +114,9 @@ class WebSocketClient:
                             original_key[f'{key}{self.device_id}'] = value
                         self.websocket_response_hanlder = {}
                         self.websocket_response_hanlder = original_key
-                        await self.get_capsule_info()
+                        self.is_initial_connection=False
+                        # Capsule Info 받았을 때, Null이면 Spring으로부터 데이터 기다리고, 그게 아니라면 그냥 request 마구잡이로 진행하는 로직 추가.
+                        # await self.get_capsule_info()
 
                     await self.init_request()
 
@@ -123,9 +125,6 @@ class WebSocketClient:
                     send_temp_hum_task = asyncio.create_task(self.send_temp_hum())
                     
                     await asyncio.gather(receive_task, send_task, send_temp_hum_task)
-
-                    if self.is_initial_connection:
-                        self.is_initial_connection=False
 
                     print("Before Disconnect")
 
@@ -201,8 +200,8 @@ class WebSocketClient:
     async def subcribe_websocket(self):
         for (idx, topic) in enumerate(self.subscribe_list):
             # 첫 연결 때에는 capsule 정보 요청 하지 않기.
-            if self.is_initial_connection and idx==0:
-                continue
+            # if self.is_initial_connection and idx==0:
+            #     continue
 
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
             print(subscribe_frame)
@@ -215,6 +214,7 @@ class WebSocketClient:
                 header = {}
                 while True:
                     res = await self.websocket.recv()
+                    print(res)
                     header, message = parse_stomp_message(res)
                     if len(message) <= 1:
                         continue
@@ -250,25 +250,28 @@ class WebSocketClient:
 
     async def send_message(self):
         while self.websocket is not None and not self.disconnection_event.is_set():
-            if self.message_queue.empty():
-                await asyncio.sleep(0.5)
-                continue
+            try:
+                if self.message_queue.empty():
+                    await asyncio.sleep(0.5)
+                    continue
 
-            # message는 항상 type과 payload 키를 가지는 딕셔너리 형태!
-            message = await self.message_queue.get()
-            print(message)
-            topic = message['type']
-            del message['type']
-            payload = message
-            print(payload)
+                # message는 항상 type과 payload 키를 가지는 딕셔너리 형태!
+                message = await self.message_queue.get()
+                print(message)
+                topic = message['type']
+                del message['type']
+                payload = message
 
-            message = self.make_message(dict_data=payload)
-            print(message)
+                message = self.make_message(dict_data=payload)
+                print(message)
 
-            json_msg = json.dumps(message)
-            send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')
-            print(send_frame)
-            await self.websocket.send(send_frame)      
+                json_msg = json.dumps(message)
+                send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')
+                print(send_frame)
+                
+                await self.websocket.send(send_frame)      
+            except Exception as e:
+                print(f"Error Occur : {e}")
 
     def make_message(self, dict_data):
         merge_dict = dict_data.copy()

@@ -62,11 +62,15 @@ class WebSocketResponseHandler:
     async def handler_auto_operation(self, message):
         payload = json.loads(message)
         combination = payload["combination"]
+
+        print("handler combination : ", combination)
         
         payload = json.dumps(combination)
+
+        print("handler combination payload : ", payload)
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/Operation",
-            combination
+            payload
         )
         if self.print_log:
             print("Handling Remote Operation Motor")

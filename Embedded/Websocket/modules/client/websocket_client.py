@@ -66,10 +66,9 @@ class WebSocketClient:
             ]
 
             self.initial_request_dest = [
-                "/app/DeviceStatus/Capsule/Info",
-                "/app/Auto/Schedule/Initial",
+                # "/app/DeviceStatus/Capsule/Info",
+                # "/app/Auto/Schedule/Initial",
                 "/app/Schedule/Initial",
-                # "/app/DeviceStatus/Sensor",
                 # "/app/Mode",
             ]
 
@@ -151,6 +150,7 @@ class WebSocketClient:
 
     async def send_request(self, topic, msg):
         send_frame = stomper.send(topic, msg, content_type='application/json')       
+        print(send_frame)
         await self.websocket.send(send_frame)
 
     async def get_capsule_info(self):
@@ -198,9 +198,6 @@ class WebSocketClient:
     async def subcribe_websocket(self):
         for (idx, topic) in enumerate(self.subscribe_list):
             # 첫 연결 때에는 capsule 정보 요청 하지 않기.
-            # if self.is_initial_connection and idx==0:
-            #     continue
-
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
             print(subscribe_frame)
             await self.websocket.send(subscribe_frame)
@@ -228,6 +225,7 @@ class WebSocketClient:
                 # 만일 캡슐 정보에 Null 값이 있다면 capsule information을 기다리기
                 if msg_type == f"/topic/DeviceStatus/Capsule/Info/{self.device_id}":
                     data = json.loads[message]
+                    print(data)
                     if (data["slot1"] is None or data["slot2"] is None or data["slot2"] is None or data["slot2"] is None):
                         print("Capusle is not initialized!!")
                         await self.get_capsule_info()

@@ -1,10 +1,13 @@
 // 단일 기기 예약 전체 조회
-const fetchReservations = async (deviceId: number, accessToken: string) => {
+export const fetchReservations = async (
+  deviceId: number,
+  accessToken: string
+) => {
   try {
-    const response = await fetch("/v1/custom/all", {
-      method: "POST",
+    const response = await fetch('/v1/custom/all', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ deviceId: deviceId }),
@@ -16,7 +19,7 @@ const fetchReservations = async (deviceId: number, accessToken: string) => {
 
     return response.json();
   } catch (error) {
-    console.error("예약 데이터 가져오기 실패:", error);
+    console.error('예약 데이터 가져오기 실패:', error);
     throw error;
   }
 };
@@ -36,20 +39,23 @@ export const getAllDevicesReservationMode = async (
         };
       })
     );
-    console.log("기기호출데이터", deviceData);
+    console.log('기기호출데이터', deviceData);
     return deviceData;
   } catch (error) {
-    console.error("기기 데이터 가져오기 실패:", error);
+    console.error('기기 데이터 가져오기 실패:', error);
     return [];
   }
 };
 
 // 단일 기기 자동화 전체 조회
-const fetchAutomations = async (deviceId: number, accessToken: string) => {
-  const response = await fetch("/v1/auto/all", {
-    method: "POST",
+export const fetchAutomations = async (
+  deviceId: number,
+  accessToken: string
+) => {
+  const response = await fetch('/v1/auto/all', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ deviceId: deviceId }),
@@ -72,10 +78,10 @@ export const getAllDevicesAutomationMode = async (
         };
       })
     );
-    console.log("기기호출데이터", deviceData);
+    console.log('기기호출데이터', deviceData);
     return deviceData;
   } catch (error) {
-    console.error("기기 데이터 가져오기 실패:", error);
+    console.error('기기 데이터 가져오기 실패:', error);
     return [];
   }
 };

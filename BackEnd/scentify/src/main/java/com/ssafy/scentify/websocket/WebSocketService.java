@@ -44,7 +44,7 @@ public class WebSocketService {
 	// 기기 등록 시 캡슐 정보 자동으로 보내줌
 	public void sendCapsuleInfo(int deviceId, CapsuleInfoRequest infoRequest) {	    
 		// 메시지 전송
-        template.convertAndSend("/topic/Schedule/Initial/" + deviceId, infoRequest);
+        template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + deviceId, infoRequest);
         log.info("Data processed for id: {}", deviceId);
 	}
 	
@@ -56,7 +56,7 @@ public class WebSocketService {
         message.put("schedules", customScheduleDto);
         
         // 메세지 전송
-        template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + deviceId, message);
+        template.convertAndSend("/topic/Schedule/Initial/" + deviceId, message);
         log.info("Data processed for id: {}", deviceId);
 	}
 	

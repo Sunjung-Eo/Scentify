@@ -47,10 +47,10 @@ public class WebSocketDto {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class CapsuleInfoRequest {
-        private int slot1;
-        private int slot2;
-        private int slot3;
-        private int slot4;
+        private Integer slot1;
+        private Integer slot2;
+        private Integer slot3;
+        private Integer slot4;
     }
 	
 	@Data

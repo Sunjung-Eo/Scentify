@@ -98,19 +98,19 @@ public class DeviceController {
 	        }
 	        	        
 	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
-	        int waitTime = 0;
-	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
-	        int sleepInterval = 500; // 0.5초마다 체크
-
-	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
-	            if (waitTime >= maxWaitTime) {
-	            	// 디바이스 삭제
-	            	deviceService.deleteDevice(deviceId, userId);
-	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
-	            }
-	            Thread.sleep(sleepInterval);
-	            waitTime += sleepInterval;
-	        }
+//	        int waitTime = 0;
+//	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
+//	        int sleepInterval = 500; // 0.5초마다 체크
+//
+//	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
+//	            if (waitTime >= maxWaitTime) {
+//	            	// 디바이스 삭제
+//	            	deviceService.deleteDevice(deviceId, userId);
+//	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
+//	            }
+//	            Thread.sleep(sleepInterval);
+//	            waitTime += sleepInterval;
+//	        }
 	        
 	        // 성공적으로 처리된 후 ID 반환
 	        Map<String, Object> response = new HashMap<>();
@@ -132,9 +132,9 @@ public class DeviceController {
 			if (!deviceService.updateCapsuleInfo(capsuleInfo)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			
 			// 캡슐 정보 웹소켓에 전송
-			CapsuleInfoRequest infoRequest = new CapsuleInfoRequest(capsuleInfo.getSlot1(), capsuleInfo.getSlot2(),
-																	capsuleInfo.getSlot3(), capsuleInfo.getSlot4());
-			socketService.sendCapsuleInfo(capsuleInfo.getId(), infoRequest);
+//			CapsuleInfoRequest infoRequest = new CapsuleInfoRequest(capsuleInfo.getSlot1(), capsuleInfo.getSlot2(),
+//																	capsuleInfo.getSlot3(), capsuleInfo.getSlot4());
+//			socketService.sendCapsuleInfo(capsuleInfo.getId(), infoRequest);
 			
 			// 세션에 캡슐 정보 저장
 			HttpSession session =  request.getSession();
@@ -185,7 +185,7 @@ public class DeviceController {
 			}
 			
 			// 자동화 모드 설정 (탈취 모드/ 단순 탐지 모드)
-			if (!autoScheduleService.setMode(deviceId, combinationId, 2, null, 15) || !autoScheduleService.setModeWithoutInterval(deviceId, combinationId, 0)) {
+			if (!autoScheduleService.setMode(deviceId, combinationId, 2, null, 15) || !autoScheduleService.setMode(deviceId, combinationId, 0, null, 15)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			

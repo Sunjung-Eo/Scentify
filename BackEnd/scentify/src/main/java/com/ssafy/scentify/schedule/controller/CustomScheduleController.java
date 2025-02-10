@@ -59,6 +59,7 @@ public class CustomScheduleController {
 		    int currentBit = codeProvider.getCurrentDayBit();
 		    if ((customScheduleDto.getDay() & currentBit) > 0) {
 		        socketService.sendCustomScehdule(customScheduleDto);
+		        log.info("오늘 날짜의 스케줄 전송 완룡");
 		    }
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨

@@ -39,7 +39,7 @@ class SmartDiffuser:
         # HW
         # 악취 감지 센서
         self.stink_sensor = StinkSensor()
-        self.th_stink_value = 0
+        self.th_stink_value = 120
 
         # 무게 감지 센서
         # self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
@@ -244,9 +244,6 @@ class SmartDiffuser:
         await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Status/Remainder", msg)
 
     async def process_detect_auto_mode(self, mode_type):
-        # if self.operation_priority[self.running_state] < self.operation_priority[mode_type]:
-        #     return
-        
         # 현재 작동중인 상태 업데이트
         self.running_state = mode_type
 
@@ -316,13 +313,9 @@ class SmartDiffuser:
             if value > self.th_stink_value:
                 await self.process_detect_auto_mode(self.mode_type.stink_detect)   
 
-
 async def main():
     smart_diffuser = SmartDiffuser()
     asyncio.create_task(smart_diffuser.mqtt_client.connect())
-    # 처음에 킬 때 모드에 따라서 정보 받아가기.
-    await asyncio.sleep(2)
-    # asyncio.create_task(smart_diffuser.operate_simple_detect())
     while True:
         await asyncio.sleep(2)
         

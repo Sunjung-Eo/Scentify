@@ -115,8 +115,6 @@ class WebSocketClient:
                         self.websocket_response_hanlder = {}
                         self.websocket_response_hanlder = original_key
                         self.is_initial_connection=False
-                        # Capsule Info 받았을 때, Null이면 Spring으로부터 데이터 기다리고, 그게 아니라면 그냥 request 마구잡이로 진행하는 로직 추가.
-                        # await self.get_capsule_info()
 
                     await self.init_request()
 
@@ -227,6 +225,14 @@ class WebSocketClient:
                 print(message)
 
                 msg_type = header['destination']
+                # 만일 캡슐 정보에 Null 값이 있다면 capsule information을 기다리기
+                if msg_type == f"/topic/DeviceStatus/Capsule/Info/{self.device_id}":
+                    data = json.loads[message]
+                    if (data["slot1"] is None or data["slot2"] is None or data["slot2"] is None or data["slot2"] is None):
+                        print("Capusle is not initialized!!")
+                        await self.get_capsule_info()
+                        continue
+
                 handler = self.websocket_response_hanlder.get(msg_type, self.websocket_response_hanlder.get("default"))
                 await handler(message)
 

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.DeviceService;
+import com.ssafy.scentify.favorite.FavoriteService;
 import com.ssafy.scentify.group.GroupService;
 import com.ssafy.scentify.home.model.dto.HomeDto.AutoScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
@@ -36,14 +37,16 @@ public class HomeController {
 	private final UserService userService;
 	private final DeviceService deviceService;
 	private final GroupService groupService;
+	private final FavoriteService favoriteService;
 	private final AutoScheduleService autoScheduleService;
 	private final CustomScheduleService customScheduleService;
 	private final TokenProvider tokenProvider;
 	
-	public HomeController(UserService userService, DeviceService deviceService, GroupService groupService, AutoScheduleService autoScheduleService, CustomScheduleService customScheduleService, TokenProvider tokenProvider) {
+	public HomeController(UserService userService, DeviceService deviceService, GroupService groupService, FavoriteService favoriteService, AutoScheduleService autoScheduleService, CustomScheduleService customScheduleService, TokenProvider tokenProvider) {
 		this.userService = userService;
 		this.deviceService = deviceService;
 		this.groupService = groupService;
+		this.favoriteService = favoriteService;
 		this.autoScheduleService = autoScheduleService;
 		this.customScheduleService = customScheduleService;
 		this.tokenProvider = tokenProvider;
@@ -88,6 +91,9 @@ public class HomeController {
 		        customSchedules = customScheduleService.getSchedulesByDeviceId(mainDeviceId);
 	        }
 	        
+	        // 해당 user의 찜 combination id 모두 가져오기
+	        List<Integer> favorites = favoriteService.getAllFavoriteIds(userId);
+	        
 	        // 응답 DTO 생성
 	        HomeResponseDto response = new HomeResponseDto();
 	        response.setUser(userHomeDto);
@@ -95,6 +101,7 @@ public class HomeController {
 	        response.setMainDevice(deviceHomeDto);
 	        response.setAutoSchedules(autoSchedules);
 	        response.setCustomSchedules(customSchedules);
+	        response.setFavorites(favorites);
 
 	        // JSON 응답 반환
 	        return ResponseEntity.ok(response);

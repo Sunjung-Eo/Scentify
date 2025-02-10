@@ -23,4 +23,10 @@ public class FavoriteDto {
 		private int id;
 		private CombinationDto combination;
 	}
+	
+	@Data
+	public static class ShareCombination {
+		CombinationDto combination;
+		String shareUrl;
+	}
 }

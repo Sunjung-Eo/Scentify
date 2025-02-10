@@ -28,6 +28,10 @@ public class FavoriteService {
 	public List<FavoriteListDto> getAllFavorites(String userId) {
 		return favoriteRepository.getAllFavorites(userId);
 	}
+	
+	public List<Integer> getAllFavoriteIds(String userId) {
+		return favoriteRepository.getAllFavoriteIds(userId);
+	}
 
 	public boolean existsByCombinationId(String userId, int combinationId) {
 		return favoriteRepository.existsByCombinationId(userId, combinationId);

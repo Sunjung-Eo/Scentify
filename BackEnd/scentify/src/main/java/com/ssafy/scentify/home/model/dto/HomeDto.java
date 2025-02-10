@@ -17,6 +17,7 @@ public class HomeDto {
 	    private DeviceHomeDto mainDevice;
 	    private List<AutoScheduleHomeDto> autoSchedules;
 	    private List<CustomScheduleHomeDto> customSchedules;
+	    private List<Integer> favorites;
 	}
 	
 	@Data
@@ -72,8 +73,6 @@ public class HomeDto {
 	    private String name;
 	    private int combinationId;
 	    private String combinationName;
-	    @JsonProperty("isFavorite") 
-	    private boolean isFavorite;
 	    private int day;
 	    private String startTime;
 	    private String endTime;

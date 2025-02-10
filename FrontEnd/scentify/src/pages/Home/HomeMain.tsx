@@ -1,14 +1,17 @@
-import { useEffect } from "react";
-import DeviceSlide from "../../feature/Home/mainhome/device/DeviceSlide.tsx";
-import UserCard from "../../feature/Home/mainhome/user/UserCard.tsx";
-import { useMainDeviceStore } from "../../stores/useDeviceStore.ts";
-import { homeInfo } from "../../apis/home/homeInfo.ts";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useUserStore } from "../../stores/useUserStore.ts";
+import { useEffect } from 'react';
+import DeviceSlide from '../../feature/Home/mainhome/device/DeviceSlide.tsx';
+import UserCard from '../../feature/Home/mainhome/user/UserCard.tsx';
+import { useMainDeviceStore } from '../../stores/useDeviceStore.ts';
+import { homeInfo } from '../../apis/home/homeInfo.ts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useUserStore } from '../../stores/useUserStore.ts';
+import { useScheduleStore } from '../../stores/useScheduleStore.ts';
 
 const HomeMain = () => {
   const { setMainDevice, mainDevice } = useMainDeviceStore();
+
   const { setUser, deviceIdsAndNames } = useUserStore();
+
   const queryClient = useQueryClient();
 
   const deviceIds = deviceIdsAndNames

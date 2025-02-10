@@ -1,7 +1,7 @@
 import Spinner from '../Loading/Spinner';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { registerDevice } from '../../../apis/home/registdevice';
+import { registDevice } from '../../../apis/home/registDevice';
 import { Link } from 'react-router-dom';
 
 function RegistConnecting() {
@@ -18,7 +18,7 @@ function RegistConnecting() {
 
       console.log('디바이스 등록 요청 몇번?');
       try {
-        const response = await registerDevice(serial, ipAddress, accessToken);
+        const response = await registDevice(serial, ipAddress, accessToken);
         console.log('디바이스 등록 성공, ID:', response.id);
 
         const id = response.id;
@@ -36,6 +36,7 @@ function RegistConnecting() {
           navigate('/home');
         } else {
           alert('등록 중 오류가 발생했습니다.');
+          console.error('등록 중 오류:', error);
           navigate('/home');
         }
       }

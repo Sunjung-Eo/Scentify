@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { UserData } from './UserTypes';
-import greenLogo from '../../../../assets/userProfiles/green.svg';
 import { useUserStore } from '../../../../stores/useUserStore';
+import sunIcon from '../../../../assets/icons/weather/sun.svg';
+import cloudsIcon from '../../../../assets/icons/weather/clouds.svg';
+import rainIcon from '../../../../assets/icons/weather/rain.svg';
+import snowIcon from '../../../../assets/icons/weather/snow.svg';
+import thunderIcon from '../../../../assets/icons/weather/thunder.svg';
+
+import { getProfileImage } from './handler/profileImageHandler';
 
 const UserCard: React.FC = () => {
   // ✅ 전역 상태에서 사용자 정보 가져오기
@@ -68,11 +74,11 @@ const UserCard: React.FC = () => {
 
       // 4. 날씨 그룹 -> 이모티콘 및 한국어 설명 매핑
       const weatherIconMap: Record<string, string> = {
-        Clear: '☀️', // 맑음
-        Clouds: '☁️', // 흐림
-        Rain: '🌧️', // 비
-        Snow: '❄️', // 눈
-        Thunderstorm: '⛈️', // 천둥
+        Clear: sunIcon,
+        Clouds: cloudsIcon,
+        Rain: rainIcon,
+        Snow: snowIcon,
+        Thunderstorm: thunderIcon,
       };
 
       const weatherDescriptionMap: Record<string, string> = {
@@ -140,7 +146,7 @@ const UserCard: React.FC = () => {
         <div className="flex items-center gap-4">
           {/* 프로필 이미지 */}
           <img
-            src={greenLogo} // img_num 기반 동적 프로필 URL
+            src={getProfileImage(userData.imgNum)}
             alt="Profile"
             className="w-12 h-12 rounded-full"
           />

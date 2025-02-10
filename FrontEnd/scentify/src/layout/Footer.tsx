@@ -10,7 +10,8 @@ const Footer = () => {
   const location = useLocation();
 
   // 특정 경로에서 Footer 숨김
-  const hideFooterPaths = /^\/user\/regist(\/.*)?$/;
+  const hideFooterPaths =
+    /^\/(?:user\/regist(?:\/.*)?|home\/(?:registdevice2|connectsuccess|registcapsule|defaultscent))$/;
 
   const tabs = [
     { id: 'home', icon: HomeIcon, path: '/home' },

@@ -55,9 +55,6 @@ function DefaultScent() {
     };
   });
 
-  console.log('🛠 부모 DefaultScent.tsx scentCnt 변경됨:', scentCnt);
-
-  console.log('1️⃣😱😱😱😱', scentCnt);
   // console.log(
   //   '캡슐 슬롯 숫자 변환',
   //   id,
@@ -117,7 +114,7 @@ function DefaultScent() {
         scentNames={scentNames}
       />
       {!roomType && (
-        <p className="text-red-500 text-center mt-4">
+        <p className="text-red-500 text-12 font-pre-light self-start">
           공간 크기를 먼저 선택해주세요.
         </p>
       )}

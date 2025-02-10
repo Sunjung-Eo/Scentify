@@ -1,13 +1,4 @@
 import { DeviceSelectItem } from "../../../components/Control/DeviceSelect";
-// 자동화 모드 설정 관련 타입
-// export type AutoMode = {
-//   탈취: boolean;
-//   동작: {
-//     집중: boolean;
-//     휴식: boolean;
-//   };
-//   탐지: boolean;
-// };
 
 export interface AutoSchedule {
   combinationId: number;
@@ -24,7 +15,6 @@ export interface AutoManagerProps {
   };
   devices: DeviceSelectItem[];
   selectedDevice: number | null;
-  onDeviceChange: (device: number) => void;
 }
 
 interface Combination {
@@ -38,11 +28,15 @@ interface Combination {
   choice4Count: number;
 }
 
+interface CombinationId {
+  id: number;
+}
+
 // 탈취 모드
 export interface deodorizationData {
   id: number;
   deviceId: number;
-  combination: Combination;
+  combination: Combination | CombinationId;
   modeOn: boolean;
   modeChange: boolean;
   interval: number;
@@ -52,18 +46,18 @@ export interface deodorizationData {
 export interface detectionData {
   id: number;
   deviceId: number;
-  combination: Combination;
+  combination: Combination | CombinationId;
   modeOn: boolean;
   modeChange: boolean;
 }
 
+// 동작 모드
 interface behaviorSchedule {
   id: number;
   deviceId: number;
   interval: number;
   modeOn: boolean;
 }
-// 동작 모드
 export interface behaviorData {
   exerciseSchedule: behaviorSchedule;
   exerciseModeChange: boolean;

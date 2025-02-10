@@ -1,27 +1,31 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Mode } from '../../feature/control/main/ControlType';
-import ModeToggle from '../../feature/control/main/ModeToggle';
-import ReservationManager from '../../feature/control/reservation/ReservationManager';
-import AutoManager from '../../feature/control/automation/AutoManager';
-import ModeChangeModal from '../../feature/control/main/ModeChangeModal';
-import BehaviorSetting from '../../feature/control/automation/BehaviorSetting';
-import DeodorizationSetting from '../../feature/control/automation/DeodorizationSetting';
-import DetectionSetting from '../../feature/control/automation/DetectionSetting';
-import CreateReservation from '../../feature/control/reservation/CreateReservation';
-import '../../styles/global.css';
-import RemoteIcon from '../../assets/icons/remote-icon.svg';
-import ModifyReservation from '../../feature/control/reservation/ModifyReservation';
+import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
-import { useMainDeviceStore } from '../../stores/useDeviceStore';
-import { useAuthStore } from '../../stores/useAuthStore';
-import { useUserStore } from '../../stores/useUserStore';
-import { getAllDevicesMode } from '../../apis/control/getAllDevicesMode';
-import { getDeviceInfo } from '../../apis/control/getDeviceInfo';
-import { switchMode } from '../../apis/control/switchMode';
+import { useMainDeviceStore } from "../../stores/useDeviceStore";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { useUserStore } from "../../stores/useUserStore";
 
-import DeviceSelect from '../../components/Control/DeviceSelect';
+import { getAllDevicesReservationMode } from "../../apis/control/getAllDevicesMode";
+import { getAllDevicesAutomationMode } from "../../apis/control/getAllDevicesMode";
+import { getDeviceInfo } from "../../apis/control/getDeviceInfo";
+import { switchMode } from "../../apis/control/switchMode";
+
+import { Mode } from "../../feature/control/main/ControlType";
+import ModeToggle from "../../feature/control/main/ModeToggle";
+import AutoManager from "../../feature/control/automation/AutoManager";
+import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
+import DetectionSetting from "../../feature/control/automation/DetectionSetting";
+import DeodorizationSetting from "../../feature/control/automation/DeodorizationSetting";
+import ReservationManager from "../../feature/control/reservation/ReservationManager";
+import CreateReservation from "../../feature/control/reservation/CreateReservation";
+import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
+import DeviceSelect from "../../components/Control/DeviceSelect";
+import Modal from "../../components/Alert/Modal";
+
+import "../../styles/global.css";
+import RemoteIcon from "../../assets/icons/remote-icon.svg";
+import AlarmIcon from "../../assets/icons/alarm-icon.svg";
 
 const Control = () => {
   // 인증토큰
@@ -32,50 +36,18 @@ const Control = () => {
   const { deviceIdsAndNames } = useUserStore();
   const { mainDevice } = useMainDeviceStore();
 
+  // 기기 id들
   const deviceIds = deviceIdsAndNames
     ? Object.keys(deviceIdsAndNames).map(Number)
     : [];
 
-  // const deviceIds = userstore.deviceIds ?? [];
-
-  // const deviceIds: string[] = deviceIdsAndNames
-  //   ? Object.keys(deviceIdsAndNames)
-  //   : [];
-  // useEffect(() => {
-  //   console.log("deviceIds 변경:", deviceIds);
-  // }, [deviceIds]);
-
-  // setDefaultScentId(mainDevice?.defaultCombination);
-  // 기기 id
-  // const deviceIds = devices
-  //   .map((device) => device.id)
-  //   .filter((id): id is number => id !== undefined);
-  // console.log("메일", mainDevice);
-  // 선택한 기기(기본값: 대표기기)
-  // const devices = mainDevice
-  //   ? [
-  //       {
-  //         id: mainDevice.id,
-  //         name: mainDevice.name,
-  //         isRepresentative: true,
-  //         roomType: mainDevice.roomType,
-  //       },
-  //     ]
-  //   : [];
-
-  // const mainDeviceStore = useMainDeviceStore()
-  // const { mainDevice } = useMainDeviceStore()
-  // const [defaultScentId, setDefaultScentId] = mainDeviceStore<MainDeviceStoreState>(null);
   // 선택한 기기(기본값: 대표기기 - 등록순)
   const [selectedDevice, setSelectedDevice] = useState<number | null>(
     mainDevice?.id ?? null
   );
-  // const [defaultScentId, setDefaultScentId] = useState<number | null>(
-  //   devices[0].defaultCombination
-  // );
+
   // 기기 선택
   const handleDeviceChange = (deviceId: number) => {
-    // console.log("선택", deviceId);
     setSelectedDevice(deviceId);
   };
   useEffect(() => {
@@ -84,23 +56,13 @@ const Control = () => {
     }
   }, []);
 
-  // // 기본향 조회
-  // const { data: fetchDefaultScentData = {} } = useQuery({
-  //   queryKey: ["defaultScentData", defaultScentId],
-  //   queryFn: () => getCombinationById(defaultScentId!, accessToken),
-  //   enabled: !!defaultScentId && !!accessToken,
-  // });
-
   // 기기 정보 조회
   const { data: fetchDeviceData = {} } = useQuery({
-    queryKey: ['deviceInfo'],
+    queryKey: ["deviceInfo"],
     queryFn: () => getDeviceInfo(deviceIds, accessToken),
   });
   const devicesInfo = fetchDeviceData;
-  // console.log("aas", devicesInfo);
-  // console.log("패치!", fetchDeviceData);
 
-  // console.log("asdadss", deviceIds);
   // 예약 관리 컴포넌트로 전달
   const deviceSelectItems =
     deviceIds.length === 0 || !devicesInfo?.devices
@@ -109,123 +71,63 @@ const Control = () => {
           const deviceInfo = devicesInfo.devices.find(
             (device: any) => device.id === deviceId
           );
-          // setDefaultScentId(deviceInfo.defaultCombination);
-          // const defaultScentData = fetchDefaultScentData;
-          // console.log(defaultCombination);
-          // console.log(defaultScentData);
-          // console.log(deviceInfo);
           return {
             deviceId: deviceInfo.id,
             name: deviceInfo.name,
-            roomType: deviceInfo.room_type,
+            roomType: deviceInfo.roomType,
             isRepresentative: deviceInfo.id === mainDevice?.id ? true : false,
             defaultScentId: deviceInfo.defaultCombination,
-            // defaultScentData: {
-            //   slot1: {
-            //     slot: defaultScentData.choice1,
-            //     count: defaultScentData.choice1Count,
-            //   },
-            //   slot2: {
-            //     slot: defaultScentData.choice2,
-            //     count: defaultScentData.choice2Count,
-            //   },
-            //   slot3: {
-            //     slot: defaultScentData.choice3,
-            //     count: defaultScentData.choice3Count,
-            //   },
-            //   slot4: {
-            //     slot: defaultScentData.choice4,
-            //     count: defaultScentData.choice4Count,
-            //   },
-            // },
           };
         });
 
-  // useEffect(() => {
-  //   if (deviceIds.length > 0 && devicesInfo?.devices) {
-  //     const deviceInfo = devicesInfo.devices.find(
-  //       (device: any) => device.id === deviceIds[0]
-  //     );
-
-  //     if (deviceInfo) {
-  //       setSelectedDevice(deviceInfo.id);
-  //       setDefaultScentId(deviceInfo.defaultCombination); // 상태 업데이트 한 번만 호출
-  //     }
-  //   }
-  // }, [deviceIds, devicesInfo]);
-  // console.log(deviceSelectItems);
-  // const deviceSelectItems = devices.map((device) => {
-  //   const defaultScentData = fetchDefaultScentData;
-
-  //   return {
-  //     deviceId: device.id,
-  //     name: device.name,
-  //     roomType: device.roomType,
-  //     isRepresentative: device.isRepresentative,
-  //     defaultScentData: {
-  //       slot1: {
-  //         slot: defaultScentData.choice1,
-  //         count: defaultScentData.choice1Count,
-  //       },
-  //       slot2: {
-  //         slot: defaultScentData.choice2,
-  //         count: defaultScentData.choice2Count,
-  //       },
-  //       slot3: {
-  //         slot: defaultScentData.choice3,
-  //         count: defaultScentData.choice3Count,
-  //       },
-  //       slot4: {
-  //         slot: defaultScentData.choice4,
-  //         count: defaultScentData.choice4Count,
-  //       },
-  //     },
-  //   };
-  // });
-  // console.log("devices", devices);
-  // console.log("deviceSelectItems", deviceSelectItems);
-
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
-    queryKey: ['reservations'],
-    queryFn: () => getAllDevicesMode(deviceIds, accessToken),
+    queryKey: ["reservations", deviceIds, accessToken],
+    queryFn: () => getAllDevicesReservationMode(deviceIds, accessToken),
     enabled: deviceIds.length > 0 && !!accessToken,
   });
-  // console.log(data);
   // 선택한 기기의 예약 정보 필터링
   const filteredReservations = selectedDevice
     ? reservationData.find((data) => data.deviceId === selectedDevice)
         ?.reservations || []
     : [];
 
+  // 전체 예약 조회 API 호출
+  const { data: automationData = [] } = useQuery({
+    queryKey: ["automations", deviceIds, accessToken],
+    queryFn: () => getAllDevicesAutomationMode(deviceIds, accessToken),
+    enabled: deviceIds.length > 0 && !!accessToken,
+  });
   // 선택한 기기의 자동화 모드 정보 필터링
   const filteredAutomations = selectedDevice
-    ? reservationData.find((data) => data.deviceId === selectedDevice)
+    ? automationData.find((data) => data.deviceId === selectedDevice)
         ?.automations || []
     : [];
-  // console.log("선택기기", selectedDevice);
-  console.log('데이터', reservationData);
-  // console.log("예약", filteredReservations);
-  // console.log("자동화", filteredAutomations);
 
   // 모드
   const selectedDeviceData = devicesInfo?.devices?.find(
     (device: any) => device.id === selectedDevice
   );
+  // 현재 설정된 모드
   const [mode, setMode] = useState(selectedDeviceData?.mode ?? false);
   useEffect(() => {
     setMode(selectedDeviceData?.mode ?? false);
   }, [selectedDeviceData]);
 
-  const [isModal, setIsModal] = useState<boolean>(false); // 모달 활성화
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
-  // const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 처음 디폴트 모드 (예약 모드)
+  const [activeTab, setActiveTab] = useState<boolean>(false); // 현재 활성화 된 탭(기본값: 0 예약)
 
   // 다른 모드 클릭 시 모달 표시
+  const [modalOpen, setModalOpen] = useState(false); // 모달달 표시 여부
+  const [modalMessage, setModalMessage] = useState(""); // 모달달 메시지
   const handleModeChange = (newMode: Mode) => {
     if (mode !== newMode) {
+      const getModeName = () => {
+        return nextMode === false ? "예약 " : "자동화 ";
+      };
       setNextMode(newMode);
-      setIsModal(true);
+      setModalMessage(`${getModeName()}모드로 변경하시겠습니까?`);
+      setModalOpen(true);
     }
   };
   // 모달 창 확인 버튼
@@ -233,15 +135,13 @@ const Control = () => {
     if (selectedDevice) {
       switchMode(selectedDevice, nextMode, accessToken);
     }
-    setMode(nextMode); // 여기서 nextMode를 바로 반영
-    setIsModal(false);
+    setMode(nextMode);
+    setModalOpen(false);
   };
-  useEffect(() => {
-    console.log('현재모드', mode);
-  }, [mode]);
+
   // 모달 창 취소 버튼
   const handleCancel = () => {
-    setIsModal(false);
+    setModalOpen(false);
   };
 
   return (
@@ -251,56 +151,76 @@ const Control = () => {
           index
           element={
             <div className="relative flex flex-col w-full px-4">
-              <div>
-                <div className="flex mb-4 items-center gap-1">
-                  <img src={RemoteIcon} alt="리모컨 이미지" />
-                  <h2 className="mt-0.5 font-pre-medium text-20">모드 설정</h2>
+              <div className="flex flex-col">
+                <div className="flex justify-between">
+                  <div className="flex mb-4 items-center gap-1">
+                    <img src={RemoteIcon} alt="리모컨 이미지" />
+                    <h2 className="mt-0.5 font-pre-medium text-16">
+                      모드 변경 버튼
+                    </h2>
+                  </div>
+                  <ModeToggle
+                    currentMode={mode}
+                    onModeChange={handleModeChange}
+                  />
                 </div>
-                <ModeToggle
-                  currentMode={mode}
-                  onModeChange={handleModeChange}
-                />
+                <div className="mt-2 border-0.2 border-sub text-center pre-light text-12 rounded-lg">
+                  {mode === false
+                    ? "지금은 예약 모드입니다."
+                    : "지금은 자동화 모드입니다."}
+                </div>
               </div>
-              <div
-                className={`font-pre-medium text-20 ${
-                  !mode ? 'mt-14' : 'mt-0'
-                }`}
-              >
-                <div className="absolute left-[225px] top-[135px] z-40">
+              <div className={"mt-12 font-pre-medium text-16"}>
+                <div className="absolute left-[225px] top-[115px] z-40">
                   <DeviceSelect
-                    reservationData={reservationData}
                     devices={deviceSelectItems}
                     selectedDevice={selectedDevice}
                     onDeviceChange={handleDeviceChange}
                   />
                 </div>
-                {!mode ? (
-                  selectedDevice !== null && (
-                    <ReservationManager
-                      reservationData={filteredReservations}
-                      devices={deviceSelectItems}
-                      selectedDevice={selectedDevice}
-                      onDeviceChange={handleDeviceChange}
-                    />
-                  )
-                ) : (
-                  <div>
-                    <div className="h-[130px] mt-5 mb-10 p-4 bg-component rounded-lg">
-                      <p>자동화 모드 설명 ~~~</p>
-                    </div>
-                    <AutoManager
-                      automationData={filteredAutomations}
-                      devices={deviceSelectItems}
-                      selectedDevice={selectedDevice}
-                      onDeviceChange={handleDeviceChange}
-                    />
+                <div>
+                  <div className="flex items-start gap-1">
+                    <img src={AlarmIcon} alt="알람 이미지" />
+                    <h2>스케줄 관리</h2>
                   </div>
+                  <div className="flex mt-6 ml-3 text-14 gap-8">
+                    <div
+                      onClick={() => setActiveTab(false)}
+                      className={`w-[50px] text-center cursor-pointer ${
+                        activeTab === false ? "border-b-[3px] border-sub" : ""
+                      }`}
+                    >
+                      예약
+                    </div>
+                    <div
+                      onClick={() => setActiveTab(true)}
+                      className={`w-[50px] text-center cursor-pointer ${
+                        activeTab === true ? "border-b-[3px] border-sub" : ""
+                      }`}
+                    >
+                      자동화
+                    </div>
+                  </div>
+                </div>
+                {activeTab === false ? (
+                  <ReservationManager
+                    reservationData={filteredReservations}
+                    selectedDevice={selectedDevice}
+                  />
+                ) : (
+                  <AutoManager
+                    automationData={filteredAutomations}
+                    devices={deviceSelectItems}
+                    selectedDevice={selectedDevice}
+                  />
                 )}
               </div>
-
-              {isModal && (
-                <ModeChangeModal
-                  nextMode={nextMode}
+              {modalOpen && (
+                <Modal
+                  message={modalMessage}
+                  showButtons={true}
+                  confirmText="확인"
+                  cancelText="취소"
                   onConfirm={handleConfirm}
                   onCancel={handleCancel}
                 />
@@ -315,7 +235,6 @@ const Control = () => {
               automationData={filteredAutomations}
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
-              onDeviceChange={handleDeviceChange}
             />
           }
         />
@@ -326,7 +245,6 @@ const Control = () => {
           path="reservation/create"
           element={
             <CreateReservation
-              reservationData={filteredReservations}
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
               onDeviceChange={handleDeviceChange}
@@ -337,7 +255,6 @@ const Control = () => {
           path="reservation/modify"
           element={
             <ModifyReservation
-              reservationData={filteredReservations}
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
               onDeviceChange={handleDeviceChange}

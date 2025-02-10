@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { useControlStore } from "../../../stores/useControlStore";
 import { useAuthStore } from "../../../stores/useAuthStore";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import DeviceSelect from "../../../components/Control/DeviceSelect";
-import ScentSetting from "../../../components/Control/ScentSetting";
-import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { ReservationData, UpdateReservationData } from "./ReservationType";
-import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
-import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 import { updateCustomSchedule } from "../../../apis/control/updateCustomSchedule";
 
+import DeviceSelect from "../../../components/Control/DeviceSelect";
+import ScentSetting from "../../../components/Control/ScentSetting";
+import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
+import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+import { ReservationData, UpdateReservationData } from "./ReservationType";
+
 export default function ModifyReservation({
-  reservationData,
   devices,
   selectedDevice,
   onDeviceChange,
@@ -109,31 +110,23 @@ export default function ModifyReservation({
     (device) => device.deviceId === selectedDevice
   );
 
-  // 기본향 설정
-  const [defaultScentId, setDefaultScentId] = useState(
-    devices.find((device) => device.deviceId === selectedDevice)?.defaultScentId
-  );
-  const [defaultScentData, setDefaultScentData] = useState({
+  // 기존 향 설정
+  const [previousScentId] = useState(schedule.combinationId);
+  const [previousScentData, setPreviousScentData] = useState({
     slot1: { slot: 0, count: 0 },
     slot2: { slot: 0, count: 0 },
     slot3: { slot: 0, count: 0 },
     slot4: { slot: 0, count: 0 },
   });
   useEffect(() => {
-    const newDefaultScentId = devices.find(
-      (device) => device.deviceId === selectedDevice
-    )?.defaultScentId;
-    setDefaultScentId(newDefaultScentId);
-  }, [selectedDevice, devices]);
-  useEffect(() => {
     const fetchCombination = async () => {
-      if (defaultScentId) {
+      if (previousScentId) {
         try {
           const combination = await getCombinationById(
-            defaultScentId,
+            previousScentId,
             accessToken
           );
-          setDefaultScentData({
+          setPreviousScentData({
             slot1: {
               slot: combination.choice1,
               count: combination.choice1Count,
@@ -158,31 +151,27 @@ export default function ModifyReservation({
     };
 
     fetchCombination();
-  }, [defaultScentId, accessToken]);
+  }, [previousScentId, accessToken]);
 
   // 향 설정
   const [scentName, setScentName] = useState<string>(schedule.combinationName);
-  // 현재
   const [scents, setScents] = useState({
-    scent1: 0,
-    scent2: 0,
-    scent3: 0,
-    scent4: 0,
+    scent1: previousScentData?.slot1?.count,
+    scent2: previousScentData?.slot2?.count,
+    scent3: previousScentData?.slot3?.count,
+    scent4: previousScentData?.slot4?.count,
   });
-  // 기존 향
-  const [previousScentData, setPreviousScentData] = useState({
-    choice1: 0,
-    choice1Count: 0,
-    choice2: 0,
-    choice2Count: 0,
-    choice3: 0,
-    choice3Count: 0,
-    choice4: 0,
-    choice4Count: 0,
-  });
+  useEffect(() => {
+    setScents({
+      scent1: previousScentData.slot1.count,
+      scent2: previousScentData.slot2.count,
+      scent3: previousScentData.slot3.count,
+      scent4: previousScentData.slot4.count,
+    });
+  }, [previousScentData]);
 
   // 방 크기 별 에너지
-  const getTotalEnergy = (roomType: number) => {
+  const getTotalEnergy = () => {
     switch (selectedDeviceData?.roomType) {
       case 1:
         return 6;
@@ -191,7 +180,8 @@ export default function ModifyReservation({
         return 3;
     }
   };
-  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType!);
+
+  const totalEnergy = getTotalEnergy();
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -232,49 +222,29 @@ export default function ModifyReservation({
     }
     // 향 수정 여부
     const isScentsChanged = () => {
-      const currentScents = {
-        choice1: defaultScentData.slot1.slot,
-        choice1Count: scents.scent1,
-        choice2: defaultScentData.slot2.slot,
-        choice2Count: scents.scent2,
-        choice3: defaultScentData.slot3.slot,
-        choice3Count: scents.scent3,
-        choice4: defaultScentData.slot4.slot,
-        choice4Count: scents.scent4,
-      };
-      console.log("현재", currentScents);
-
-      // const previousScents = {
-      //   choice1: schedule.combination.choice1,
-      //   choice1Count: schedule.combination.choice1Count,
-      //   choice2: schedule.combination.choice2,
-      //   choice2Count: schedule.combination.choice2Count,
-      //   choice3: schedule.combination.choice3,
-      //   choice3Count: schedule.combination.choice3Count,
-      //   choice4: schedule.combination.choice4,
-      //   choice4Count: schedule.combination.choice4Count,
-      // };
-
       return (
-        JSON.stringify(currentScents) !== JSON.stringify(previousScentData)
+        scents.scent1 !== previousScentData.slot1.count ||
+        scents.scent2 !== previousScentData.slot2.count ||
+        scents.scent3 !== previousScentData.slot3.count ||
+        scents.scent4 !== previousScentData.slot4.count
       );
     };
 
     const reservationData: UpdateReservationData = {
       id: schedule.id,
       name: reservationName,
-      deviceId: selectedDevice!,
+      deviceId: selectedDevice,
       day: getDaysBitMask(selectedDays),
       combination: isScentsChanged()
         ? {
             name: scentName,
-            choice1: defaultScentData.slot1.slot!,
+            choice1: previousScentData.slot1.slot,
             choice1Count: scents.scent1,
-            choice2: defaultScentData.slot2.slot!,
+            choice2: previousScentData.slot2.slot,
             choice2Count: scents.scent2,
-            choice3: defaultScentData.slot3.slot!,
+            choice3: previousScentData.slot3.slot,
             choice3Count: scents.scent3,
-            choice4: defaultScentData.slot4.slot!,
+            choice4: previousScentData.slot4.slot,
             choice4Count: scents.scent4,
           }
         : { id: schedule.combinationId },
@@ -283,79 +253,10 @@ export default function ModifyReservation({
       interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, "")),
       modeOn: modeOn,
     };
-    console.log("실행!", reservationData);
     updateMutation.mutate(reservationData);
   };
 
-  // 이전 향 가져오기
   useEffect(() => {
-    const fetchPreviousScent = async () => {
-      if (schedule.combinationId) {
-        try {
-          const data = await getCombinationById(
-            schedule.combinationId,
-            accessToken
-          );
-          // console.log("들어가가", data);
-          // 이전 향 데이터를 따로 저장
-          setPreviousScentData((prev) => {
-            const newState = {
-              choice1: data.choice1 || prev.choice1, // API 값이 없으면 기존 값 유지
-              choice1Count: data.choice1Count || prev.choice1Count,
-              choice2: data.choice2 || prev.choice2,
-              choice2Count: data.choice2Count || prev.choice2Count,
-              choice3: data.choice3 || prev.choice3,
-              choice3Count: data.choice3Count || prev.choice3Count,
-              choice4: data.choice4 || prev.choice4,
-              choice4Count: data.choice4Count || prev.choice4Count,
-            };
-
-            // console.log("🟢 업데이트될 기존향:", newState); // 최종적으로 상태가 어떻게 변하는지 확인
-            return newState;
-          });
-          // console.log("기존향", previousScentData);
-
-          // setScents({
-          //   choice1: previousScentData.choice1 || 0,
-          //   choice1Count: previousScentData.choice1Count || 0,
-          //   choice2: previousScentData.choice1 || 0,
-          //   choice2Count: previousScentData.choice2Count || 0,
-          //   choice3: previousScentData.choice1 || 0,
-          //   choice3Count: previousScentData.choice3Count || 0,
-          //   choice4: previousScentData.choice1 || 0,
-          //   choice4Count: previousScentData.choice4Count || 0,
-          // });
-        } catch (error) {
-          console.error("이전 향 정보 조회 실패:", error);
-        }
-      }
-    };
-    // console.log("bbb", {
-    //   slot1: {
-    //     slot: previousScentData.choice1,
-    //     count: previousScentData.choice1Count,
-    //   },
-    //   slot2: {
-    //     slot: previousScentData.choice2,
-    //     count: previousScentData.choice2Count,
-    //   },
-    //   slot3: {
-    //     slot: previousScentData.choice3,
-    //     count: previousScentData.choice3Count,
-    //   },
-    //   slot4: {
-    //     slot: previousScentData.choice4,
-    //     count: previousScentData.choice4Count,
-    //   },
-    // });
-
-    fetchPreviousScent();
-  }, [schedule, accessToken]);
-  // useEffect(() => {
-  //   console.log("✅ 기존향 업데이트됨:", previousScentData);
-  // }, [previousScentData]);
-  useEffect(() => {
-    console.log("scents", scents);
     setCompleteHandler(handleComplete);
     return () => {
       setCompleteHandler(null);
@@ -388,7 +289,7 @@ export default function ModifyReservation({
             id="reservationName"
             value={reservationName}
             onChange={(e) => setReservationName(e.target.value)}
-            className="relative w-[255px] h-[34px] ml-[20px] bg-component rounded-lg"
+            className="relative w-[255px] h-[34px] ml-[20px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.reservationName && (
@@ -405,7 +306,6 @@ export default function ModifyReservation({
         </label>
         <div className="absolute top-[-9px] left-[63px] z-50">
           <DeviceSelect
-            reservationData={reservationData}
             devices={devices}
             selectedDevice={selectedDevice}
             onDeviceChange={onDeviceChange}
@@ -571,7 +471,7 @@ export default function ModifyReservation({
             id="scentName"
             value={scentName}
             onChange={(e) => setScentName(e.target.value)}
-            className="w-[255px] h-[34px] ml-[30px] bg-component rounded-lg"
+            className="w-[255px] h-[34px] ml-[30px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.scentName && (
@@ -583,32 +483,7 @@ export default function ModifyReservation({
           scents={scents}
           setScents={setScents}
           totalEnergy={totalEnergy}
-          defaultScentData={
-            defaultScentData || {
-              slot1: { slot: 0, count: 0 },
-              slot2: { slot: 0, count: 0 },
-              slot3: { slot: 0, count: 0 },
-              slot4: { slot: 0, count: 0 },
-            }
-          }
-          // defaultScentData={{
-          //   slot1: {
-          //     slot: previousScentData.choice1,
-          //     count: previousScentData.choice1Count,
-          //   },
-          //   slot2: {
-          //     slot: previousScentData.choice2,
-          //     count: previousScentData.choice2Count,
-          //   },
-          //   slot3: {
-          //     slot: previousScentData.choice3,
-          //     count: previousScentData.choice3Count,
-          //   },
-          //   slot4: {
-          //     slot: previousScentData.choice4,
-          //     count: previousScentData.choice4Count,
-          //   },
-          // }}
+          defaultScentData={previousScentData}
         />
         {formErrors.scents && (
           <p className="absolute mt-[217px] ml-[70px] text-red-500 text-10">

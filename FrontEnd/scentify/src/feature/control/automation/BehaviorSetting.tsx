@@ -115,11 +115,11 @@ export default function BehaviorSetting() {
   }, [exercise, rest, exerciseSelectedTime, restSelectedTime]);
 
   return (
-    <div className="content p-0">
+    <div className="content p-0 overflow-visible">
       <div className="relative">
         <div className="flex flex-col w-[320px] h-[130px] p-5 ml-5 bg-sub text-white rounded-xl">
           <div className="flex justify-between">
-            <h3 className="font-pre-medium text-20">운동동</h3>
+            <h3 className="font-pre-medium text-20">운동</h3>
             <div onClick={() => toggleExercise()}>
               <div
                 className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${exercise ? "" : "bg-lightgray"}`}
@@ -131,12 +131,14 @@ export default function BehaviorSetting() {
             </div>
           </div>
           <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
-            <div className="flex items-center">
+            <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
-              <SprayIntervalSelector
-                selectedTime={exerciseSelectedTime}
-                onTimeSelect={handleExerciseSelectTime}
-              />
+              <div className="absolute top-[0px] left-[59px]">
+                <SprayIntervalSelector
+                  selectedTime={exerciseSelectedTime}
+                  onTimeSelect={handleExerciseSelectTime}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -156,12 +158,14 @@ export default function BehaviorSetting() {
             </div>
           </div>
           <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
-            <div className="flex items-center">
+            <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
-              <SprayIntervalSelector
-                selectedTime={restSelectedTime}
-                onTimeSelect={handleRestSelectTime}
-              />
+              <div className="absolute top-[0px] left-[59px]">
+                <SprayIntervalSelector
+                  selectedTime={restSelectedTime}
+                  onTimeSelect={handleRestSelectTime}
+                />
+              </div>
             </div>
           </div>
         </div>

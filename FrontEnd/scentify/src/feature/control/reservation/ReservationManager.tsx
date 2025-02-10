@@ -7,7 +7,7 @@ import { useAuthStore } from "../../../stores/useAuthStore";
 import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 
-import DeleteConfirmModal from "./DeleteReservationModal";
+import Modal from "../../../components/Alert/Modal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 import {
@@ -15,7 +15,6 @@ import {
   ReservationManagerProps,
 } from "./ReservationType";
 
-import AlarmIcon from "../../../assets/icons/alarm-icon.svg";
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import HeartButton from "../../../components/Button/HeartButton";
 
@@ -36,18 +35,19 @@ export default function ReservationManager({
   const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
 
   // 삭제 모달
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [reservationDelete, setReservationDelete] = useState<number | null>(
     null
   );
   const deleteMutation = useMutation({
-    mutationFn: (scheduleId: number) =>
-      deleteCustomSchedule(scheduleId, selectedDevice, accessToken),
+    mutationFn: (scheduleId: number) => {
+      if (selectedDevice === null) {
+        throw new Error("선택된 기기가 없습니다."); // 에러 처리
+      }
+      return deleteCustomSchedule(scheduleId, selectedDevice, accessToken); // selectedDevice는 여기서 number로 보장됨
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["reservations"],
-      });
-      setDeleteModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["reservations"] });
+      setModalOpen(false);
       setReservationDelete(null);
     },
     onError: (error) => {
@@ -55,18 +55,21 @@ export default function ReservationManager({
     },
   });
   // 삭제 버튼 핸들러
+  const [modalOpen, setModalOpen] = useState(false); // 모달달 표시 여부
+  const [modalMessage, setModalMessage] = useState(""); // 모달달 메시지
   const handleDeleteClick = (scheduleId: number) => {
     setReservationDelete(scheduleId);
-    setDeleteModalOpen(true);
+    setModalMessage("예약을 삭제하시겠습니까?");
+    setModalOpen(true);
   };
   // 삭제 모달창
   const handleDeleteConfirm = () => {
-    if (reservationDelete) {
+    if (reservationDelete && selectedDevice !== null) {
       deleteMutation.mutate(reservationDelete);
     }
   };
   const handleDeleteCancel = () => {
-    setDeleteModalOpen(false);
+    setModalOpen(false);
     setReservationDelete(null);
   };
 
@@ -109,14 +112,8 @@ export default function ReservationManager({
 
   return (
     <div>
-      <div className="relative">
-        <div className="flex items-start gap-1">
-          <img src={AlarmIcon} alt="알람 이미지" />
-          <h2>예약 관리</h2>
-        </div>
-      </div>
       {customSchedules.length > 0 ? (
-        <div className="mt-5 pb-3 max-h-96 overflow-y-auto">
+        <div className="mt-3 pb-3 max-h-96 overflow-y-auto">
           {customSchedules.map((schedule) => {
             const selectedDays = getDaysFromBitMask(schedule.day);
             const [startTime, startPeriod] = convertTo12Hour(
@@ -205,8 +202,12 @@ export default function ReservationManager({
               </div>
             );
           })}
-          {deleteModalOpen && (
-            <DeleteConfirmModal
+          {modalOpen && (
+            <Modal
+              message={modalMessage}
+              showButtons={true}
+              confirmText="확인"
+              cancelText="취소"
               onConfirm={handleDeleteConfirm}
               onCancel={handleDeleteCancel}
             />

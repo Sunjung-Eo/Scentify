@@ -111,9 +111,7 @@ export default function ModifyReservation({
   );
 
   // 기존 향 설정
-  const [previousScentId, setPreviousScentId] = useState(
-    schedule.combinationId
-  );
+  const [previousScentId] = useState(schedule.combinationId);
   const [previousScentData, setPreviousScentData] = useState({
     slot1: { slot: 0, count: 0 },
     slot2: { slot: 0, count: 0 },
@@ -173,7 +171,7 @@ export default function ModifyReservation({
   }, [previousScentData]);
 
   // 방 크기 별 에너지
-  const getTotalEnergy = (roomType: number) => {
+  const getTotalEnergy = () => {
     switch (selectedDeviceData?.roomType) {
       case 1:
         return 6;
@@ -182,7 +180,8 @@ export default function ModifyReservation({
         return 3;
     }
   };
-  const totalEnergy = getTotalEnergy(selectedDeviceData?.roomType ?? 0);
+
+  const totalEnergy = getTotalEnergy();
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
@@ -290,7 +289,7 @@ export default function ModifyReservation({
             id="reservationName"
             value={reservationName}
             onChange={(e) => setReservationName(e.target.value)}
-            className="relative w-[255px] h-[34px] ml-[20px] bg-component rounded-lg"
+            className="relative w-[255px] h-[34px] ml-[20px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.reservationName && (
@@ -472,7 +471,7 @@ export default function ModifyReservation({
             id="scentName"
             value={scentName}
             onChange={(e) => setScentName(e.target.value)}
-            className="w-[255px] h-[34px] ml-[30px] bg-component rounded-lg"
+            className="w-[255px] h-[34px] ml-[30px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.scentName && (

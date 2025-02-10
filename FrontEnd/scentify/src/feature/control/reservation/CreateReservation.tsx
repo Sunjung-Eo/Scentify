@@ -268,7 +268,7 @@ export default function CreateReservation({
             id="reservationName"
             value={reservationName}
             onChange={(e) => setReservationName(e.target.value)}
-            className="relative w-[255px] h-[34px] ml-[20px] bg-component rounded-lg"
+            className="relative w-[255px] h-[34px] ml-[20px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.reservationName && (
@@ -451,7 +451,7 @@ export default function CreateReservation({
             id="scentName"
             value={scentName}
             onChange={(e) => setScentName(e.target.value)}
-            className="w-[255px] h-[34px] ml-[30px] bg-component rounded-lg"
+            className="w-[255px] h-[34px] ml-[30px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.scentName && (

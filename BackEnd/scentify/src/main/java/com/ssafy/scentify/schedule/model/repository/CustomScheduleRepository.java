@@ -41,6 +41,7 @@ public interface CustomScheduleRepository {
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 
 		    + " VALUES (#{customSchedule.name}, #{customSchedule.deviceId}, #{combinationId}, #{conbinationName}, #{customSchedule.day},"
 			+ " #{customSchedule.startTime}, #{customSchedule.endTime}, #{customSchedule.interval}, #{customSchedule.modeOn}, NOW(), NOW())")
+	@Options(useGeneratedKeys = true, keyProperty = "customSchedule.id", keyColumn = "id")
 	boolean createCustomSchedule(@Param("customSchedule") CustomScheduleDto customScheduleDto, int combinationId, String conbinationName);
 	
 	// 커스텀 스케줄 수정

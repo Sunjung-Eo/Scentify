@@ -44,7 +44,19 @@ public class WebSocketService {
 	// 기기 등록 시 캡슐 정보 자동으로 보내줌
 	public void sendCapsuleInfo(int deviceId, CapsuleInfoRequest infoRequest) {	    
 		// 메시지 전송
-        template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + deviceId, infoRequest);
+        template.convertAndSend("/topic/Schedule/Initial/" + deviceId, infoRequest);
+        log.info("Data processed for id: {}", deviceId);
+	}
+	
+	// 오늘 날짜에 해당하는 스케줄을 생성했을 때 RB에 전송하는 메서드 
+	public void sendCustomScehdule(CustomScheduleDto customScheduleDto) {	    
+		// 메세지 준비
+		int deviceId = customScheduleDto.getDeviceId();
+		Map<String, Object> message = new HashMap<>();
+        message.put("schedules", customScheduleDto);
+        
+        // 메세지 전송
+        template.convertAndSend("/topic/DeviceStatus/Capsule/Info/" + deviceId, message);
         log.info("Data processed for id: {}", deviceId);
 	}
 	

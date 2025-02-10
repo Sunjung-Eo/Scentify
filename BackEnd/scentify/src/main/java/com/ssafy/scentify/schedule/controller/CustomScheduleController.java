@@ -56,6 +56,10 @@ public class CustomScheduleController {
 			}
 			
 			// 설정 날짜가 오늘이면 RB에 스케줄 보내주기
+		    int currentBit = codeProvider.getCurrentDayBit();
+		    if ((customScheduleDto.getDay() & currentBit) > 0) {
+		        socketService.sendCustomScehdule(customScheduleDto);
+		    }
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -109,9 +113,8 @@ public class CustomScheduleController {
 			if (!customScheduleService.updateCustomSchedule(customScheduleDto, combinationId, combination.getName())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
-			
 
-//			socketService.sendCustomScheduleUpdate(customScheduleDto);
+			socketService.sendCustomScheduleUpdate(customScheduleDto);
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -144,7 +147,7 @@ public class CustomScheduleController {
 		    
 		    // 사용자가 선택한 요일 목록에 현재 요일이 포함되어 있는 경우만 실행
 		    if ((day & currentBit) != 0) {
-//				socketController.sendCustomScheduleDelete(deleteScheduleMap);
+		    	socketService.sendCustomScheduleDelete(deleteScheduleMap);
 		    }
 
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨

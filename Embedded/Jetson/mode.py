@@ -7,7 +7,7 @@ class AutoDetectionMode:
     interval : int = -1
     sub_mode : int = -1
     operation_type :int = None
-    modeOn : bool = True
+    modeOn : bool = False
 
 @dataclass
 class AutoModeType:

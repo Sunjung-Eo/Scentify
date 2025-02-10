@@ -7,7 +7,6 @@ import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 import { AutoManagerProps } from "./AutoModeType";
 
-import AutoIcon from "../../../assets/icons/auto-icon.svg";
 import SettingIcon from "../../../assets/icons/setting-icon.svg";
 
 export default function AutoManager({
@@ -120,62 +119,53 @@ export default function AutoManager({
   };
 
   return (
-    <div>
-      <div className="relative">
-        <div className="flex items-center gap-1">
-          <img src={AutoIcon} alt="자동화 이미지" />
-          <h2>자동화 모드 설정</h2>
+    <div className="flex flex-col mt-6 gap-4">
+      {/* 탈취 모드 */}
+      <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
+        <div className="flex justify-between items-center w-full">
+          <div>탈취 모드</div>
+          <div className="flex items-center gap-2">
+            <p>{autoSchedules[0].modeOn === 1 ? "ON" : "OFF"}</p>
+            <button
+              onClick={() => handleSettingClick(autoSchedules[0].subMode)}
+            >
+              <img src={SettingIcon} alt="세팅 이미지" />
+            </button>
+          </div>
         </div>
-        <div className="absolute top-[-4px] left-[209px] z-40"></div>
       </div>
-      <div className="flex flex-col mt-5 gap-4">
-        {/* 탈취 모드 */}
-        <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
-          <div className="flex justify-between items-center w-full">
-            <div>탈취 모드</div>
-            <div className="flex items-center gap-2">
-              <p>{autoSchedules[0].modeOn === 1 ? "ON" : "OFF"}</p>
-              <button
-                onClick={() => handleSettingClick(autoSchedules[0].subMode)}
-              >
-                <img src={SettingIcon} alt="세팅 이미지" />
-              </button>
-            </div>
-          </div>
-        </div>
 
-        {/* 동작 모드 */}
-        <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
-          <div className="flex justify-between items-center w-full">
-            <div>동작 모드</div>
-            <div className="flex flex-col gap-2">
-              <div className="flex">
-                <div className="flex flex-col pr-2 items-center gap-1 font-pre-light text-10">
-                  <p>운동 {autoSchedules[2].modeOn === 1 ? "ON" : "OFF"}</p>
-                  <p>휴식 {autoSchedules[3].modeOn === 1 ? "ON" : "OFF"}</p>
-                </div>
-                <button
-                  onClick={() => handleSettingClick(autoSchedules[2].subMode)}
-                >
-                  <img src={SettingIcon} alt="세팅 이미지" />
-                </button>
+      {/* 동작 모드 */}
+      <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
+        <div className="flex justify-between items-center w-full">
+          <div>동작 모드</div>
+          <div className="flex flex-col gap-2">
+            <div className="flex">
+              <div className="flex flex-col pr-2 items-center gap-1 font-pre-light text-10">
+                <p>운동 {autoSchedules[2].modeOn === 1 ? "ON" : "OFF"}</p>
+                <p>휴식 {autoSchedules[3].modeOn === 1 ? "ON" : "OFF"}</p>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 탐지 모드 */}
-        <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
-          <div className="flex justify-between items-center w-full">
-            <div>탐지 모드</div>
-            <div className="flex items-center gap-2">
-              <p>{autoSchedules[1].modeOn === 1 ? "ON" : "OFF"}</p>
               <button
-                onClick={() => handleSettingClick(autoSchedules[1].subMode)}
+                onClick={() => handleSettingClick(autoSchedules[2].subMode)}
               >
                 <img src={SettingIcon} alt="세팅 이미지" />
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 탐지 모드 */}
+      <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
+        <div className="flex justify-between items-center w-full">
+          <div>탐지 모드</div>
+          <div className="flex items-center gap-2">
+            <p>{autoSchedules[1].modeOn === 1 ? "ON" : "OFF"}</p>
+            <button
+              onClick={() => handleSettingClick(autoSchedules[1].subMode)}
+            >
+              <img src={SettingIcon} alt="세팅 이미지" />
+            </button>
           </div>
         </div>
       </div>

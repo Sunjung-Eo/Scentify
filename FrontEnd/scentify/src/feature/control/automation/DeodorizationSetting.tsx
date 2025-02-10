@@ -15,7 +15,6 @@ export default function DeodorizationSetting() {
   const navigate = useNavigate();
   const location = useLocation();
   const schedule = location.state.schedule;
-  const defaultScentData = location.state.defaultScentData;
   const deviceId = location.state.deviceId;
   const accessToken = location.state.accessToken;
   const roomType = location.state.roomType;
@@ -49,9 +48,7 @@ export default function DeodorizationSetting() {
   };
 
   // 기존 향 설정
-  const [previousScentId, setPreviousScentId] = useState(
-    schedule.combinationId
-  );
+  const [previousScentId] = useState(schedule.combinationId);
   const [previousScentData, setPreviousScentData] = useState({
     slot1: { slot: 0, count: 0 },
     slot2: { slot: 0, count: 0 },
@@ -199,7 +196,7 @@ export default function DeodorizationSetting() {
   }, [deodorize, scents, selectedTime]);
 
   return (
-    <div className="content p-0">
+    <div className="content p-0 overflow-visible">
       <div className="font-pre-medium text-16 ml-5 mr-5">
         <div className="flex relative justify-between mb-6">
           <h3>향 설정</h3>
@@ -226,12 +223,14 @@ export default function DeodorizationSetting() {
         )}
         <div className="mt-12">
           <h3>분사 설정</h3>
-          <div className="flex pt-4 justify-center items-center font-pre-light text-12">
-            <p className="pr-12">분사 주기</p>
-            <SprayIntervalSelector
-              selectedTime={selectedTime}
-              onTimeSelect={handleSelectTime}
-            />
+          <div className="relative pt-4 items-center font-pre-light text-12">
+            <p className="ml-[50px] pr-12">분사 주기</p>
+            <div className="absolute top-[6px] right-[50px] z-110">
+              <SprayIntervalSelector
+                selectedTime={selectedTime}
+                onTimeSelect={handleSelectTime}
+              />
+            </div>
           </div>
         </div>
       </div>

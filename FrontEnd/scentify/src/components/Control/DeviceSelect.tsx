@@ -1,6 +1,5 @@
 import { useState } from "react";
 import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
-import { CustomSchedules } from "../../feature/control/reservation/ReservationType";
 
 // 기기 선택 타입
 export interface DeviceSelectItem {
@@ -24,19 +23,22 @@ export default function DeviceSelect({
   onDeviceChange,
 }: DeviceSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const getSelectedDeviceName = () => {
-    const selected = devices.find(
-      (device) => device.deviceId === selectedDevice
-    );
-    return selected?.isRepresentative ? `👑 ${selected.name}` : selected?.name;
-  };
+  // 현재 선택된 기기
+  const selected = devices.find((device) => device.deviceId === selectedDevice);
   return (
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 items-center justify-between rounded-lg"
+        className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 justify-between items-center rounded-lg"
       >
-        {getSelectedDeviceName()}
+        <div>
+          <span
+            className={`flex-grow text-left ${
+              selected?.isRepresentative ? "pl-[0px]" : "pl-[19px]"
+            }`}
+          ></span>
+          {selected?.isRepresentative ? `👑 ${selected.name}` : selected?.name}
+        </div>
         <img src={ArrowDownIcon} alt="아래 화살표 이미지" />
       </button>
       {isOpen && (
@@ -54,7 +56,7 @@ export default function DeviceSelect({
                 {device.isRepresentative ? (
                   <div>👑 {device.name}</div>
                 ) : (
-                  <div>{device.name}</div>
+                  <div className="ml-[19px]">{device.name}</div>
                 )}
               </div>
             ))}

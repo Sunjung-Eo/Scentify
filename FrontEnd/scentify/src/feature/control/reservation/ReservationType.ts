@@ -31,7 +31,7 @@ export interface ReservationManagerProps {
   reservationData: {
     customSchedules: Reservation[];
   };
-  selectedDevice: number;
+  selectedDevice: number | null;
 }
 
 // 예약하기 데이터 전송

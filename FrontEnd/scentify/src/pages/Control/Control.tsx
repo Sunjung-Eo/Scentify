@@ -13,7 +13,6 @@ import { switchMode } from "../../apis/control/switchMode";
 
 import { Mode } from "../../feature/control/main/ControlType";
 import ModeToggle from "../../feature/control/main/ModeToggle";
-import ModeChangeModal from "../../feature/control/main/ModeChangeModal";
 import AutoManager from "../../feature/control/automation/AutoManager";
 import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
 import DetectionSetting from "../../feature/control/automation/DetectionSetting";
@@ -22,9 +21,11 @@ import ReservationManager from "../../feature/control/reservation/ReservationMan
 import CreateReservation from "../../feature/control/reservation/CreateReservation";
 import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
 import DeviceSelect from "../../components/Control/DeviceSelect";
+import Modal from "../../components/Alert/Modal";
 
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
+import AlarmIcon from "../../assets/icons/alarm-icon.svg";
 
 const Control = () => {
   // 인증토큰
@@ -113,15 +114,20 @@ const Control = () => {
     setMode(selectedDeviceData?.mode ?? false);
   }, [selectedDeviceData]);
 
-  const [isModal, setIsModal] = useState<boolean>(false); // 모달 활성화
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
-  const [isFirstRender, setIsFirstRender] = useState<boolean>(true); // 처음 디폴트 모드 (예약 모드)
+  const [activeTab, setActiveTab] = useState<boolean>(false); // 현재 활성화 된 탭(기본값: 0 예약)
 
   // 다른 모드 클릭 시 모달 표시
+  const [modalOpen, setModalOpen] = useState(false); // 모달달 표시 여부
+  const [modalMessage, setModalMessage] = useState(""); // 모달달 메시지
   const handleModeChange = (newMode: Mode) => {
     if (mode !== newMode) {
+      const getModeName = () => {
+        return nextMode === false ? "예약 " : "자동화 ";
+      };
       setNextMode(newMode);
-      setIsModal(true);
+      setModalMessage(`${getModeName()}모드로 변경하시겠습니까?`);
+      setModalOpen(true);
     }
   };
   // 모달 창 확인 버튼
@@ -130,13 +136,12 @@ const Control = () => {
       switchMode(selectedDevice, nextMode, accessToken);
     }
     setMode(nextMode);
-    setIsModal(false);
-    setIsFirstRender(false);
+    setModalOpen(false);
   };
 
   // 모달 창 취소 버튼
   const handleCancel = () => {
-    setIsModal(false);
+    setModalOpen(false);
   };
 
   return (
@@ -146,52 +151,76 @@ const Control = () => {
           index
           element={
             <div className="relative flex flex-col w-full px-4">
-              <div>
-                <div className="flex mb-4 items-center gap-1">
-                  <img src={RemoteIcon} alt="리모컨 이미지" />
-                  <h2 className="mt-0.5 font-pre-medium text-20">모드 설정</h2>
+              <div className="flex flex-col">
+                <div className="flex justify-between">
+                  <div className="flex mb-4 items-center gap-1">
+                    <img src={RemoteIcon} alt="리모컨 이미지" />
+                    <h2 className="mt-0.5 font-pre-medium text-16">
+                      모드 변경 버튼
+                    </h2>
+                  </div>
+                  <ModeToggle
+                    currentMode={mode}
+                    onModeChange={handleModeChange}
+                  />
                 </div>
-                <ModeToggle
-                  currentMode={mode}
-                  onModeChange={handleModeChange}
-                />
+                <div className="mt-2 border-0.2 border-sub text-center pre-light text-12 rounded-lg">
+                  {mode === false
+                    ? "지금은 예약 모드입니다."
+                    : "지금은 자동화 모드입니다."}
+                </div>
               </div>
-              <div
-                className={`font-pre-medium text-20 ${
-                  isFirstRender || !mode ? "mt-14" : "mt-0"
-                }`}
-              >
-                <div className="absolute left-[225px] top-[135px] z-40">
+              <div className={"mt-12 font-pre-medium text-16"}>
+                <div className="absolute left-[225px] top-[115px] z-40">
                   <DeviceSelect
                     devices={deviceSelectItems}
                     selectedDevice={selectedDevice}
                     onDeviceChange={handleDeviceChange}
                   />
                 </div>
-                {isFirstRender || !mode ? (
-                  selectedDevice !== null && (
-                    <ReservationManager
-                      reservationData={filteredReservations}
-                      selectedDevice={selectedDevice}
-                    />
-                  )
-                ) : (
-                  <div>
-                    <div className="h-[130px] mt-5 mb-10 p-4 bg-component rounded-lg">
-                      <p>자동화 모드 설명 ~~~</p>
-                    </div>
-                    <AutoManager
-                      automationData={filteredAutomations}
-                      devices={deviceSelectItems}
-                      selectedDevice={selectedDevice}
-                    />
+                <div>
+                  <div className="flex items-start gap-1">
+                    <img src={AlarmIcon} alt="알람 이미지" />
+                    <h2>스케줄 관리</h2>
                   </div>
+                  <div className="flex mt-6 ml-3 text-14 gap-8">
+                    <div
+                      onClick={() => setActiveTab(false)}
+                      className={`w-[50px] text-center cursor-pointer ${
+                        activeTab === false ? "border-b-[3px] border-sub" : ""
+                      }`}
+                    >
+                      예약
+                    </div>
+                    <div
+                      onClick={() => setActiveTab(true)}
+                      className={`w-[50px] text-center cursor-pointer ${
+                        activeTab === true ? "border-b-[3px] border-sub" : ""
+                      }`}
+                    >
+                      자동화
+                    </div>
+                  </div>
+                </div>
+                {activeTab === false ? (
+                  <ReservationManager
+                    reservationData={filteredReservations}
+                    selectedDevice={selectedDevice}
+                  />
+                ) : (
+                  <AutoManager
+                    automationData={filteredAutomations}
+                    devices={deviceSelectItems}
+                    selectedDevice={selectedDevice}
+                  />
                 )}
               </div>
-
-              {isModal && (
-                <ModeChangeModal
-                  nextMode={nextMode}
+              {modalOpen && (
+                <Modal
+                  message={modalMessage}
+                  showButtons={true}
+                  confirmText="확인"
+                  cancelText="취소"
                   onConfirm={handleConfirm}
                   onCancel={handleCancel}
                 />

@@ -10,17 +10,15 @@ import NoDeviceInfo from './components/NoDeviceInfo.tsx';
 import DeviceSchedule from './components/DeviceSchedule.tsx';
 import { deviceInfo } from '../../../../apis/home/deviceInfo.ts';
 import { useQuery } from '@tanstack/react-query';
-import { useMainDeviceStore } from '../../../../stores/useDeviceStore.ts';
 import {
   fetchReservations,
   fetchAutomations,
 } from '../../../../apis/control/getAllDevicesMode.ts';
 import { useAuthStore } from '../../../../stores/useAuthStore.ts';
-import { useScheduleStore } from '../../../../stores/useScheduleStore.ts';
-
 interface DeviceSlideProps {
   data: {
     mainDeviceId: number | null;
+    mainDeviceMode: number | null;
     deviceIds: number[];
     autoSchedules: AutoSchedule[];
     customSchedules: CustomSchedule[];
@@ -31,17 +29,21 @@ type ScheduleType = 0 | 1 | null;
 
 interface ScheduleData {
   type: ScheduleType;
-  schedules: CustomSchedule[] | AutoSchedule[] | null;
+  schedules: {
+    customSchedules?: CustomSchedule[];
+    autoSchedules?: AutoSchedule[];
+  } | null;
 }
 
 const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
-  const { mainDeviceId, deviceIds, autoSchedules, customSchedules } = data;
-  const { mainDevice } = useMainDeviceStore();
-  const setCustomSchedules = useScheduleStore(
-    (state) => state.setCustomSchedules
-  );
-  const setAutoSchedules = useScheduleStore((state) => state.setAutoSchedules);
-
+  // 메인 디바이스 내용
+  const {
+    mainDeviceId,
+    mainDeviceMode,
+    deviceIds,
+    autoSchedules,
+    customSchedules,
+  } = data;
   // 현재 선택된 슬라이스 인덱스
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -56,73 +58,86 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
 
   const accessToken = useAuthStore.getState().accessToken;
 
+  let scheduleType: ScheduleType;
+  let fetchedSchedules: CustomSchedule[] | AutoSchedule[] | null;
+
   useEffect(() => {
     const fetchModeAndSchedule = async () => {
       try {
         const currentDeviceId = sortedDeviceIds[currentIndex];
         if (!currentDeviceId) return;
-
-        // Main Device인 경우
         if (currentDeviceId === mainDeviceId) {
-          const mainModeOn = mainDevice?.mode;
-          if (mainModeOn === 0) {
-            setCustomSchedules(customSchedules);
-            setSchedules((prev) => ({
-              ...prev,
+          // Main Device인 경우
+          if (mainDeviceMode === 0) {
+            // 커스텀 예약
+            setSchedules({
               [currentDeviceId]: {
                 type: 0,
-                schedules: customSchedules,
+                schedules: {
+                  customSchedules: customSchedules,
+                },
               },
-            }));
-          } else if (mainModeOn === 1) {
-            setAutoSchedules(autoSchedules);
-            setSchedules((prev) => ({
-              ...prev,
+            });
+          } else if (mainDeviceMode === 1) {
+            setSchedules({
               [currentDeviceId]: {
                 type: 1,
-                schedules: autoSchedules,
+                schedules: {
+                  autoSchedules: autoSchedules,
+                },
               },
-            }));
+            });
           } else {
-            setSchedules((prev) => ({
-              ...prev,
+            setSchedules({
               [currentDeviceId]: {
                 type: null,
                 schedules: null,
               },
-            }));
+            });
           }
         } else {
           // 일반 기기인 경우
-          const deviceInfoResponse = await deviceInfo(currentDeviceId);
-          const modeOn: number = deviceInfoResponse.mode;
+          const normalDeviceData = await deviceInfo(currentDeviceId);
+          const modeOn: number | null =
+            normalDeviceData.devices?.[0]?.mode ?? null;
 
-          let scheduleType: ScheduleType = null;
+          let scheduleType: ScheduleType;
           let fetchedSchedules: CustomSchedule[] | AutoSchedule[] | null = null;
 
           if (modeOn === 0) {
-            // Custom Schedules
-            fetchedSchedules = await fetchReservations(
+            const customSchedules = await fetchReservations(
               currentDeviceId,
               accessToken
             );
-            scheduleType = 0;
+            setSchedules({
+              [currentDeviceId]: {
+                type: 0,
+                schedules: {
+                  customSchedules: customSchedules,
+                },
+              },
+            });
           } else if (modeOn === 1) {
-            // Auto Schedules
-            fetchedSchedules = await fetchAutomations(
+            const autoSchedules = await fetchAutomations(
               currentDeviceId,
               accessToken
             );
-            scheduleType = 1;
+            setSchedules({
+              [currentDeviceId]: {
+                type: 1,
+                schedules: {
+                  autoSchedules: autoSchedules,
+                },
+              },
+            });
+          } else {
+            setSchedules({
+              [currentDeviceId]: {
+                type: null,
+                schedules: null,
+              },
+            });
           }
-
-          setSchedules((prev) => ({
-            ...prev,
-            [currentDeviceId]: {
-              type: scheduleType,
-              schedules: fetchedSchedules,
-            },
-          }));
         }
       } catch (error) {
         console.error('스케줄 데이터 가져오기 실패:', error);
@@ -134,14 +149,11 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
     sortedDeviceIds,
     currentIndex,
     accessToken,
-    mainDevice,
+    mainDeviceMode,
     mainDeviceId,
     autoSchedules,
     customSchedules,
-    setAutoSchedules,
-    setCustomSchedules,
   ]);
-
   // React Query 사용해서 현재 기기 정보 가져오기
   const {
     data: deviceData,
@@ -173,10 +185,10 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
 
   // 기기 변경되면 데이터 다시 가져오기
   useEffect(() => {
-    if (mainDevice) {
+    if (mainDeviceId) {
       refetch();
     }
-  }, [mainDevice, refetch]);
+  }, [mainDeviceId, refetch]);
 
   // 다음 기기로 변경
   const handleNext = () => {
@@ -206,9 +218,9 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   const currentScheduleData = schedules[currentDeviceId];
 
   console.log(
-    ' 현재 디바이스: ',
+    ' 🐛 현재 디바이스: ',
     currentDeviceId,
-    ' 스케줄 내용: ',
+    ' 🐛 스케줄 내용: ',
     currentScheduleData
   );
 

@@ -5,12 +5,19 @@ import { useMainDeviceStore } from '../../stores/useDeviceStore.ts';
 import { homeInfo } from '../../apis/home/homeInfo.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUserStore } from '../../stores/useUserStore.ts';
+import { AutoSchedule, CustomSchedule } from '../../types/SchedulesType.ts';
+
+interface ExampleDataProps {
+  mainDeviceId: number | null;
+  mainDeviceMode: number | null;
+  deviceIds: number[];
+  autoSchedules: AutoSchedule[];
+  customSchedules: CustomSchedule[];
+}
 
 const HomeMain = () => {
   const { setMainDevice, mainDevice } = useMainDeviceStore();
-
   const { setUser, deviceIdsAndNames } = useUserStore();
-
   const queryClient = useQueryClient();
 
   const deviceIds = deviceIdsAndNames
@@ -18,7 +25,7 @@ const HomeMain = () => {
     : [];
 
   useEffect(() => {
-    console.log('들ㅇ옴', deviceIdsAndNames);
+    console.log('들어옴', deviceIdsAndNames);
   }, [deviceIdsAndNames]);
 
   const { data, isLoading, isError } = useQuery({
@@ -38,7 +45,7 @@ const HomeMain = () => {
 
   // ✅ API 응답이 있을 때만 상태 업데이트 (무한 렌더링 방지)
   useEffect(() => {
-    if (!data?.user) return;
+    if (!data || !data.user) return;
 
     console.log('업데이트 전 User:', useUserStore.getState());
     console.log('업데이트 전 Devices:', useMainDeviceStore.getState());
@@ -48,7 +55,7 @@ const HomeMain = () => {
     //   : [];
     setUser({
       nickname: data.user.nickname,
-      imgNum: data.user.imgNum || 0,
+      imgNum: data.user.imgNum ?? 0,
       mainDeviceId: data.user.mainDeviceId || null,
       deviceIdsAndNames: data.deviceIdsAndNames || null, // deviceIds 대신 deviceIdsAndNames 사용
     });
@@ -71,21 +78,24 @@ const HomeMain = () => {
   if (isError) return <p>데이터를 불러오지 못했습니다.</p>;
 
   // DeviceCarousel에 전달할 데이터
-  const exampleData = {
-    mainDeviceId: mainDevice?.id || null,
-    deviceIds: deviceIds.length > 0 ? deviceIds : [], // deviceIds가 비어있는지 확인
-    devices: mainDevice ? [mainDevice] : [],
-    autoSchedules: data?.autoSchedules || [],
-    customSchedules: data?.customSchedules || [],
+  const exampleData: ExampleDataProps = {
+    mainDeviceId: mainDevice?.id ?? null,
+    mainDeviceMode: data?.mainDevice?.mode ?? null,
+    deviceIds: deviceIds.length > 0 ? deviceIds : [],
+    autoSchedules: data?.autoSchedules ?? [],
+    customSchedules: data?.customSchedules ?? [],
   };
+
+  console.log('💘 데이터: ', data);
+  console.log('💘 메인디바이스모드: ', exampleData.mainDeviceMode);
 
   return (
     <div className="flex flex-col content px-4 py-1">
       <div className="mb-5">
         <UserCard
           nickname={data?.user?.nickname}
-          imgNum={data?.user?.imgNum || 0}
-          mainDeviceId={data?.user?.mainDeviceId || null}
+          imgNum={data?.user?.imgNum ?? 0}
+          mainDeviceId={data?.user?.mainDeviceId ?? null}
         />
       </div>
       {/* DeviceCarousel에 데이터 전달 */}

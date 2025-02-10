@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
+import { useFavoriteStore } from "../../../stores/useFavoriteStore";
 
 import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
+import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
 
 import Modal from "../../../components/Alert/Modal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
-import {
-  // HeartStatus,
-  ReservationManagerProps,
-} from "./ReservationType";
+import { ReservationManagerProps } from "./ReservationType";
+import { fetchFavoritesData } from "../../scent/scentmain/scenttypes";
 
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import HeartButton from "../../../components/Button/HeartButton";
@@ -110,6 +110,55 @@ export default function ReservationManager({
     }
   }, [customSchedules]);
 
+  // 찜 id 리스트
+  const { favoriteIds, addFavorite, removeFavorite } = useFavoriteStore();
+  // const previousFavoriteIds = useFavoriteStore(
+  //   (state) => state.previousFavoriteIds
+  // );
+  // const setPreviousFavorites = useFavoriteStore(
+  //   (state) => state.setPreviousFavorites
+  // );
+  // // 찜 리스트 전체조회
+  // const { data: favoriteData } = useQuery({
+  //   queryKey: ["favoriteData"],
+  //   queryFn: () => getAllFavorite(accessToken),
+  // });
+  // useEffect(() => {
+  //   const combinationIds = favoriteData.favorites.map(
+  //     (favorite: { combination: { id: number } }) => favorite.combination.id
+  //   );
+  //   setPreviousFavorites(combinationIds);
+  // }, [favoriteData]);
+  // useEffect(() => {
+  //   console.log("좋아요 (업데이트된 값)", previousFavoriteIds);
+  // }, [previousFavoriteIds]);
+  // useEffect(() => {
+  //   console.log("좋아요123 (업데이트된 값)", favoriteIds);
+  // }, [favoriteIds]);
+
+  // // useEffect(() => {
+  //   const initialFavorites = customSchedules
+  //     .filter((schedule) => schedule.isFavorite)
+  //     .map((schedule) => schedule.id);
+
+  //   // 기기 변경 시 기존 favoriteIds와 새로 계산된 ids 병합
+  //   setFavoriteIds((prev) => {
+  //     const mergedFavorites = [...new Set([...prev, ...initialFavorites])];
+  //     return mergedFavorites;
+  //   });
+  // }, [customSchedules]);
+  // // 찜 추가
+  // const addFavorite = (id: number) => {
+  //   setFavoriteIds((prev) => [...prev, id]);
+  // };
+  // // 찜 제거
+  // const removeFavorite = (id: number) => {
+  //   setFavoriteIds((prev) => prev.filter((favoriteId) => favoriteId !== id));
+  // };
+  useEffect(() => {
+    console.log("찜아이디들", favoriteIds);
+  }, [favoriteIds]);
+
   return (
     <div>
       {customSchedules.length > 0 ? (
@@ -144,7 +193,6 @@ export default function ReservationManager({
                   .map(({ choice }) => mapIntToFragrance(choice))
                   .join(", ")
               : "";
-
             return (
               <div
                 key={schedule.id}
@@ -154,17 +202,16 @@ export default function ReservationManager({
                   <div className="text-16 font-pre-medium">{schedule.name}</div>
                   <div className="flex flex-col justify-between gap-3">
                     <div className="flex justify-between gap-2">
-                      <HeartButton />
-                      {/* 찜하기 버튼 상태는 Scent탭 눌렀을 때 적용 */}
-                      {/* <HeartButton
-                      isLiked={heartStatus[reservation]}
-                      onToggle={(newState) => {
-                        setHeartStatus((prev) => ({
-                          ...prev,
-                          [reservation]: newState,
-                          }));
-                          }}
-                          /> */}
+                      <HeartButton
+                        isLiked={favoriteIds.includes(schedule.combinationId)} // 찜 여부 확인 후 추가 제거거
+                        onToggle={(newState) => {
+                          if (newState) {
+                            addFavorite(schedule.combinationId);
+                          } else {
+                            removeFavorite(schedule.combinationId);
+                          }
+                        }}
+                      />
                       <button
                         onClick={() =>
                           navigate("/control/reservation/modify", {

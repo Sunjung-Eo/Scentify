@@ -80,8 +80,8 @@ const MyUserCard = (): JSX.Element => {
   // Zustand 스토어에서 전체 사용자 정보를 가져옵니다.
   const user = useUserStore((state) => state);
 
-  // getProfileImage 함수를 사용해, user.imgNum에 해당하는 이미지 URL을 얻어옵니다.
-  // 이 함수는 utils/profileImageMapper 파일에서 정의되어 있으며, 이미지 배열을 기반으로 이미지를 반환합니다.
+  // getProfileImage 함수를 사용해, user.imgNum에 해당하는 이미지 URL얻기.
+  // utils/profileImageMapper의 함수를 써서 이미지 배열을 기반으로 이미지를 반환.
   const profileImg = getProfileImage(user.imgNum);
 
   return (

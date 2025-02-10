@@ -1,6 +1,7 @@
 import os, sys
 import asyncio
 from mqtt_client import *
+from dummy_data import *
 
 current_dir = os.path.dirname(__file__)  # 현재 파일의 디렉토리
 parent_dir = os.path.abspath(os.path.join(current_dir, ".."))  # 상위 디렉토리
@@ -42,8 +43,19 @@ async def main():
     await asyncio.sleep(2)
     # asyncio.create_task(smart_hub.websocket_client.connection())
 
-    json_msg = json.dumps(msg)
-    await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeInit", json_msg)
+    # auto_mode_init = json.dumps(auto_mode_init_data)
+    # await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeInit", auto_mode_init)
+
+    # relax_detection_change = json.dumps(relax_mode_change_data)
+    # await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeChange", relax_detection_change)
+
+    # simple_detection_change = json.dumps(simple_detection_change_data)
+    # await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeChange", simple_detection_change)
+
+    # await asyncio.sleep(30)
+
+    # action_detection_change = json.dumps(exercise_mode_change_data)
+    # await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeChange", action_detection_change)
 
     while True:
         await asyncio.sleep(1)

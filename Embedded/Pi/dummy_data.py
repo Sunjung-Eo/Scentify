@@ -13,11 +13,11 @@ auto_mode_init_data = {
             "combinationId" : 5,
             "subMode" : 1,
             "type" : 1,
-            "interval" : 15,
+            "interval" : 0,
             "modeOn" : False
         },
         {
-            "id" : 3,
+            "id" : 4,
             "combinationId" : 5,
             "subMode" : 1,
             "type" : 2,
@@ -25,7 +25,7 @@ auto_mode_init_data = {
             "modeOn" : False
         },
         {
-            "id" : 4,
+            "id" : 5,
             "combinationId" : 7,
             "subMode" : 2,
             "type" : None,
@@ -35,7 +35,17 @@ auto_mode_init_data = {
     ]
 }
 
-auto_mode_change_data = {
+exercise_mode_change_data = {
+    "id" : 3,
+    "modeOn" : True,
+}
+
+relax_mode_change_data = {
+    "id" : 4,
+    "modeOn" : True,
+}
+
+simple_detection_change_data = {
     "id" : 2,
     "modeOn" : True,
 }

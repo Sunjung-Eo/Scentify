@@ -598,7 +598,7 @@ public class UserController {
 	}
 	
 	// API 80변 : 비밀번호 재설정
-	@PostMapping("/password/update")
+	@PostMapping("/reset/password")
 	public ResponseEntity<?> resetUserPassword(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
 		try {
 			// 세션을 가져옴

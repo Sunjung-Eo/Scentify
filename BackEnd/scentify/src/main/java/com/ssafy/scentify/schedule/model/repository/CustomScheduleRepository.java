@@ -11,14 +11,13 @@ import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest
 public interface CustomScheduleRepository {
 	
 	// 디바이스 아이디로 스케줄 조회
-	@Select("SELECT id, name, combination_id, combination_name, is_favorite, day, start_time, end_time, `interval`, mode_on "
+	@Select("SELECT id, name, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on "
 	          + "FROM customschedule WHERE device_id = #{deviceId}")
     @Results({
         @Result(column = "id", property = "id"),
         @Result(column = "name", property = "name"),
         @Result(column = "combination_id", property = "combinationId"),
         @Result(column = "combination_name", property = "combinationName"),
-        @Result(column = "is_favorite", property = "isFavorite"),
         @Result(column = "day", property = "day"),
         @Result(column = "start_time", property = "startTime"),
         @Result(column = "end_time", property = "endTime"),

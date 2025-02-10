@@ -36,8 +36,6 @@ class SmartDiffuser:
         self.slowfast = SlowFast()
         self.slowfast.print_log = True
 
-        # self.frame = None
-
         # HW
         # 악취 감지 센서
         self.stink_sensor = StinkSensor()
@@ -48,9 +46,9 @@ class SmartDiffuser:
 
         # 모터
         self.soleniods = [
-            Solenoid(31, 33),
-            Solenoid(16, 18),
             Solenoid(13, 15),
+            Solenoid(16, 18),
+            Solenoid(29, 32),
             Solenoid(35, 37),
         ] 
 
@@ -85,6 +83,8 @@ class SmartDiffuser:
             self.mode_type.relax_detect : 2,
             self.mode_type.stink_detect : 3,
         }
+
+        self.last_operation = None
     
     def is_valid_key(self, payload, key):
         return payload[key] is not None

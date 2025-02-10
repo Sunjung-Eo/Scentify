@@ -22,10 +22,6 @@ public class AutoScheduleService {
 		return autoScheduleRepository.createMode(deviceId, combinationId, subMode, type, interval) ? true : false;
 	}
 
-	public boolean setModeWithoutInterval(int deviceId, int combinationId, int subMode) {
-		return autoScheduleRepository.createModeWithoutInterval(deviceId, combinationId, subMode) ? true : false;
-	}
-
 	public List<AutoScheduleHomeDto> getSchedulesByDeviceId(Integer mainDeviceId) {
 		return autoScheduleRepository.selectSchedulesByDeviceId(mainDeviceId);
 	}

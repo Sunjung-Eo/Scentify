@@ -10,12 +10,12 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({
   nickname,
-  imgNum,
   mainDeviceId,
+  imgNum,
 }) => {
   const [userData, setUserData] = useState<UserData>({
     nickname: nickname || '사용자', // ✅ 기본값 설정
-    imgNum: imgNum || 1, // ✅ 기본 프로필 이미지 번호
+    imgNum: imgNum || 0, // ✅ 기본 프로필 이미지 번호
     mainDeviceId: mainDeviceId ?? 0,
     date: '',
     weatherIcon: '',
@@ -27,7 +27,7 @@ const UserCard: React.FC<UserCardProps> = ({
     setUserData((prev) => ({
       ...prev,
       nickname: nickname || '사용자',
-      imgNum: imgNum || 1,
+      imgNum: imgNum || 0,
       mainDeviceId: mainDeviceId ?? 0,
     }));
   }, [nickname, imgNum, mainDeviceId]); // ✅ user 상태가 변경될 때 업데이트
@@ -130,15 +130,14 @@ const UserCard: React.FC<UserCardProps> = ({
         <div className="flex items-center gap-4">
           {/* 프로필 이미지 */}
           <img
-            src={getProfileImage(userData.imgNum)}
+            src={getProfileImage(imgNum ?? 0)}
             alt="Profile"
             className="w-12 h-12 rounded-full"
           />
+
           {/* 닉네임 */}
           <div className="">
-            <span className="font-pre-bold text-[22px]">
-              {userData.nickname}
-            </span>{' '}
+            <span className="font-pre-bold text-[22px]">{nickname}</span>{' '}
             {/* 홍길동만 pre-bold */}
             <p className="font-pre-light text-[22px] ">님 반갑습니다!</p>
           </div>

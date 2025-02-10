@@ -28,6 +28,7 @@ class MQTTClient:
             await self.subscribe()
 
             asyncio.create_task(self.listen_message())
+            asyncio.create_task(self.initial_request())
             print("Complete Connect!")
             while True:
                 await asyncio.sleep(1)
@@ -59,6 +60,11 @@ class MQTTClient:
             return
         await self.client.publish(topic, payload)
         print(f"pub! topic : {topic}, payload : {payload}")
+
+    async def initial_request(self):
+        await self.client.publish(f"{self.device_id}/Request/AutoModeInfo", "0")
+        await self.client.publish(f"{self.device_id}/Request/OperationModeInfo", "0")
+        await self.client.publish(f"{self.device_id}/Request/Capsule/Info", "0")
 
     
 # async def main():

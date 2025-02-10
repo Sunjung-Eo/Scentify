@@ -1,4 +1,5 @@
 import { deodorizationData } from "../../feature/control/automation/AutoModeType";
+
 // 탈취 모드
 export const updateDeodorization = async (
   deodorizationData: deodorizationData,

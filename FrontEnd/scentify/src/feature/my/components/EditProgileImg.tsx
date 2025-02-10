@@ -14,7 +14,7 @@ function EditProfileImg() {
   // 로그인된 사용자의 인증 토큰
   const accessToken = authStore.accessToken;
 
-  // 현재 선택된 프로필 이미지 번호 (초기값: 현재 사용자의 프로필 이미지 번호)
+  // 현재 선택된 프로필 이미지 번호(초기값은 기존에 저장된 사용자 프로필 이미지 번호(userStore.imgNum)로 설정)
   const [selectedImage, setSelectedImage] = useState<number | null>(
     userStore.imgNum
   );
@@ -29,6 +29,7 @@ function EditProfileImg() {
   /**
    * 저장 버튼 클릭 시 실행되는 함수
    * 선택된 프로필 이미지 번호를 서버에 전송하여 변경
+   * API 호출이 성공하면, useUserStore에 저장된 imgNum 값을 업데이트하여 앱 전반에 반영.
    */
   const handleSave = async () => {
     if (selectedImage === null) {
@@ -71,6 +72,7 @@ function EditProfileImg() {
                 alt={`Profile ${index}`}
                 className="w-full h-full"
               />
+              {/* 선택된 이미지에 오버레이 표시 */}
               {selectedImage === index && (
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-full">
                   <p className="text-white text-12 font-pre-medium">선택</p>

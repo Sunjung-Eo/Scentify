@@ -1,18 +1,16 @@
 // AutoSchedule 타입 정의
 export interface AutoSchedule {
   id: number;
-  deviceId: number; // ✅ 추가
   combinationId: number;
   subMode: number;
   type: number | null;
+  interval: number | null;
   modeOn: boolean;
-  interval: number; // ✅ 추가
 }
 
 // CustomSchedule 타입 정의
 export interface CustomSchedule {
   id: number;
-  deviceId: number; // ✅ 추가
   name: string;
   combinationId: number;
   combinationName: string;
@@ -20,7 +18,7 @@ export interface CustomSchedule {
   day: number;
   startTime: string;
   endTime: string;
-  interval: number;
+  interval: number | null;
   modeOn: boolean;
 }
 

@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { useMainDeviceStore } from "./useDeviceStore";
+import { create } from 'zustand';
 
 export interface UserState {
+  id: string;
   nickname: string;
   email: string;
   imgNum: number;
@@ -15,12 +15,13 @@ export interface UserState {
 }
 
 export const useUserStore = create<UserState>((set) => ({
-  nickname: "",
-  email: "",
+  id: '',
+  nickname: '',
+  email: '',
   imgNum: 0,
   socialType: 0,
   gender: 0,
-  birth: "",
+  birth: '',
   mainDeviceId: null,
   deviceIdsAndNames: null,
 
@@ -39,12 +40,14 @@ export const useUserStore = create<UserState>((set) => ({
 
   resetUser: () =>
     set({
-      nickname: "",
-      email: "",
+      id: '',
+      nickname: '',
+      email: '',
       imgNum: 0,
       socialType: 0,
       gender: 0,
-      birth: "",
+      birth: '',
+
       mainDeviceId: null,
       deviceIdsAndNames: null,
     }),

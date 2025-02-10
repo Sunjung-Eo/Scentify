@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerDevice } from '../../../apis/home/registdevice';
 import { useAuthStore } from '../../../stores/useAuthStore';
 
 function RegistDevice() {
@@ -38,8 +37,11 @@ function RegistDevice() {
     }
   };
 
+  const inputStyle =
+    'w-full px-4 py-3 text-14 rounded-lg bg-component focus:outline-none focus:border-[2px] focus:border-brand';
+
   return (
-    <div className="content px-4 pt-6 pb-8 h-full flex flex-col justify-between">
+    <div className="content text-12 px-4 pt-6 pb-8 h-full flex flex-col justify-between">
       {/* 입력 필드 영역 */}
       <div>
         <div className="text-center text-20 font-pre-bold mb-8">
@@ -48,28 +50,26 @@ function RegistDevice() {
         </div>
 
         {/* 시리얼 번호 입력 */}
-        <div className="mb-6">
-          <label className="text-sm font-pre-regular mb-2 block">
-            시리얼 번호 (S/N)
-          </label>
+        <div className="mb-6 font-pre-light placeholder:font-pre-light placeholder:text-12">
+          <label className="mb-2 block">시리얼 번호 (S/N)</label>
           <input
             type="text"
             value={serial}
             onChange={(e) => setSerial(e.target.value)}
             placeholder="시리얼 번호 입력"
-            className="w-full px-4 py-3 rounded-lg bg-component font-pre-regular"
+            className={inputStyle}
           />
         </div>
 
         {/* IP 주소 입력 */}
-        <div className="mb-6">
-          <label className="text-sm font-pre-regular mb-2 block">IP 주소</label>
+        <div className="mb-6 font-pre-light placeholder:font-pre-light placeholder:text-12">
+          <label className="text-sm font-pre-light mb-2 block">IP 주소</label>
           <input
             type="text"
             value={ipAddress}
             onChange={(e) => setIpAddress(e.target.value)}
             placeholder="IP 주소 입력 (예: 192.168.1.1)"
-            className="w-full px-4 py-3 rounded-lg bg-component font-pre-regular"
+            className={inputStyle}
           />
         </div>
 

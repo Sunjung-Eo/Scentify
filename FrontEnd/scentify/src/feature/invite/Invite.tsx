@@ -1,43 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { createInviteCode } from '../../apis/invite/createInviteCode';
-import { useAuthStore } from '../../stores/useAuthStore';
-import { useUserStore } from '../../stores/useUserStore';
+import { createInviteCode } from "../../apis/invite/createInviteCode";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { useLocation } from "react-router-dom"; //  추가 (GroupList에서 받은 데이터 받기)
+import { useState, useEffect } from "react";
 
 // 초대 코드를 생성하고 화면에 표시하는 컴포넌트
 function Invite() {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const authStore = useAuthStore();
-  const accessToken = authStore.accessToken; // 사용자 인증 토큰
-  const { deviceIdsAndNames } = useUserStore();
-
-  const deviceIds = deviceIdsAndNames
-    ? Object.keys(deviceIdsAndNames).map(Number)
-    : [];
+  const { accessToken } = useAuthStore(); // 인증 토큰 가져오기
+  const location = useLocation(); // GroupList에서 전달된 데이터 받기
+  const selectedDeviceId = location.state?.deviceId; // 선택된 기기 ID
 
   useEffect(() => {
     const fetchInviteCode = async () => {
       try {
-        // deviceIds가 비어있지 않은 경우에만 첫 번째 디바이스 ID 사용
-        if (deviceIds.length > 0) {
-          const deviceId = deviceIds[0]; // 첫 번째 디바이스 ID 사용
-          const result = await createInviteCode(deviceId, accessToken);
+        if (!selectedDeviceId) {
+          throw new Error("기기가 선택되지 않았습니다.");
+        }
 
-          if (result) {
-            setInviteCode(result.inviteCode);
-          } else {
-            throw new Error('초대 코드 생성에 실패했습니다.');
-          }
+        const result = await createInviteCode(selectedDeviceId, accessToken);
+        if (result) {
+          setInviteCode(result.inviteCode);
         } else {
-          throw new Error('등록된 디바이스가 없습니다.');
+          throw new Error("초대 코드 생성에 실패했습니다.");
         }
       } catch (err: any) {
-        setError(err.message || '초대 코드 생성에 실패했습니다.');
+        setError(err.message || "초대 코드 생성에 실패했습니다.");
       }
     };
+
     fetchInviteCode();
-  }, [accessToken]);
+  }, [selectedDeviceId, accessToken]); // 택된 기기 ID가 변경될 때마다 실행
 
   return (
     <div className="flex flex-col items-center">

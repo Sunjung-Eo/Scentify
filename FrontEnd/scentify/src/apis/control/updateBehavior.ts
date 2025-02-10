@@ -1,6 +1,6 @@
 import { behaviorData } from "../../feature/control/automation/AutoModeType";
 
-// 탈취 모드
+// 동작 모드
 export const updateBehavior = async (
   behaviorData: behaviorData,
   accessToken: string

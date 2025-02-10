@@ -1,4 +1,4 @@
-// 단일 기기 예약 전체 조회
+// 기기 모드 변경
 export const switchMode = async (
   deviceId: number,
   mode: boolean,

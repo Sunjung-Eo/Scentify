@@ -2,7 +2,7 @@ export interface RegisterDeviceResponse {
   id: number; // 등록된 디바이스의 PK
 }
 
-export const registerDevice = async (
+export const registDevice = async (
   serial: string,
   ipAddress: string,
   accessToken: string

@@ -8,12 +8,18 @@ import { useUserStore } from '../../stores/useUserStore.ts';
 
 const HomeMain = () => {
   const { setMainDevice, mainDevice } = useMainDeviceStore();
+
   const { setUser, deviceIdsAndNames } = useUserStore();
+
   const queryClient = useQueryClient();
 
   const deviceIds = deviceIdsAndNames
     ? Object.keys(deviceIdsAndNames).map(Number)
     : [];
+
+  useEffect(() => {
+    console.log('들ㅇ옴', deviceIdsAndNames);
+  }, [deviceIdsAndNames]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['homeInfo'],
@@ -76,7 +82,11 @@ const HomeMain = () => {
   return (
     <div className="flex flex-col content px-4 py-1">
       <div className="mb-5">
-        <UserCard />
+        <UserCard
+          nickname={data?.user?.nickname}
+          imgNum={data?.user?.imgNum || 0}
+          mainDeviceId={data?.user?.mainDeviceId || null}
+        />
       </div>
       {/* DeviceCarousel에 데이터 전달 */}
       <DeviceSlide data={exampleData} />

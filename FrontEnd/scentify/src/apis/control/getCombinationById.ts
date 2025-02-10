@@ -1,3 +1,4 @@
+// 향 조합 데이터 가져오기
 export const getCombinationById = async (
   combinationId: number,
   accessToken: string

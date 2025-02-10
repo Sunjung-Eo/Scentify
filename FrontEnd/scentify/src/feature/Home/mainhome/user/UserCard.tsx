@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { UserData } from './UserTypes';
-import greenLogo from '../../../../assets/userProfiles/green.svg';
-import { useUserStore } from '../../../../stores/useUserStore';
+import { getProfileImage } from './handler/profileImageHandler';
 
-const UserCard: React.FC = () => {
-  // ✅ 전역 상태에서 사용자 정보 가져오기
-  const { nickname, imgNum, mainDeviceId } = useUserStore();
+interface UserCardProps {
+  nickname?: string;
+  imgNum?: number;
+  mainDeviceId?: number;
+}
 
+const UserCard: React.FC<UserCardProps> = ({
+  nickname,
+  imgNum,
+  mainDeviceId,
+}) => {
   const [userData, setUserData] = useState<UserData>({
     nickname: nickname || '사용자', // ✅ 기본값 설정
     imgNum: imgNum || 1, // ✅ 기본 프로필 이미지 번호
@@ -18,11 +24,6 @@ const UserCard: React.FC = () => {
 
   // 4. 사용자 정보 업데이트 (전역 상태 변경 시)
   useEffect(() => {
-    console.log('🔥 업데이트된 상태');
-    console.log('닉네임:', nickname);
-    console.log('이미지 번호:', imgNum);
-    console.log('메인 디바이스 ID:', mainDeviceId);
-
     setUserData((prev) => ({
       ...prev,
       nickname: nickname || '사용자',
@@ -42,14 +43,24 @@ const UserCard: React.FC = () => {
     return `Today ${day} ${month} ${year}`;
   };
 
+  const weatherIconMap = {
+    Clear: '/weather-icons/sun.svg',
+    Clouds: '/weather-icons/clouds.svg',
+    Rain: '/weather-icons/rain.svg',
+    Snow: '/weather-icons/snow.svg',
+    Thunderstorm: '/weather-icons/thunder.svg',
+  } as const;
+
+  const weatherDescriptionMap = {
+    Clear: '맑음',
+    Clouds: '흐림',
+    Rain: '비',
+    Snow: '눈',
+    Thunderstorm: '천둥',
+  } as const;
+
   // 2. OpenWeatherMap API 호출
-  const getWeather = async (
-    lat: number,
-    lon: number
-  ): Promise<{
-    weatherIcon: string;
-    weatherDescription: string;
-  }> => {
+  const getWeather = async (lat: number, lon: number) => {
     const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || ''; // 환경 변수 값 로드
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
@@ -64,32 +75,11 @@ const UserCard: React.FC = () => {
 
       // 3. JSON 데이터 파싱
       const data = await response.json();
-      const weatherMain = data.weather[0].main; // 날씨 그룹
-
-      // 4. 날씨 그룹 -> 이모티콘 및 한국어 설명 매핑
-      const weatherIconMap: Record<string, string> = {
-        Clear: '☀️', // 맑음
-        Clouds: '☁️', // 흐림
-        Rain: '🌧️', // 비
-        Snow: '❄️', // 눈
-        Thunderstorm: '⛈️', // 천둥
-      };
-
-      const weatherDescriptionMap: Record<string, string> = {
-        Clear: '맑음',
-        Clouds: '흐림',
-        Rain: '비',
-        Snow: '눈',
-        Thunderstorm: '천둥',
-      };
-
-      const weatherIcon = weatherIconMap[weatherMain] || '🌈'; // 기본값 설정
-      const weatherDescription =
-        weatherDescriptionMap[weatherMain] || '알 수 없음';
+      const weatherMain = data.weather[0].main as keyof typeof weatherIconMap;
 
       return {
-        weatherIcon,
-        weatherDescription,
+        weatherIcon: weatherIconMap[weatherMain] || '🌈', // 기본값
+        weatherDescription: weatherDescriptionMap[weatherMain] || '알 수 없음',
       };
     } catch (error) {
       console.error('Failed to fetch weather data:', error);
@@ -140,7 +130,7 @@ const UserCard: React.FC = () => {
         <div className="flex items-center gap-4">
           {/* 프로필 이미지 */}
           <img
-            src={greenLogo} // img_num 기반 동적 프로필 URL
+            src={getProfileImage(userData.imgNum)}
             alt="Profile"
             className="w-12 h-12 rounded-full"
           />
@@ -155,13 +145,17 @@ const UserCard: React.FC = () => {
         </div>
 
         {/* 날짜+ 날씨 묶음*/}
-        <div className="flex justify-end mt-auto font-pre-light text-opacity-50 text-12">
+        <div className="flex justify-end items-center mt-auto font-pre-light text-opacity-50 text-12">
           <p className="text-pre-regular text-sm mr-4">{userData.date}</p>
           {error ? (
             <p className="text-red-500">{error}</p>
           ) : userData.weatherIcon ? (
             <div className="flex items-center">
-              <span>{userData.weatherIcon}</span>
+              <img
+                src={userData.weatherIcon}
+                alt="Weather Icon"
+                className="w-6 h-6"
+              />
               <p className="text-opacity-50 ml-1">
                 {userData.weatherDescription}
               </p>

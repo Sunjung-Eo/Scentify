@@ -35,16 +35,20 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
     sprayMutation.mutate(device.id);
   };
 
+  // // 슬롯 정보 렌더링 함수
+  // const renderSlotInfo = (slotNumber: number, remainingRatio: number | null) => {
+  //   if (remainingRatio === null) return null;
+
   return (
     <div className="flex flex-col items-center w-full my-2">
       {/* 기기 이름 + 수정 버튼 */}
       <div className="relative w-full px-5 flex items-center">
-        <h2 className="text-[20px] font-pre-bold text-center flex items-center justify-center w-full">
+        <p className="text-[20px] font-pre-medium text-center flex items-center justify-center w-full">
           {device?.name ?? '이름 없음'}
           {device?.id === mainDeviceId && (
             <img src={crownIcon} alt="Crown Icon" className="ml-1 h-4 w-4" />
           )}
-        </h2>
+        </p>
         <Link to="/home/devicesetting" className="absolute right-5">
           <img src={modifyIcon} alt="modifyIcon" className="w-6 h-6" />
         </Link>

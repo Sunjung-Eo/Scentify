@@ -1,5 +1,5 @@
-import Vector from "../../../assets/images/Vector.png";
-import { Link } from "react-router-dom"; //페이지 이동 LInk쓸지 Navigate쓸 지 안정함.
+import Vector from '../../../assets/images/Vector.png';
+import { Link } from 'react-router-dom'; //페이지 이동 LInk쓸지 Navigate쓸 지 안정함.
 
 function RegistDevice1() {
   return (
@@ -25,7 +25,7 @@ function RegistDevice1() {
 
         <div className="w-full">
           <Link to="/home/registdevice2">
-            <button className="w-full h-12 px-6 rounded-lg bg-brand text-white text-20 font-pre-medium">
+            <button className="w-full h-12 px-6 rounded-lg bg-brand text-white text-16 font-pre-medium">
               기기 등록하기
             </button>
           </Link>

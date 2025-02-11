@@ -3,30 +3,27 @@ import {
   DeleteMemberRequest,
   DeleteGroupRequest,
 } from "../groupTypes";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react"; //useMemo는 객체 사용시 불필요한 렌더링 막기 위함
 import MemberCard from "./MemberCard";
 import { useUserStore } from "../../../stores/useUserStore"; // 유저 상태 관리(사용자 기기정보)
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 정보 관리(토큰)
 import { getGroupByDeviceId } from "../../../apis/group/getGroupByDeviceId"; // 그룹 정보 조회 API
 import { deleteGroupMember } from "../../../apis/group/deleteGroupMember"; // 개별 멤버 삭제 API
 import { deleteGroup } from "../../../apis/group/deleteGroup"; // 그룹 삭제 API
-import { useMemo } from "react"; //객체 사용시 불필요한 렌더링 막기 위함
 import { Link, useNavigate } from "react-router-dom";
 import rigtarrowIcon from "../../../assets/icons/rightarrow-icon.svg";
 import crownIcon from "../../../assets/icons/crown-icon.svg";
+import Modal from "../../../components/Alert/Modal";
 
 export const GroupList = () => {
   // 사용자가 소유한 기기 ID 목록 가져오기 (등록된 디바이스가 없을 경우 빈 배열 사용)
-  // deviceIdsAndName는 객체로, 리액트는 객체가 같은 값이어도 새로운 객체가 생성되면 다른 것으로 인식해서 불필요한 리렌더링을 함. 이를 막히위해 useMemo()사용
+  // 리액트는 객체가 같은 값이어도 새로운 객체가 생성되면 다른 것으로 인식해서 불필요한 리렌더링 함. 이를 막히위해 useMemo()사용
   const deviceIdsAndNames = useUserStore((state) => state.deviceIdsAndNames);
   const memoizedDeviceIdsAndNames = useMemo(
     () => deviceIdsAndNames ?? {},
     [deviceIdsAndNames]
   );
-
-  // 사용자의 대표(메인) 기기 ID 가져오기
   const mainDeviceId = useUserStore((state) => state.mainDeviceId);
-  // 현재 로그인한 유저 ID
   const userId = useUserStore((state) => state.id);
   console.log("현재 로그인한 유저 ID:", userId);
 
@@ -50,20 +47,18 @@ export const GroupList = () => {
   const [members, setMembers] = useState<{ id: string; nickname: string }[]>(
     []
   );
-  //현재 그룹의 ID
   const [groupId, setGroupId] = useState<string>("");
-  // 에러 메시지 상태
   const [error, setError] = useState<string | null>(null);
 
   // 인증 관련 정보 가져오기 (토큰, 로그인 여부)
   const { accessToken } = useAuthStore();
-  console.log("현재 accessToken:", accessToken);
 
-  // 그룹의 관리자(Admin ID)정보
   const [adminId, setAdminId] = useState<string>("");
   console.log("현재 관리자ID:", adminId);
 
   const navigate = useNavigate();
+  // 그룹 삭제 모달 상태
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // 커스텀 드롭다운 열림 상태
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -148,7 +143,6 @@ export const GroupList = () => {
         const filteredMembers = formattedMembers.filter(
           (member) => member.id !== userId
         );
-
         setMembers(filteredMembers); // 멤버 리스트 업데이트
       } catch (err: any) {
         setError(err.message); // 에러 발생 시 메시지 저장
@@ -176,7 +170,7 @@ export const GroupList = () => {
     }
   };
 
-  // 그룹 삭제 함수
+  // 그룹 삭제 함수(모달 확인 후 호출)
   const handleDeleteGroup = async () => {
     try {
       const requestData: DeleteGroupRequest = { groupId }; // API 요청 데이터 구성
@@ -188,7 +182,7 @@ export const GroupList = () => {
     }
   };
 
-  // 초대하기 버튼 클릭 시 Invite 페이지로 이동하면서 selectedDeviceId 전달
+  // 초대하기 버튼 클릭 시 페이지 이동하면서 selectedDeviceId 전달
   const handleInvite = () => {
     if (selectedDeviceId) {
       navigate("/my/invite", { state: { deviceId: selectedDeviceId } }); // 상태로 전달
@@ -322,16 +316,27 @@ export const GroupList = () => {
           </div>
         </Link>
 
-        {/* 그룹 삭제 버튼 */}
+        {/* 그룹 삭제 버튼: 클릭 시 모달을 띄움 */}
         {userId === adminId && members.length > 0 && (
           <button
             className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
-            onClick={handleDeleteGroup}
+            onClick={() => setDeleteModalOpen(true)}
           >
             그룹 삭제
           </button>
         )}
       </div>
+      {/* 그룹 삭제 모달 */}
+      {deleteModalOpen && (
+        <Modal
+          message="그룹을 삭제하시겠습니까?"
+          onConfirm={async () => {
+            await handleDeleteGroup();
+            setDeleteModalOpen(false);
+          }}
+          onCancel={() => setDeleteModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

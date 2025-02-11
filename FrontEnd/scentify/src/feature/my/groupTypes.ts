@@ -24,3 +24,9 @@ export interface DeleteMemberRequest {
 export interface DeleteGroupRequest {
   groupId: string;
 }
+
+// 삭제 모달 props 타입
+export interface DeleteModalProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}

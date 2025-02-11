@@ -187,11 +187,10 @@ public class GroupController {
 	        // 해당 그룹에 등록된 적이 있는지 검사
 	        Group group = groupService.getGroup(deviceId);
 	        if (group.getAdminId().equals(userId)) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
-	        if (group.getMember1Id() != null && group.getMember1Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
-	        if (group.getMember2Id() != null && group.getMember2Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
-	        if (group.getMember3Id() != null && group.getMember3Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
-	        if (group.getMember4Id() != null && group.getMember4Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
-	        
+	        if (group.getMember1Id() != null && group.getMember1Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
+	        if (group.getMember2Id() != null && group.getMember2Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
+	        if (group.getMember3Id() != null && group.getMember3Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
+	        if (group.getMember4Id() != null && group.getMember4Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
 	        
 	        // 그룹에 자리가 없으면 409 반환
 	        if (!groupService.updateMember(memberDto)) { return new ResponseEntity<>(HttpStatus.CONFLICT); };

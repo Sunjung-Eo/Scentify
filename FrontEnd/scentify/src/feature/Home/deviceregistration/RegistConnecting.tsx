@@ -1,7 +1,7 @@
 import Spinner from '../Loading/Spinner';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { registDevice } from '../../../apis/home/registDevice';
+import { registDevice } from '../../../apis/home/registdevice';
 import { Link } from 'react-router-dom';
 
 function RegistConnecting() {

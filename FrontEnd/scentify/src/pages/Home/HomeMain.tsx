@@ -22,11 +22,11 @@ const HomeMain = () => {
     : [];
 
   useEffect(() => {
-    console.log("들ㅇ옴", deviceIdsAndNames);
+    console.log('들ㅇ옴', deviceIdsAndNames);
   }, [deviceIdsAndNames]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["homeInfo"],
+    queryKey: ['homeInfo'],
     // queryFn: homeInfo,
     queryFn: async () => {
       try {
@@ -44,8 +44,8 @@ const HomeMain = () => {
   useEffect(() => {
     if (!data?.user) return;
 
-    console.log("업데이트 전 User:", useUserStore.getState());
-    console.log("업데이트 전 Devices:", useMainDeviceStore.getState());
+    console.log('업데이트 전 User:', useUserStore.getState());
+    console.log('업데이트 전 Devices:', useMainDeviceStore.getState());
     // const deviceIdsAndNames = data.deviceIdsAndNames || [];
     // const deviceIds: number[] = deviceIdsAndNames
     //   ? Object.keys(deviceIdsAndNames).map(Number)
@@ -66,13 +66,13 @@ const HomeMain = () => {
     }
 
     setTimeout(() => {
-      console.log("✅ 업데이트 후 User:", useUserStore.getState());
-      console.log("✅ 업데이트 후 Devices:", useMainDeviceStore.getState());
+      console.log('✅ 업데이트 후 User:', useUserStore.getState());
+      console.log('✅ 업데이트 후 Devices:', useMainDeviceStore.getState());
     }, 100);
   }, [data]); //  `setUser`, `setDevices`는 상태 변경을 트리거하는 함수라서 의존성 배열에서 제거해도 됨
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
+    queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
   }, [queryClient]);
 
   if (isLoading) return <p>로딩 중...</p>;
@@ -90,7 +90,11 @@ const HomeMain = () => {
   return (
     <div className="flex flex-col content px-4 py-1">
       <div className="mb-5">
-        <UserCard />
+        <UserCard
+          nickname={data?.user?.nickname}
+          imgNum={data?.user?.imgNum || 0}
+          mainDeviceId={data?.user?.mainDeviceId || null}
+        />
       </div>
       {/* DeviceCarousel에 데이터 전달 */}
       <DeviceSlide data={exampleData} />

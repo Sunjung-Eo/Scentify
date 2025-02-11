@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.scentify.combination.CombinationController;
@@ -27,6 +28,7 @@ import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListDto;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListResponseDto;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ImageGenerationResponse;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ImageGenerationResponse.ImageData;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ReadCombination;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ShareCombination;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -203,9 +205,35 @@ public class FavoriteController {
 	
 	// API 82번 : 공유된 찜 조합 조회
 	@GetMapping("/share/read")
-	public ResponseEntity<?>  readShareFavorite() {
-		
-        
-    	return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<?>  readShareFavorite(@RequestParam("combinationId") Integer combinationId, @RequestParam("imageName") String imageName) {
+		try {
+			// 전달된 combinationId 검사
+			if (combinationId == null) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+			
+			// 조합 DB에서 가져오기
+	        CombinationDto combination = combinationService.getCombinationById(combinationId);
+	        if (combination == null) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // 해당 이미지 파일의 presigned url 생성
+	        String imageUrl = s3Service.generatePresignedUrl(imageName, 10);
+			if (imageUrl == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+	        
+			// 응답 객체 생성
+			ReadCombination response = new ReadCombination();
+			response.setCombination(combination);
+			response.setS3Url(imageUrl);
+			
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
     }
 }

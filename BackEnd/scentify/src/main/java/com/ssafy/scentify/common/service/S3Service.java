@@ -59,7 +59,7 @@ public class S3Service {
             amazonS3.putObject(bucketName, fileName, imageInputStream, metadata);
             Map<String, String> s3Info = new HashMap<>();
             s3Info.put("imageName", fileName);
-            s3Info.put("s3Url", generatePresignedUrl(bucketName, fileName, amazonS3, 10));
+            s3Info.put("s3Url", generatePresignedUrl(fileName, 10));
             
             // 10분 간 유효한 url과 파일 이름 전달
             return s3Info;
@@ -70,14 +70,13 @@ public class S3Service {
         }
     }
     
-    public String generatePresignedUrl(String bucketName, String fileName, AmazonS3 amazonS3, int expirationMinutes) {
+    public String generatePresignedUrl(String fileName, int expirationMinutes) {
         Date expiration = new Date();
         expiration.setTime(expiration.getTime() + expirationMinutes * 60 * 1000); 
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-            new GeneratePresignedUrlRequest(bucketName, fileName)
-                							.withMethod(HttpMethod.GET) // GET 요청만 허용
-                							.withExpiration(expiration);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, fileName)
+                														.withMethod(HttpMethod.GET) // GET 요청만 허용
+                														.withExpiration(expiration);
 
         URL presignedUrl = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
         return presignedUrl.toString();

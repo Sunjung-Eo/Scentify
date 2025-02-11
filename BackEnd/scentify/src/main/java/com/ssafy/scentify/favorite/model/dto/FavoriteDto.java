@@ -34,6 +34,11 @@ public class FavoriteDto {
 		String shareUrl;
 	}
 	
+	@Data
+	public static class ReadCombination {
+		CombinationDto combination;
+		String S3Url;
+	}
 
 	@Getter
 	@NoArgsConstructor

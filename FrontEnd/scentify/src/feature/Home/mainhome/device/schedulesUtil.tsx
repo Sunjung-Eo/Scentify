@@ -1,5 +1,15 @@
 import { AutoSchedule, CustomSchedule } from '../../../../types/SchedulesType';
 
+/**
+ * 
+ * 현재 실행 중인 예약 찾기 → 없으면 다음 단계
+다음 실행될 예약 찾기
+오늘 실행될 예약이 있으면 선택
+오늘 예약이 없으면, 가장 가까운 요일의 예약 선택s
+ * 
+ * 
+ */
+
 export const getClosestCustomSchedule = (
   scheduleData: {
     type: 0 | 1 | null;
@@ -11,87 +21,82 @@ export const getClosestCustomSchedule = (
     scheduleData.type !== 0 ||
     !Array.isArray(scheduleData.schedules)
   ) {
-    console.log('❌ 유효하지 않은 스케줄 데이터:', scheduleData);
     return null;
   }
 
   const schedules = scheduleData.schedules;
-  console.log('📌 처리할 스케줄 데이터:', schedules);
-
   const now = new Date();
-  const today = now.getDay();
+  const today = now.getDay(); // 0(일) ~ 6(토)
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
+  const DAY_BITS = [1, 2, 4, 8, 16, 32, 64];
+  const todayBit = DAY_BITS[today];
+
   console.log(
-    `📌 현재 요일: ${today} (${['일', '월', '화', '수', '목', '금', '토'][today]})`
+    `🕒 현재 시간: ${now.getHours()}:${now.getMinutes()} (분 단위: ${nowMinutes})`
   );
-  console.log('📌 들어온 스케줄들: ', schedules);
+  console.log(`📅 오늘 요일(${today})의 비트: ${todayBit}`);
 
-  // ✅ 현재 요일에 해당하는 예약 찾기
-  let validSchedules = schedules
-    .filter((schedule) => {
-      const isValidDay = (schedule.day & (1 << (6 - today))) !== 0;
-      console.log(
-        `📌 day 필터링 확인:`,
-        schedule.name,
-        schedule.day,
-        isValidDay
-      );
-      return isValidDay;
-    })
-    .map((schedule) => {
-      const [startHours, startMinutes] = schedule.startTime
-        .split(':')
-        .map(Number);
-      const startTimeMinutes = startHours * 60 + startMinutes;
-      return { ...schedule, startTimeMinutes };
-    });
+  // 1. 현재 실행 중인 예약 찾기
+  const runningSchedule = schedules.find((schedule) => {
+    // 오늘 요일에 해당하는지 확인
+    const isToday = (schedule.day & todayBit) !== 0;
 
-  console.log(`📌 오늘(${today}) 가능한 예약 목록:`, validSchedules);
+    if (!isToday) return false;
 
-  // ✅ 현재 실행 중인 예약 찾기 (startTime ≤ 현재 시간)
-  const runningSchedule = validSchedules.find(
-    (schedule) => schedule.startTimeMinutes <= nowMinutes
-  );
+    // 시작 시간과 종료 시간을 분으로 변환
+    const [startHours, startMinutes] = schedule.startTime
+      .split(':')
+      .map(Number);
+    const [endHours, endMinutes] = schedule.endTime.split(':').map(Number);
+    const startTimeMinutes = startHours * 60 + startMinutes;
+    const endTimeMinutes = endHours * 60 + endMinutes;
 
+    // 현재 시간이 시작 시간과 종료 시간 사이에 있는지 확인
+    return startTimeMinutes <= nowMinutes && nowMinutes <= endTimeMinutes;
+  });
+
+  // 실행 중인 예약이 있다면 반환
   if (runningSchedule) {
     console.log(`✅ 실행 중인 예약 찾음: ${runningSchedule.name}`);
     return runningSchedule;
   }
 
-  // ✅ 현재 시간 이후의 가장 가까운 예약 찾기
-  const upcomingSchedules = validSchedules
-    .filter((schedule) => schedule.startTimeMinutes > nowMinutes)
-    .sort((a, b) => a.startTimeMinutes - b.startTimeMinutes);
-
-  if (upcomingSchedules.length > 0) {
-    console.log(
-      `⏳ 오늘(${today}) 가장 가까운 예약: ${upcomingSchedules[0].name}`
-    );
-    return upcomingSchedules[0];
-  }
-
-  // ✅ 이번 주 내에서 가장 가까운 예약 찾기
-  const futureSchedules = schedules
+  // 2. 다음 실행될 예약 찾기
+  const upcomingSchedules = schedules
+    .filter((schedule) => schedule.modeOn)
     .map((schedule) => {
+      const [hours, minutes] = schedule.startTime.split(':').map(Number);
+      const startTimeMinutes = hours * 60 + minutes;
+
+      // 각 요일별로 다음 실행 시간 계산
+      let daysUntilNext = 0;
+      let currentDay = today;
+
+      while (daysUntilNext < 7) {
+        if ((schedule.day & DAY_BITS[currentDay]) !== 0) {
+          if (daysUntilNext === 0 && startTimeMinutes > nowMinutes) break;
+          if (daysUntilNext > 0) break;
+        }
+        daysUntilNext++;
+        currentDay = (currentDay + 1) % 7;
+      }
+
       return {
         ...schedule,
-        nextDay: [...Array(7).keys()]
-          .map((offset) => (today + offset) % 7)
-          .find((day) => (schedule.day & (1 << (6 - day))) !== 0),
+        daysUntilNext,
+        nextRunTime: startTimeMinutes + daysUntilNext * 24 * 60,
       };
     })
-    .filter((schedule) => schedule.nextDay !== undefined)
-    .sort((a, b) => (a.nextDay as number) - (b.nextDay as number));
+    .filter((schedule) => schedule.daysUntilNext < 7)
+    .sort((a, b) => a.nextRunTime - b.nextRunTime);
 
-  if (futureSchedules.length > 0) {
-    console.log(
-      `⏳ 이번 주 가장 가까운 예약: ${futureSchedules[0].name} (${['일', '월', '화', '수', '목', '금', '토'][futureSchedules[0].nextDay as number]})`
-    );
-    return futureSchedules[0];
+  if (upcomingSchedules.length > 0) {
+    const nextSchedule = upcomingSchedules[0];
+    console.log(`⏳ 다음 실행될 예약: ${nextSchedule.name}`);
+    return nextSchedule;
   }
 
-  console.log(`❌ 이번 주 예약 없음`);
   return null;
 };
 
@@ -108,7 +113,6 @@ export const getActiveAutoSchedule = (
     scheduleData.type !== 1 ||
     !Array.isArray(scheduleData.schedules)
   ) {
-    console.log('❌ 유효하지 않은 자동화 스케줄 데이터');
     return [];
   }
 

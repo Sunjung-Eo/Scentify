@@ -55,7 +55,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   }
 
   console.log('🐛🐛🐛 scheduleData: ', scheduleData);
-  console.log('🐛🐛🐛 closestCustomSchedule: ', closestCustomSchedule);
+  console.log('🐛🐛🐛 activeAutoSchedules: ', activeAutoSchedules);
 
   const scheduleInfo = () => {
     if (!scheduleData || !scheduleData.schedules) {
@@ -131,11 +131,13 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   return (
     <div className="w-full mt-4 px-5">
       <div
-        className="relative w-full h-40 bg-cover bg-center flex flex-col justify-start items-center text-white rounded-lg shadow-none pt-3"
-        style={{ backgroundImage: `url(${scheduleBg})` }}
+        className="relative w-full h-40 bg-cover bg-center flex flex-col justify-start items-center bg-white text-white rounded-[12px] pt-3"
+        style={{
+          filter: 'drop-shadow(0px 0px 15px rgba(0, 0, 0, 0.05))',
+        }}
       >
         <div
-          className="absolute top-3 right-0 flex items-center justify-center text-white text-xs font-semibold"
+          className="absolute top-0 right-0 flex items-center justify-center text-white text-xs font-semibold"
           style={{
             width: '83px',
             height: '31px',
@@ -148,9 +150,6 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
         </div>
 
         <div className="text-center bg-black bg-opacity-50 p-3 rounded-lg w-full">
-          <h4 className="text-md font-semibold">
-            {currentSchedule.type === '-' ? '기본 예약' : '활성화된 스케줄'}
-          </h4>
           {currentSchedule.schedules?.map((schedule, index) => (
             <p key={index} className="text-sm mt-2">
               {schedule.name}

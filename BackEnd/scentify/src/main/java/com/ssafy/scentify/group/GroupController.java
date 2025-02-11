@@ -186,7 +186,7 @@ public class GroupController {
 	        
 	        // 해당 그룹에 등록된 적이 있는지 검사
 	        Group group = groupService.getGroup(deviceId);
-	        if (group.getAdminId().equals(userId)) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
+	        if (group.getAdminId().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
 	        if (group.getMember1Id() != null && group.getMember1Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
 	        if (group.getMember2Id() != null && group.getMember2Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }
 	        if (group.getMember3Id() != null && group.getMember3Id().equals(userId)) { return new ResponseEntity<>(HttpStatus.FORBIDDEN); }

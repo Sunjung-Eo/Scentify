@@ -645,32 +645,16 @@ public class UserController {
 	
 	// API 81번 : 새로고침 시 Access 토큰 발급
 	@PostMapping("/token/issue")
-	public ResponseEntity<?> isseueAccessToken(@RequestHeader("Authorization") String authorizationHeader, HttpServletRequest request) {
+	public ResponseEntity<?> isseueAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
 		try {
 			// access 토큰에서 id 정보, 만료시간 추출
         	String accessToken = authorizationHeader.substring(7);
-            long expiration = tokenProvider.getExpiration(accessToken).getTime();
-            
-            // 블랙리스트로 등록
-            tokenService.addToBlacklist(accessToken, expiration);
-			
-			// 쿠키에서 Refresh Token 추출
-            String refreshToken = getRefreshTokenFromCookies(request.getCookies());
-			
-            // Refrsh Token에서 userId 추출
-            String userId = tokenProvider.getId(refreshToken);
             
             // 응답 헤더 생성
             HttpHeaders headers = new HttpHeaders();
-            
-			// Redis에서 Refresh Token 조회 및 검증 (만약 Refresh token이 검증되지 않으면 토큰 발급 생략)
-            if (tokenService.validateRefreshToken(userId, refreshToken)) {
-                // Access Token 생성
-                String newAccessToken = tokenProvider.createAccessToken(userId);
-                
-                // 응답 헤더에 Access Token 추가
-                headers.add("Authorization", "Bearer " + newAccessToken);
-            }
+           
+            // 응답 헤더에 Access Token 추가
+            headers.add("Authorization", "Bearer " + accessToken);
 			
             return ResponseEntity.ok().headers(headers).build();   // 성공적으로 처리됨	   
 		} catch (Exception e) {
@@ -679,17 +663,4 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	private String getRefreshTokenFromCookies(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-
-        for (Cookie cookie : cookies) {
-            if ("refreshToken".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
 }

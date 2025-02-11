@@ -5,8 +5,6 @@ interface FavoriteState {
   setFavorites: (ids: number[]) => void;
   favoriteCombinationIds: number[];
   setFavoriteCombinationIds: (ids: number[]) => void;
-  // previousFavoriteIds: number[];
-  // setPreviousFavorites: (ids: number[]) => void;
   favoriteIds: number[];
   setFavoriteIds: (id: number[]) => void;
   addFavorite: (id: number) => void;
@@ -15,6 +13,8 @@ interface FavoriteState {
   setDeleteFavoriteIds: (id: number[]) => void;
   deleteAddFavorite: (id: number) => void;
   deleteRemoveFavorite: (id: number) => void;
+  favoritesData: any; // 구체적인 타입으로 교체 권장
+  setFavoritesData: (data: any) => void;
 }
 
 export const useFavoriteStore = create<FavoriteState>((set) => ({
@@ -23,6 +23,11 @@ export const useFavoriteStore = create<FavoriteState>((set) => ({
   favoriteCombinationIds: [] as number[], // 찜 리스트의 향 id들
   setFavoriteCombinationIds: (favoriteCombinationId) =>
     set({ favoriteCombinationIds: favoriteCombinationId }), // 찜 리스트의 향 id들
+
+  favoritesData: { favorites: [] },
+  setFavoritesData: (data) => {
+    set({ favoritesData: data });
+  },
 
   favoriteIds: [] as number[], // 새로 추가한 찜 id들
   setFavoriteIds: (id: number[]) => set({ favoriteIds: id }),

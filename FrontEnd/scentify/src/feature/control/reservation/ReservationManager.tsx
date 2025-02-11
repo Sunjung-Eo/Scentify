@@ -8,6 +8,8 @@ import { useFavoriteStore } from "../../../stores/useFavoriteStore";
 import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
+import { createFavorite } from "../../../apis/scent/createFavorite";
+import { deleteAllFavorite } from "../../../apis/scent/deleteFavorite";
 
 import Modal from "../../../components/Alert/Modal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
@@ -120,11 +122,17 @@ export default function ReservationManager({
     removeFavorite,
     deleteAddFavorite,
     deleteRemoveFavorite,
+    setFavoriteIds,
+    setDeleteFavoriteIds,
+    setFavoritesData,
   } = useFavoriteStore();
   console.log("진짜임", favorites);
   const { data: favoritesData } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
+    onSuccess: (data: any) => {
+      setFavoritesData(data); // Zustand에 데이터 저장
+    },
   });
   // 찜 리스트 향 id들
   useEffect(() => {
@@ -145,6 +153,39 @@ export default function ReservationManager({
     console.log("찜아이디들", favoriteIds);
     console.log("삭제할찜아이디들", deleteFavoriteIds);
   }, [favoriteIds, deleteFavoriteIds]);
+
+  useEffect(() => {
+    if (!favoritesData || !favoritesData.favorites || !favorites) return;
+    return () => {
+      // 컴포넌트 언마운트 시 실행 (탭 이동 시)
+      const newFavoriteIds = favoriteIds.filter(
+        (id) => !favorites.includes(id)
+      );
+      const newDeleteIds = deleteFavoriteIds.filter((id) =>
+        favorites.includes(id)
+      );
+
+      // 찜 추가 API 호출
+      if (newFavoriteIds.length > 0) {
+        createFavorite({ combinationIds: newFavoriteIds }, accessToken)
+          .then(() => {
+            setFavoriteIds([]);
+            queryClient.invalidateQueries(["favoritesData"]);
+          })
+          .catch(console.error);
+      }
+
+      // 찜 삭제 API 호출
+      if (newDeleteIds.length > 0) {
+        deleteAllFavorite(newDeleteIds, accessToken)
+          .then(() => {
+            setDeleteFavoriteIds([]);
+            queryClient.invalidateQueries(["favoritesData"]);
+          })
+          .catch(console.error);
+      }
+    };
+  }, [favoriteIds, deleteFavoriteIds, favorites, accessToken, favoritesData]);
 
   return (
     <div>

@@ -25,22 +25,44 @@ const ScentMain = () => {
   const deleteFavoriteIds = favoriteStore.deleteFavoriteIds;
   const setFavoriteIds = favoriteStore.setFavoriteIds;
   const setDeleteFavoriteIds = favoriteStore.setDeleteFavoriteIds;
+  // const favoritesData = favoriteStore.favoritesData;
+  const setFavoritesData = favoriteStore.setFavoritesData;
   useEffect(() => {
     console.log("sc찜아이디들", favoriteIds);
     console.log("sc삭제할찜아이디들", deleteFavoriteIds);
   }, [favoriteIds, deleteFavoriteIds]);
 
+  // ScentMain 마운트 시 강제 리페치
+  useEffect(() => {
+    refetch();
+  }, []);
+
   // 기존 db 찜 리스트
 
   // 찜 리스트 전체조회
   const queryClient = useQueryClient();
-  const { data: favoritesData, refetch } = useQuery({
+  const { data: fetchedFavoritesData, refetch } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
     staleTime: 0,
-    refetchOnMount: true,
+    refetchOnMount: "always",
+    initialData: { favorites: [] },
   });
+  useEffect(() => {
+    if (fetchedFavoritesData) {
+      console.log("📌 Zustand 상태 업데이트", fetchedFavoritesData);
+      setFavoritesData(fetchedFavoritesData);
+    }
+  }, [fetchedFavoritesData, setFavoritesData]);
 
+  const favoritesData = favoriteStore.favoritesData || fetchedFavoritesData;
+  useEffect(() => {
+    console.log("fetchedFavoritesData:", fetchedFavoritesData);
+    console.log("zustand 상태 favoritesData:", favoriteStore.favoritesData);
+  }, [fetchedFavoritesData, favoriteStore.favoritesData]);
+  useEffect(() => {
+    console.log("상태 업데이트 후 favoritesData:", favoritesData);
+  }, [favoritesData]);
   // 찜 내역 보내기
   const createMutation = useMutation({
     mutationFn: (ids: number[]) =>
@@ -70,27 +92,31 @@ const ScentMain = () => {
   useEffect(() => {
     if (!favoritesData?.favorites || !favorites) return;
 
+    let createTimeoutId: number;
+    let deleteTimeoutId: number;
+
     const newFavoriteIds = favoriteIds.filter((id) => !favorites.includes(id));
-    const newDeleteFavoriteIds = deleteFavoriteIds.filter((id) =>
+    const newDeleteIds = deleteFavoriteIds.filter((id) =>
       favorites.includes(id)
     );
 
     if (newFavoriteIds.length > 0) {
-      const createTimeoutId = setTimeout(() => {
+      createTimeoutId = window.setTimeout(() => {
         createMutation.mutate(newFavoriteIds);
-        setFavoriteIds([]);
       }, 300);
-      return () => clearTimeout(createTimeoutId);
     }
 
-    if (newDeleteFavoriteIds.length > 0) {
-      const deleteTimeoutId = setTimeout(() => {
-        deleteMutation.mutate(newDeleteFavoriteIds);
-        setDeleteFavoriteIds([]);
+    if (newDeleteIds.length > 0) {
+      deleteTimeoutId = window.setTimeout(() => {
+        deleteMutation.mutate(newDeleteIds);
       }, 300);
-      return () => clearTimeout(deleteTimeoutId);
     }
-  }, [favoriteIds, deleteFavoriteIds, favorites, favoritesData]);
+
+    return () => {
+      window.clearTimeout(createTimeoutId);
+      window.clearTimeout(deleteTimeoutId);
+    };
+  }, [favoriteIds, deleteFavoriteIds]);
 
   // 찜 버튼 클릭 시 단일 삭제
   const deleteSingleMutation = useMutation({
@@ -147,7 +173,7 @@ const ScentMain = () => {
         </div>
         <div className="overflow-y-auto max-h-[259px]">
           {/* FavoritesList 렌더링 ( favoritesData 배열을 받아서 렌더링)*/}
-          {favoritesData && favoritesData.favorites.length > 0 ? (
+          {favoritesData?.favorites?.length > 0 ? (
             <FavoritesList
               favorites={favoritesData.favorites}
               onToggleLike={handleToggleLike}

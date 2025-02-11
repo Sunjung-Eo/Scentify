@@ -13,7 +13,6 @@ import Modal from "../../../components/Alert/Modal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 import { ReservationManagerProps } from "./ReservationType";
-import { fetchFavoritesData } from "../../scent/scentmain/scenttypes";
 
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import HeartButton from "../../../components/Button/HeartButton";
@@ -41,9 +40,9 @@ export default function ReservationManager({
   const deleteMutation = useMutation({
     mutationFn: (scheduleId: number) => {
       if (selectedDevice === null) {
-        throw new Error("선택된 기기가 없습니다."); // 에러 처리
+        throw new Error("선택된 기기가 없습니다.");
       }
-      return deleteCustomSchedule(scheduleId, selectedDevice, accessToken); // selectedDevice는 여기서 number로 보장됨
+      return deleteCustomSchedule(scheduleId, selectedDevice, accessToken);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reservations"] });
@@ -55,8 +54,8 @@ export default function ReservationManager({
     },
   });
   // 삭제 버튼 핸들러
-  const [modalOpen, setModalOpen] = useState(false); // 모달달 표시 여부
-  const [modalMessage, setModalMessage] = useState(""); // 모달달 메시지
+  const [modalOpen, setModalOpen] = useState(false); // 모달 표시 여부
+  const [modalMessage, setModalMessage] = useState(""); // 모달 메시지
   const handleDeleteClick = (scheduleId: number) => {
     setReservationDelete(scheduleId);
     setModalMessage("예약을 삭제하시겠습니까?");
@@ -111,7 +110,34 @@ export default function ReservationManager({
   }, [customSchedules]);
 
   // 찜 id 리스트
-  const { favoriteIds, addFavorite, removeFavorite } = useFavoriteStore();
+  const {
+    favorites,
+    favoriteCombinationIds,
+    setFavoriteCombinationIds,
+    favoriteIds,
+    removeFavoriteIds,
+    addFavorite,
+    removeFavorite,
+  } = useFavoriteStore();
+  console.log("진짜임", favorites);
+  const { data: favoritesData } = useQuery({
+    queryKey: ["favoritesData"],
+    queryFn: () => getAllFavorite(accessToken),
+  });
+  // 찜 리스트 향 id들
+  // const [favoriteCombinationIds, setFavoriteCombinationIds] = useState<
+  //   number[]
+  // >([]);
+  useEffect(() => {
+    if (!favoritesData?.favorites || !favorites) return;
+    console.log("newwwwwwwwww", favoritesData);
+    const combinationIds = favoritesData.favorites.map(
+      (favorite: any) => favorite.combination.id
+    );
+    setFavoriteCombinationIds(combinationIds);
+    console.log("id에요", favoriteCombinationIds);
+  }, [favorites, favoritesData]);
+
   // const previousFavoriteIds = useFavoriteStore(
   //   (state) => state.previousFavoriteIds
   // );
@@ -132,9 +158,9 @@ export default function ReservationManager({
   // useEffect(() => {
   //   console.log("좋아요 (업데이트된 값)", previousFavoriteIds);
   // }, [previousFavoriteIds]);
-  // useEffect(() => {
-  //   console.log("좋아요123 (업데이트된 값)", favoriteIds);
-  // }, [favoriteIds]);
+  useEffect(() => {
+    console.log("좋아요123 (업데이트된 값)", favoriteIds);
+  }, [favoriteIds]);
 
   // // useEffect(() => {
   //   const initialFavorites = customSchedules
@@ -155,15 +181,16 @@ export default function ReservationManager({
   // const removeFavorite = (id: number) => {
   //   setFavoriteIds((prev) => prev.filter((favoriteId) => favoriteId !== id));
   // };
-  useEffect(() => {
-    console.log("찜아이디들", favoriteIds);
-  }, [favoriteIds]);
+  // useEffect(() => {
+  //   console.log("찜아이디들", favoriteIds);
+  // }, [favoriteIds]);
 
   return (
     <div>
       {customSchedules.length > 0 ? (
-        <div className="mt-3 pb-3 max-h-96 overflow-y-auto">
+        <div className="mt-3 pb-3 overflow-y-auto">
           {customSchedules.map((schedule) => {
+            console.log(schedule);
             const selectedDays = getDaysFromBitMask(schedule.day);
             const [startTime, startPeriod] = convertTo12Hour(
               schedule.startTime
@@ -203,7 +230,12 @@ export default function ReservationManager({
                   <div className="flex flex-col justify-between gap-3">
                     <div className="flex justify-between gap-2">
                       <HeartButton
-                        isLiked={favoriteIds.includes(schedule.combinationId)} // 찜 여부 확인 후 추가 제거거
+                        // isLiked={
+                        //   schedule.combinationId in (favorites || favoriteIds)
+                        // } // 찜 여부 확인 후 추가 제거
+                        isLiked={favoriteCombinationIds.includes(
+                          schedule.combinationId
+                        )}
                         onToggle={(newState) => {
                           if (newState) {
                             addFavorite(schedule.combinationId);

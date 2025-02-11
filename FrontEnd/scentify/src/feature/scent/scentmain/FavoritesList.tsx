@@ -1,4 +1,3 @@
-import React from "react";
 import FavoriteScent from "./FavoriteScent";
 import { Favorite } from "./scenttypes";
 
@@ -16,9 +15,14 @@ const FavoritesList = ({
   onToggleLike,
   onShare,
 }: FavoritesListProps) => {
+  // 초기 렌더링 전 로딩
+  if (!favorites || favorites.length === 0) {
+    return;
+  }
+  console.log(favorites);
   return (
     <div className="space-y-4">
-      {favorites.map((favorite) => (
+      {favorites.favorites.map((favorite: any) => (
         <FavoriteScent
           key={favorite.id}
           combination={favorite.combination}

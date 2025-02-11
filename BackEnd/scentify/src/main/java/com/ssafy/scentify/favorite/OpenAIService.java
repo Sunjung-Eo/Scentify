@@ -65,10 +65,9 @@ public class OpenAIService {
     		comment.deleteCharAt(comment.length() - 1);
     	}
     	
-    	comment.append(". There should never be any English or text in the picture.");
+    	comment.append(". Make sure you draw only one cocktail.");
+    	comment.append(" Never write letters on a picture.");
     	comment.append(" The cocktail glass in the picture must be in the middle.");
-    	comment.append(" You must draw only one cocktail glass in the picture.");
-    	comment.append(" The cocktail glass in the picture should be visible from top to bottom.");
     	comment.append(" The size of the picture cannot exceed 525 pixels * 525 pixels.");
     	comment.append(" The color of the painting must be painted.");
     	

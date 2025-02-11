@@ -165,10 +165,13 @@ public class FavoriteController {
 	        
 	        // s3 버킷에 업로드 후 링크 반환
 	        List<String> s3Urls = new ArrayList();
+	        List<String> imageNames = new ArrayList();
+	        
 	        for (ImageData imageData : imageResponse.getData()) {
 	            try {
-	                String s3Url = s3Service.downloadAndUploadImage(imageData.getUrl());
-	                s3Urls.add(s3Url);
+	                Map<String, String> s3Info = s3Service.downloadAndUploadImage(imageData.getUrl());
+	                s3Urls.add(s3Info.get("s3Url"));
+	                imageNames.add(s3Info.get("imageName"));
 	                
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -184,7 +187,7 @@ public class FavoriteController {
 	        shareCombination.setS3Url(s3Url);
 	        
 	        // s3에 업로드된 이미지 이름을 넣어줌
-	        String imageName = s3Url.substring(s3Url.lastIndexOf("/") + 1);
+	        String imageName = imageNames.get(0);
 	        String shareUrl = "http://localhost:5170/favorite/share/read/combinationId=" + combinationId + "&imageName=" + imageName;
 	        shareCombination.setShareUrl(shareUrl);
 	        

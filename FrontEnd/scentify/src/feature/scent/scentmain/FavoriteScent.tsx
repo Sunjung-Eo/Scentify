@@ -42,10 +42,12 @@ const FavoriteScent = ({
         {/* 향기 정보 */}
         <div className="text-10 text-sub font-pre-light flex gap-1">
           {[1, 2, 3, 4].map((num) => {
-            const scentName = getScentName(combination[`choice${num}`]);
-            const scentCount = combination[`choice${num}Count`] || 0;
+            const scentName = getScentName(
+              (combination as any)[`choice${num}`]
+            );
+            const scentCount = (combination as any)[`choice${num}Count`] || 0;
 
-            if (scentCount === 0) return null; // ⬅️ count가 0이면 아무것도 안 렌더링
+            if (scentCount === 0) return null;
 
             return (
               <span key={num} className="mr-1 flex items-center gap-1">

@@ -1,26 +1,26 @@
-import { useAuthStore } from '../../stores/useAuthStore';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import LoginForm from '../../feature/user/login/components/LoginForm';
-import '../../styles/global.css';
-import { useState } from 'react';
-import Logo from '../../assets/icons/scentify-green-logo.svg';
-import SocialLogoBtn from '../../components/Social/SocialLogoBtn';
+import { useAuthStore } from "../../stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import LoginForm from "../../feature/user/login/components/LoginForm";
+import "../../styles/global.css";
+import { useState } from "react";
+import Logo from "../../assets/icons/scentify-green-logo.svg";
+import SocialLogoBtn from "../../components/Social/SocialLogoBtn";
 
 const Login = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
+  const [id, setId] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setLoading(true);
     try {
       await login(id, password); // 1. 로그인 수행
-      navigate('/home');
+      navigate("/home");
     } catch (error) {
-      alert('로그인에 실패했습니다.');
+      alert("로그인에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ const Login = () => {
         <div className="flex py-6 font-pre-medium text-14">
           <Link to="/user/regist">회원가입 하기</Link>
           <span className="w-[56px]"></span>
-          <Link to="/user/forgot-password">비밀번호 찾기</Link>
+          <Link to="/user/find-password">비밀번호 찾기</Link>
         </div>
         <span className="py-1 font-pre-light text-12 text-gray">
           SNS 계정으로 로그인

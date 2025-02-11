@@ -93,19 +93,33 @@ const ScentMain = () => {
     }
   }, [favoriteIds, deleteFavoriteIds, favorites, favoritesData]);
 
-  // 찜 상태 토글 함수
-  const handleToggleLike = async (id: string) => {
-    try {
-      const response = await removeCombinationFromFavorites(id);
-
-      if (response === 200) {
-        alert("찜한 향기 조합이 삭제되었습니다.");
-        console.log(`Deleted favorite combination: ${id}`);
-      }
-    } catch (error) {
-      alert("삭제 중 오류가 발생했습니다.");
-    }
+  // 찜 버튼 클릭 시 단일 삭제
+  const deleteSingleMutation = useMutation({
+    mutationFn: (id: number) => deleteFavorite(id, accessToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
+      refetch();
+    },
+    onError: (error) => {
+      console.error("찜 목록 업데이트 실패:", error);
+    },
+  });
+  // 찜 버튼 핸들러
+  const handleToggleLike = (id: number) => {
+    deleteSingleMutation.mutate(id);
   };
+  // const handleToggleLike = async (id: string) => {
+  //   try {
+  //     const response = await removeCombinationFromFavorites(id);
+
+  //     if (response === 200) {
+  //       alert("찜한 향기 조합이 삭제되었습니다.");
+  //       console.log(`Deleted favorite combination: ${id}`);
+  //     }
+  //   } catch (error) {
+  //     alert("삭제 중 오류가 발생했습니다.");
+  //   }
+  // };
   // 공유 버튼 클릭 함수(id는 공유할 향기의 ID)
   const handleShare = (id: string) => {
     // `favoritesData`에서 해당 ID에 맞는 항목을 찾

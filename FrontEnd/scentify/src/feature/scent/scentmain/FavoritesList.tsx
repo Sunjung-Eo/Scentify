@@ -19,7 +19,7 @@ const FavoritesList = ({
   if (!favorites || favorites.length === 0) {
     return;
   }
-  console.log(favorites);
+  console.log("favorites", favorites);
   return (
     <div className="space-y-4">
       {favorites.favorites.map((favorite: any) => (
@@ -27,7 +27,7 @@ const FavoritesList = ({
           key={favorite.id}
           combination={favorite.combination}
           isLiked={true} // 기본적으로 찜 상태로 표시
-          onToggleLike={() => onToggleLike(favorite.id)}
+          onToggleLike={() => onToggleLike(favorite.combination.id)}
           onShare={() => onShare(favorite.id)}
         />
       ))}

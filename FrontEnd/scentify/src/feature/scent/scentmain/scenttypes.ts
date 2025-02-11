@@ -47,6 +47,6 @@ export interface ModalProps {
 // FavoritesList 컴포넌트의 Props 타입
 export interface FavoritesListProps {
   favorites: Favorite[]; // 찜한 향기 조합 목록
-  onToggleLike: (id: string) => void; // 찜 상태를 변경하는 함수
+  onToggleLike: (id: number) => void; // 찜 상태를 변경하는 함수
   onShare: (id: string) => void; // 공유 버튼 클릭 시 호출되는 함수
 }

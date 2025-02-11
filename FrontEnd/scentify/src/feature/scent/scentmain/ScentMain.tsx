@@ -1,13 +1,20 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useFavoriteStore } from "../../../stores/useFavoriteStore";
+
+import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
+import { createFavorite } from "../../../apis/scent/createFavorite";
+import {
+  deleteFavorite,
+  deleteAllFavorite,
+} from "../../../apis/scent/deleteFavorite";
+
 import ScentCarousel from "./scentcarousel";
 import FavoritesList from "./FavoritesList";
 import bookmarkIcon from "../../../assets/icons/bookmark.svg";
 import { removeCombinationFromFavorites } from "../../../apis/scent/favorite";
-import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
-import { createFavorite } from "../../../apis/scent/createFavorite";
 
 const ScentMain = () => {
   // 인증토큰
@@ -16,6 +23,13 @@ const ScentMain = () => {
   const favoriteStore = useFavoriteStore();
   const favorites = favoriteStore.favorites;
   const favoriteIds = favoriteStore.favoriteIds;
+  const deleteFavoriteIds = favoriteStore.deleteFavoriteIds;
+  const setFavoriteIds = favoriteStore.setFavoriteIds;
+  const setDeleteFavoriteIds = favoriteStore.setDeleteFavoriteIds;
+  useEffect(() => {
+    console.log("sc찜아이디들", favoriteIds);
+    console.log("sc삭제할찜아이디들", deleteFavoriteIds);
+  }, [favoriteIds, deleteFavoriteIds]);
 
   // 기존 db 찜 리스트
 
@@ -24,6 +38,8 @@ const ScentMain = () => {
   const { data: favoritesData, refetch } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   // 찜 내역 보내기
@@ -31,27 +47,51 @@ const ScentMain = () => {
     mutationFn: (ids: number[]) =>
       createFavorite({ combinationIds: ids }, accessToken),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["favoriteData"] });
+      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
       refetch();
+      setFavoriteIds([]);
     },
     onError: (error) => {
       console.error("찜 목록 업데이트 실패:", error);
     },
   });
+  // 찜 삭제 내역 보내기
+  const deleteMutation = useMutation({
+    mutationFn: (ids: number[]) => deleteAllFavorite(ids, accessToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
+      refetch();
+      setDeleteFavoriteIds([]);
+    },
+    onError: (error) => {
+      console.error("찜 목록 업데이트 실패:", error);
+    },
+  });
+
   useEffect(() => {
     if (!favoritesData?.favorites || !favorites) return;
 
     const newFavoriteIds = favoriteIds.filter((id) => !favorites.includes(id));
-    if (newFavoriteIds.length > 0) {
-      // debounce를 적용하여 빠른 연속 호출 방지
-      const timeoutId = setTimeout(() => {
-        createMutation.mutate(newFavoriteIds);
-      }, 300);
+    const newDeleteFavoriteIds = deleteFavoriteIds.filter((id) =>
+      favorites.includes(id)
+    );
 
-      return () => clearTimeout(timeoutId);
+    if (newFavoriteIds.length > 0) {
+      const createTimeoutId = setTimeout(() => {
+        createMutation.mutate(newFavoriteIds);
+        setFavoriteIds([]);
+      }, 300);
+      return () => clearTimeout(createTimeoutId);
     }
-    console.log(favoritesData);
-  }, [favoriteIds, favorites, favoritesData]);
+
+    if (newDeleteFavoriteIds.length > 0) {
+      const deleteTimeoutId = setTimeout(() => {
+        deleteMutation.mutate(newDeleteFavoriteIds);
+        setDeleteFavoriteIds([]);
+      }, 300);
+      return () => clearTimeout(deleteTimeoutId);
+    }
+  }, [favoriteIds, deleteFavoriteIds, favorites, favoritesData]);
 
   // 찜 상태 토글 함수
   const handleToggleLike = async (id: string) => {

@@ -115,9 +115,11 @@ export default function ReservationManager({
     favoriteCombinationIds,
     setFavoriteCombinationIds,
     favoriteIds,
-    removeFavoriteIds,
+    deleteFavoriteIds,
     addFavorite,
     removeFavorite,
+    deleteAddFavorite,
+    deleteRemoveFavorite,
   } = useFavoriteStore();
   console.log("진짜임", favorites);
   const { data: favoritesData } = useQuery({
@@ -135,7 +137,7 @@ export default function ReservationManager({
       (favorite: any) => favorite.combination.id
     );
     setFavoriteCombinationIds(combinationIds);
-    console.log("id에요", favoriteCombinationIds);
+    console.log("favoritesData", favoritesData);
   }, [favorites, favoritesData]);
 
   // const previousFavoriteIds = useFavoriteStore(
@@ -181,9 +183,10 @@ export default function ReservationManager({
   // const removeFavorite = (id: number) => {
   //   setFavoriteIds((prev) => prev.filter((favoriteId) => favoriteId !== id));
   // };
-  // useEffect(() => {
-  //   console.log("찜아이디들", favoriteIds);
-  // }, [favoriteIds]);
+  useEffect(() => {
+    console.log("찜아이디들", favoriteIds);
+    console.log("삭제할찜아이디들", deleteFavoriteIds);
+  }, [favoriteIds, deleteFavoriteIds]);
 
   return (
     <div>
@@ -237,10 +240,18 @@ export default function ReservationManager({
                           schedule.combinationId
                         )}
                         onToggle={(newState) => {
+                          // const deleteTarget = favoritesData.favorites.find(
+                          //   (fav: any) =>
+                          //     fav.combination.id === schedule.combinationId
+                          // );
                           if (newState) {
                             addFavorite(schedule.combinationId);
+                            // deleteRemoveFavorite(deleteTarget.id);
+                            deleteRemoveFavorite(schedule.combinationId);
                           } else {
                             removeFavorite(schedule.combinationId);
+                            // deleteAddFavorite(deleteTarget.id);
+                            deleteAddFavorite(schedule.combinationId);
                           }
                         }}
                       />

@@ -138,8 +138,9 @@ const UserCard: React.FC<UserCardProps> = ({
           {/* 닉네임 */}
           <div className="">
             <span className="font-pre-bold text-[22px]">{nickname}</span>{' '}
+            <span className="font-pre-light text-[22px]">님</span>
             {/* 홍길동만 pre-bold */}
-            <p className="font-pre-light text-[22px] ">님 반갑습니다!</p>
+            <p className="font-pre-light text-[22px] ">반갑습니다!</p>
           </div>
         </div>
 

@@ -11,6 +11,11 @@ const Regist = () => {
     window.location.href = '/v1/auth/kakao/login';
   };
 
+  const handleGoogleLogin = () => {
+    // 백엔드 API 호출 후 카카오 로그인 페이지로 리디렉트됨
+    window.location.href = '/v1/auth/google/login';
+  };
+
   return (
     <Layout>
       <div className="flex flex-col items-center mt-4">
@@ -25,7 +30,7 @@ const Regist = () => {
               <button onClick={handleKakaoLogin}>
                 <img src={kakaoLogo} alt="Kakao Logo" className="h-12 w-12" />
               </button>
-              <button onClick={() => navigate('v1/auth/google/regist')}>
+              <button onClick={handleGoogleLogin}>
                 <img src={googleLogo} alt="Google Logo" className="h-12 w-12" />
               </button>
             </div>

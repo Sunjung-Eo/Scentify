@@ -29,7 +29,7 @@ export const getClosestCustomSchedule = (
   const today = now.getDay(); // 0(일) ~ 6(토)
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const DAY_BITS = [1, 2, 4, 8, 16, 32, 64];
+  const DAY_BITS = [1, 64, 32, 16, 8, 4, 2];
   const todayBit = DAY_BITS[today];
 
   console.log(
@@ -39,9 +39,9 @@ export const getClosestCustomSchedule = (
 
   // 1. 현재 실행 중인 예약 찾기
   const runningSchedule = schedules.find((schedule) => {
+    if (!schedule.modeOn) return false; // ✅ modeOn이 false면 실행 중 아님
     // 오늘 요일에 해당하는지 확인
     const isToday = (schedule.day & todayBit) !== 0;
-
     if (!isToday) return false;
 
     // 시작 시간과 종료 시간을 분으로 변환

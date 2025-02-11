@@ -16,7 +16,7 @@ const SocialLogoBtn = () => {
       <button onClick={() => handleSocialLogin('kakao')}>
         <img src={kakaoLogo} alt="Kakao Logo" className="h-10 w-10" />
       </button>
-      <button>
+      <button onClick={() => handleSocialLogin('google')}>
         <img src={googleLogo} alt="Google Logo" className="h-10 w-10" />
       </button>
     </div>

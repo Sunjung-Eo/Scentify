@@ -1,10 +1,10 @@
 import { SocialRegistData } from '../../../feature/user/social/types/SocialRegistData';
 
-export const registKakao = async (
+export const registGoogle = async (
   userData: SocialRegistData
 ): Promise<void> => {
   try {
-    const response = await fetch('/v1/auth/kakao/regist', {
+    const response = await fetch('/v1/auth/google/regist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

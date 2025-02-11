@@ -4,97 +4,140 @@ import {
   AutoSchedule,
 } from '../../../../../types/SchedulesType';
 import scheduleBg from '../../../../../assets/images/scheduleBg.png';
+import {
+  getClosestCustomSchedule,
+  getActiveAutoSchedule,
+} from '../schedulesUtil';
 
 interface DeviceScheduleProps {
-  deviceId: number;
-  scheduleData:
-    | {
-        type: 0 | 1 | null;
-        schedules: CustomSchedule[] | AutoSchedule[] | null;
-      }
-    | undefined;
-}
-
-interface ScheduleItem {
-  id: number;
-  deviceId: number;
-  name: string;
-  type: string;
-  scheduleTime: number;
+  deviceId: number | null;
+  scheduleData: {
+    type: 0 | 1 | null;
+    schedules: {
+      customSchedules?:
+        | CustomSchedule[]
+        | { customSchedules: CustomSchedule[] };
+      autoSchedules?: AutoSchedule[];
+    } | null;
+  } | null;
 }
 
 const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   deviceId,
   scheduleData,
 }) => {
-  if (!scheduleData || !scheduleData.schedules) {
-    return (
-      <div className="w-full mt-4 px-5">
-        <div
-          className="relative w-full h-40 bg-cover bg-center flex flex-col justify-start items-center text-white rounded-lg shadow-none pt-3"
-          style={{ backgroundImage: `url(${scheduleBg})` }}
-        >
-          <p className="text-sm text-gray-500 px-3 py-10 mt-5 rounded-md text-gray text-12 font-pre-light">
-            현재 예정된 스케줄이 없습니다.
-          </p>
-        </div>
-      </div>
-    );
+  let activeAutoSchedules: AutoSchedule[] = [];
+  let closestCustomSchedule: CustomSchedule | null = null;
+
+  if (scheduleData?.type === 1 && scheduleData.schedules?.autoSchedules) {
+    activeAutoSchedules = getActiveAutoSchedule({
+      type: 1,
+      schedules: scheduleData.schedules.autoSchedules,
+    });
+  } else if (
+    scheduleData?.type === 0 &&
+    scheduleData.schedules?.customSchedules
+  ) {
+    const customSchedulesArray = Array.isArray(
+      scheduleData.schedules.customSchedules
+    )
+      ? scheduleData.schedules.customSchedules
+      : (
+          scheduleData.schedules.customSchedules as {
+            customSchedules: CustomSchedule[];
+          }
+        ).customSchedules;
+
+    closestCustomSchedule = getClosestCustomSchedule({
+      type: 0,
+      schedules: customSchedulesArray,
+    });
   }
 
-  const now = new Date();
-  const nowTime = now.getHours() * 60 + now.getMinutes();
+  console.log('🐛🐛🐛 scheduleData: ', scheduleData);
+  console.log('🐛🐛🐛 activeAutoSchedules: ', activeAutoSchedules);
 
-  console.log('🤪🤪🤪 넘어온 scheduleData: ', scheduleData);
-  console.log('끝');
-  const allSchedules: ScheduleItem[] =
-    scheduleData.type === 0
-      ? (scheduleData.schedules as CustomSchedule[]).map(
-          (schedule: CustomSchedule) => ({
-            id: schedule.id,
-            deviceId: deviceId,
-            name: schedule.name || '',
-            type: '예약 모드',
-            scheduleTime:
-              parseInt(schedule.startTime.split(':')[0]) * 60 +
-              parseInt(schedule.startTime.split(':')[1]),
-          })
-        )
-      : (scheduleData.schedules as AutoSchedule[]).map(
-          (schedule: AutoSchedule) => ({
-            id: schedule.id,
-            deviceId: deviceId,
-            name: `자동 스케줄 ${schedule.id}`,
-            type: '자동화 모드',
-            scheduleTime: schedule.interval || 0,
-          })
-        );
-
-  let closestSchedule: ScheduleItem = {
-    id: -1,
-    deviceId: deviceId,
-    name: 'No Schedule',
-    type: '-',
-    scheduleTime: 0,
-  };
-  let minDiff = Infinity;
-
-  allSchedules.forEach((schedule) => {
-    const timeDiff = schedule.scheduleTime - nowTime;
-    if (timeDiff >= 0 && timeDiff < minDiff) {
-      closestSchedule = schedule;
-      minDiff = timeDiff;
+  const scheduleInfo = () => {
+    if (!scheduleData || !scheduleData.schedules) {
+      return {
+        type: '-',
+        name: '예약 없음',
+        timeText: '',
+      };
     }
-  });
+
+    if (scheduleData.type === 1 && activeAutoSchedules.length > 0) {
+      return {
+        type: '자동화 모드',
+        schedules: activeAutoSchedules.map((schedule) => {
+          let modeName = '';
+          switch (schedule.subMode) {
+            case 0:
+              modeName = '탐지모드';
+              break;
+            case 1:
+              modeName =
+                schedule.type === 1 ? '동작모드(운동)' : '동작모드(휴식)';
+              break;
+            case 2:
+              modeName = '탈취모드';
+              break;
+          }
+
+          return {
+            name: modeName,
+            timeText: schedule.interval
+              ? `${schedule.interval}분 간격`
+              : '간격 없음',
+          };
+        }),
+      };
+    }
+
+    if (closestCustomSchedule && scheduleData.type === 0) {
+      const [hours, minutes] = closestCustomSchedule.startTime
+        .split(':')
+        .map(Number);
+      const now = new Date();
+      const scheduleDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hours,
+        minutes
+      );
+      const diffMinutes = Math.floor(
+        (scheduleDate.getTime() - now.getTime()) / (1000 * 60)
+      );
+      const diffHours = Math.floor(diffMinutes / 60);
+      const remainingMinutes = diffMinutes % 60;
+
+      return {
+        type: '예약 모드',
+        name: closestCustomSchedule.name || '예약',
+        timeText: `${diffHours}시간 ${remainingMinutes}분 후`,
+      };
+    }
+
+    return {
+      type: '-',
+      name: '예약 없음',
+      timeText: '',
+    };
+  };
+
+  const currentSchedule = scheduleInfo();
 
   return (
     <div className="w-full mt-4 px-5">
       <div
-        className="relative w-full h-40 bg-cover bg-center flex flex-col justify-start items-center text-white rounded-lg shadow-none pt-3"
-        style={{ backgroundImage: `url(${scheduleBg})` }}
+        className="relative w-full h-40 bg-cover bg-center flex flex-col justify-start items-center bg-white text-white rounded-[12px] pt-3"
+        style={{
+          filter: 'drop-shadow(0px 0px 15px rgba(0, 0, 0, 0.05))',
+        }}
       >
         <div
-          className="absolute top-3 right-0 flex items-center justify-center text-white text-xs font-semibold"
+          className="absolute top-0 right-0 flex items-center justify-center text-white text-xs font-semibold"
           style={{
             width: '83px',
             height: '31px',
@@ -103,22 +146,23 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
             background: '#2D3319',
           }}
         >
-          {closestSchedule?.type || '-'}
+          {currentSchedule.type}
         </div>
 
-        {allSchedules.length === 0 ? (
-          <p className="text-sm text-gray-500 px-3 py-10 mt-5 rounded-md text-gray text-12 font-pre-light">
-            현재 예정된 스케줄이 없습니다.
-          </p>
-        ) : (
-          <div className="text-center bg-black bg-opacity-50 p-3 rounded-lg">
-            <h4 className="text-md font-semibold">다가오는 예약</h4>
-            <p className="text-sm">
-              {closestSchedule.name} - {closestSchedule.type} (
-              {Math.floor(minDiff / 60)}시간 {minDiff % 60}분 후)
+        <div className="text-center bg-black bg-opacity-50 p-3 rounded-lg w-full">
+          {currentSchedule.schedules?.map((schedule, index) => (
+            <p key={index} className="text-sm mt-2">
+              {schedule.name}
+              {schedule.timeText && ` (${schedule.timeText})`}
             </p>
-          </div>
-        )}
+          ))}
+          {!currentSchedule.schedules && (
+            <p className="text-sm mt-2">
+              {currentSchedule.name}
+              {currentSchedule.timeText && ` (${currentSchedule.timeText})`}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

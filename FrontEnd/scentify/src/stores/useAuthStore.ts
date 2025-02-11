@@ -24,7 +24,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loginWithSocial: async (provider: 'kakao' | 'google') => {
     try {
       // 다시 카카오 로그인 Access 토큰 발급하기
-      const response = await fetch('/v1/auth/kakao/token/issue', {
+      const response = await fetch(`/v1/auth/${provider}/token/issue`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

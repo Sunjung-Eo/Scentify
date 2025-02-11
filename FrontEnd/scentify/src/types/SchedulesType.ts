@@ -16,7 +16,7 @@ export interface CustomSchedule {
   combinationName: string;
   isFavorite: boolean;
   day: number;
-  startTime: string;
+  startTime: string; // HH : mm : ss 형식
   endTime: string;
   interval: number | null;
   modeOn: boolean;

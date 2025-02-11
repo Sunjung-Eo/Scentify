@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
@@ -58,7 +58,7 @@ const Control = () => {
   }, []);
 
   // 기기 정보 조회
-  const { data: fetchDeviceData = {} } = useQuery({
+  const { data: fetchDeviceData = {}, isLoading } = useQuery({
     queryKey: ["deviceInfo"],
     queryFn: () => getDeviceInfo(deviceIds, accessToken),
   });
@@ -110,9 +110,11 @@ const Control = () => {
     (device: any) => device.id === selectedDevice
   );
   // 현재 설정된 모드
-  const [mode, setMode] = useState(selectedDeviceData?.mode ?? false);
+  const [mode, setMode] = useState<boolean | null>(null);
   useEffect(() => {
-    setMode(selectedDeviceData?.mode ?? false);
+    if (selectedDeviceData?.mode !== undefined) {
+      setMode(selectedDeviceData.mode);
+    }
   }, [selectedDeviceData]);
 
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
@@ -126,7 +128,7 @@ const Control = () => {
     }
     if (mode !== newMode) {
       const getModeName = () => {
-        return nextMode === false ? "예약 " : "자동화 ";
+        return newMode ? "자동화 " : "예약 ";
       };
       setNextMode(newMode);
       setModalMessage(`${getModeName()}모드로 변경하시겠습니까?`);
@@ -134,13 +136,22 @@ const Control = () => {
     }
   };
   // 모달 창 확인 버튼
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedDevice) {
-      switchMode(selectedDevice, nextMode, accessToken);
+      try {
+        await switchMode(selectedDevice, nextMode, accessToken);
+        setMode(nextMode);
+        setModalOpen(false);
+      } catch (error) {
+        console.error("모드 변경 실패:", error);
+      }
     }
-    setMode(nextMode);
-    setModalOpen(false);
   };
+  useEffect(() => {
+    if (selectedDeviceData?.mode !== undefined) {
+      setMode(selectedDeviceData.mode);
+    }
+  }, [selectedDeviceData?.mode]);
 
   // 모달 창 취소 버튼
   const handleCancel = () => {
@@ -177,11 +188,15 @@ const Control = () => {
                   />
                 </div>
                 <div className="mt-2 border-0.2 border-sub text-center pre-light text-12 rounded-lg">
-                  {deviceIds.length === 0
-                    ? "기기를 먼저 등록해주세요."
-                    : mode === false
-                      ? "지금은 예약 모드입니다."
-                      : "지금은 자동화 모드입니다."}
+                  {isLoading
+                    ? ""
+                    : deviceIds.length === 0
+                      ? "기기를 먼저 등록해주세요."
+                      : mode === null
+                        ? ""
+                        : mode
+                          ? "지금은 자동화 모드입니다."
+                          : "지금은 예약 모드입니다."}
                 </div>
               </div>
               <div className={"mt-12 font-pre-medium text-16"}>

@@ -126,7 +126,7 @@ export default function ReservationManager({
     setDeleteFavoriteIds,
     setFavoritesData,
   } = useFavoriteStore();
-  console.log("DB저장찜", favorites);
+
   const { data: favoritesData } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
@@ -147,14 +147,11 @@ export default function ReservationManager({
     // console.log("favoritesData", favoritesData);
   }, [favorites, favoritesData]);
 
+  // console.log("DB저장찜", favorites);
   // useEffect(() => {
-  //   console.log("좋아요123 (업데이트된 값)", favoriteIds);
-  // }, [favoriteIds]);
-
-  useEffect(() => {
-    console.log("찜아이디들", favoriteIds);
-    console.log("삭제할찜아이디들", deleteFavoriteIds);
-  }, [favoriteIds, deleteFavoriteIds]);
+  //   console.log("찜아이디들", favoriteIds);
+  //   console.log("삭제할찜아이디들", deleteFavoriteIds);
+  // }, [favoriteIds, deleteFavoriteIds]);
 
   useEffect(() => {
     if (!favoritesData || !favoritesData.favorites || !favorites) return;
@@ -194,7 +191,6 @@ export default function ReservationManager({
       {customSchedules.length > 0 ? (
         <div className="mt-3 pb-3 overflow-y-auto">
           {customSchedules.map((schedule) => {
-            // console.log(schedule);
             const selectedDays = getDaysFromBitMask(schedule.day);
             const [startTime, startPeriod] = convertTo12Hour(
               schedule.startTime

@@ -1,6 +1,7 @@
 import json
 import asyncio
 from datetime import datetime, time
+from mqtt_client import *
 
 class WebSocketResponseHandler:
     _instance = None  
@@ -41,6 +42,7 @@ class WebSocketResponseHandler:
                 "/topic/Schedule/Initial/" : self.handler_schedule_init,
                 "/topic/Schedule/Change/" : self.handler_schedule_change,
                 "/topic/Schedule/Delete/" : self.handler_schedule_delete,
+                "/topic/Schedule/Add/" : self.handler_schedule_add,
                 
                 # 디폴트
                 "default": self.default_hanlder
@@ -115,53 +117,92 @@ class WebSocketResponseHandler:
     def handler_schedule_init(self, message): 
         payload = json.loads(message)
         list_schedules = payload["schedules"]
+        self.schedules = dict()
         for value in list_schedules:
             value["startTime"] = datetime.strptime(value["startTime"], "%H:%M:%S").time()
             value["endTime"] = datetime.strptime(value["endTime"], "%H:%M:%S").time()
+            value["is_running"] = False
             self.schedules[value["id"]] = value
         
         if self.print_log:
             print("Handling Schedule Initial Operation")
 
-    def handler_schedule_change(self, message):
+    async def handler_schedule_change(self, message):
         payload = json.loads(message)
         schedule = payload["schedule"]
+        if schedule["id"] not in self.schedules:
+            print("Schedule Change Error! -- Not Exist ID")
+            return
+
         schedule["startTime"] = datetime.strptime(schedule["startTime"], "%H:%M:%S").time()
         schedule["endTime"] = datetime.strptime(schedule["endTime"], "%H:%M:%S").time()
+        schedule["is_running"] = False
         self.schedules[schedule["id"]] = schedule
 
-    def handler_schedule_delete(self, message):
+    async def handler_schedule_delete(self, message):
         payload = json.loads(message)
         schedule_id = payload["scheduleId"]
 
         if schedule_id in self.schedules:
             del self.schedules[schedule_id]
+        else:
+            print("Schedule Delete Error! -- Not Exist ID")
+
+    async def handler_schedule_add(self, message): 
+        payload = json.loads(message)
+        list_schedules = payload["schedules"]
+        for value in list_schedules:
+            value["startTime"] = datetime.strptime(value["startTime"], "%H:%M:%S").time()
+            value["endTime"] = datetime.strptime(value["endTime"], "%H:%M:%S").time()
+            value["is_running"] = False
+            self.schedules[value["id"]] = value
+        
+        if self.print_log:
+            print("Handling Schedule Initial Operation")
 
     async def schedule_operation_loop(self, schedule_id):
-        if schedule_id not in self.schedules:
+        if schedule_id not in self.schedules or not self.schedules[schedule_id]["modeOn"]:
             return
 
         # 동작 모드일 때에만 수행
-        while self.schedules[schedule_id]["modeOn"]:
-            now = datetime.now().strftime("%H:%M:%S")
-            # 수행 시간이 끝나면 break
-            if now > self.schedules[schedule_id]["endTime"] or now < self.schedules[schedule_id]["startTime"]:
-                break
-
+        while True:
             # 스케줄이 삭제되면 break
             if schedule_id not in self.schedules:
                 break
 
+            if not self.schedules[schedule_id]["modeOn"]:
+                break
+
+            now = datetime.now().strftime("%H:%M:%S")
+            now_time = datetime.strptime(now, "%H:%M:%S").time()
+
+            print(self.schedules[schedule_id]["startTime"], now_time, self.schedules[schedule_id]["endTime"])
+
+            # 수행 시간이 끝나면 break
+            if now_time > self.schedules[schedule_id]["endTime"] or now_time < self.schedules[schedule_id]["startTime"]:
+                break
+
+            print(f"{schedule_id} Operation from Schedule!!")
+            json_combination = json.dumps(self.schedules[schedule_id]["combination"])
             # combination에 해당하는 조합 분사
-            self.handler_remote_operation(self.schedules[schedule_id]["combination"])
+            await self.handler_remote_operation(json_combination)
+            self.schedules[schedule_id]["is_running"] = True
             await asyncio.sleep(60 * self.schedules[schedule_id]["interval"])
+
+        print(f"{schedule_id} Operation Finish!")
+
+        if schedule_id in self.schedules:
+            self.schedules[schedule_id]["is_running"] = False
 
     async def handler_schedule(self):
         while not self.operation_mode:
             now = datetime.now().strftime("%H:%M:%S")
+            now_time = datetime.strptime(now, "%H:%M:%S").time()
+
+            print(now_time)
 
             for (key, value) in self.schedules.items():
-                if value["startTime"] > now and value["endTime"] < now:
+                if value["startTime"] < now_time and value["endTime"] > now_time and not value["is_running"]:
                     asyncio.create_task(self.schedule_operation_loop(key))
 
             await asyncio.sleep(10)
@@ -171,3 +212,107 @@ class WebSocketResponseHandler:
         print("There isn't type!!")
         return 400
 
+
+async def main():
+    work_queue = asyncio.Queue()
+    mqtt_client = MQTTClient(url="192.168.137.127", work_queue=work_queue)
+    asyncio.create_task(mqtt_client.connect())
+    await asyncio.sleep(2)
+
+    handler = WebSocketResponseHandler(mqtt_client=mqtt_client)
+    capsule_data = {
+            "slot1" : 4,
+            "slot2" : 2,
+            "slot3" : 5,
+            "slot4" : 3,
+    }
+
+    json_capsule_msg = json.dumps(capsule_data)
+    await handler.handler_capsule_initial_info(json_capsule_msg)
+
+    schedule_data = {
+        "schedules": [
+            {
+                "id": "1",
+                "deviceId": "A1",
+                "combination": {
+                    "choice1": 1, "choice1Count": 3,
+                    "choice2": 2, "choice2Count": 2,
+                    "choice3": None, "choice3Count": None,
+                    "choice4": None, "choice4Count": None
+                },
+                "startTime": "18:00:00",
+                "endTime": "18:30:00",
+                "interval": 15,
+                "modeOn": True
+            },
+            {
+                "id": "2",
+                "deviceId": "B2",
+                "combination": {
+                    "choice1": 2, "choice1Count": 2,
+                    "choice2": 1, "choice2Count": 3,
+                    "choice3": None, "choice3Count": None,
+                    "choice4": None, "choice4Count": None
+                },
+                "startTime": "17:13:00",
+                "endTime": "18:20:40",
+                "interval": 0.3,
+                "modeOn": True
+            },
+            {
+                "id": "3",
+                "deviceId": "C3",
+                "combination": {
+                    "choice1": 2, "choice1Count": 5,
+                    "choice2": 5, "choice2Count": 2,
+                    "choice3": 4, "choice3Count": 5,
+                    "choice4": 3, "choice4Count": 4
+                },
+                "startTime": "17:02:10",
+                "endTime": "17:03:00",
+                "interval": 0.1,
+                "modeOn": True
+            }
+        ]
+    }
+
+    json_msg = json.dumps(schedule_data)
+    handler.handler_schedule_init(json_msg)
+
+    mode_msg = {
+        "mode" : 0,
+    }
+    json_mode_msg = json.dumps(mode_msg)
+    asyncio.create_task(handler.handler_set_operation_mode(json_mode_msg))
+
+    await asyncio.sleep(20)
+    print("request add")
+
+    add_schedule_msg = {
+        "schedules" : [
+            {
+                "id": "3",
+                "deviceId": "C3",
+                "combination": {
+                    "choice1": 2, "choice1Count": 5,
+                    "choice2": 5, "choice2Count": 2,
+                    "choice3": 4, "choice3Count": 5,
+                    "choice4": 3, "choice4Count": 4
+                },
+                "startTime": "17:02:10",
+                "endTime": "17:50:00",
+                "interval": 0.1,
+                "modeOn": True
+            }
+        ]
+    }
+    json_add_schedule_msg = json.dumps(add_schedule_msg)
+    asyncio.create_task(handler.handler_schedule_add(json_add_schedule_msg))
+    
+
+    # print(handler.schedules)
+    while True:
+        await asyncio.sleep(2)
+
+asyncio.run(main())

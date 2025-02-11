@@ -63,7 +63,8 @@ class WebSocketClient:
                 "/topic/Auto/Schedule/Initial/",
                 "/topic/Schedule/Initial/",
                 "/topic/Schedule/Change/",
-                "/topic/Schedule/Delete/"
+                "/topic/Schedule/Delete/",
+                "/topic/Schedule/Add/",
             ]
 
             self.initial_request_dest = [

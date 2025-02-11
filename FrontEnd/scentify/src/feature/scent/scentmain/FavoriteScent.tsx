@@ -1,6 +1,8 @@
 import HeartButton from "../../../components/Button/HeartButton";
 import ShareIcon from "../../../assets/icons/shareIcon.svg";
+import { getScentName } from "../../../utils/control/scentUtils";
 import { Combination } from "./scenttypes";
+import { getColor } from "../../../utils/control/scentUtils";
 
 // FavoriteScent 컴포넌트 Props 타입 정의
 interface FavoriteScentProps {
@@ -20,39 +22,44 @@ const FavoriteScent = ({
   return (
     <div className="flex justify-between items-start">
       <div className="mb-[19px]">
-        {/* 조합 이름 */}
-        <h3 className="text-14 text-brand font-pre-medium mb-1">
-          {combination.name || "이름 없는 조합"}
-        </h3>
+        <div className="flex w-[310px] mb-[10px] mr-[10px] justify-between">
+          {/* 조합 이름 */}
+          <h3 className="text-14 text-brand font-pre-medium mb-1">
+            {combination.name || "이름 없는 조합"}
+          </h3>
+          {/* 찜 & 공유 버튼 */}
+          <div className="flex flex-row gap-3">
+            <HeartButton isLiked={isLiked} onToggle={onToggleLike} />
+            <button onClick={onShare}>
+              <img
+                src={ShareIcon}
+                alt="공유 아이콘"
+                className="w-[17px] h-[18px]"
+              />
+            </button>
+          </div>
+        </div>
         {/* 향기 정보 */}
-        <p className="text-10 text-sub font-pre-light flex gap-1">
-          <span className="mr-1">
-            {combination.choice1} ({combination.choice1Count})
-          </span>
-          <span className="mr-1">
-            {combination.choice2 || "없음"} (
-            {combination.choice2Count || "없음"})
-          </span>
-          <span className="mr-1">
-            {combination.choice3 || "없음"} (
-            {combination.choice3Count || "없음"})
-          </span>
-          <span>
-            {combination.choice4 || "없음"} (
-            {combination.choice4Count || "없음"})
-          </span>
-        </p>
-      </div>
-      {/* 찜 & 공유 버튼 */}
-      <div className="flex flex-row gap-3">
-        <HeartButton isLiked={isLiked} onToggle={onToggleLike} />
-        <button onClick={onShare}>
-          <img
-            src={ShareIcon}
-            alt="공유 아이콘"
-            className="w-[17px] h-[18px]"
-          />
-        </button>
+        <div className="text-10 text-sub font-pre-light flex gap-1">
+          {[1, 2, 3, 4].map((num) => {
+            const scentName = getScentName(combination[`choice${num}`]);
+            const scentCount = combination[`choice${num}Count`] || 0;
+
+            if (scentCount === 0) return null; // ⬅️ count가 0이면 아무것도 안 렌더링
+
+            return (
+              <span key={num} className="mr-1 flex items-center gap-1">
+                {scentName}
+                {Array.from({ length: scentCount }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-3 h-3 ${getColor(scentName)}`}
+                  ></div>
+                ))}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

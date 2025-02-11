@@ -1,4 +1,4 @@
-package com.ssafy.scentify.favorite;
+package com.ssafy.scentify.common.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;

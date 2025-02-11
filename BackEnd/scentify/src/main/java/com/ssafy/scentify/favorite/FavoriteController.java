@@ -20,13 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.scentify.combination.CombinationController;
 import com.ssafy.scentify.combination.CombinationService;
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
+import com.ssafy.scentify.common.service.AIService;
+import com.ssafy.scentify.common.service.S3Service;
 import com.ssafy.scentify.common.util.TokenProvider;
-import com.ssafy.scentify.favorite.model.dto.CommentRequest;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListDto;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.FavoriteListResponseDto;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ImageGenerationResponse;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ImageGenerationResponse.ImageData;
 import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ShareCombination;
-import com.ssafy.scentify.favorite.model.dto.ImageGenerationResponse;
-import com.ssafy.scentify.favorite.model.dto.ImageGenerationResponse.ImageData;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,11 +40,11 @@ public class FavoriteController {
 	
 	private final FavoriteService favoriteService;
 	private final CombinationService combinationService;
-	private final OpenAIService aiService;
+	private final AIService aiService;
 	private final S3Service s3Service;
 	private final TokenProvider tokenProvider;
 	
-	public FavoriteController(FavoriteService favoriteService, CombinationService combinationService, OpenAIService aiService, S3Service s3Service, TokenProvider tokenProvider) {
+	public FavoriteController(FavoriteService favoriteService, CombinationService combinationService, AIService aiService, S3Service s3Service, TokenProvider tokenProvider) {
 		this.favoriteService = favoriteService;
 		this.combinationService = combinationService;
 		this.aiService = aiService;

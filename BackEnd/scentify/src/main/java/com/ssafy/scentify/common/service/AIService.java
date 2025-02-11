@@ -1,30 +1,30 @@
-package com.ssafy.scentify.favorite;
+package com.ssafy.scentify.common.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.common.config.ChatGptConfig;
-import com.ssafy.scentify.favorite.model.dto.CommentRequest;
-import com.ssafy.scentify.favorite.model.dto.ImageGenerationRequest;
-import com.ssafy.scentify.favorite.model.dto.ImageGenerationResponse;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ImageGenerationRequest;
+import com.ssafy.scentify.favorite.model.dto.FavoriteDto.ImageGenerationResponse;
 
 import jakarta.annotation.PostConstruct;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
-public class OpenAIService {
+public class AIService {
 	
 	private final Map<Integer, String> scentMap = new HashMap<>();
-	
 	@PostConstruct
     public void init() {
         scentMap.put(0, "Lemon");
@@ -38,16 +38,16 @@ public class OpenAIService {
         scentMap.put(8, "Orange Blossom");
     }
 	
+	private final RestTemplate restTemplate;
+	
     @Value("${openai.api.key}")
     private String openaiApiKey;
-
-    private final RestTemplate restTemplate;
-
-    public OpenAIService(RestTemplateBuilder restTemplateBuilder) {
-         this.restTemplate = restTemplateBuilder.build();
-    }
-
-    public ImageGenerationResponse makeImages(CombinationDto combination){  	
+    
+    public AIService(RestTemplateBuilder restTemplateBuilder) {
+    	this.restTemplate = restTemplateBuilder.build();
+	}
+	
+	public ImageGenerationResponse makeImages(CombinationDto combination){  	
     	List<String> scentName = new ArrayList<>();
     	scentName.add(scentMap.get(combination.getChoice1())); 
     	if (combination.getChoice2() != null) { scentName.add(scentMap.get(combination.getChoice2())); }
@@ -71,7 +71,6 @@ public class OpenAIService {
     	comment.append(" The size of the picture cannot exceed 525 pixels * 525 pixels.");
     	comment.append(" The color of the painting must be painted.");
     	
-    	CommentRequest commentRequest = new CommentRequest();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.parseMediaType(ChatGptConfig.MEDIA_TYPE));
         httpHeaders.add(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + openaiApiKey);
@@ -83,11 +82,9 @@ public class OpenAIService {
                 																.build();
         HttpEntity<ImageGenerationRequest> requestHttpEntity = new HttpEntity<>(imageGenerationRequest, httpHeaders);
 
-        ResponseEntity<ImageGenerationResponse> responseEntity = restTemplate.postForEntity(
-																	                ChatGptConfig.IMAGE_URL,
-																	                requestHttpEntity,
-																	                ImageGenerationResponse.class
-																	        	);
+        ResponseEntity<ImageGenerationResponse> responseEntity = restTemplate.postForEntity(ChatGptConfig.IMAGE_URL,
+																	                		requestHttpEntity,
+																	                		ImageGenerationResponse.class);
         return responseEntity.getBody();
     }
 }

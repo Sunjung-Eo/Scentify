@@ -28,6 +28,7 @@ class MQTTClient:
             await self.subscribe()
 
             asyncio.create_task(self.listen_message())
+            await asyncio.sleep(2)
             asyncio.create_task(self.initial_request())
             print("Complete Connect!")
             while True:

@@ -56,7 +56,7 @@ public class WebSocketService {
         message.put("schedules", customScheduleDto);
         
         // 메세지 전송
-        template.convertAndSend("/topic/Schedule/Initial/" + deviceId, message);
+        template.convertAndSend("/topic/Schedule/Add/" + deviceId, message);
         log.info("Data processed for id: {}", deviceId);
 	}
 	

@@ -1,19 +1,13 @@
 import React, { useState } from "react";
 import Modal from "../../../components/Alert/Modal";
-// userType.ts가 완성되지 않은 상태라 임의의 Membercard 타입정의(멤버카드CSS를 보기위해 넣어놓음, 교체 바람!)
-type MemberCardProps = {
-  profileImg: string; // 프로필 이미지 경로
-  id: string; // 멤버 ID
-  nickname: string; // 멤버 닉네임
-  onDelete: () => void; // 삭제 버튼 클릭 핸들러
-  showDeleteButton?: boolean; //삭제 버튼 표시 여부
-};
+import { MemberCardProps } from "../groupTypes";
+import crownIcon from "../../../assets/icons/crown-icon.svg";
 
 const MemberCard = ({
-  profileImg,
   nickname,
   onDelete,
   showDeleteButton,
+  isAdmin,
 }: MemberCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -36,13 +30,16 @@ const MemberCard = ({
   return (
     <>
       <div className="flex items-center justify-between py-2">
-        {/* 프로필 이미지와 닉네임 영역 */}
-        <div className="flex items-center">
-          <img src={profileImg} alt="profileImg" className="w-10 h-10" />
-          <div className="flex flex-col ml-4">
+        {/* 닉네임 영역 */}
+        <div className="flex flex-col ml-4">
+          <div className="flex items-center">
             <p className="text-16 font-pre-medium">{nickname}</p>
+            {isAdmin && (
+              <img src={crownIcon} alt="Admin" className="w-4 h-4 ml-2" />
+            )}
           </div>
         </div>
+
         {/* showDeleteButton이 true일 때만 삭제 버튼 표시 */}
         {showDeleteButton && (
           <button

@@ -35,6 +35,8 @@ export const joinGroupByCode = async (
       return { success: false, message: "빈 멤버 자리가 없습니다." };
     } else if (response.status === 410) {
       return { success: false, message: "초대코드가 만료되었습니다." };
+    } else if (response.status === 403) {
+      return { success: false, message: "이미 등록된 멤버입니다." };
     }
 
     throw new Error("알 수 없는 오류가 발생했습니다.");

@@ -222,19 +222,22 @@ export const GroupList = () => {
           <div className="relative inline-block" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className="w-auto min-w-[88px] max-w-[130px] h-[25px] text-center text-12 font-pre-light rounded-lg  border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand flex items-center justify-center"
+              className="relative w-auto min-w-[88px] max-w-[130px] h-[25px] text-center text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand flex items-center justify-center"
             >
-              {selectedDeviceId === mainDeviceId && (
-                <img
-                  src={crownIcon}
-                  alt="Crown Icon"
-                  className="mr-1 w-4 h-4"
-                />
-              )}
-              <span>{selectedDeviceName}</span>
+              {/* 등록된 기기가 존재하고 선택된 기기가 메인 기기라면 왕관 아이콘 표시 */}
+              {deviceOptions.length > 0 &&
+                selectedDeviceId === mainDeviceId && (
+                  <img
+                    src={crownIcon}
+                    alt="Crown Icon"
+                    className="mr-1 w-4 h-4"
+                  />
+                )}
+              {/* 텍스트 줄바꿈 방지를 위해 whitespace-nowrap 사용 */}
+              <span className="whitespace-nowrap">{selectedDeviceName}</span>
             </button>
             {dropdownOpen && (
-              <div className="absolute z-10 mt-1 w-full bg-white border-[1px] border-lightgray rounded-lg shadow-lg text-12 font-pre-light">
+              <div className="absolute z-10 mt-1 w-full bg-white border border-lightgray rounded-lg shadow-lg text-12 font-pre-light">
                 {deviceOptions.length > 0 ? (
                   deviceOptions.map((option) => (
                     <div
@@ -243,8 +246,9 @@ export const GroupList = () => {
                         setSelectedDeviceId(option.id);
                         setDropdownOpen(false);
                       }}
-                      className="px-3 py-2 hover:bg-brand hover:text-white flex items-center justify-between"
+                      className="px-3 py-2 hover:bg-brand hover:text-white flex items-center justify-center whitespace-nowrap"
                     >
+                      {/* 옵션에서는 메인 기기인 경우만 왕관 아이콘 표시 */}
                       {option.id === mainDeviceId && (
                         <img
                           src={crownIcon}
@@ -252,7 +256,7 @@ export const GroupList = () => {
                           className="w-4 h-4 mr-1"
                         />
                       )}
-                      <span>{option.name}</span>
+                      <span className="whitespace-nowrap">{option.name}</span>
                     </div>
                   ))
                 ) : (
@@ -282,22 +286,24 @@ export const GroupList = () => {
       {/* 멤버 리스트 */}
       {!error && (
         <div className="mt-4 space-y-4">
-          {members.length > 0 ? (
-            members.map((member) => (
-              <MemberCard
-                key={member.id}
-                profileImg=""
-                id={member.id}
-                nickname={member.nickname}
-                onDelete={() => handleDeleteMember(member.id)}
-                showDeleteButton={userId === adminId}
-              />
-            ))
-          ) : (
-            <p className="text-12 font-pre-light text-gray">
-              그룹에 해당하는 멤버가 없습니다. 그룹 멤버를 초대해보세요.
-            </p>
-          )}
+          {members.length > 0
+            ? members.map((member) => (
+                <MemberCard
+                  key={member.id}
+                  id={member.id}
+                  nickname={member.nickname}
+                  onDelete={() => handleDeleteMember(member.id)}
+                  showDeleteButton={userId === adminId}
+                  // 멤버 id가 adminId와 일치하면 관리자로 판단하여 isAdmin 전달
+                  isAdmin={member.id === adminId}
+                />
+              ))
+            : // 관리자 계정인 경우에만 "멤버가 없습니다" 메시지 표시
+              userId === adminId && (
+                <p className="text-12 font-pre-light text-gray">
+                  그룹에 해당하는 멤버가 없습니다. 그룹 멤버를 초대해보세요.
+                </p>
+              )}
         </div>
       )}
       {/* 초대코드 입력 & 그룹 삭제 버튼 */}

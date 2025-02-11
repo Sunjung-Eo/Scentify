@@ -115,9 +115,11 @@ export default function ReservationManager({
     favoriteCombinationIds,
     setFavoriteCombinationIds,
     favoriteIds,
-    removeFavoriteIds,
+    deleteFavoriteIds,
     addFavorite,
     removeFavorite,
+    deleteAddFavorite,
+    deleteRemoveFavorite,
   } = useFavoriteStore();
   console.log("진짜임", favorites);
   const { data: favoritesData } = useQuery({
@@ -125,9 +127,6 @@ export default function ReservationManager({
     queryFn: () => getAllFavorite(accessToken),
   });
   // 찜 리스트 향 id들
-  // const [favoriteCombinationIds, setFavoriteCombinationIds] = useState<
-  //   number[]
-  // >([]);
   useEffect(() => {
     if (!favoritesData?.favorites || !favorites) return;
     console.log("newwwwwwwwww", favoritesData);
@@ -135,55 +134,17 @@ export default function ReservationManager({
       (favorite: any) => favorite.combination.id
     );
     setFavoriteCombinationIds(combinationIds);
-    console.log("id에요", favoriteCombinationIds);
+    console.log("favoritesData", favoritesData);
   }, [favorites, favoritesData]);
 
-  // const previousFavoriteIds = useFavoriteStore(
-  //   (state) => state.previousFavoriteIds
-  // );
-  // const setPreviousFavorites = useFavoriteStore(
-  //   (state) => state.setPreviousFavorites
-  // );
-  // // 찜 리스트 전체조회
-  // const { data: favoriteData } = useQuery({
-  //   queryKey: ["favoriteData"],
-  //   queryFn: () => getAllFavorite(accessToken),
-  // });
-  // useEffect(() => {
-  //   const combinationIds = favoriteData.favorites.map(
-  //     (favorite: { combination: { id: number } }) => favorite.combination.id
-  //   );
-  //   setPreviousFavorites(combinationIds);
-  // }, [favoriteData]);
-  // useEffect(() => {
-  //   console.log("좋아요 (업데이트된 값)", previousFavoriteIds);
-  // }, [previousFavoriteIds]);
   useEffect(() => {
     console.log("좋아요123 (업데이트된 값)", favoriteIds);
   }, [favoriteIds]);
 
-  // // useEffect(() => {
-  //   const initialFavorites = customSchedules
-  //     .filter((schedule) => schedule.isFavorite)
-  //     .map((schedule) => schedule.id);
-
-  //   // 기기 변경 시 기존 favoriteIds와 새로 계산된 ids 병합
-  //   setFavoriteIds((prev) => {
-  //     const mergedFavorites = [...new Set([...prev, ...initialFavorites])];
-  //     return mergedFavorites;
-  //   });
-  // }, [customSchedules]);
-  // // 찜 추가
-  // const addFavorite = (id: number) => {
-  //   setFavoriteIds((prev) => [...prev, id]);
-  // };
-  // // 찜 제거
-  // const removeFavorite = (id: number) => {
-  //   setFavoriteIds((prev) => prev.filter((favoriteId) => favoriteId !== id));
-  // };
-  // useEffect(() => {
-  //   console.log("찜아이디들", favoriteIds);
-  // }, [favoriteIds]);
+  useEffect(() => {
+    console.log("찜아이디들", favoriteIds);
+    console.log("삭제할찜아이디들", deleteFavoriteIds);
+  }, [favoriteIds, deleteFavoriteIds]);
 
   return (
     <div>
@@ -230,17 +191,17 @@ export default function ReservationManager({
                   <div className="flex flex-col justify-between gap-3">
                     <div className="flex justify-between gap-2">
                       <HeartButton
-                        // isLiked={
-                        //   schedule.combinationId in (favorites || favoriteIds)
-                        // } // 찜 여부 확인 후 추가 제거
+                        // 찜 여부 확인 후 추가 제거
                         isLiked={favoriteCombinationIds.includes(
                           schedule.combinationId
                         )}
                         onToggle={(newState) => {
                           if (newState) {
                             addFavorite(schedule.combinationId);
+                            deleteRemoveFavorite(schedule.combinationId);
                           } else {
                             removeFavorite(schedule.combinationId);
+                            deleteAddFavorite(schedule.combinationId);
                           }
                         }}
                       />

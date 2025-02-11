@@ -31,10 +31,14 @@ class SmartDiffuser:
         self.print_log = True
 
         # AI 모델
-        self.camera = Camera()
-        self.yolo = SIMPLEYOLO()
-        self.slowfast = SlowFast()
-        self.slowfast.print_log = True
+        # self.camera = Camera()
+        # self.yolo = SIMPLEYOLO()
+        # self.slowfast = SlowFast()
+        self.camera = None
+        self.yolo = None
+        self.slowfast = None
+
+        # self.slowfast.print_log = True
 
         # HW
         # 악취 감지 센서
@@ -95,8 +99,8 @@ class SmartDiffuser:
 
         self.running_state = self.mode_type.no_running
     
-    def is_valid_key(self, payload, key):
-        return payload[key] is not None
+    def is_valid_key(self,key):
+        return key in self.capsule_to_slot
 
     async def process_mqtt_message(self, topic, payload):
         topic = topic.value
@@ -104,29 +108,50 @@ class SmartDiffuser:
         if topic == f"{self.mqtt_client.device_id}/Operation":
             # 모터 동작
             payload = json.loads(payload)
+
+            print(payload)
             
-            cap_slot, cap_cnt = [], []
+            cap_cnt = []
             choices = ['choice1', 'choice2', 'choice3', 'choice4']
             counts = ['choice1Count', 'choice2Count', 'choice3Count', 'choice4Count']
 
-            cap_slot = [self.capsule_to_slot[payload[ch]] for ch in choices if self.is_valid_key(payload, ch)]
-            cap_cnt = [payload[cnt] for cnt in counts if self.is_valid_key(payload, cnt)]
+            # 각 캡슐에 대한 분사 횟수 합계
+            cap_cnt = dict()
+            # 각 캡슐 index에 대해서 cap_cnt를 합계한다.
+            for idx, cnt_key in enumerate(counts):
+                if payload[choices[idx]] is None or  payload[counts[idx]] is None:
+                    continue
+                if payload[choices[idx]] not in cap_cnt:
+                    cap_cnt[payload[choices[idx]]] = 0
+                cap_cnt[payload[choices[idx]]] += payload[cnt_key]
 
-            # choice가 동일한 것이 있다면 슬롯에 대해서 균일하게 분사.
+            print(cap_cnt)
+
+            # 슬롯 당 분사해야 하는 횟수
             num_operate_for_slot = [0] * 4
-    
-            for (index, slot_num) in enumerate(cap_slot):
-                cnt = cap_cnt[index]
+
+            # 캡슐 : 횟수 데이터에 대해서 순회
+            for key, value in cap_cnt.items():
+                # 특정 캡슐에 해당하는 슬롯 인덱스
                 slot_idx = 0
-                # cnt만큼 뿌릴 건데, 그 향에 해당하는 슬롯에 돌아가면서 cnt를 1씩 증가시켜준다.
-                for _ in range(cnt):
-                    slot_idx %= len(slot_num)
-                    num_operate_for_slot[slot_num[slot_idx]] += 1
+                # 횟수 만큼 반복
+                for _ in range(value):
+                    # index 예외 처리
+                    slot_idx %= len(self.capsule_to_slot[key])
+                    # 캡슐에 해당하는 슬롯에 count를 하나씩 증가
+                    num_operate_for_slot[self.capsule_to_slot[key][slot_idx] - 1] += 1
                     slot_idx += 1
 
-            for (index, value) in enumerate(num_operate_for_slot):
-                self.soleniods[index].operate_repeat(repeat_num=value, time_duration=1)
-                print(f"{index} slot operate repeatly {value}")
+            while True:
+                if num_operate_for_slot[0] == 0 and num_operate_for_slot[1] == 0 and\
+                num_operate_for_slot[2] == 0 and num_operate_for_slot[3] == 0:
+                    break
+                for i in range(4):
+                    if num_operate_for_slot[i] == 0:
+                        continue
+                    num_operate_for_slot[i] -= 1
+                    self.soleniods[i].operate_once(time_duration = 0.1)
+                time.sleep(0.5)
 
             # 잔여량 계산
             # self.update_ramainder()

@@ -137,6 +137,8 @@ class SmartDiffuser:
                 # 횟수 만큼 반복
                 for _ in range(value):
                     # index 예외 처리
+                    if key not in self.capsule_to_slot:
+                        continue
                     slot_idx %= len(self.capsule_to_slot[key])
                     # 캡슐에 해당하는 슬롯에 count를 하나씩 증가
                     num_operate_for_slot[self.capsule_to_slot[key][slot_idx] - 1] += 1

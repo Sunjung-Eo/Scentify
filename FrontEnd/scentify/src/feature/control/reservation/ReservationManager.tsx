@@ -130,10 +130,12 @@ export default function ReservationManager({
   const { data: favoritesData } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
-    onSuccess: (data: any) => {
-      setFavoritesData(data); // Zustand에 데이터 저장
-    },
   });
+  useEffect(() => {
+    if (favoritesData) {
+      setFavoritesData(favoritesData);
+    }
+  }, [favoritesData]);
   // 찜 리스트 향 id들
   useEffect(() => {
     if (!favoritesData?.favorites || !favorites) return;
@@ -170,7 +172,7 @@ export default function ReservationManager({
         createFavorite({ combinationIds: newFavoriteIds }, accessToken)
           .then(() => {
             setFavoriteIds([]);
-            queryClient.invalidateQueries(["favoritesData"]);
+            queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
           })
           .catch(console.error);
       }
@@ -180,7 +182,7 @@ export default function ReservationManager({
         deleteAllFavorite(newDeleteIds, accessToken)
           .then(() => {
             setDeleteFavoriteIds([]);
-            queryClient.invalidateQueries(["favoritesData"]);
+            queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
           })
           .catch(console.error);
       }

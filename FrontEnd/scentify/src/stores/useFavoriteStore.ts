@@ -35,7 +35,6 @@ export const useFavoriteStore = create<FavoriteState>((set) => ({
   addFavorite: (id: number) =>
     set((state) => {
       if (state.favoriteIds.includes(id)) return state;
-      // if (state.previousFavoriteIds.includes(id)) return state;
       return {
         favoriteIds: [...state.favoriteIds, id],
       };
@@ -52,7 +51,6 @@ export const useFavoriteStore = create<FavoriteState>((set) => ({
   deleteAddFavorite: (id: number) =>
     set((state) => {
       if (state.deleteFavoriteIds.includes(id)) return state;
-      // if (state.previousFavoriteIds.includes(id)) return state;
 
       return {
         deleteFavoriteIds: [...state.deleteFavoriteIds, id],

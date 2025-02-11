@@ -37,8 +37,8 @@ public class FavoriteService {
 		return favoriteRepository.addCombinationToFavorites(userId, combinationId);
 	}
 
-	public boolean deleteFavorite(int favoriteId, String userId) {
-		return favoriteRepository.deleteFavorite(favoriteId, userId);
+	public boolean deleteFavorite(int combinationId, String userId) {
+		return favoriteRepository.deleteFavorite(combinationId, userId);
 	}
 
 	public List<FavoriteListDto> getAllFavorites(String userId) {

@@ -18,8 +18,8 @@ public interface FavoriteRepository {
 	boolean addCombinationToFavorites(String userId, int combinationId);
 	
 	// 찜 삭제
-	@Delete("DELETE FROM favorite WHERE id = #{id} AND user_id = #{userId}")
-	boolean deleteFavorite(int id, String userId);
+	@Delete("DELETE FROM favorite WHERE combination_id = #{combinationId} AND user_id = #{userId}")
+	boolean deleteFavorite(int combinationId, String userId);
 	
 	// 별도의 매퍼에 구현
 	List<FavoriteListDto> getAllFavorites(String userId);

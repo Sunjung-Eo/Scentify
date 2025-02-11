@@ -643,7 +643,7 @@ public class UserController {
 		}
 	}
 	
-	// API 81번 : 새로고침 시 Access 토큰 발급
+	// API 81번 : 새로고침 시 Access 토큰 헤더에 삽입
 	@PostMapping("/token/issue")
 	public ResponseEntity<?> isseueAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
 		try {

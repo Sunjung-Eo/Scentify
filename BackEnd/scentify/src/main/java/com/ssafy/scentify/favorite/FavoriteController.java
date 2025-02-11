@@ -117,7 +117,7 @@ public class FavoriteController {
 	
 	// API 57번 : 찜 삭제하기
 	@PostMapping("/delete")
-	public ResponseEntity<?> removeCombinationFromFavorites(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> favoriteMap) {
+	public ResponseEntity<?> removeCombinationFromFavorites(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, Integer> combinationIdMap) {
 		try {
 			// "Bearer " 제거
 			if (!authorizationHeader.startsWith("Bearer ")) {
@@ -129,13 +129,13 @@ public class FavoriteController {
 			String userId = tokenProvider.getId(token);
 			 
 			// 삭제 요청하는 찜 id
-			Integer favoriteId = favoriteMap.get("id");
-			if (favoriteId == null) {
+			Integer combinationId = combinationIdMap.get("combinationId");
+			if (combinationId == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			 
 			// 찜 삭제 (실패 시 400 반환)
-			if (!favoriteService.deleteFavorite(favoriteId, userId)) {
+			if (!favoriteService.deleteFavorite(combinationId, userId)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			

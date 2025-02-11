@@ -196,6 +196,13 @@ public class DeviceController {
 				case 1 -> 6;
 				default -> throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
 			};
+			int totalCount = combination.getChoice1Count();
+			if (combination.getChoice2Count() != null) { totalCount += combination.getChoice2Count(); }
+			if (combination.getChoice3Count() != null) { totalCount += combination.getChoice3Count(); }
+			if (combination.getChoice4Count() != null) { totalCount += combination.getChoice4Count(); }
+			
+			// 요청한 분사량과  roomType에 맞는 분사량 비교
+			if (count != totalCount) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			// 자동화 모드 설정 (시용자 행동 기반)
 			Integer exerciseCombinationId = combinationService.createAutoCombination("운동향", capsules.get(0), count);
@@ -236,15 +243,44 @@ public class DeviceController {
 	
 	// API 75번 : 기본 향 수정
 	@PostMapping("/set/update")
-	public ResponseEntity<?> updateDefultCombination(@RequestBody CombinationDto combination) {
+	public ResponseEntity<?> updateDefultCombination(@RequestBody defaultCombinationDto combinationDto) {
 		try {
+			// combaintion 추출
+			CombinationDto combination = combinationDto.getCombination();
 			// 전달 데이터 검사
 			if (combination == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
+			// 디바이스 id와 room type 추출
+			Integer deviceId = combinationDto.getId();
+			Integer roomType = combinationDto.getRoomType();
+			// 전달 데이터 검사
+			if (deviceId == null || roomType == null) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			// roomType에 따라 분사량 선택
+			int count = switch (roomType) {
+				case 0 -> 3;
+				case 1 -> 6;
+				default -> throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+			};
+			int totalCount = combination.getChoice1Count();
+			if (combination.getChoice2Count() != null) { totalCount += combination.getChoice2Count(); }
+			if (combination.getChoice3Count() != null) { totalCount += combination.getChoice3Count(); }
+			if (combination.getChoice4Count() != null) { totalCount += combination.getChoice4Count(); }
+			
+			// 요청한 분사량과  roomType에 맞는 분사량 비교
+			if (count != totalCount) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
 			// 조합 업데이트 (실패 시 400 반환)
 			if (!combinationService.updateCombination(combination)) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			
+			// 방 정보 업데이트 (실패 시 400 반환)
+			if (!deviceService.updateRoomType(deviceId, roomType)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			

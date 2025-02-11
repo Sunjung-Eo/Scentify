@@ -35,7 +35,7 @@ public interface DeviceRepository {
     
     // 그룹 정보 조회 쿼리
     @Select("SELECT group_id, admin_id FROM device WHERE id = #{id}")
-    DeviceGroupInfoDto selectGroupInfoByDeviceId(Integer id);
+    DeviceGroupInfoDto selectGroupInfoByDeviceId(int id);
     
     // 기본향 id 조회 쿼리
     @Select("SELECT default_combination FROM device WHERE id = #{id}")
@@ -70,7 +70,7 @@ public interface DeviceRepository {
     
     // 기본향 정보 업데이트
     @Update("UPDATE device SET room_type = #{roomType}, default_combination = #{combinationId} WHERE id = #{id}")
-	boolean updateDefalutCombination(Integer id, Integer roomType, Integer combinationId);
+	boolean updateDefalutCombination(int id, int roomType, int combinationId);
 	
 	// 온습도 정보 업데이트
 	@Update("UPDATE device SET temperature = #{request.temperature}, humidity = #{request.humidity} WHERE id = #{id}")
@@ -84,6 +84,10 @@ public interface DeviceRepository {
 	// 모드 업데이트
     @Update("UPDATE device SET mode = #{mode} WHERE id = #{id}")
 	boolean updateMode(int id, boolean mode);
+    
+    // room type 업데이트
+    @Update("UPDATE device SET room_type = #{roomType} WHERE id = #{id}")
+	boolean updateRoomType(int id, int roomType);
     
     // id에 해당하는 기기 삭제
     @Delete("DELETE FROM device WHERE id = #{id} AND admin_id = #{userId}")

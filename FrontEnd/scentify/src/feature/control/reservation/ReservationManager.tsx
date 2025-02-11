@@ -147,11 +147,11 @@ export default function ReservationManager({
     // console.log("favoritesData", favoritesData);
   }, [favorites, favoritesData]);
 
-  // console.log("DB저장찜", favorites);
-  // useEffect(() => {
-  //   console.log("찜아이디들", favoriteIds);
-  //   console.log("삭제할찜아이디들", deleteFavoriteIds);
-  // }, [favoriteIds, deleteFavoriteIds]);
+  console.log("DB저장찜", favorites);
+  useEffect(() => {
+    console.log("찜아이디들", favoriteIds);
+    console.log("삭제할찜아이디들", deleteFavoriteIds);
+  }, [favoriteIds, deleteFavoriteIds]);
 
   useEffect(() => {
     if (!favoritesData || !favoritesData.favorites || !favorites) return;

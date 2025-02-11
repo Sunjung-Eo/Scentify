@@ -14,7 +14,6 @@ import {
 import ScentCarousel from "./scentcarousel";
 import FavoritesList from "./FavoritesList";
 import bookmarkIcon from "../../../assets/icons/bookmark.svg";
-import { removeCombinationFromFavorites } from "../../../apis/scent/favorite";
 
 const ScentMain = () => {
   // 인증토큰
@@ -150,7 +149,7 @@ const ScentMain = () => {
           {/* FavoritesList 렌더링 ( favoritesData 배열을 받아서 렌더링)*/}
           {favoritesData && favoritesData.favorites.length > 0 ? (
             <FavoritesList
-              favorites={favoritesData}
+              favorites={favoritesData.favorites}
               onToggleLike={handleToggleLike}
               onShare={handleShare}
             />

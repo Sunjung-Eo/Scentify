@@ -5,7 +5,7 @@ import { Favorite } from "./scenttypes";
 //백엔드 API에서 가져온 데이터를 props로 받아와서 렌더링
 interface FavoritesListProps {
   favorites: Favorite[]; //찜한 향기 조합 목록(배열)
-  onToggleLike: (id: string) => void; // 찜 상태를 변경하는 함수, 해당 id(찜한 향기 조합의 ID)를 부모 컴포넌트로 전달하여 상태를 변경
+  onToggleLike: (id: number) => void; // 찜 상태를 변경하는 함수, 해당 id(찜한 향기 조합의 ID)를 부모 컴포넌트로 전달하여 상태를 변경
   onShare: (id: string) => void; // 공유 버튼 클릭 시 호출되는 함수
 }
 
@@ -22,7 +22,7 @@ const FavoritesList = ({
   console.log("favorites", favorites);
   return (
     <div className="space-y-4">
-      {favorites.favorites.map((favorite: any) => (
+      {favorites.map((favorite: any) => (
         <FavoriteScent
           key={favorite.id}
           combination={favorite.combination}

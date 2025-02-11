@@ -1,3 +1,7 @@
+export interface combinationIds {
+  combinationIds: number[];
+}
+
 // 각 향기의 카드 데이터 타입
 export interface ScentCard {
   id: number; // 고유 ID
@@ -9,21 +13,26 @@ export interface ScentCard {
 
 // 찜한 향기의 조합 데이터 타입
 export interface Combination {
+  id: number;
   name: string | null; // 조합 이름
   choice1: number; // 첫 번째 선택된 향기 ID
   choice1Count: number; // 첫 번째 선택의 사용 횟수
-  choice2: number | null; // 두 번째 선택된 향기 ID
-  choice2Count: number | null; // 두 번째 선택의 사용 횟수
-  choice3: number | null; // 세 번째 선택된 향기 ID
-  choice3Count: number | null; // 세 번째 선택의 사용 횟수
-  choice4: number | null; // 네 번째 선택된 향기 ID
-  choice4Count: number | null; // 네 번째 선택의 사용 횟수
+  choice2: number; // 두 번째 선택된 향기 ID
+  choice2Count: number; // 두 번째 선택의 사용 횟수
+  choice3: number; // 세 번째 선택된 향기 ID
+  choice3Count: number; // 세 번째 선택의 사용 횟수
+  choice4: number; // 네 번째 선택된 향기 ID
+  choice4Count: number; // 네 번째 선택의 사용 횟수
 }
 
 // 찜한 향기 데이터 타입
 export interface Favorite {
-  id: string; // 찜한 항목의 고유 ID
+  id: number; // 찜한 항목의 고유 ID
   combination: Combination; // 향기 조합 데이터
+}
+
+export interface FetchFavoritesData {
+  favorites: Favorite[];
 }
 
 // 모달 컴포넌트의 Props 타입

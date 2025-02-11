@@ -31,12 +31,12 @@ class SmartDiffuser:
         self.print_log = True
 
         # AI 모델
-        # self.camera = Camera()
-        # self.yolo = SIMPLEYOLO()
-        # self.slowfast = SlowFast()
-        self.camera = None
-        self.yolo = None
-        self.slowfast = None
+        self.camera = Camera()
+        self.yolo = SIMPLEYOLO()
+        self.slowfast = SlowFast()
+        # self.camera = None
+        # self.yolo = None
+        # self.slowfast = None
 
         # self.slowfast.print_log = True
 
@@ -46,7 +46,12 @@ class SmartDiffuser:
         self.th_stink_value = 120
 
         # 무게 감지 센서
-        # self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
+        self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
+        self.loadcell.window_size = 100
+        self.max_capsule_weight = 200.0
+        self.min_capsule_weight = 20.0
+        self.current_capsule_weight = [200.0, 200.0, 200.0, 200.0]
+        self.account_operation = 1.0
 
         # 모터
         self.soleniods = [
@@ -98,7 +103,7 @@ class SmartDiffuser:
         }
 
         self.running_state = self.mode_type.no_running
-    
+
     def is_valid_key(self,key):
         return key in self.capsule_to_slot
 
@@ -107,59 +112,7 @@ class SmartDiffuser:
 
         if topic == f"{self.mqtt_client.device_id}/Operation":
             # 모터 동작
-            payload = json.loads(payload)
-
-            print(payload)
-            
-            cap_cnt = []
-            choices = ['choice1', 'choice2', 'choice3', 'choice4']
-            counts = ['choice1Count', 'choice2Count', 'choice3Count', 'choice4Count']
-
-            # 각 캡슐에 대한 분사 횟수 합계
-            cap_cnt = dict()
-            # 각 캡슐 index에 대해서 cap_cnt를 합계한다.
-            for idx, cnt_key in enumerate(counts):
-                if payload[choices[idx]] is None or  payload[counts[idx]] is None:
-                    continue
-                if payload[choices[idx]] not in cap_cnt:
-                    cap_cnt[payload[choices[idx]]] = 0
-                cap_cnt[payload[choices[idx]]] += payload[cnt_key]
-
-            print(cap_cnt)
-
-            # 슬롯 당 분사해야 하는 횟수
-            num_operate_for_slot = [0] * 4
-
-            # 캡슐 : 횟수 데이터에 대해서 순회
-            for key, value in cap_cnt.items():
-                # 특정 캡슐에 해당하는 슬롯 인덱스
-                slot_idx = 0
-                # 횟수 만큼 반복
-                for _ in range(value):
-                    # index 예외 처리
-                    if key not in self.capsule_to_slot:
-                        continue
-                    slot_idx %= len(self.capsule_to_slot[key])
-                    # 캡슐에 해당하는 슬롯에 count를 하나씩 증가
-                    num_operate_for_slot[self.capsule_to_slot[key][slot_idx] - 1] += 1
-                    slot_idx += 1
-
-            while True:
-                if num_operate_for_slot[0] == 0 and num_operate_for_slot[1] == 0 and\
-                num_operate_for_slot[2] == 0 and num_operate_for_slot[3] == 0:
-                    break
-                for i in range(4):
-                    if num_operate_for_slot[i] == 0:
-                        continue
-                    num_operate_for_slot[i] -= 1
-                    self.soleniods[i].operate_once(time_duration = 0.1)
-                time.sleep(0.5)
-
-            # 잔여량 계산
-            # self.update_ramainder()
-            
-            # 잔여량 표시
-            await self.send_remainder()
+            asyncio.create_task(self.operate_solenoid(payload))
 
         elif topic == f"{self.mqtt_client.device_id}/SetOperationMode":
             old_operation_mode = self.mode.operation_mode
@@ -195,7 +148,7 @@ class SmartDiffuser:
                     sub_mode = int(mode["subMode"])
                 )
             self.mapping_id_to_type()
-
+            
         elif topic == f"{self.mqtt_client.device_id}/AutoModeChange":
             payload = json.loads(payload)
             id = payload["id"]
@@ -252,6 +205,81 @@ class SmartDiffuser:
                 self.capsule_to_slot[capsule].append(slot_number)
 
             await self.send_remainder()
+
+    async def operate_solenoid(self, data):
+        payload = json.loads(data)
+        
+        cap_cnt = []
+        choices = ['choice1', 'choice2', 'choice3', 'choice4']
+        counts = ['choice1Count', 'choice2Count', 'choice3Count', 'choice4Count']
+
+        # 각 캡슐에 대한 분사 횟수 합계
+        cap_cnt = dict()
+        # 각 캡슐 index에 대해서 cap_cnt를 합계한다.
+        for idx, cnt_key in enumerate(counts):
+            if payload[choices[idx]] is None or  payload[counts[idx]] is None:
+                continue
+            if payload[choices[idx]] not in cap_cnt:
+                cap_cnt[payload[choices[idx]]] = 0
+            cap_cnt[payload[choices[idx]]] += payload[cnt_key]
+
+        print(cap_cnt)
+
+        # 슬롯 당 분사해야 하는 횟수
+        num_operate_for_slot = [0] * 4
+
+        # 캡슐 : 횟수 데이터에 대해서 순회
+        for key, value in cap_cnt.items():
+            # 특정 캡슐에 해당하는 슬롯 인덱스
+            slot_idx = 0
+            # 횟수 만큼 반복
+            for _ in range(value):
+                # index 예외 처리
+                if key not in self.capsule_to_slot:
+                    continue
+                slot_idx %= len(self.capsule_to_slot[key])
+                # 캡슐에 해당하는 슬롯에 count를 하나씩 증가
+                num_operate_for_slot[self.capsule_to_slot[key][slot_idx] - 1] += 1
+                slot_idx += 1
+
+        # 잔여량 계산
+        self.update_remainder(num_operate_for_slot)
+
+        while True:
+            if num_operate_for_slot[0] == 0 and num_operate_for_slot[1] == 0 and\
+            num_operate_for_slot[2] == 0 and num_operate_for_slot[3] == 0:
+                break
+            for i in range(4):
+                if num_operate_for_slot[i] == 0:
+                    continue
+                num_operate_for_slot[i] -= 1
+                self.soleniods[i].operate_once(time_duration = 0.2)
+            time.sleep(0.5)
+
+        # 잔여량 표시
+        await self.send_remainder()
+
+
+    def update_remainder(self, num_operation):
+        # 현재 무게 계산하기
+        current_weight = self.loadcell.get_weight_avg()
+        for idx in range(4):
+            # 변화된 무게 감지
+            modified_weight = self.current_capsule_weight[idx] - num_operation[idx] * self.account_operation
+            if idx == 0:
+                # 데이터 보장
+                if modified_weight < current_weight:
+                    modified_weight = current_weight
+            remainder_id = ""
+            for id in self.capsule_remainder:
+                if str(idx + 1) in id:
+                    remainder_id = id
+                    break
+            # remainder, weight 업데이트
+            self.capsule_remainder[remainder_id] = \
+                int((modified_weight - self.min_capsule_weight) / (self.max_capsule_weight - self.min_capsule_weight) * 100)
+            self.current_capsule_weight[idx] = modified_weight
+        
 
     def mapping_id_to_type(self,):
         for key, value in self.mode.auto_operation_mode.items():

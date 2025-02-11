@@ -1,4 +1,3 @@
-import React from "react";
 import { ModalProps } from "./scenttypes";
 import closeIcon from "../../../assets/icons/closeIcon.svg";
 

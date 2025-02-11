@@ -5,11 +5,7 @@ import { useAuthStore } from "../../../stores/useAuthStore";
 import { useFavoriteStore } from "../../../stores/useFavoriteStore";
 
 import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
-import { createFavorite } from "../../../apis/scent/createFavorite";
-import {
-  deleteFavorite,
-  deleteAllFavorite,
-} from "../../../apis/scent/deleteFavorite";
+import { deleteFavorite } from "../../../apis/scent/deleteFavorite";
 
 import ScentCarousel from "./scentcarousel";
 import FavoritesList from "./FavoritesList";
@@ -19,78 +15,31 @@ const ScentMain = () => {
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
+
   const favoriteStore = useFavoriteStore();
-  const favorites = favoriteStore.favorites;
-  const favoriteIds = favoriteStore.favoriteIds;
-  const deleteFavoriteIds = favoriteStore.deleteFavoriteIds;
-  const setFavoriteIds = favoriteStore.setFavoriteIds;
-  const setDeleteFavoriteIds = favoriteStore.setDeleteFavoriteIds;
+  const setFavoritesData = favoriteStore.setFavoritesData;
+
+  // ScentMain 마운트 시 강제 리페치
   useEffect(() => {
-    console.log("sc찜아이디들", favoriteIds);
-    console.log("sc삭제할찜아이디들", deleteFavoriteIds);
-  }, [favoriteIds, deleteFavoriteIds]);
+    refetch();
+  }, []);
 
   // 기존 db 찜 리스트
-
   // 찜 리스트 전체조회
   const queryClient = useQueryClient();
-  const { data: favoritesData, refetch } = useQuery({
+  const { data: fetchedFavoritesData, refetch } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
     staleTime: 0,
-    refetchOnMount: true,
+    refetchOnMount: "always",
+    initialData: { favorites: [] },
   });
-
-  // 찜 내역 보내기
-  const createMutation = useMutation({
-    mutationFn: (ids: number[]) =>
-      createFavorite({ combinationIds: ids }, accessToken),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
-      refetch();
-      setFavoriteIds([]);
-    },
-    onError: (error) => {
-      console.error("찜 목록 업데이트 실패:", error);
-    },
-  });
-  // 찜 삭제 내역 보내기
-  const deleteMutation = useMutation({
-    mutationFn: (ids: number[]) => deleteAllFavorite(ids, accessToken),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
-      refetch();
-      setDeleteFavoriteIds([]);
-    },
-    onError: (error) => {
-      console.error("찜 목록 업데이트 실패:", error);
-    },
-  });
-
   useEffect(() => {
-    if (!favoritesData?.favorites || !favorites) return;
-
-    const newFavoriteIds = favoriteIds.filter((id) => !favorites.includes(id));
-    const newDeleteFavoriteIds = deleteFavoriteIds.filter((id) =>
-      favorites.includes(id)
-    );
-
-    if (newFavoriteIds.length > 0) {
-      const createTimeoutId = setTimeout(() => {
-        createMutation.mutate(newFavoriteIds);
-        setFavoriteIds([]);
-      }, 300);
-      return () => clearTimeout(createTimeoutId);
+    if (fetchedFavoritesData) {
+      setFavoritesData(fetchedFavoritesData);
     }
-
-    if (newDeleteFavoriteIds.length > 0) {
-      const deleteTimeoutId = setTimeout(() => {
-        deleteMutation.mutate(newDeleteFavoriteIds);
-        setDeleteFavoriteIds([]);
-      }, 300);
-      return () => clearTimeout(deleteTimeoutId);
-    }
-  }, [favoriteIds, deleteFavoriteIds, favorites, favoritesData]);
+  }, [fetchedFavoritesData, setFavoritesData]);
+  const favoritesData = favoriteStore.favoritesData || fetchedFavoritesData;
 
   // 찜 버튼 클릭 시 단일 삭제
   const deleteSingleMutation = useMutation({
@@ -107,21 +56,10 @@ const ScentMain = () => {
   const handleToggleLike = (id: number) => {
     deleteSingleMutation.mutate(id);
   };
-  // const handleToggleLike = async (id: string) => {
-  //   try {
-  //     const response = await removeCombinationFromFavorites(id);
 
-  //     if (response === 200) {
-  //       alert("찜한 향기 조합이 삭제되었습니다.");
-  //       console.log(`Deleted favorite combination: ${id}`);
-  //     }
-  //   } catch (error) {
-  //     alert("삭제 중 오류가 발생했습니다.");
-  //   }
-  // };
   // 공유 버튼 클릭 함수(id는 공유할 향기의 ID)
   const handleShare = (id: string) => {
-    // `favoritesData`에서 해당 ID에 맞는 항목을 찾
+    // `favoritesData`에서 해당 ID에 맞는 항목을 찾기
     const favorite = favoritesData.find((fav: any) => fav.id === id);
 
     // 불필요한 if문 제거하고 바로 실행
@@ -147,7 +85,7 @@ const ScentMain = () => {
         </div>
         <div className="overflow-y-auto max-h-[259px]">
           {/* FavoritesList 렌더링 ( favoritesData 배열을 받아서 렌더링)*/}
-          {favoritesData && favoritesData.favorites.length > 0 ? (
+          {favoritesData?.favorites?.length > 0 ? (
             <FavoritesList
               favorites={favoritesData.favorites}
               onToggleLike={handleToggleLike}

@@ -1,8 +1,8 @@
 import HeartButton from "../../../components/Button/HeartButton";
 import ShareIcon from "../../../assets/icons/shareIcon.svg";
 import { getScentName } from "../../../utils/control/scentUtils";
-import { Combination } from "./scenttypes";
 import { getColor } from "../../../utils/control/scentUtils";
+import { Combination } from "./scenttypes";
 
 // FavoriteScent 컴포넌트 Props 타입 정의
 interface FavoriteScentProps {

@@ -8,7 +8,6 @@ import EditNickname from "../../feature/my/components/EditNickname";
 import EditUserinfo from "../../feature/my/components/EdituUserinfo";
 import EditPassword from "../../feature/my/components/EditPassword";
 import EditProfileImg from "../../feature/my/components/EditProgileImg";
-import { useUserStore } from "../../stores/useUserStore";
 import MyUserCard from "../../feature/my/components/MyUserCard";
 import Invite from "../../feature/invite/Invite";
 import InviteCodeInput from "../../feature/invite/InviteCodeInput";
@@ -18,8 +17,6 @@ import managegroupsIcon from "../../assets/icons/managegroups.svg";
 const My = () => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
-
-  const { nickname, imgNum, mainDeviceId } = useUserStore();
 
   const handleLogout = async () => {
     try {
@@ -41,7 +38,7 @@ const My = () => {
               {/** 계정 관리 */}
               <div>
                 <div className="flex flex-row justify-between items-center text-center">
-                  <div className="flex items-center py-4 font-pre-medium text-20">
+                  <div className="flex items-center py-4 font-pre-medium text-16">
                     <img
                       src={manageaccountIcon}
                       alt="계정 관리 아이콘"
@@ -56,17 +53,13 @@ const My = () => {
                     로그아웃
                   </button>
                 </div>
-                <MyUserCard
-                  nickname={nickname ?? "사용자"} // 기본값 처리
-                  imgNum={imgNum ?? 1}
-                  mainDeviceId={mainDeviceId ?? 0}
-                />
+                <MyUserCard />
               </div>
               <div className="h-[25px]"></div>
 
               {/** 그룹 관리 */}
               <div>
-                <div className="flex items-center py-4 font-pre-medium text-20">
+                <div className="flex items-center py-4 font-pre-medium text-16">
                   <img
                     src={managegroupsIcon}
                     alt="그룹 관리 아이콘"

@@ -75,7 +75,7 @@ const InviteCodeInput = () => {
       {/* 안내 메시지 또는 오류 메시지 표시 */}
       {showNotice ? (
         <p className="mt-4 text-12 font-pre-light">
-          초대코드는 24시간 이내로 등록해주세요.
+          초대코드는 30분 이내로 등록해주세요.
         </p>
       ) : (
         message && (

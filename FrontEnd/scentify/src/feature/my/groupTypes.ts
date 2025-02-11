@@ -24,3 +24,18 @@ export interface DeleteMemberRequest {
 export interface DeleteGroupRequest {
   groupId: string;
 }
+
+// 삭제 모달 props 타입
+export interface DeleteModalProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+// 멤버카드 props 타입
+export type MemberCardProps = {
+  id: string;
+  nickname: string;
+  onDelete: () => void; // 삭제 버튼 클릭 후 확인 시 실행할 함수
+  showDeleteButton?: boolean; // 삭제 버튼 표시 여부
+  isAdmin?: boolean; // 관리자인 경우 true
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
@@ -22,6 +22,7 @@ import CreateReservation from "../../feature/control/reservation/CreateReservati
 import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
 import DeviceSelect from "../../components/Control/DeviceSelect";
 import Modal from "../../components/Alert/Modal";
+import ProtectedRoute from "../../components/Control/ProtectedRoute";
 
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
@@ -115,12 +116,14 @@ const Control = () => {
   }, [selectedDeviceData]);
 
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
-  const [activeTab, setActiveTab] = useState<boolean>(false); // 현재 활성화 된 탭(기본값: 0 예약)
 
   // 다른 모드 클릭 시 모달 표시
   const [modalOpen, setModalOpen] = useState(false); // 모달달 표시 여부
   const [modalMessage, setModalMessage] = useState(""); // 모달달 메시지
   const handleModeChange = (newMode: Mode) => {
+    if (deviceIds.length === 0) {
+      return;
+    }
     if (mode !== newMode) {
       const getModeName = () => {
         return nextMode === false ? "예약 " : "자동화 ";
@@ -144,6 +147,15 @@ const Control = () => {
     setModalOpen(false);
   };
 
+  // 탭 전환
+  const [activeTab, setActiveTab] = useState<boolean>(false); // 현재 활성화 된 탭(기본값: 0 예약)
+  const handleTabChange = (tab: boolean) => {
+    if (deviceIds.length === 0 && tab === true) {
+      return;
+    }
+    setActiveTab(tab);
+  };
+
   return (
     <div className="content pt-5">
       <Routes>
@@ -165,9 +177,11 @@ const Control = () => {
                   />
                 </div>
                 <div className="mt-2 border-0.2 border-sub text-center pre-light text-12 rounded-lg">
-                  {mode === false
-                    ? "지금은 예약 모드입니다."
-                    : "지금은 자동화 모드입니다."}
+                  {deviceIds.length === 0
+                    ? "기기를 먼저 등록해주세요."
+                    : mode === false
+                      ? "지금은 예약 모드입니다."
+                      : "지금은 자동화 모드입니다."}
                 </div>
               </div>
               <div className={"mt-12 font-pre-medium text-16"}>
@@ -185,7 +199,7 @@ const Control = () => {
                   </div>
                   <div className="flex mt-6 ml-3 text-14 gap-8">
                     <div
-                      onClick={() => setActiveTab(false)}
+                      onClick={() => handleTabChange(false)}
                       className={`w-[50px] text-center cursor-pointer ${
                         activeTab === false ? "border-b-[3px] border-sub" : ""
                       }`}
@@ -193,7 +207,7 @@ const Control = () => {
                       예약
                     </div>
                     <div
-                      onClick={() => setActiveTab(true)}
+                      onClick={() => handleTabChange(true)}
                       className={`w-[50px] text-center cursor-pointer ${
                         activeTab === true ? "border-b-[3px] border-sub" : ""
                       }`}
@@ -244,11 +258,16 @@ const Control = () => {
         <Route
           path="reservation/create"
           element={
-            <CreateReservation
-              devices={deviceSelectItems}
-              selectedDevice={selectedDevice}
-              onDeviceChange={handleDeviceChange}
-            />
+            <ProtectedRoute
+              condition={deviceIds.length > 0}
+              redirectPath="/control"
+            >
+              <CreateReservation
+                devices={deviceSelectItems}
+                selectedDevice={selectedDevice}
+                onDeviceChange={handleDeviceChange}
+              />
+            </ProtectedRoute>
           }
         />
         <Route

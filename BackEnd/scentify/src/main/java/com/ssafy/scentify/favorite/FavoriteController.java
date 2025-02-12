@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.scentify.combination.CombinationController;
 import com.ssafy.scentify.combination.CombinationService;
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.common.service.AIService;

@@ -80,7 +80,7 @@ const ManageAccount = () => {
   };
 
   return (
-    <div className="content pt-8">
+    <div className="content pt-4 ">
       {/* 프로필 정보 */}
       <div className="flex items-center mb-8">
         <img
@@ -151,7 +151,7 @@ const ManageAccount = () => {
               type="password"
               value={inputPassword}
               onChange={(e) => setInputPassword(e.target.value)}
-              className="w-full p-2 bg-component rounded-lg mt-4  focus:outline-none focus:ring-2 focus:ring-brand"
+              className="w-full h-[34px] px-3 bg-component rounded-lg mt-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             {/* 에러 메시지 영역의 높이를 고정 */}
             <div className="min-h-[20px] mt-2 text-center">
@@ -161,13 +161,13 @@ const ManageAccount = () => {
             </div>
             <div className="flex p-3 pt-[25px] justify-between gap-2">
               <button
-                className="w-[60px] py-2 border-0.2 border-sub rounded-lg bg-gray-300 text-sub text-12 hover:opacity-90"
+                className="w-[60px] h-[30px] py-2 border-0.2 border-sub rounded-lg bg-gray-300 text-sub text-12 hover:opacity-90 flex items-center justify-center"
                 onClick={closeModal}
               >
                 취소
               </button>
               <button
-                className="w-[60px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90"
+                className="w-[60px] h-[30px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90 flex items-center justify-center "
                 onClick={handlePasswordCheck}
               >
                 확인

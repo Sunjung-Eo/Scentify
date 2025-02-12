@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { updateUserNickname } from "../../../apis/user/editaccount/editnickname";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useUserStore } from "../../../stores/useUserStore"; // 유저 상태 업데이트
+import Alert from "../../../components/Alert/AlertMy";
 
 function EditNickname() {
   const [nickname, setNickname] = useState("");
@@ -11,6 +12,7 @@ function EditNickname() {
   const authStore = useAuthStore();
   const userStore = useUserStore();
   const accessToken = authStore.accessToken;
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   // 닉네임 변경 핸들러(React.ChangeEvent는 React에서 제공하는 타입으로,폼<input>,<textarea>,<select>변경이벤트 나타냄.)
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -30,22 +32,21 @@ function EditNickname() {
 
     if (result.success) {
       userStore.setUser({ nickname }); // 유저 상태 업데이트
-      alert(`닉네임이 "${nickname}"으로 변경되었습니다.`);
-      navigate("/my/manageaccount");
+      setShowAlert(true); // 모달창
     } else {
       setError(result.message || "닉네임 변경에 실패했습니다.");
     }
   }
 
   return (
-    <div className="content pt-8 pb-8 h-full flex flex-col justify-between">
+    <div className="content pt-4 pb-8 h-full flex flex-col justify-between">
       {/* 제목과 입력 필드를 하나로 묶음 */}
       <div>
         {/* 제목 */}
         <h1 className="text-20 font-pre-bold text-center">닉네임 변경</h1>
 
         {/* 입력 필드 */}
-        <div className="mt-10 text-center">
+        <div className="mt-10 ">
           <label className="text-12 font-pre-light mr-7" htmlFor="nickname">
             닉네임
           </label>
@@ -54,11 +55,11 @@ function EditNickname() {
             type="text"
             value={nickname}
             onChange={handleInputChange}
-            className="w-[256px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
+            className="w-[256px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
           />
           {/* 에러 메시지 */}
           {error && (
-            <p className="mt-6 text-red-500 text-12 font-pre-light">{error}</p>
+            <p className="text-red-500 text-12 font-pre-light mt-2">{error}</p>
           )}
         </div>
       </div>
@@ -72,6 +73,17 @@ function EditNickname() {
           저장
         </button>
       </div>
+
+      {/* 닉네임 변경 성공 모달창 */}
+      {showAlert && (
+        <Alert
+          message="닉네임이 변경되었습니다."
+          onClose={() => {
+            setShowAlert(false);
+            navigate("/my/manageaccount"); // 모달 닫으면 계정 관리 페이지로 이동
+          }}
+        />
+      )}
     </div>
   );
 }

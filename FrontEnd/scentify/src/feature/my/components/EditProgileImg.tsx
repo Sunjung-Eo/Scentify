@@ -4,6 +4,7 @@ import { updateUserImg } from "../../../apis/user/editaccount/editprofileimg";
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
 import { useUserStore } from "../../../stores/useUserStore"; // Zustand로 유저 상태 업데이트
 import { getProfileImage } from "../../../utils/profileImageMapper"; //프로필 사진매핑함수
+import Alert from "../../../components/Alert/AlertMy";
 
 function EditProfileImg() {
   // Zustand에서 사용자 정보 가져오기 (현재 프로필 이미지 번호 포함)
@@ -19,6 +20,7 @@ function EditProfileImg() {
     userStore.imgNum
   );
   const [error, setError] = useState<string>("");
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   // 프로필 이미지 선택 시 실행되는 함수
   const handleImageSelect = (index: number) => {
@@ -33,7 +35,7 @@ function EditProfileImg() {
    */
   const handleSave = async () => {
     if (selectedImage === null) {
-      setError("프로필 사진을 선택해주세요."); // 이미지 선택되지 않은 경우 에러 메시지 표시
+      setError("프로필 이미지를 선택해주세요."); // 이미지 선택되지 않은 경우 에러 메시지 표시
       return;
     }
 
@@ -43,17 +45,18 @@ function EditProfileImg() {
 
     if (result.success) {
       userStore.setUser({ imgNum: selectedImage }); // Zustand 상태 업데이트 (프로필 이미지 번호 변경)
-      alert("프로필 사진이 변경되었습니다.");
-      navigate("/my/manageaccount");
+      setShowAlert(true); // 모달창
     } else {
       setError(result.message || "프로필 이미지 변경에 실패했습니다.");
     }
   };
 
   return (
-    <div className="content pt-8 pb-8 h-full flex flex-col justify-between">
+    <div className="content pt-4 pb-8 h-full flex flex-col justify-between">
       <div>
-        <h1 className="text-20 font-pre-bold text-center">프로필 사진 변경</h1>
+        <h1 className="text-20 font-pre-bold text-center">
+          프로필 이미지 변경
+        </h1>
 
         {/* 이미지 선택 영역 */}
         <div className="grid grid-cols-3 gap-4 mt-10 justify-items-center">
@@ -84,9 +87,7 @@ function EditProfileImg() {
 
         {/* 에러 메시지 출력 */}
         {error && (
-          <p className="mt-6 text-red-500 text-12 font-pre-light text-center">
-            {error}
-          </p>
+          <p className="mt-6 text-red-500 text-12 font-pre-light">{error}</p>
         )}
       </div>
 
@@ -99,6 +100,16 @@ function EditProfileImg() {
           저장
         </button>
       </div>
+
+      {showAlert && (
+        <Alert
+          message="프로필 이미지가 변경되었습니다."
+          onClose={() => {
+            setShowAlert(false);
+            navigate("/my/manageaccount"); // 모달 닫으면 계정 관리 페이지로 이동
+          }}
+        />
+      )}
     </div>
   );
 }

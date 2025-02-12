@@ -47,16 +47,36 @@ const UserCard: React.FC<UserCardProps> = ({
     Clear: "/weather-icons/sun.svg",
     Clouds: "/weather-icons/clouds.svg",
     Rain: "/weather-icons/rain.svg",
-    Snow: "/weather-icons/snow.svg",
+    Drizzle: "/weather-icons/rain.svg",
     Thunderstorm: "/weather-icons/thunder.svg",
+    Snow: "/weather-icons/snow.svg",
+    Mist: "/weather-icons/foggy.png",
+    Smoke: "/weather-icons/foggy.png",
+    Haze: "/weather-icons/foggy.png",
+    Dust: "/weather-icons/dust.png",
+    Fog: "/weather-icons/foggy.png",
+    Sand: "/weather-icons/dust.png",
+    Ash: "/weather-icons/dust.png",
+    Squall: "/weather-icons/rain.svg",
+    Tornado: "/weather-icons/rain.svg",
   } as const;
 
   const weatherDescriptionMap = {
     Clear: "맑음",
     Clouds: "흐림",
     Rain: "비",
+    Drizzle: "이슬비",
+    Thunderstorm: "천둥번개",
     Snow: "눈",
-    Thunderstorm: "천둥",
+    Mist: "옅은 안개",
+    Smoke: "연기",
+    Haze: "실안개",
+    Dust: "황사",
+    Fog: "짙은 안개",
+    Sand: "모래폭풍",
+    Ash: "화산재",
+    Squall: "돌풍",
+    Tornado: "토네이도",
   } as const;
 
   // 2. OpenWeatherMap API 호출
@@ -65,34 +85,32 @@ const UserCard: React.FC<UserCardProps> = ({
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
     try {
-      // 1️⃣ API 요청 보내기
+      // API 요청 보내기
       const response = await fetch(url);
 
-      // 2️⃣ HTTP 응답 상태 코드 확인
+      // 응답이 정상적이지 않을 경우 오류 처리
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      // 3️⃣ 응답 데이터를 JSON으로 변환
       const data = await response.json();
 
-      // 4️⃣ API 응답 데이터 검증 (날씨 정보가 없을 경우 에러 발생)
+      // API 응답 데이터 검증 (날씨 정보가 없을 경우 에러 발생)
       if (
         !data.weather ||
         !Array.isArray(data.weather) ||
         data.weather.length === 0 ||
         !data.weather[0].main
       ) {
-        throw new Error("Invalid weather data received");
+        throw new Error("유효하지 않은 날씨 정보를 받았습니다.");
       }
 
-      // 5️⃣ 날씨 정보를 가져와서 매핑된 값 반환
+      // 날씨 정보를 가져와서 매핑된 값 반환
       const weatherMain = data.weather[0].main as keyof typeof weatherIconMap;
 
       // 예상하지 못한 날씨 상태가 온 경우, 로딩 아이콘 및 "날씨 정보를 가져오는 중..." 표시
       if (!weatherIconMap[weatherMain] || !weatherDescriptionMap[weatherMain]) {
         return {
-          weatherIcon: "/weather-icons/loading.svg", // ⏳ 로딩 아이콘 표시
+          weatherIcon: "/weather-icons/loading.png",
           weatherDescription: "날씨 정보를 가져오는 중...", // "날씨 정보를 가져오는 중..." 메시지 표시
         };
       }
@@ -104,7 +122,7 @@ const UserCard: React.FC<UserCardProps> = ({
     } catch (error) {
       console.error("Failed to fetch weather data:", error);
       return {
-        weatherIcon: "/weather-icons/loading.svg", // ⏳ 로딩 아이콘
+        weatherIcon: "/weather-icons/loading.png",
         weatherDescription: "날씨 정보를 가져오는 중...", // 오류 발생 시 동일한 메시지 표시
       };
     }
@@ -138,7 +156,7 @@ const UserCard: React.FC<UserCardProps> = ({
     );
   };
 
-  // 4. 컴포넌트가 마운트될 때 실행
+  // 4. 컴포넌트가 마운트될 때 위치 및 날씨 정보 가져오기
   useEffect(() => {
     fetchLocationAndWeather();
   }, []);

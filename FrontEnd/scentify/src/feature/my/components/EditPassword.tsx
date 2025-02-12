@@ -4,6 +4,7 @@ import { validatePassword as verifyCurrentPassword } from "../../../apis/user/ed
 import { updateUserPassword } from "../../../apis/user/editaccount/updatepassword";
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
 import { validatePassword as validateNewPassword } from "../../../utils/validation"; // 유효성 검사
+import Alert from "../../../components/Alert/AlertMy";
 
 function EditPassword() {
   const authStore = useAuthStore();
@@ -20,6 +21,9 @@ function EditPassword() {
   const [passwordCheckMessage, setPasswordCheckMessage] = useState<string>(""); // 현재 비밀번호 검증 메시지
   const [passwordVerified, setPasswordVerified] = useState<boolean>(false); // 현재 비밀번호 검증 상태
 
+  // 모달창 상태 추가
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+
   // 입력값 변경 핸들러 (공통)
   const handleInputChange =
     (setter: React.Dispatch<React.SetStateAction<string>>) =>
@@ -28,29 +32,16 @@ function EditPassword() {
       setPasswordCheckMessage(""); // 입력 시 기존 메시지 초기화
     };
 
-  // 새 비밀번호 입력 시 유효성 검사 실행
+  // 새 비밀번호 입력 (유효성 검사 메시지는 표시하지 않음)
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNewPassword(value);
-
-    const error = validateNewPassword(value); // 유효성 검사 실행
-    setPasswordError(error || ""); // 에러 메시지 설정 (없으면 초기화)
+    setNewPassword(e.target.value);
   };
 
-  // 비밀번호 확인 입력 시 검사
+  // 비밀번호 확인 입력 (유효성 검사 메시지는 표시하지 않음)
   const handleConfirmPasswordChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
-
-    if (newPassword && value !== newPassword) {
-      setConfirmPasswordError(
-        "새 비밀번호와 확인 비밀번호가 일치하지 않습니다."
-      );
-    } else {
-      setConfirmPasswordError(""); // 에러 초기화
-    }
+    setConfirmPassword(e.target.value);
   };
 
   // 현재 비밀번호 확인 API 호출
@@ -71,34 +62,38 @@ function EditPassword() {
     }
   };
 
-  // 저장 버튼 클릭 시 실행되는 함수
+  // 저장 버튼 클릭 시 실행되는 함수 (여기에서만 에러 메시지 설정)
   const handleSave = async () => {
     if (!passwordVerified) {
       setPasswordCheckMessage("기존 비밀번호를 확인해주세요.");
       return;
     }
 
-    if (!newPassword.trim() || !confirmPassword.trim()) {
-      setPasswordCheckMessage("모든 필드를 입력해주세요.");
-      return;
-    }
+    let errorFlag = false;
 
-    if (passwordError) {
-      setPasswordCheckMessage(passwordError);
-      return;
+    // 새 비밀번호 유효성 검사
+    const passwordValidationError = validateNewPassword(newPassword);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      errorFlag = true;
+    } else {
+      setPasswordError("");
     }
-
+    // 비밀번호 확인 검사
     if (newPassword !== confirmPassword) {
       setConfirmPasswordError(
         "새 비밀번호와 확인 비밀번호가 일치하지 않습니다."
       );
-      return;
+      errorFlag = true;
+    } else {
+      setConfirmPasswordError("");
     }
-
+    // 에러가 있으면 진행 중지
+    if (errorFlag) return;
+    // 비밀번호 변경 API 호출
     const result = await updateUserPassword(newPassword, accessToken);
     if (result.success) {
-      alert("비밀번호가 변경되었습니다.");
-      navigate("/my/manageaccount");
+      setShowAlert(true); // 모달창 띄우기
     } else {
       setPasswordCheckMessage(
         result.message || "비밀번호 변경에 실패했습니다."
@@ -125,7 +120,7 @@ function EditPassword() {
               type="password"
               value={currentPassword}
               onChange={handleInputChange(setCurrentPassword)}
-              className="w-[170px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component mr-4"
+              className="w-[170px] h-[34px] text-12 font-pre-light rounded-lg bg-component mr-4 px-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             <button
               onClick={handlePasswordCheck} // 현재 비밀번호 검증 API 호출
@@ -157,7 +152,7 @@ function EditPassword() {
               type="password"
               value={newPassword}
               onChange={handleNewPasswordChange} // 유효성 검사 적용
-              className="w-[256px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
+              className="w-[256px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             {passwordError && (
               <p className="text-[12px] text-red-500">{passwordError}</p>
@@ -177,7 +172,7 @@ function EditPassword() {
               type="password"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
-              className="w-[235px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
+              className="w-[235px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             {confirmPasswordError && (
               <p className="text-[12px] text-red-500">{confirmPasswordError}</p>
@@ -195,6 +190,16 @@ function EditPassword() {
           저장
         </button>
       </div>
+      {/* 비밀번호 변경 성공 모달창 */}
+      {showAlert && (
+        <Alert
+          message="비밀번호가 변경되었습니다."
+          onClose={() => {
+            setShowAlert(false);
+            navigate("/my/manageaccount");
+          }}
+        />
+      )}
     </div>
   );
 }

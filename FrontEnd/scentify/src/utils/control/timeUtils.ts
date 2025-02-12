@@ -1,13 +1,16 @@
 // 시간 변환
-// 24시간 -> AM/PM
+// 24시간 -> 오전 / 오후
 export const convertTo12Hour = (time24: string): [string, "오전" | "오후"] => {
   const [hours, minutes] = time24.split(":");
   let hour = parseInt(hours, 10);
   const period = hour >= 12 ? "오후" : "오전";
+  // 자정(00시) 처리
+  const paddedHour =
+    period === "오전" && hour === 0
+      ? "00" // 오전 00시 처리
+      : (hour % 12 || 12).toString().padStart(2, "0"); // 나머지 시간 처리
 
-  hour = hour % 12 || 12; // 0시 → 12AM, 12시 → 12PM 처리
-
-  return [`${hour}:${minutes}`, period];
+  return [`${paddedHour}:${minutes}`, period];
 };
 // AM/PM -> 24시간
 export const convertTo24Hour = (

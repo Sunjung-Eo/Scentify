@@ -531,4 +531,136 @@ public class UserController {
 		}
 	}
 	
+	// API 78번 : 비밀번호 수정을 위한 이메일 전송
+	@PostMapping("/reset/password/send-code")
+	public ResponseEntity<?> sendEmailCodeForPassword(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
+		try {
+			// 입력값에서 아이디와 이메일 추출
+			String id = requestMap.get("id");
+			if (id == null || id.isBlank() || id.contains(" ") || id.length() > 30) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // id가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			String email = requestMap.get("email");
+			if (email == null || email.equals("") || !emailpattern.matcher(email).matches() || email.contains(" ")) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // email가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			// id에 등록한 이메일과 같은지 확인
+			String userEmail = userService.getUserEmailById(id);
+			if (!userEmail.equals(email)) {
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 사용자 등록 정보와 일치하지 않는 이메일
+	        }
+	        
+	        // 8자리 인증 코드 생성
+	        String verifyCode = codeProvider.generateVerificationCode();
+	        emailService.sendVerificationEmail(email, verifyCode);
+	        
+	        // 세션에 email과 발송 인증코드 저장
+	        HttpSession session = request.getSession();
+	        session.setAttribute("id", id);
+			session.setAttribute("email", email);
+			session.setAttribute("verifyCode", verifyCode);
+	        
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			// 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 79번 : 비밀번호 수정을 위한 이메일 코드 확인
+	@PostMapping("/reset/password/verify-code")
+	public ResponseEntity<?> verifyEmailCodeForPassword(@RequestBody Map<String, String> inputCodeMap, HttpServletRequest request) {
+		try {
+			// 입력값에서 코드 추출
+			String inputCode = inputCodeMap.get("code");
+			if (inputCode == null || inputCode.equals("") || inputCode.length() != 8 || inputCode.contains(" ") ){
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // code가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			// 세션에 저장된 인증코드와 비교
+			HttpSession session = request.getSession(false);
+			if (session == null || session.getAttribute("verifyCode") == null || session.getAttribute("verifyCode").equals("")) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			String verifyCode = (String) session.getAttribute("verifyCode");
+			if (!inputCode.equals(verifyCode)) new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증코드와 일치하지 않음
+			
+			// 세션에 코드 검증 여부를 저장
+			session.setAttribute("validateCode", true);
+			
+			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
+		} catch (Exception e) {
+			// 예기치 않은 예외 처리
+			log.error("Exception: ", e);			
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 80변 : 비밀번호 재설정
+	@PostMapping("/reset/password")
+	public ResponseEntity<?> resetUserPassword(@RequestBody Map<String, String> requestMap, HttpServletRequest request) {
+		try {
+			// 세션을 가져옴
+			HttpSession session = request.getSession(false);
+			
+			// 세션이 없거나 세션에 비밀번호 검증 여부가 있는지 확인
+			if (session == null || !(Boolean.TRUE.equals(session.getAttribute("validateCode")))) {
+		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		    }
+			
+			// id 값 추출
+			String id = requestMap.get("id");			
+			if (id == null || id.isBlank() || id.contains(" ") || id.length() > 30) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // id가 없거나 빈 값/ 형식에 맞지 않을 경우
+	        }
+			
+			// 세션에 저장한 이메일 검증 id와 요청 id가 같지 않은 경우
+			String sessionId = (String) session.getAttribute("id");
+			if (sessionId == null || !sessionId.equals(id)) {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			
+			// 비밀번호 값 추출
+	        String password = requestMap.get("password");
+	        
+	        // 비밀번호가 지정된 패턴을 따르지 않은 경우
+	        if (!passwordPattern.matcher(password).matches()) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+
+	        // 비밀번호 재설정
+	        if (!userService.updatePassword(id, password)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // 로직 수행 후 세션 만료
+	        session.invalidate();
+	        
+			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	// API 81번 : 새로고침 시 Access 토큰 헤더에 삽입
+	@PostMapping("/token/issue")
+	public ResponseEntity<?> isseueAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
+		try {
+			// access 토큰에서 id 정보, 만료시간 추출
+        	String accessToken = authorizationHeader.substring(7);
+            
+            // 응답 헤더 생성
+            HttpHeaders headers = new HttpHeaders();
+           
+            // 응답 헤더에 Access Token 추가
+            headers.add("Authorization", "Bearer " + accessToken);
+			
+            return ResponseEntity.ok().headers(headers).build();   // 성공적으로 처리됨	   
+		} catch (Exception e) {
+			// 예기치 못한 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 }

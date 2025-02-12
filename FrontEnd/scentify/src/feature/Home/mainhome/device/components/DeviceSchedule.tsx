@@ -174,16 +174,23 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
                     {schedule.endStartTime}
                   </div>
                 )}
-                {currentSchedule.type !== '자동화 모드' && (
-                  <p className="font-pre-medium text-16 text-sub">
-                    {schedule.isRunning ? '실행중' : '실행예정'}
-                  </p>
-                )}
+                {currentSchedule.name !== '예약 없음' &&
+                  currentSchedule.type !== '자동화 모드' && (
+                    <p className="font-pre-medium text-16 text-sub">
+                      {schedule.isRunning ? '실행중' : '실행예정'}
+                    </p>
+                  )}
               </div>
             ))
           ) : (
             <div className="flex flex-col justify-start items-start mt-2 gap-1">
-              <p className="flex flex-col font-pre-medium text-16 text-sub items-center">
+              <p
+                className={`flex flex-col items-center ${
+                  currentSchedule.name === '예약 없음'
+                    ? 'text-gray font-pre-light text-14'
+                    : 'text-sub font-pre-medium text-16'
+                }`}
+              >
                 {currentSchedule.name}
               </p>
               {currentSchedule.type === '자동화 모드' && (
@@ -197,11 +204,12 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
                     {currentSchedule.endStartTime}
                   </p>
                 )}
-                {currentSchedule.type !== '자동화 모드' && (
-                  <span className="pl-2 font-pre-light text-12 text-sub">
-                    {currentSchedule.isRunning ? '실행중' : '실행예정'}
-                  </span>
-                )}
+                {currentSchedule.name !== '예약 없음' &&
+                  currentSchedule.type !== '자동화 모드' && (
+                    <span className="pl-2 font-pre-light text-12 text-sub">
+                      {currentSchedule.isRunning ? '실행중' : '실행예정'}
+                    </span>
+                  )}
               </div>
             </div>
           )}

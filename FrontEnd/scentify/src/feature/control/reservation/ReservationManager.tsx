@@ -25,12 +25,15 @@ export default function ReservationManager({
 }: ReservationManagerProps) {
   const navigate = useNavigate();
 
+  // 마운트 시 동기화
+  const queryClient = useQueryClient();
+  // useEffect(() => {
+  //   queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
+  // }, []);
+
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
-
-  // react query
-  const queryClient = useQueryClient();
 
   const customSchedules = reservationData?.customSchedules || []; // 기기 한개의 예약 데이터 저장
   const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
@@ -111,34 +114,35 @@ export default function ReservationManager({
     }
   }, [customSchedules]);
 
+  const { data: favoritesData } = useQuery({
+    queryKey: ["favoritesData"],
+    queryFn: () => getAllFavorite(accessToken),
+    staleTime: 0,
+    refetchOnMount: "always",
+    initialData: { favorites: [] },
+  });
+  console.log("제발되라", favoritesData);
   // 찜 id 리스트
-  const {
-    favorites,
-    setFavorites,
-    favoriteCombinationIds,
-    setFavoriteCombinationIds,
-    favoriteIds,
-    deleteFavoriteIds,
-    addFavorite,
-    removeFavorite,
-    deleteAddFavorite,
-    deleteRemoveFavorite,
-    setFavoriteIds,
-    setDeleteFavoriteIds,
-    setFavoritesData,
-  } = useFavoriteStore();
+  const { setFavorites } = useFavoriteStore();
 
-  // console.log("DB저장찜", favorites);
+  // DB 찜 리스트
+  const favorites =
+    favoritesData?.favorites
+      ?.filter((item) => item?.combination) // undefined 항목 제거
+      ?.map((item) => item.combination.id) || [];
+  // const favorites = useFavoriteStore((state) => state.favorites);
   // 현재 찜 리스트
   const [currentFavorites, setCurrentFavorites] = useState<number[]>([
     ...favorites,
   ]);
+
+  console.log("DB저장", favorites);
   const currentFavoritesRef = useRef(currentFavorites);
   useEffect(() => {
     currentFavoritesRef.current = currentFavorites;
   }, [currentFavorites]);
   useEffect(() => {
-    // console.log("current", currentFavorites);
+    console.log("current", currentFavorites);
   }, [favorites, currentFavorites]);
 
   // 현재 찜 추가 핸들러
@@ -175,9 +179,6 @@ export default function ReservationManager({
       const newDeleteFavorites = favorites.filter(
         (fav) => !currentFavoritesRef.current.includes(fav)
       );
-
-      console.log("newadd", newAddFavorites);
-      console.log("newdelete", newDeleteFavorites);
 
       try {
         if (newAddFavorites.length > 0) {
@@ -244,9 +245,7 @@ export default function ReservationManager({
                     <div className="flex justify-between gap-2">
                       <HeartButton
                         // 찜 여부 확인 후 추가 제거
-                        isLiked={favoriteCombinationIds.includes(
-                          schedule.combinationId
-                        )}
+                        isLiked={favorites.includes(schedule.combinationId)}
                         onToggle={(newState) => {
                           if (newState) {
                             addCurrentFavorites(schedule.combinationId);

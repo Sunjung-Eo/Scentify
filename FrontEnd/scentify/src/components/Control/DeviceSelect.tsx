@@ -73,7 +73,7 @@ export default function DeviceSelect({
                     <img
                       src={CrownIcon}
                       alt="대표 기기 아이콘"
-                      className="w-[16px] h-[16px] mr-[4px]"
+                      className="w-[16px] h-[16px] mr-[3px]"
                     />
                     <span>{device.name}</span>
                   </>

@@ -38,4 +38,8 @@ public interface AutoScheduleRepository {
 	@Update("UPDATE autoschedule SET `interval` = #{autoSchedule.interval}, mode_on = #{autoSchedule.modeOn}, updated_at = NOW() "
 			+ "WHERE id = #{autoSchedule.id} AND device_id = #{autoSchedule.deviceId}")
 	boolean updateActionSchedule(@Param("autoSchedule") Schedule schedule);
+	
+	// 해당 디바이스의 기존 자동화 스케쥴 삭제
+	@Delete("DELETE FROM autoschedule WHERE device_id = #{deviceId}")
+	boolean deleteAutoSchedules(int deviceId);
 }

@@ -116,7 +116,7 @@ public class DeviceDto {
 	@AllArgsConstructor
 	public static class defaultCombinationDto {
 		@NotNull
-	    private Integer id;
+	    private int id;
 		@Setter
 		private CombinationDto combination; 
 	    private int roomType;

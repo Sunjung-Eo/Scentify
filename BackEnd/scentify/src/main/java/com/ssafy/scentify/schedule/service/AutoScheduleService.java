@@ -22,15 +22,19 @@ public class AutoScheduleService {
 		return autoScheduleRepository.createMode(deviceId, combinationId, subMode, type, interval) ? true : false;
 	}
 
-	public List<AutoScheduleHomeDto> getSchedulesByDeviceId(Integer mainDeviceId) {
+	public List<AutoScheduleHomeDto> getSchedulesByDeviceId(int mainDeviceId) {
 		return autoScheduleRepository.selectSchedulesByDeviceId(mainDeviceId);
 	}
 
-	public boolean updateAutoSchedule(AutoScheduleDto autoScheduleDto, Integer combinationId) {
+	public boolean updateAutoSchedule(AutoScheduleDto autoScheduleDto, int combinationId) {
 		return autoScheduleRepository.updateAutoSchedule(autoScheduleDto, combinationId);
 	}
 	
 	public boolean updateActionSchedule(Schedule schedule) {
 		return autoScheduleRepository.updateActionSchedule(schedule);
+	}
+	
+	public boolean deleteAutoSchedules(int deviceId) {
+		return autoScheduleRepository.deleteAutoSchedules(deviceId);
 	}
 }

@@ -45,7 +45,6 @@ public class DeviceService {
 	public List<DeviceInfoDto> findDevicesByIds(List<Integer> deviceIds) {
 		return deviceRepository.selectDevicesByIds(deviceIds);
 	}
-	
 
 	public DeviceHomeDto getDeviceHomeInfoById(int mainDeviceId) {
 		return deviceRepository.getDeviceHomeInfoById(mainDeviceId);

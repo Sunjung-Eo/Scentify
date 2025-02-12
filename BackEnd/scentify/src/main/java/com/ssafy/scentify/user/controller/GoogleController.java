@@ -121,8 +121,8 @@ public class GoogleController {
 			// 이메일 중복 확인
 			SocialLoginDto existingUserInfo = userService.getUserIdByEmail(email);
 	        
-			// 해당 이메일 정보로 가입한 회원이 이미 있는데 카카오 소셜 회원이 아닌 경우
-			if (existingUserInfo != null && existingUserInfo.getSocialType() != 2) {
+			// 해당 이메일 정보로 가입한 회원이 이미 있는데 구글 소셜 회원이 아닌 경우
+			if (existingUserInfo != null && existingUserInfo.getSocialType() != 1) {
 				response.sendRedirect("https://my-scentify.shop/login/social?social=false&provider=google"); 
 				return;
 			}

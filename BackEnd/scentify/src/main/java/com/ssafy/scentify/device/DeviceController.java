@@ -2,6 +2,7 @@ package com.ssafy.scentify.device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,9 +24,11 @@ import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
+import com.ssafy.scentify.device.model.entity.Device;
 import com.ssafy.scentify.group.GroupService;
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
 import com.ssafy.scentify.group.model.entity.Group;
+import com.ssafy.scentify.home.model.dto.HomeDto.DeviceHomeDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
 import com.ssafy.scentify.user.service.UserService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
@@ -171,49 +174,16 @@ public class DeviceController {
 	        CombinationDto combination = combinationDto.getCombination();
 	        if (!isValidCombination(capsules, combination)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
-	        // 조합을 먼저 등록
-	        combination.setName("기본향");
-			Integer combinationId = combinationService.createCombination(combination);			
+	        // roomType에 따라 분사량 선택
+			int roomType = combinationDto.getRoomType();
+			int count = getVaildCountAboutRoomType(roomType, combination);
+			if (count == 0) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
-			// 조합 id가 null이면 등록 실패로 400 반환
-			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }			
-			Integer deviceId = combinationDto.getId();
-			
-			// 기기 기본향 등록 (등록 실패 시 400 반환)
-			if(!deviceService.updateDefalutCombination(deviceId, combinationDto.getRoomType(), combinationId)) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			
-			// 자동화 모드 설정 (탈취 모드/ 단순 탐지 모드)
-			if (!autoScheduleService.setMode(deviceId, combinationId, 2, null, 15) || !autoScheduleService.setMode(deviceId, combinationId, 0, null, 15)) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			
-			// roomType에 따라 분사량 선택
-			Integer roomType = combinationDto.getRoomType();
-			int count = switch (roomType) {
-				case 0 -> 3;
-				case 1 -> 6;
-				default -> throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
-			};
-			int totalCount = combination.getChoice1Count();
-			if (combination.getChoice2Count() != null) { totalCount += combination.getChoice2Count(); }
-			if (combination.getChoice3Count() != null) { totalCount += combination.getChoice3Count(); }
-			if (combination.getChoice4Count() != null) { totalCount += combination.getChoice4Count(); }
-			
-			// 요청한 분사량과  roomType에 맞는 분사량 비교
-			if (count != totalCount) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-			
-			// 자동화 모드 설정 (시용자 행동 기반)
-			Integer exerciseCombinationId = combinationService.createAutoCombination("운동향", capsules.get(0), count);
-			if (exerciseCombinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-			
-			if (!autoScheduleService.setMode(deviceId, exerciseCombinationId, 1, 1, 15)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-			
-			Integer restCombinationId = combinationService.createAutoCombination("휴식향", capsules.get(1), count);
-			if (restCombinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-			
-			if(!autoScheduleService.setMode(deviceId, restCombinationId, 1, 2, 15)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        // 기본향 및 자동화 스케줄 추가
+			int deviceId = combinationDto.getId();
+			Integer combinationId = addDefaultCombination(count, deviceId, roomType, combination);
+			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			if (!addAutoMode(count, deviceId, combinationId, capsules)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
 			// 로직 수행 후 세션 만료
 			session.invalidate();
@@ -228,18 +198,137 @@ public class DeviceController {
 	
 	// 기본향 조합 유효성 검사 메서드
 	private boolean isValidCombination(List<Integer> capsules, CombinationDto combination) {
-    List<Integer> choices = Arrays.asList(
-        combination.getChoice1(),
-        combination.getChoice2(),
-        combination.getChoice3(),
-        combination.getChoice4()
-    );
+	    List<Integer> choices = Arrays.asList(combination.getChoice1(), combination.getChoice2(),
+										      combination.getChoice3(), combination.getChoice4());
+	
+	    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인
+	    return choices.stream()
+	                  .filter(Objects::nonNull)
+	                  .allMatch(capsules::contains);
+	}
+	
+	// 방 크기와 분사량 검사 메서드
+	private int getVaildCountAboutRoomType(int roomType, CombinationDto combination) {
+		int count = switch (roomType) {
+			case 0 -> 3;
+			case 1 -> 6;
+			default -> throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
+		};
+		int totalCount = combination.getChoice1Count();
+		if (combination.getChoice2Count() != null) { totalCount += combination.getChoice2Count(); }
+		if (combination.getChoice3Count() != null) { totalCount += combination.getChoice3Count(); }
+		if (combination.getChoice4Count() != null) { totalCount += combination.getChoice4Count(); }
+		
+		// 요청한 분사량과  roomType에 맞는 분사량 비교
+		if (count != totalCount) { return 0; }
+		
+		return count;
+	}
+	
+	// 기본향 등록
+	private Integer addDefaultCombination(int count, int deviceId, int roomType, CombinationDto combination) {
+		// 조합을 먼저 등록
+        combination.setName("기본향");
+		Integer combinationId = combinationService.createCombination(combination);			
+		
+		// 조합 id가 null이면 등록 실패로 400 반환
+		if (combinationId == null) { return null; }			
+		
+		// 기기에 기본향 정보 등록 (등록 실패 시 400 반환)
+		if(!deviceService.updateDefalutCombination(deviceId, roomType, combinationId)) {
+			return null;
+		}
+		
+		return combinationId;
+	}
+	
+	// 자동화 모드 등록
+	private boolean addAutoMode(int count, int deviceId, int combinationId, List<Integer> capsules) {
+		// 자동화 모드 설정 (탈취 모드/ 단순 탐지 모드)
+		if (!autoScheduleService.setMode(deviceId, combinationId, 2, null, 15) || !autoScheduleService.setMode(deviceId, combinationId, 0, null, 15)) {
+			return false;
+		}
 
-    // choice 값이 null이 아니면 capsules에 포함되어 있는지 확인
-    return choices.stream()
-                  .filter(Objects::nonNull)
-                  .allMatch(capsules::contains);
-	}	
+		// 자동화 모드 설정 (시용자 행동 기반)
+		Integer exerciseCombinationId = combinationService.createAutoCombination("운동향", capsules.get(0), count);
+		if (exerciseCombinationId == null) { return false; }
+		
+		if (!autoScheduleService.setMode(deviceId, exerciseCombinationId, 1, 1, 15)) { return false; }
+		
+		Integer restCombinationId = combinationService.createAutoCombination("휴식향", capsules.get(1), count);
+		if (restCombinationId == null) { return false; }
+		
+		if(!autoScheduleService.setMode(deviceId, restCombinationId, 1, 2, 15)) { return false; }
+		
+		return true;
+	}
+	
+	// API 83번 : 캡슐 변경에 따른 기본향 재등록
+	@PostMapping("/set/change")
+	public ResponseEntity<?> changeDefaultCombination(@RequestBody defaultCombinationDto combinationDto, HttpServletRequest request) {
+		try {
+			HttpSession session = request.getSession(false);
+			
+			// session이 null이면 유효성 검사를 할 수 없음
+	        if (session == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			List<Integer> capsules = (List<Integer>) session.getAttribute("capsules");
+
+	        // capsules이 null이거나 비어있으면 유효성 검사를 할 수 없음
+	        if (capsules == null || capsules.isEmpty()) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // choice 값 검증
+	        CombinationDto combination = combinationDto.getCombination();
+	        if (!isValidCombination(capsules, combination)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        
+	        // roomType에 따라 분사량 선택
+			int roomType = combinationDto.getRoomType();
+			int count = getVaildCountAboutRoomType(roomType, combination);
+			if (count == 0) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// 등록된 디바이스 정보를 받아옴
+	        Integer deviceId = combinationDto.getId();
+	        DeviceHomeDto deviceInfo = deviceService.getDeviceHomeInfoById(deviceId);
+	        
+	        // 기존 캡슐 정보를 리스트로 만듦
+	        List<Integer> beforeCapsules = new ArrayList<>();
+	        beforeCapsules.add(deviceInfo.getSlot1());    beforeCapsules.add(deviceInfo.getSlot2());
+	        beforeCapsules.add(deviceInfo.getSlot3());    beforeCapsules.add(deviceInfo.getSlot4());
+	        
+	        // 만약 기존에 설정한 방 정보와 캡슐 정보가 같다면 그냥 기본향만 수정해줌
+	        if (deviceInfo.getRoomType() == combinationDto.getRoomType()) {
+	        	boolean isEqual = new HashSet<>(capsules).equals(new HashSet<>(beforeCapsules));
+	        	if (isEqual) {
+	        		// 조합을 먼저 등록
+	        		Integer combinationId = addDefaultCombination(count, deviceId, roomType, combination);
+	    			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	    			
+	    			// 로직 수행 후 세션 만료
+	    			session.invalidate();
+	    			return new ResponseEntity<>(HttpStatus.OK);
+	        	}	        	
+	        }
+			
+	        // 기존 자동화 스케줄 삭제
+	        if (!autoScheduleService.deleteAutoSchedules(deviceId)) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // 기본향 및 자동화 스케줄 추가
+			Integer combinationId = addDefaultCombination(count, deviceId, roomType, combination);
+			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			if (!addAutoMode(count, deviceId, combinationId, capsules)) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// 로직 수행 후 세션 만료
+			session.invalidate();
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	// API 75번 : 기본 향 수정
 	@PostMapping("/set/update")

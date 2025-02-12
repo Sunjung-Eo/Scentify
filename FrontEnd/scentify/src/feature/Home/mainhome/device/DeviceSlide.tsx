@@ -225,13 +225,6 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   const currentDeviceId = sortedDeviceIds[currentIndex];
   const currentScheduleData = schedules[currentDeviceId];
 
-  console.log(
-    ' 🐛 현재 디바이스: ',
-    currentDeviceId,
-    ' 🐛 스케줄 내용: ',
-    currentScheduleData
-  );
-
   return (
     <div className="relative flex flex-col items-center h-[460px] justify-between">
       {deviceIds.length === 0 ? (

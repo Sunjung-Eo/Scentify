@@ -94,9 +94,6 @@ const HomeMain = () => {
     customSchedules: data?.customSchedules ?? [],
   };
 
-  console.log('💘 데이터: ', data);
-  console.log('💘 메인디바이스모드: ', exampleData.mainDeviceMode);
-
   return (
     <div className="flex flex-col content px-4 py-1">
       <div className="mb-5">

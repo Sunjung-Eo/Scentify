@@ -33,3 +33,8 @@ export interface ScheduleState {
   ) => void;
   resetSchedules: () => void;
 }
+
+// 기존 CustomSchedule 타입을 확장하여 isRunning 추가
+export interface CustomScheduleWithStatus extends CustomSchedule {
+  isRunning: boolean;
+}

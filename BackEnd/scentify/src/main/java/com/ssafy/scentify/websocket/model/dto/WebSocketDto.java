@@ -77,16 +77,15 @@ public class WebSocketDto {
 	    @Data
 	    public static class Combination {
 	    	private int choice1; // NOT NULL
-    	    @Setter
     	    private int choice1Count;
+    	    
     	    private Integer choice2; // NULL 허용
-    	    @Setter
     	    private Integer choice2Count;
+    	    
     	    private Integer choice3; // NULL 허용
-    	    @Setter
     	    private Integer choice3Count;
+    	    
     	    private Integer choice4; // NULL 허용
-    	    @Setter
     	    private Integer choice4Count;
 	    }
 	}

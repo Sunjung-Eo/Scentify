@@ -94,7 +94,7 @@ public class WebSocketService {
 	// Combination 객체 생성 메서드
 	private Combination getCombination(CustomScheduleDto scheduleDto) {
 	    Integer combinationId = scheduleDto.getCombination().getId();
-
+	    
 	    if (combinationId == null) {
 	        Combination combination = new Combination();
 	        combination.setChoice1(scheduleDto.getCombination().getChoice1());
@@ -103,6 +103,9 @@ public class WebSocketService {
 	        combination.setChoice2(scheduleDto.getCombination().getChoice2Count());
 	        combination.setChoice3(scheduleDto.getCombination().getChoice3());
 	        combination.setChoice3(scheduleDto.getCombination().getChoice3Count());
+		    
+		    System.out.println("콤비네이션 잘 세팅되니?" + scheduleDto.getCombination().getChoice3Count());
+	        
 	        combination.setChoice4(scheduleDto.getCombination().getChoice4());
 	        combination.setChoice4(scheduleDto.getCombination().getChoice4Count());
 	    	return combination;

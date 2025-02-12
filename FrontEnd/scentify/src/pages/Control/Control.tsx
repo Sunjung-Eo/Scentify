@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
@@ -33,6 +33,8 @@ const Control = () => {
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  const queryClient = useQueryClient();
+
   // 기기 정보
   const { deviceIdsAndNames } = useUserStore();
   const { mainDevice } = useMainDeviceStore();
@@ -61,25 +63,34 @@ const Control = () => {
   const { data: fetchDeviceData = {}, isLoading } = useQuery({
     queryKey: ["deviceInfo"],
     queryFn: () => getDeviceInfo(deviceIds, accessToken),
+    enabled: deviceIds.length > 0 && !!accessToken,
   });
   const devicesInfo = fetchDeviceData;
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["deviceInfo"] });
+  }, [deviceIds]);
 
   // 예약 관리 컴포넌트로 전달
   const deviceSelectItems =
     deviceIds.length === 0 || !devicesInfo?.devices
       ? []
-      : deviceIds.map((deviceId) => {
-          const deviceInfo = devicesInfo.devices.find(
-            (device: any) => device.id === deviceId
-          );
-          return {
-            deviceId: deviceInfo.id,
-            name: deviceInfo.name,
-            roomType: deviceInfo.roomType,
-            isRepresentative: deviceInfo.id === mainDevice?.id ? true : false,
-            defaultScentId: deviceInfo.defaultCombination,
-          };
-        });
+      : deviceIds
+          .map((deviceId) => {
+            const deviceInfo = devicesInfo.devices.find(
+              (device: any) => device.id === deviceId
+            );
+            if (!deviceInfo) {
+              return null; // 데이터가 없는 경우 null 반환
+            }
+            return {
+              deviceId: deviceInfo.id,
+              name: deviceInfo.name,
+              roomType: deviceInfo.roomType,
+              isRepresentative: deviceInfo.id === mainDevice?.id ? true : false,
+              defaultScentId: deviceInfo.defaultCombination,
+            };
+          })
+          .filter(Boolean);
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
@@ -112,6 +123,12 @@ const Control = () => {
   // 현재 설정된 모드
   const [mode, setMode] = useState<boolean | null>(null);
   useEffect(() => {
+    if (selectedDevice) {
+      queryClient.invalidateQueries({ queryKey: ["deviceInfo"] });
+    }
+  }, [selectedDevice]);
+  // 최신 모드 동기화
+  useEffect(() => {
     if (selectedDeviceData?.mode !== undefined) {
       setMode(selectedDeviceData.mode);
     }
@@ -126,7 +143,7 @@ const Control = () => {
     if (deviceIds.length === 0) {
       return;
     }
-    if (mode !== newMode) {
+    if (Boolean(mode) !== newMode) {
       const getModeName = () => {
         return newMode ? "자동화 " : "예약 ";
       };
@@ -147,11 +164,11 @@ const Control = () => {
       }
     }
   };
-  useEffect(() => {
-    if (selectedDeviceData?.mode !== undefined) {
-      setMode(selectedDeviceData.mode);
-    }
-  }, [selectedDeviceData?.mode]);
+  // useEffect(() => {
+  //   if (selectedDeviceData?.mode !== undefined) {
+  //     setMode(selectedDeviceData.mode);
+  //   }
+  // }, [selectedDeviceData?.mode]);
 
   // 모달 창 취소 버튼
   const handleCancel = () => {
@@ -166,6 +183,10 @@ const Control = () => {
     }
     setActiveTab(tab);
   };
+
+  if (isLoading || !devicesInfo?.devices) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <div className="content pt-5">

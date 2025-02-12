@@ -31,12 +31,12 @@ class SmartDiffuser:
         self.print_log = True
 
         # AI 모델
-        self.camera = Camera()
-        self.yolo = SIMPLEYOLO()
-        self.slowfast = SlowFast()
-        # self.camera = None
-        # self.yolo = None
-        # self.slowfast = None
+        # self.camera = Camera()
+        # self.yolo = SIMPLEYOLO()
+        # self.slowfast = SlowFast()
+        self.camera = None
+        self.yolo = None
+        self.slowfast = None
 
         # self.slowfast.print_log = True
 
@@ -52,6 +52,7 @@ class SmartDiffuser:
         self.min_capsule_weight = 20.0
         self.current_capsule_weight = [200.0, 200.0, 200.0, 200.0]
         self.account_operation = 1.0
+        self.init_weight()
 
         # 모터
         self.soleniods = [
@@ -130,9 +131,6 @@ class SmartDiffuser:
             if old_operation_mode == 0 and self.mode.operation_mode == 1:
                 # 자동화 모드 정보 요청
                 await self.mqtt_client.publish(f"{self.mqtt_client.device_id}/Request/AutoModeInfo", "0")
-            elif old_operation_mode == 1 and self.mode.opration_mode == 0:
-                # 스케줄 모드 정보 요청
-                pass
 
         elif topic == f"{self.mqtt_client.device_id}/AutoModeInit":
             payload = json.loads(payload)
@@ -259,6 +257,11 @@ class SmartDiffuser:
         # 잔여량 표시
         await self.send_remainder()
 
+    def init_weight(self,):
+        current_weight = self.loadcell.get_weight_avg()
+        if current_weight < self.max_capsule_weight and current_weight > self.min_capsule_weight:
+            self.capsule_remainder[0] = (current_weight - self.min_capsule_weight) / (self.max_capsule_weight - self.min_capsule_weight) * 100 
+            self.current_capsule_weight[0] = current_weight
 
     def update_remainder(self, num_operation):
         # 현재 무게 계산하기

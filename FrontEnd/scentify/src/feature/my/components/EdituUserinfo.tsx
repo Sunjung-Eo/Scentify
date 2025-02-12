@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getUserInfo } from "../../../apis/user/editaccount/getUserInfo";
 import { updateUserInfo } from "../../../apis/user/editaccount/updateUserInfo";
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
+import Alert from "../../../components/Alert/AlertMy";
 
 function EditUserinfo() {
   const authStore = useAuthStore();
@@ -14,6 +15,8 @@ function EditUserinfo() {
   const [birthDay, setBirthDay] = useState("");
   const [gender, setGender] = useState<number | null>(null);
   const [error, setError] = useState("");
+  // 모달창 상태 추가
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   // 생년월일 포맷팅 함수 (YYYY-MM-DD → ["YYYY", "MM", "DD"])
   const formatBirthdate = (birth: string) => {
@@ -52,15 +55,14 @@ function EditUserinfo() {
     );
 
     if (result.success) {
-      alert("회원 정보가 변경되었습니다.");
-      navigate("/my/manageaccount");
+      setShowAlert(true); // 모달창
     } else {
       setError(result.message || "회원 정보 변경에 실패했습니다.");
     }
   };
 
   return (
-    <div className="content pt-8 pb-8 h-full flex flex-col justify-between">
+    <div className="content pt-4 pb-8 h-full flex flex-col justify-between">
       {/* 제목 */}
       <h1 className="text-20 font-pre-bold text-center">회원정보 변경</h1>
 
@@ -68,7 +70,7 @@ function EditUserinfo() {
       <div className="mt-10">
         {/* 생년월일 입력 */}
         <div className="mb-4 flex items-center">
-          <label className="text-12 font-pre-light mr-4" htmlFor="birth">
+          <label className="text-12 font-pre-light mr-3" htmlFor="birth">
             생년월일
           </label>
           <div className="flex gap-2">
@@ -78,12 +80,12 @@ function EditUserinfo() {
               maxLength={4}
               value={birthYear}
               onChange={(e) => setBirthYear(e.target.value)}
-              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black"
+              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black focus:outline-none focus:ring-2 focus:ring-brand"
             />
             <select
               value={birthMonth}
               onChange={(e) => setBirthMonth(e.target.value)}
-              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray"
+              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-2 focus:ring-brand"
             >
               <option value="">월</option> {/*option의 기본 선택값은 빈 값 */}
               {[...Array(12)].map((_, i) => (
@@ -98,7 +100,7 @@ function EditUserinfo() {
               maxLength={2}
               value={birthDay}
               onChange={(e) => setBirthDay(e.target.value)}
-              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black"
+              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
         </div>
@@ -143,9 +145,7 @@ function EditUserinfo() {
 
       {/* 에러 메시지 */}
       {error && (
-        <div className="mt-6 text-red-500 text-12 font-pre-light text-center">
-          {error}
-        </div>
+        <div className="mt-2 text-red-500 text-12 font-pre-light ">{error}</div>
       )}
 
       {/* 저장 버튼 */}
@@ -157,6 +157,16 @@ function EditUserinfo() {
           저장
         </button>
       </div>
+      {/* 회원정보변경 성공 모달창 */}
+      {showAlert && (
+        <Alert
+          message="회원정보가 변경되었습니다."
+          onClose={() => {
+            setShowAlert(false);
+            navigate("/my/manageaccount");
+          }}
+        />
+      )}
     </div>
   );
 }

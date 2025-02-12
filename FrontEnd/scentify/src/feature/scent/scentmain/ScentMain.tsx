@@ -18,11 +18,12 @@ const ScentMain = () => {
 
   const favoriteStore = useFavoriteStore();
   const setFavoritesData = favoriteStore.setFavoritesData;
+  const favoritesData = favoriteStore.favoritesData;
 
   // ScentMain 마운트 시 강제 리페치
-  useEffect(() => {
-    refetch();
-  }, []);
+  // useEffect(() => {
+  //   refetch();
+  // }, []);
 
   // 기존 db 찜 리스트
   // 찜 리스트 전체조회
@@ -34,12 +35,16 @@ const ScentMain = () => {
     refetchOnMount: "always",
     initialData: { favorites: [] },
   });
+
   useEffect(() => {
     if (fetchedFavoritesData) {
       setFavoritesData(fetchedFavoritesData);
     }
   }, [fetchedFavoritesData, setFavoritesData]);
-  const favoritesData = favoriteStore.favoritesData || fetchedFavoritesData;
+  useEffect(() => {
+    console.log("dasd", favoritesData.favorites);
+  }, [favoritesData]);
+  // const favoritesData = favoriteStore.favoritesData || fetchedFavoritesData;
 
   // 찜 버튼 클릭 시 단일 삭제
   const deleteSingleMutation = useMutation({
@@ -85,7 +90,7 @@ const ScentMain = () => {
         </div>
         <div className="overflow-y-auto max-h-[259px]">
           {/* FavoritesList 렌더링 ( favoritesData 배열을 받아서 렌더링)*/}
-          {favoritesData?.favorites?.length > 0 ? (
+          {/* {favoritesData.favorites.length > 0 ? (
             <FavoritesList
               favorites={favoritesData.favorites}
               onToggleLike={handleToggleLike}
@@ -93,7 +98,7 @@ const ScentMain = () => {
             />
           ) : (
             ""
-          )}
+          )} */}
         </div>
       </div>
     </div>

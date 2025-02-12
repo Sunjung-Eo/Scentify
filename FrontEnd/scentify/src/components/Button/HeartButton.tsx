@@ -10,7 +10,7 @@ interface HeartButtonProps {
 export default function HeartButton({ isLiked, onToggle }: HeartButtonProps) {
   const [isFilled, setIsFilled] = useState(isLiked);
   useEffect(() => {
-    console.log(isFilled);
+    // console.log(isFilled);
   }, [isFilled]);
   const handleClick = () => {
     const newState = !isFilled;

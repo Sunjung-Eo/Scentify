@@ -104,46 +104,30 @@ export const getClosestCustomSchedule = (
   return null;
 };
 
-export const getActiveAutoSchedule = (
-  scheduleData: {
-    type: 0 | 1 | null;
-    schedules: AutoSchedule[];
-  } | null
-): AutoSchedule[] => {
+// scheduleData : {type: 1, schedules: {autoSchedules:[{..}, {..}]}}
+// scheduleData?.schedules : {autoSchedules:[{..}, {..}]}
+// scheduleData?.schedules?.autoSchedules : [{..}, {..}]
+
+export const getActiveAutoSchedule = (scheduleData: any): AutoSchedule[] => {
   console.log('🛠 DeviceSchedule에서 넘어온 scheduleData:', scheduleData);
 
   if (
     !scheduleData ||
     scheduleData.type !== 1 || // ✅ 자동화 모드인지 확인
-    !Array.isArray(scheduleData.schedules)
+    !scheduleData.schedules
   ) {
     console.log('🚨 유효한 자동화 스케줄이 없습니다.');
     return [];
   }
 
-  const activeSchedules = scheduleData.schedules.filter((schedule) => {
-    if (schedule.modeOn !== true) return false;
+  console.log('🔥 필터링 전 schedules:', scheduleData.schedules);
 
-    let modeName = '';
-    switch (schedule.subMode) {
-      case 0:
-        modeName = '탐지모드';
-        break;
-      case 1:
-        modeName = schedule.type === 1 ? '동작모드(운동)' : '동작모드(휴식)';
-        break;
-      case 2:
-        modeName = '탈취모드';
-        break;
-    }
+  const autoSchedules = scheduleData.schedules.autoSchedules;
 
-    console.log(`📌 스케줄 ID: ${schedule.id}`);
-    console.log(`📌 모드: ${modeName}`);
-    console.log(`📌 인터벌: ${schedule.interval || '없음'}`);
-
-    return true;
-  });
-
+  console.log('🔥 autoSchedules:', autoSchedules);
+  const activeSchedules = autoSchedules.filter(
+    (schedule: any) => schedule.modeOn === 1
+  );
   console.log('✅ 활성화된 자동화 스케줄들:', activeSchedules);
   return activeSchedules;
 };

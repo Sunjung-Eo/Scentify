@@ -22,8 +22,11 @@ const RegistFormSocial = ({
     verificationCode: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [alertMessage, setAlertMessage] = useState<string>('');
 
-  console.log('email1 : ', formData.email);
+  const setShowAlert = (message: string) => {
+    setAlertMessage(message);
+  };
 
   // 입력 변경 핸들러
   const handleChange = (
@@ -33,12 +36,9 @@ const RegistFormSocial = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  console.log('email2 : ', initialEmail);
-
   // 폼 제출 핸들러
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('🚀 handleSubmit 실행됨!'); // 확인
     setErrors({}); // 에러 초기화
 
     let newErrors: { [key: string]: string } = {};
@@ -83,7 +83,8 @@ const RegistFormSocial = ({
       await registKakao(userData);
       onRegist();
     } catch (error) {
-      setErrors({ server: '서버에 문제가 발생했습니다.' });
+      console.error('회원가입 에러:', error);
+      setErrors({ server: '회원가입 처리 중 오류가 발생했습니다.' });
     }
   };
 
@@ -126,6 +127,11 @@ const RegistFormSocial = ({
           className={inputStyles}
         />
       </div>
+      {errors.password && (
+        <p className="text-[12px] text-red-500 break-words whitespace-pre-line">
+          {errors.password}
+        </p>
+      )}
 
       {/* 비밀번호 확인 */}
       <div className="flex items-center gap-2 ">

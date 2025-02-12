@@ -6,6 +6,7 @@ import { getProfileImage } from "../../../utils/profileImageMapper";
 import { validatePassword } from "../../../apis/user/editaccount/validatepassword";
 import { deleteUserAccount } from "../../../apis/user/editaccount/deleteUserAccount"; // 회원 탈퇴 API
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
+import Modal from "../../../components/Alert/Modal";
 
 const ManageAccount = () => {
   const navigate = useNavigate();
@@ -91,7 +92,6 @@ const ManageAccount = () => {
           <p className="text-16 font-pre-medium">{nickname}</p>
         </div>
       </div>
-
       {/* 버튼 그룹 */}
       <div className="flex justify-between gap-3 mb-8">
         <button
@@ -107,7 +107,6 @@ const ManageAccount = () => {
           닉네임 변경
         </button>
       </div>
-
       {/* 변경 항목 리스트 */}
       <div>
         {/* 구분선 */}
@@ -132,7 +131,6 @@ const ManageAccount = () => {
           </div>
         </div>
       </div>
-
       {/* 탈퇴하기 버튼 */}
       <div className="mt-8 flex justify-end">
         <button
@@ -142,43 +140,39 @@ const ManageAccount = () => {
           탈퇴하기
         </button>
       </div>
-
       {/* 모달 창 */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-component w-[250px] h-[220px] p-4 rounded-lg flex flex-col items-center justify-between relative">
-            {/* 닫기 버튼 */}
-            <button onClick={closeModal} className="absolute top-3 right-4">
-              ✕
-            </button>
-            {/* 제목 */}
-            <div className="mt-12">
-              <h2 className="text-12 font-pre-medium text-center">
-                비밀번호를 입력해주세요
-              </h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="flex flex-col max-w-[260px] w-full h-[300px] p-6 rounded-2xl border-black/10 bg-white shadow-lg relative">
+            <p className="text-center text-12 text-gray-700 mt-[60px]">
+              탈퇴하시겠습니까?<br></br> 비밀번호를 입력해주세요.
+            </p>
+            <input
+              type="password"
+              value={inputPassword}
+              onChange={(e) => setInputPassword(e.target.value)}
+              className="w-full p-2 bg-component rounded-lg mt-4  focus:outline-none focus:ring-2 focus:ring-brand"
+            />
+            {/* 에러 메시지 영역의 높이를 고정 */}
+            <div className="min-h-[20px] mt-2 text-center">
+              {error && (
+                <p className="text-red-500 font-pre-light text-10">{error}</p>
+              )}
             </div>
-            {/* 비밀번호 입력창 */}
-            <div className="mt-0">
-              <input
-                type="password"
-                value={inputPassword}
-                onChange={(e) => setInputPassword(e.target.value)}
-                className="w-[200px] h-[40px] text-12 px-3 font-pre-light rounded-lg bg-white border border-lightgray"
-              />
+            <div className="flex p-3 pt-[25px] justify-between gap-2">
+              <button
+                className="w-[60px] py-2 border-0.2 border-sub rounded-lg bg-gray-300 text-sub text-12 hover:opacity-90"
+                onClick={closeModal}
+              >
+                취소
+              </button>
+              <button
+                className="w-[60px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90"
+                onClick={handlePasswordCheck}
+              >
+                확인
+              </button>
             </div>
-            {/* 에러 메시지 */}
-            {error && (
-              <p className="text-red-500 text-12 font-pre-light text-center">
-                {error}
-              </p>
-            )}
-            {/* 확인 버튼 */}
-            <button
-              onClick={handlePasswordCheck}
-              className="w-[100px] h-[35px] text-12 font-pre-light rounded-lg border-[1px] border-lightgray bg-white"
-            >
-              확인
-            </button>
           </div>
         </div>
       )}

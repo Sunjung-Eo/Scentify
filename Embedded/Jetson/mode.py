@@ -8,6 +8,7 @@ class AutoDetectionMode:
     sub_mode : int = -1
     operation_type :int = None
     modeOn : bool = False
+    is_running : bool = False
 
 @dataclass
 class AutoModeType:

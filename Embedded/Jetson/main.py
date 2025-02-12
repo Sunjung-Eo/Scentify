@@ -31,14 +31,14 @@ class SmartDiffuser:
         self.print_log = True
 
         # AI 모델
-        # self.camera = Camera()
-        # self.yolo = SIMPLEYOLO()
-        # self.slowfast = SlowFast()
-        self.camera = None
-        self.yolo = None
-        self.slowfast = None
+        self.camera = Camera()
+        self.yolo = SIMPLEYOLO()
+        self.slowfast = SlowFast()
+        # self.camera = None
+        # self.yolo = None
+        # self.slowfast = None
 
-        # self.slowfast.print_log = True
+        self.slowfast.print_log = True
 
         # HW
         # 악취 감지 센서
@@ -46,13 +46,13 @@ class SmartDiffuser:
         self.th_stink_value = 120
 
         # 무게 감지 센서
-        self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
-        self.loadcell.window_size = 100
-        self.max_capsule_weight = 200.0
-        self.min_capsule_weight = 20.0
-        self.current_capsule_weight = [200.0, 200.0, 200.0, 200.0]
-        self.account_operation = 1.0
-        self.init_weight()
+        # self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
+        # self.loadcell.window_size = 100
+        # self.max_capsule_weight = 200.0
+        # self.min_capsule_weight = 20.0
+        # self.current_capsule_weight = [200.0, 200.0, 200.0, 200.0]
+        # self.account_operation = 1.0
+        # self.init_weight()
 
         # 모터
         self.soleniods = [
@@ -145,6 +145,14 @@ class SmartDiffuser:
                     operation_type = mode["type"],
                     sub_mode = int(mode["subMode"])
                 )
+
+            if self.mode.operation_mode == 1:
+                for id, auto_mode in self.mode.auto_operation_mode.items():
+                    if auto_mode.is_running or not auto_mode.modeOn:
+                        continue
+                    await self.run_auto_mode(id)
+                    
+
             self.mapping_id_to_type()
             
         elif topic == f"{self.mqtt_client.device_id}/AutoModeChange":
@@ -169,25 +177,7 @@ class SmartDiffuser:
 
             # key가 modeOn을 수정하는 거라면, 해당하는 함수 호출
             if key == "modeOn" and bool(payload[key]) == True:
-                if self.type_to_id[self.mode_type.simple_detect] == id:
-                    if self.print_log:
-                        print("Run Simple Detect")
-                    asyncio.create_task(self.operate_simple_detect())
-
-                elif self.type_to_id[self.mode_type.exercise_detect] == id:
-                    if self.print_log:
-                        print("Run Exercise Detect")
-                    asyncio.create_task(self.operate_action_detect())
-                
-                elif self.type_to_id[self.mode_type.relax_detect] == id:
-                    if self.print_log:
-                        print("Run Relax Detect")
-                    asyncio.create_task(self.operate_action_detect())
-                    
-                elif self.type_to_id[self.mode_type.stink_detect] == id:
-                    if self.print_log:
-                        print("Run Stink Detect")
-                    asyncio.create_task(self.operate_stink_detect())
+                await self.run_auto_mode(id)
 
         elif topic == f"{self.mqtt_client.device_id}/CapsuleInfo":
             # 캡슐 맵핑
@@ -241,7 +231,7 @@ class SmartDiffuser:
                 slot_idx += 1
 
         # 잔여량 계산
-        self.update_remainder(num_operate_for_slot)
+        # self.update_remainder(num_operate_for_slot)
 
         while True:
             if num_operate_for_slot[0] == 0 and num_operate_for_slot[1] == 0 and\
@@ -257,6 +247,27 @@ class SmartDiffuser:
         # 잔여량 표시
         await self.send_remainder()
 
+    async def run_auto_mode(self, id):
+        if self.type_to_id[self.mode_type.simple_detect] == id:
+            if self.print_log:
+                print("Run Simple Detect")
+            asyncio.create_task(self.operate_simple_detect())
+
+        elif self.type_to_id[self.mode_type.exercise_detect] == id:
+            if self.print_log:
+                print("Run Exercise Detect")
+            asyncio.create_task(self.operate_action_detect())
+        
+        elif self.type_to_id[self.mode_type.relax_detect] == id:
+            if self.print_log:
+                print("Run Relax Detect")
+            asyncio.create_task(self.operate_action_detect())
+            
+        elif self.type_to_id[self.mode_type.stink_detect] == id:
+            if self.print_log:
+                print("Run Stink Detect")
+            asyncio.create_task(self.operate_stink_detect())
+
     def init_weight(self,):
         current_weight = self.loadcell.get_weight_avg()
         if current_weight < self.max_capsule_weight and current_weight > self.min_capsule_weight:
@@ -269,6 +280,7 @@ class SmartDiffuser:
         for idx in range(4):
             # 변화된 무게 감지
             modified_weight = self.current_capsule_weight[idx] - num_operation[idx] * self.account_operation
+            modified_weight = min(self.min_capsule_weight, modified_weight)
             if idx == 0:
                 # 데이터 보장
                 if modified_weight < current_weight:
@@ -329,8 +341,10 @@ class SmartDiffuser:
     # TODO: 각 감지 모드의 인터벌 말고, Operation 자체의 인터벌도 생각하기!
 
     async def operate_simple_detect(self):
+        self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].is_running = True
         while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].modeOn and \
         self.operation_priority[self.running_state] >= self.operation_priority[self.mode_type.simple_detect]:
+            print("Operation Simple Detect")
             await asyncio.sleep(1)
             frame = await self.camera.get_one_frame()
             person_detect = self.yolo.person_detect(frame)
@@ -341,11 +355,18 @@ class SmartDiffuser:
             else:
                 if self.print_log:
                     print("Person Not Detect!")
+        self.mode.auto_operation_mode[self.type_to_id[self.mode_type.simple_detect]].is_running = False
 
     async def operate_action_detect(self):
+        if self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn:
+            self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].is_running = True
+        elif self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
+            self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].is_running = True
+
         while (self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].modeOn or \
             self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn) and \
              self.operation_priority[self.running_state] >= self.operation_priority[self.mode_type.exercise_detect]:
+            print("Operation Action Detect")
 
             await asyncio.sleep(1)
             frame = await self.camera.get_one_frame()
@@ -353,7 +374,7 @@ class SmartDiffuser:
             if person_detect:
                 frames = await self.camera.get_frames(self.slowfast.required_frames_num)
                 ret = self.slowfast.analyze_action(frames)
-                if ret.value == 1 and self.mode.auto_operation_mode[sel.type_to_id[self.mode_type.exercise_detect]].modeOn:
+                if ret.value == 1 and self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].modeOn:
                     if self.print_log:
                         print("Exercise Detect!!")
                     await self.process_detect_auto_mode(self.mode_type.exercise_detect)
@@ -363,19 +384,26 @@ class SmartDiffuser:
                         print("Exercise Relax!!")
                     await self.process_detect_auto_mode(self.mode_type.relax_detect)
 
+        self.mode.auto_operation_mode[self.type_to_id[self.mode_type.relax_detect]].is_running = False
+        self.mode.auto_operation_mode[self.type_to_id[self.mode_type.exercise_detect]].is_running = False
+
     async def operate_stink_detect(self):
+        self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].is_running = True
         while self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].modeOn and \
         self.operation_priority[self.running_state] >= self.operation_priority[self.mode_type.stink_detect]:
+            print("Operation Stink Detect")
             await asyncio.sleep(1)
             value = self.stink_sensor.read_avg_data()
             if value > self.th_stink_value:
                 await self.process_detect_auto_mode(self.mode_type.stink_detect)   
+        self.mode.auto_operation_mode[self.type_to_id[self.mode_type.stink_detect]].is_running = False
 
 async def main():
     smart_diffuser = SmartDiffuser()
     asyncio.create_task(smart_diffuser.mqtt_client.connect())
     while True:
         await asyncio.sleep(2)
+        
         
 
 asyncio.run(main())

@@ -30,6 +30,10 @@ export default function ScentSCntetting({
   setScentCnt,
   totalEnergy, // 3, 6
 }: ScentSCntettingProps) {
+  if (!scentCnt || !scentNames) {
+    return null;
+  }
+
   // scentsCnt 객체에 저장된 모든 값(향 분사 횟수)의 합을 계산
   const totalUsage = Object.values(scentCnt).reduce(
     (acc, curr) => acc + curr,

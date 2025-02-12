@@ -185,24 +185,65 @@ export default function ModifyReservation({
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
     reservationName: "",
+    reservationNameLength: "",
+    noonTimeError: "",
+    timeError: "",
     scentName: "",
+    scentNameLength: "",
     scents: "",
   });
   // 완료 버튼 누를 시 유효성 검사
   const handleComplete = () => {
     const errors = {
       reservationName: "",
+      reservationNameLength: "",
+      noonTimeError: "",
+      timeError: "",
       scentName: "",
+      scentNameLength: "",
       scents: "",
     };
     let isValid = true;
 
+    // 시간 유효성검사를 위한 변환
+    const parseTimeToNumber = (time: string): number => {
+      const [hour, minute] = time.split(":").map(Number);
+      return hour * 100 + minute;
+    };
+    const start24 = convertTo24Hour(
+      Number(startHour),
+      Number(startMinute),
+      startPeriod
+    );
+    const end24 = convertTo24Hour(
+      Number(endHour),
+      Number(endMinute),
+      endPeriod
+    );
+    const start24Number = parseTimeToNumber(start24);
+    const end24Number = parseTimeToNumber(end24);
+
     if (!reservationName.trim()) {
       errors.reservationName = "예약 이름을 입력해주세요.";
       isValid = false;
+    } else if (reservationName.length > 30) {
+      errors.reservationNameLength = "예약 이름은 30자 이내로 입력해주세요.";
+      isValid = false;
     }
+
+    if (start24Number >= 100 && end24Number < 100) {
+      errors.noonTimeError = "12:00 AM 이전 시간을 선택해주세요.";
+      isValid = false;
+    } else if (end24Number < start24Number) {
+      errors.timeError = "종료 시간을 시작 시간 이후로 선택해주세요.";
+      isValid = false;
+    }
+
     if (!scentName.trim()) {
       errors.scentName = "향 이름을 입력해주세요.";
+      isValid = false;
+    } else if (scentName.length > 15) {
+      errors.scentNameLength = "향 이름은 15자 이내로 입력해주세요.";
       isValid = false;
     }
 
@@ -294,6 +335,11 @@ export default function ModifyReservation({
         {formErrors.reservationName && (
           <p className="absolute ml-[70px] text-red-500 text-10">
             {formErrors.reservationName}
+          </p>
+        )}
+        {formErrors.reservationNameLength && (
+          <p className="absolute ml-[70px] text-red-500 text-10">
+            {formErrors.reservationNameLength}
           </p>
         )}
       </div>
@@ -390,7 +436,7 @@ export default function ModifyReservation({
             </div>
           </div>
           {/* 종료 시간 */}
-          <div className="flex items-center gap-1 justify-end">
+          <div className="relative flex items-center gap-1 justify-end">
             <span className="mr-[15px]">종료 시간</span>
             <select
               className="w-[34px] h-[34px] border p-2 rounded-lg bg-white shadow-sm text-center appearance-none"
@@ -434,8 +480,18 @@ export default function ModifyReservation({
               </button>
             </div>
           </div>
+          {formErrors.noonTimeError && (
+            <p className="absolute bottom-[398px] left-[90px] text-red-500 text-10">
+              {formErrors.noonTimeError}
+            </p>
+          )}
+          {formErrors.timeError && (
+            <p className="absolute bottom-[398px] left-[90px] text-red-500 text-10">
+              {formErrors.timeError}
+            </p>
+          )}
           {/* 분사주기 */}
-          <div className="relative flex items-center mt-2 mb-[10px]">
+          <div className="relative flex items-center mt-4 mb-[10px]">
             <span className="mr-[15px]">분사 주기</span>
             <div className="absolute top-[-9px] left-[63px] z-50">
               <SprayIntervalSelector
@@ -462,6 +518,11 @@ export default function ModifyReservation({
         {formErrors.scentName && (
           <p className="absolute mt-[35px] ml-[70px] text-red-500 text-10">
             {formErrors.scentName}
+          </p>
+        )}
+        {formErrors.scentNameLength && (
+          <p className="absolute mt-[35px] ml-[70px] text-red-500 text-10">
+            {formErrors.scentNameLength}
           </p>
         )}
         <ScentSetting

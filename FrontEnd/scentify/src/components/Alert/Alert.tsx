@@ -14,8 +14,8 @@ const Alert = ({
   showButtons = true,
   onConfirm = onClose,
   onCancel = onClose,
-  confirmText = '확인',
-  cancelText = '취소',
+  confirmText = "확인",
+  cancelText = "취소",
 }: AlertProps) => {
   return (
     <div

@@ -270,7 +270,8 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
             </div>
           )}
           <div className="mt-2">
-            <p className="text-[10px]">{`기기 ID: ${currentDeviceId || '없음'} (슬라이드 ${currentIndex + 1}/${deviceIds.length})`}</p>
+            {/* <p className="text-[10px]">{`기기 ID: ${currentDeviceId || '없음'} (${currentIndex + 1}/${deviceIds.length})`}</p> */}
+            <p className="text-gray text-[10px]">{`${currentIndex + 1}/${deviceIds.length}`}</p>
           </div>
         </>
       )}

@@ -92,22 +92,22 @@ public class WebSocketService {
 	}
 
 	// Combination 객체 생성 메서드
-	private Combination getCombination(CustomScheduleDto scheduleDto) {
+	public Combination getCombination(CustomScheduleDto scheduleDto) {
 	    Integer combinationId = scheduleDto.getCombination().getId();
 	    
 	    if (combinationId == null) {
 	        Combination combination = new Combination();
-	        combination.setChoice1(scheduleDto.getCombination().getChoice1());
-	        combination.setChoice1(scheduleDto.getCombination().getChoice1Count());
-	        combination.setChoice2(scheduleDto.getCombination().getChoice2());
-	        combination.setChoice2(scheduleDto.getCombination().getChoice2Count());
-	        combination.setChoice3(scheduleDto.getCombination().getChoice3());
-	        combination.setChoice3(scheduleDto.getCombination().getChoice3Count());
-		    
-		    log.info("combination 잘 가니? {}" + combination.getChoice3Count());
+	        CombinationDto combinationInfo = scheduleDto.getCombination();
 	        
-	        combination.setChoice4(scheduleDto.getCombination().getChoice4());
-	        combination.setChoice4(scheduleDto.getCombination().getChoice4Count());
+	        combination.setChoice1(combinationInfo.getChoice1());
+	        combination.setChoice1Count(combinationInfo.getChoice1Count());
+	        combination.setChoice2(combinationInfo.getChoice2());
+	        combination.setChoice2Count(combinationInfo.getChoice2Count());
+	        combination.setChoice3(combinationInfo.getChoice3());
+	        combination.setChoice3Count(combinationInfo.getChoice3Count());
+	        combination.setChoice4(combinationInfo.getChoice4());
+	        combination.setChoice4Count(combinationInfo.getChoice4Count());
+	        
 	    	return combination;
 	    }
 

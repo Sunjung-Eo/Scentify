@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
 import { useAuthStore } from "../../stores/useAuthStore";
@@ -32,6 +32,8 @@ const Control = () => {
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
+
+  const queryClient = useQueryClient();
 
   // 기기 정보
   const { deviceIdsAndNames } = useUserStore();
@@ -112,6 +114,12 @@ const Control = () => {
   // 현재 설정된 모드
   const [mode, setMode] = useState<boolean | null>(null);
   useEffect(() => {
+    if (selectedDevice) {
+      queryClient.invalidateQueries({ queryKey: ["deviceInfo"] });
+    }
+  }, [selectedDevice]);
+  // 최신 모드 동기화
+  useEffect(() => {
     if (selectedDeviceData?.mode !== undefined) {
       setMode(selectedDeviceData.mode);
     }
@@ -126,7 +134,7 @@ const Control = () => {
     if (deviceIds.length === 0) {
       return;
     }
-    if (mode !== newMode) {
+    if (Boolean(mode) !== newMode) {
       const getModeName = () => {
         return newMode ? "자동화 " : "예약 ";
       };
@@ -147,11 +155,11 @@ const Control = () => {
       }
     }
   };
-  useEffect(() => {
-    if (selectedDeviceData?.mode !== undefined) {
-      setMode(selectedDeviceData.mode);
-    }
-  }, [selectedDeviceData?.mode]);
+  // useEffect(() => {
+  //   if (selectedDeviceData?.mode !== undefined) {
+  //     setMode(selectedDeviceData.mode);
+  //   }
+  // }, [selectedDeviceData?.mode]);
 
   // 모달 창 취소 버튼
   const handleCancel = () => {

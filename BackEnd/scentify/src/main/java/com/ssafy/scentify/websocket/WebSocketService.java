@@ -104,7 +104,7 @@ public class WebSocketService {
 	        combination.setChoice3(scheduleDto.getCombination().getChoice3());
 	        combination.setChoice3(scheduleDto.getCombination().getChoice3Count());
 		    
-		    System.out.println("콤비네이션 잘 세팅되니?" + scheduleDto.getCombination().getChoice3Count());
+		    log.info("combination 잘 가니? {}" + combination.getChoice3Count());
 	        
 	        combination.setChoice4(scheduleDto.getCombination().getChoice4());
 	        combination.setChoice4(scheduleDto.getCombination().getChoice4Count());

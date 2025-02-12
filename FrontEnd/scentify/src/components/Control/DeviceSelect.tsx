@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ArrowDownIcon from "../../assets/icons/arrow-down-icon.svg";
+import CrownIcon from "../../assets/icons/crown-icon.svg";
 
 // 기기 선택 타입
 export interface DeviceSelectItem {
@@ -22,29 +23,43 @@ export default function DeviceSelect({
   selectedDevice,
   onDeviceChange,
 }: DeviceSelectProps) {
+  // 드롭박스 오픈 여부
   const [isOpen, setIsOpen] = useState(false);
   // 현재 선택된 기기
   const selected = devices.find((device) => device.deviceId === selectedDevice);
+  // 기기 정렬렬
+  const sortedDevices = [...devices].sort((a, b) => {
+    if (a.name && b.name) {
+      return a.name.localeCompare(b.name); // 이름 기준 오름차순
+    }
+    return 0;
+  });
   return (
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 justify-between items-center rounded-lg"
       >
-        <div>
+        <div className="flex items-center">
+          {selected?.isRepresentative && (
+            <img
+              src={CrownIcon}
+              alt="대표 기기 아이콘"
+              className="w-[16px] h-[16px] mr-[4px]"
+            />
+          )}
           <span
-            className={`flex-grow text-left ${
-              selected?.isRepresentative ? "pl-[0px]" : "pl-[19px]"
-            }`}
-          ></span>
-          {selected?.isRepresentative ? `👑 ${selected.name}` : selected?.name}
+            className={`text-left ${!selected?.isRepresentative ? "pl-[19px]" : ""}`}
+          >
+            {selected?.name}
+          </span>
         </div>
         <img src={ArrowDownIcon} alt="아래 화살표 이미지" />
       </button>
       {isOpen && (
         <div className="w-[120px] h-[36px] font-pre-light text-12">
           <div className="border-0.2 border-lightgray bg-white rounded-lg">
-            {devices.map((device, index) => (
+            {sortedDevices.map((device, index) => (
               <div
                 key={`device-${device.deviceId}-${index}`}
                 onClick={() => {
@@ -54,7 +69,14 @@ export default function DeviceSelect({
                 className="flex p-1 pl-3"
               >
                 {device.isRepresentative ? (
-                  <div>👑 {device.name}</div>
+                  <>
+                    <img
+                      src={CrownIcon}
+                      alt="대표 기기 아이콘"
+                      className="w-[16px] h-[16px] mr-[4px]"
+                    />
+                    <span>{device.name}</span>
+                  </>
                 ) : (
                   <div className="ml-[19px]">{device.name}</div>
                 )}

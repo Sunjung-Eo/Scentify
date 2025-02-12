@@ -8,7 +8,6 @@ import { useAuthStore } from "../../../stores/useAuthStore";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 import { updateCustomSchedule } from "../../../apis/control/updateCustomSchedule";
 
-import DeviceSelect from "../../../components/Control/DeviceSelect";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
 import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
@@ -297,20 +296,6 @@ export default function ModifyReservation({
             {formErrors.reservationName}
           </p>
         )}
-      </div>
-
-      {/* 기기 선택 */}
-      <div className="relative flex ml-5 mr-5 mb-[25px] items-center">
-        <label htmlFor="deviceSelect" className="mr-[20px]">
-          기기 선택
-        </label>
-        <div className="absolute top-[-9px] left-[63px] z-50">
-          <DeviceSelect
-            devices={devices}
-            selectedDevice={selectedDevice}
-            onDeviceChange={onDeviceChange}
-          />
-        </div>
       </div>
 
       {/* 요일 설정 */}

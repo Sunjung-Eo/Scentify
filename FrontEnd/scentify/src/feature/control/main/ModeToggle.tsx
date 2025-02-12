@@ -5,6 +5,9 @@ export default function ModeToggle({
   currentMode,
   onModeChange,
 }: ModeToggleProps) {
+  if (currentMode === null) {
+    return;
+  }
   return (
     <div>
       <div className="flex w-[180px] mb-[12px] bg-white border-0.2 border-brand font-pre-light text-12 rounded-lg">

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { UserData } from './UserTypes';
-import { getProfileImage } from './handler/profileImageHandler';
+import React, { useEffect, useState } from "react";
+import { UserData } from "./UserTypes";
+import { getProfileImage } from "./handler/profileImageHandler";
 
 interface UserCardProps {
   nickname?: string;
@@ -14,19 +14,19 @@ const UserCard: React.FC<UserCardProps> = ({
   imgNum,
 }) => {
   const [userData, setUserData] = useState<UserData>({
-    nickname: nickname || '사용자', // ✅ 기본값 설정
+    nickname: nickname || "사용자", // ✅ 기본값 설정
     imgNum: imgNum || 0, // ✅ 기본 프로필 이미지 번호
     mainDeviceId: mainDeviceId ?? 0,
-    date: '',
-    weatherIcon: '',
-    weatherDescription: '',
+    date: "",
+    weatherIcon: "",
+    weatherDescription: "",
   });
 
   // 4. 사용자 정보 업데이트 (전역 상태 변경 시)
   useEffect(() => {
     setUserData((prev) => ({
       ...prev,
-      nickname: nickname || '사용자',
+      nickname: nickname || "사용자",
       imgNum: imgNum || 0,
       mainDeviceId: mainDeviceId ?? 0,
     }));
@@ -38,54 +38,74 @@ const UserCard: React.FC<UserCardProps> = ({
   const getCurrentDate = (): string => {
     const today = new Date();
     const day = today.getDate();
-    const month = today.toLocaleString('en-US', { month: 'long' });
+    const month = today.toLocaleString("en-US", { month: "long" });
     const year = today.getFullYear();
     return `Today ${day} ${month} ${year}`;
   };
 
   const weatherIconMap = {
-    Clear: '/weather-icons/sun.svg',
-    Clouds: '/weather-icons/clouds.svg',
-    Rain: '/weather-icons/rain.svg',
-    Snow: '/weather-icons/snow.svg',
-    Thunderstorm: '/weather-icons/thunder.svg',
+    Clear: "/weather-icons/sun.svg",
+    Clouds: "/weather-icons/clouds.svg",
+    Rain: "/weather-icons/rain.svg",
+    Snow: "/weather-icons/snow.svg",
+    Thunderstorm: "/weather-icons/thunder.svg",
   } as const;
 
   const weatherDescriptionMap = {
-    Clear: '맑음',
-    Clouds: '흐림',
-    Rain: '비',
-    Snow: '눈',
-    Thunderstorm: '천둥',
+    Clear: "맑음",
+    Clouds: "흐림",
+    Rain: "비",
+    Snow: "눈",
+    Thunderstorm: "천둥",
   } as const;
 
   // 2. OpenWeatherMap API 호출
   const getWeather = async (lat: number, lon: number) => {
-    const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || ''; // 환경 변수 값 로드
+    const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || ""; // 환경 변수 값 로드
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
 
     try {
-      // 1. API 호출
+      // 1️⃣ API 요청 보내기
       const response = await fetch(url);
 
-      // 2. HTTP 응답 상태 확인
+      // 2️⃣ HTTP 응답 상태 코드 확인
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // 3. JSON 데이터 파싱
+      // 3️⃣ 응답 데이터를 JSON으로 변환
       const data = await response.json();
+
+      // 4️⃣ API 응답 데이터 검증 (날씨 정보가 없을 경우 에러 발생)
+      if (
+        !data.weather ||
+        !Array.isArray(data.weather) ||
+        data.weather.length === 0 ||
+        !data.weather[0].main
+      ) {
+        throw new Error("Invalid weather data received");
+      }
+
+      // 5️⃣ 날씨 정보를 가져와서 매핑된 값 반환
       const weatherMain = data.weather[0].main as keyof typeof weatherIconMap;
 
+      // 예상하지 못한 날씨 상태가 온 경우, 로딩 아이콘 및 "날씨 정보를 가져오는 중..." 표시
+      if (!weatherIconMap[weatherMain] || !weatherDescriptionMap[weatherMain]) {
+        return {
+          weatherIcon: "/weather-icons/loading.svg", // ⏳ 로딩 아이콘 표시
+          weatherDescription: "날씨 정보를 가져오는 중...", // "날씨 정보를 가져오는 중..." 메시지 표시
+        };
+      }
+
       return {
-        weatherIcon: weatherIconMap[weatherMain] || '🌈', // 기본값
-        weatherDescription: weatherDescriptionMap[weatherMain] || '알 수 없음',
+        weatherIcon: weatherIconMap[weatherMain], // 정상적인 경우 매핑된 아이콘 표시
+        weatherDescription: weatherDescriptionMap[weatherMain], // 정상적인 경우 매핑된 설명 표시
       };
     } catch (error) {
-      console.error('Failed to fetch weather data:', error);
+      console.error("Failed to fetch weather data:", error);
       return {
-        weatherIcon: '',
-        weatherDescription: '날씨 정보를 가져올 수 없습니다.',
+        weatherIcon: "/weather-icons/loading.svg", // ⏳ 로딩 아이콘
+        weatherDescription: "날씨 정보를 가져오는 중...", // 오류 발생 시 동일한 메시지 표시
       };
     }
   };
@@ -93,7 +113,7 @@ const UserCard: React.FC<UserCardProps> = ({
   // 3. Geolocation API로 현재 위치 가져오기
   const fetchLocationAndWeather = async () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser.');
+      setError("Geolocation is not supported by your browser.");
       return;
     }
 
@@ -112,8 +132,8 @@ const UserCard: React.FC<UserCardProps> = ({
         setError(null); // 에러 초기화
       },
       (error) => {
-        setError('Failed to retrieve location.');
-        console.error('Geolocation error:', error);
+        setError("Failed to retrieve location.");
+        console.error("Geolocation error:", error);
       }
     );
   };
@@ -137,7 +157,7 @@ const UserCard: React.FC<UserCardProps> = ({
 
           {/* 닉네임 */}
           <div className="">
-            <span className="font-pre-bold text-[22px]">{nickname}</span>{' '}
+            <span className="font-pre-bold text-[22px]">{nickname}</span>{" "}
             <span className="font-pre-light text-[22px]">님</span>
             {/* 홍길동만 pre-bold */}
             <p className="font-pre-light text-[22px] ">반갑습니다!</p>

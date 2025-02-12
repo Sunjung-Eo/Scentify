@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { validatePassword } from "../../../apis/user/editaccount/validatepassword";
+import { validatePassword as verifyCurrentPassword } from "../../../apis/user/editaccount/validatepassword"; // 현재 비밀번호 검증 API
 import { updateUserPassword } from "../../../apis/user/editaccount/updatepassword";
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
+import { validatePassword as validateNewPassword } from "../../../utils/validation"; // 유효성 검사
 
 function EditPassword() {
   const authStore = useAuthStore();
@@ -12,74 +13,96 @@ function EditPassword() {
   const [currentPassword, setCurrentPassword] = useState<string>(""); // 현재 비밀번호 입력값
   const [newPassword, setNewPassword] = useState<string>(""); // 변경할 새 비밀번호 입력값
   const [confirmPassword, setConfirmPassword] = useState<string>(""); // 새 비밀번호 확인 입력값
-  const [error, setError] = useState<string>(""); // 에러 메시지 상태
+
+  // 에러 상태 분리
+  const [passwordError, setPasswordError] = useState<string>(""); // 새 비밀번호 에러
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>(""); // 비밀번호 확인 에러
+  const [passwordCheckMessage, setPasswordCheckMessage] = useState<string>(""); // 현재 비밀번호 검증 메시지
   const [passwordVerified, setPasswordVerified] = useState<boolean>(false); // 현재 비밀번호 검증 상태
 
-  /**
-   * 입력값 변경 핸들러
-   * @param setter - 상태 업데이트 함수
-   */
+  // 입력값 변경 핸들러 (공통)
   const handleInputChange =
     (setter: React.Dispatch<React.SetStateAction<string>>) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setter(e.target.value);
-      setError(""); // 입력 시 에러 메시지 초기화
+      setPasswordCheckMessage(""); // 입력 시 기존 메시지 초기화
     };
 
-  /**
-   * 현재 비밀번호 확인 버튼 클릭 시 실행
-   * 서버에서 현재 비밀번호 검증을 수행
-   */
+  // 새 비밀번호 입력 시 유효성 검사 실행
+  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewPassword(value);
+
+    const error = validateNewPassword(value); // 유효성 검사 실행
+    setPasswordError(error || ""); // 에러 메시지 설정 (없으면 초기화)
+  };
+
+  // 비밀번호 확인 입력 시 검사
+  const handleConfirmPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+
+    if (newPassword && value !== newPassword) {
+      setConfirmPasswordError(
+        "새 비밀번호와 확인 비밀번호가 일치하지 않습니다."
+      );
+    } else {
+      setConfirmPasswordError(""); // 에러 초기화
+    }
+  };
+
+  // 현재 비밀번호 확인 API 호출
   const handlePasswordCheck = async () => {
     if (!currentPassword.trim()) {
-      setError("현재 비밀번호를 입력해주세요.");
+      setPasswordCheckMessage("기존 비밀번호를 입력해주세요.");
       setPasswordVerified(false);
       return;
     }
 
-    const result = await validatePassword(currentPassword, accessToken);
-
+    const result = await verifyCurrentPassword(currentPassword, accessToken);
     if (result.success) {
-      setError("비밀번호가 확인되었습니다.");
+      setPasswordCheckMessage("기존 비밀번호가 확인되었습니다.");
       setPasswordVerified(true);
     } else {
-      setError("비밀번호가 일치하지 않습니다.");
+      setPasswordCheckMessage("기존 비밀번호와 일치하지 않습니다.");
       setPasswordVerified(false);
     }
   };
 
-  /**
-   * 저장 버튼 클릭 시 실행되는 함수
-   * 비밀번호 유효성 검사 후 API 호출
-   */
+  // 저장 버튼 클릭 시 실행되는 함수
   const handleSave = async () => {
     if (!passwordVerified) {
-      setError("현재 비밀번호를 확인해주세요.");
+      setPasswordCheckMessage("기존 비밀번호를 확인해주세요.");
       return;
     }
 
     if (!newPassword.trim() || !confirmPassword.trim()) {
-      setError("모든 필드를 입력해주세요.");
+      setPasswordCheckMessage("모든 필드를 입력해주세요.");
       return;
     }
 
-    if (newPassword.length < 8) {
-      setError("비밀번호는 최소 8자 이상이어야 합니다.");
+    if (passwordError) {
+      setPasswordCheckMessage(passwordError);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+      setConfirmPasswordError(
+        "새 비밀번호와 확인 비밀번호가 일치하지 않습니다."
+      );
       return;
     }
 
     const result = await updateUserPassword(newPassword, accessToken);
-
     if (result.success) {
       alert("비밀번호가 변경되었습니다.");
       navigate("/my/manageaccount");
     } else {
-      setError(result.message || "비밀번호 변경에 실패했습니다.");
+      setPasswordCheckMessage(
+        result.message || "비밀번호 변경에 실패했습니다."
+      );
     }
   };
 
@@ -88,7 +111,7 @@ function EditPassword() {
       <div>
         <h1 className="text-20 font-pre-bold text-center">비밀번호 변경</h1>
 
-        {/* 현재 비밀번호 입력 */}
+        {/* 기존 비밀번호 입력 */}
         <div className="mt-10 space-y-4">
           <div className="flex items-center">
             <label
@@ -111,6 +134,15 @@ function EditPassword() {
               확인
             </button>
           </div>
+          {passwordCheckMessage && (
+            <p
+              className={`font-pre-light text-[12px] mt-2 ${
+                passwordVerified ? "text-brand" : "text-red-500"
+              }`}
+            >
+              {passwordCheckMessage}
+            </p>
+          )}
 
           {/* 새 비밀번호 입력 */}
           <div>
@@ -124,9 +156,12 @@ function EditPassword() {
               id="new-password"
               type="password"
               value={newPassword}
-              onChange={handleInputChange(setNewPassword)}
+              onChange={handleNewPasswordChange} // 유효성 검사 적용
               className="w-[256px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
             />
+            {passwordError && (
+              <p className="text-[12px] text-red-500">{passwordError}</p>
+            )}
           </div>
 
           {/* 새 비밀번호 확인 입력 */}
@@ -141,26 +176,14 @@ function EditPassword() {
               id="confirm-password"
               type="password"
               value={confirmPassword}
-              onChange={handleInputChange(setConfirmPassword)}
+              onChange={handleConfirmPasswordChange}
               className="w-[235px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
             />
+            {confirmPasswordError && (
+              <p className="text-[12px] text-red-500">{confirmPasswordError}</p>
+            )}
           </div>
         </div>
-
-        {/* 에러 메시지 출력 */}
-        {error && (
-          <div className="mt-6 text-center text-12 font-pre-light">
-            <p
-              className={
-                error === "비밀번호가 확인되었습니다."
-                  ? "text-green-500"
-                  : "text-red-500"
-              }
-            >
-              {error}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* 저장 버튼 */}

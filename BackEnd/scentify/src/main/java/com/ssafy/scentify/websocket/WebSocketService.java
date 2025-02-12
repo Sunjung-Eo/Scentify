@@ -135,7 +135,7 @@ public class WebSocketService {
 		int deviceId = (int) modeInfoMap.get("deviceId");
 		boolean mode = (boolean) modeInfoMap.get("mode");
         
-        // 요청 객체 생성
+        // 응답 객체 생성
 		Map<String, Boolean> modeRequest = new HashMap<>();
 		modeRequest.put("mode", mode);
 		

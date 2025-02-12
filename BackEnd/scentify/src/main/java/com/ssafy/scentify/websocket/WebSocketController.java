@@ -155,9 +155,10 @@ public class WebSocketController {
 	    boolean mode = deviceService.getMode(id);
 	    Map<String, Boolean> response = new HashMap<>();
 	    response.put("mode", mode);
+	    System.out.println("mode 잘 가니? : " + mode);
 	    
 	    // 메시지 전송
-        template.convertAndSend("/topic/Mode" + id, response);
+        template.convertAndSend("/topic/Mode/" + id, response);
 	    log.info("Data processed for id: {}", id);    
 	}
 	

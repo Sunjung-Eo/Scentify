@@ -70,7 +70,7 @@ class WebSocketClient:
             self.initial_request_dest = [
                 # "/app/DeviceStatus/Capsule/Info",
                 # "/app/Auto/Schedule/Initial",
-                "/app/Schedule/Initial",
+                # "/app/Schedule/Initial",
                 # "/app/Mode",
             ]
 
@@ -116,14 +116,15 @@ class WebSocketClient:
                         self.websocket_response_hanlder = {}
                         self.websocket_response_hanlder = original_key
                         self.is_initial_connection=False
-
-                    await self.init_request()
+                    
+                    # await self.init_request()
 
                     receive_task = asyncio.create_task(self.receive_messages())
                     send_task = asyncio.create_task(self.send_message())
-                    send_temp_hum_task = asyncio.create_task(self.send_temp_hum())
+                    # send_temp_hum_task = asyncio.create_task(self.send_temp_hum())
                     
-                    await asyncio.gather(receive_task, send_task, send_temp_hum_task)
+                    # await asyncio.gather(receive_task, send_task, send_temp_hum_task)
+                    await asyncio.gather(receive_task, send_task)
 
                     print("Before Disconnect")
 
@@ -178,7 +179,7 @@ class WebSocketClient:
 
         serial_msg = json.dumps({'token' : get_access_token(self.__serial_number)})
         await self.send_request('/app/DeviceInfo/Id', serial_msg)
-
+        print("Start Process Set Device ID!!")
         while True:
             res = await self.websocket.recv()
             header, body = parse_stomp_message(res)
@@ -211,7 +212,7 @@ class WebSocketClient:
                 header = {}
                 while True:
                     res = await self.websocket.recv()
-                    print(res)
+                    print("RESEPONSE", res)
                     header, message = parse_stomp_message(res)
                     if len(message) <= 1:
                         continue
@@ -221,13 +222,10 @@ class WebSocketClient:
                     self.disconnection_event.set()
                     break
 
-                print(message)
-
                 msg_type = header['destination']
                 # 만일 캡슐 정보에 Null 값이 있다면 capsule information을 기다리기
                 if msg_type == f"/topic/DeviceStatus/Capsule/Info/{self.device_id}":
-                    data = json.loads[message]
-                    print(data)
+                    data = json.loads(message)
                     if (data["slot1"] is None or data["slot2"] is None or data["slot2"] is None or data["slot2"] is None):
                         print("Capusle is not initialized!!")
                         await self.get_capsule_info()
@@ -263,13 +261,12 @@ class WebSocketClient:
 
                 # message는 항상 type과 payload 키를 가지는 딕셔너리 형태!
                 message = await self.message_queue.get()
-                print(message)
+
                 topic = message['type']
                 del message['type']
                 payload = message
 
                 message = self.make_message(dict_data=payload)
-                print(message)
 
                 json_msg = json.dumps(message)
                 send_frame = stomper.send(f'/app/{topic}', json_msg, content_type='application/json')

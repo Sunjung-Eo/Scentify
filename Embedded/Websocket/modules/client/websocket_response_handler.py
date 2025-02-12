@@ -19,7 +19,7 @@ class WebSocketResponseHandler:
             self.__initialized = True  
             self.mqtt_client = mqtt_client
             self.print_log = False
-            self.operation_mode = 0
+            self.operation_mode = -1
 
             self.handlers = {
                 # 캡슐 관련
@@ -49,6 +49,7 @@ class WebSocketResponseHandler:
             }
 
             self.schedules = dict()
+            self.schedule_running = False
 
     async def handler_capsule_initial_info(self, message):
         await self.mqtt_client.publish(
@@ -99,13 +100,25 @@ class WebSocketResponseHandler:
             print("Handling Auto Mode Change ")
 
     async def handler_set_operation_mode(self, message):
-        msg = json.loads(message)
-        self.opeation_mode = msg["mode"]
+        # TODO
+        # Backend에서 Operation Mode 수신 안되는 문제 체크
 
-        if self.operation_mode == 0:
+        msg = json.loads(message)
+        if self.operation_mode == msg['mode']:
+            return
+
+        self.operation_mode = msg['mode']
+
+        if int(self.operation_mode) == 0:
             asyncio.create_task(self.handler_schedule())
-        elif self.operation_mode:
+            queue_msg = dict()
+            queue_msg["type"] = "Schedule/Initial"
+            self.schedule_running = True
+            await self.mqtt_client.work_queue.put(queue_msg)
+
+        else:
             self.schedules = dict()
+            self.schedule_running = False
         
         await self.mqtt_client.publish(
             f"{self.mqtt_client.device_id_list[0]}/SetOperationMode",
@@ -114,7 +127,8 @@ class WebSocketResponseHandler:
         if self.print_log:
             print("Handling Set Operation Mode")
 
-    def handler_schedule_init(self, message): 
+
+    async def handler_schedule_init(self, message): 
         payload = json.loads(message)
         list_schedules = payload["schedules"]
         self.schedules = dict()
@@ -136,7 +150,7 @@ class WebSocketResponseHandler:
 
         schedule["startTime"] = datetime.strptime(schedule["startTime"], "%H:%M:%S").time()
         schedule["endTime"] = datetime.strptime(schedule["endTime"], "%H:%M:%S").time()
-        schedule["is_running"] = False
+        schedule["is_running"] = self.schedules[schedule["id"]]["is_running"]
         self.schedules[schedule["id"]] = schedule
 
     async def handler_schedule_delete(self, message):
@@ -150,12 +164,12 @@ class WebSocketResponseHandler:
 
     async def handler_schedule_add(self, message): 
         payload = json.loads(message)
-        list_schedules = payload["schedules"]
-        for value in list_schedules:
-            value["startTime"] = datetime.strptime(value["startTime"], "%H:%M:%S").time()
-            value["endTime"] = datetime.strptime(value["endTime"], "%H:%M:%S").time()
-            value["is_running"] = False
-            self.schedules[value["id"]] = value
+        schedule = payload["schedules"]
+        
+        schedule["startTime"] = datetime.strptime(schedule["startTime"], "%H:%M:%S").time()
+        schedule["endTime"] = datetime.strptime(schedule["endTime"], "%H:%M:%S").time()
+        schedule["is_running"] = False
+        self.schedules[schedule["id"]] = schedule
         
         if self.print_log:
             print("Handling Schedule Initial Operation")
@@ -195,6 +209,7 @@ class WebSocketResponseHandler:
             self.schedules[schedule_id]["is_running"] = False
 
     async def handler_schedule(self):
+        self.schedule_running = True
         while not self.operation_mode:
             now = datetime.now().strftime("%H:%M:%S")
             now_time = datetime.strptime(now, "%H:%M:%S").time()
@@ -206,113 +221,112 @@ class WebSocketResponseHandler:
                     asyncio.create_task(self.schedule_operation_loop(key))
 
             await asyncio.sleep(10)
+        self.schedule_running = False
             
 
-    def default_hanlder(self):
+    async def default_hanlder(self):
         print("There isn't type!!")
         return 400
 
 
-async def main():
-    work_queue = asyncio.Queue()
-    mqtt_client = MQTTClient(url="192.168.137.127", work_queue=work_queue)
-    asyncio.create_task(mqtt_client.connect())
-    await asyncio.sleep(2)
+# async def main():
+#     work_queue = asyncio.Queue()
+#     mqtt_client = MQTTClient(url="192.168.137.127", work_queue=work_queue)
+#     asyncio.create_task(mqtt_client.connect())
+#     await asyncio.sleep(2)
 
-    handler = WebSocketResponseHandler(mqtt_client=mqtt_client)
-    capsule_data = {
-            "slot1" : 4,
-            "slot2" : 2,
-            "slot3" : 5,
-            "slot4" : 3,
-    }
+#     handler = WebSocketResponseHandler(mqtt_client=mqtt_client)
+#     capsule_data = {
+#             "slot1" : 4,
+#             "slot2" : 2,
+#             "slot3" : 5,
+#             "slot4" : 3,
+#     }
 
-    json_capsule_msg = json.dumps(capsule_data)
-    await handler.handler_capsule_initial_info(json_capsule_msg)
+#     json_capsule_msg = json.dumps(capsule_data)
+#     await handler.handler_capsule_initial_info(json_capsule_msg)
 
-    schedule_data = {
-        "schedules": [
-            {
-                "id": "1",
-                "deviceId": "A1",
-                "combination": {
-                    "choice1": 1, "choice1Count": 3,
-                    "choice2": 2, "choice2Count": 2,
-                    "choice3": None, "choice3Count": None,
-                    "choice4": None, "choice4Count": None
-                },
-                "startTime": "18:00:00",
-                "endTime": "18:30:00",
-                "interval": 15,
-                "modeOn": True
-            },
-            {
-                "id": "2",
-                "deviceId": "B2",
-                "combination": {
-                    "choice1": 2, "choice1Count": 2,
-                    "choice2": 1, "choice2Count": 3,
-                    "choice3": None, "choice3Count": None,
-                    "choice4": None, "choice4Count": None
-                },
-                "startTime": "17:13:00",
-                "endTime": "18:20:40",
-                "interval": 0.3,
-                "modeOn": True
-            },
-            {
-                "id": "3",
-                "deviceId": "C3",
-                "combination": {
-                    "choice1": 2, "choice1Count": 5,
-                    "choice2": 5, "choice2Count": 2,
-                    "choice3": 4, "choice3Count": 5,
-                    "choice4": 3, "choice4Count": 4
-                },
-                "startTime": "17:02:10",
-                "endTime": "17:03:00",
-                "interval": 0.1,
-                "modeOn": True
-            }
-        ]
-    }
+#     schedule_data = {
+#         "schedules": [
+#             {
+#                 "id": "1",
+#                 "deviceId": "A1",
+#                 "combination": {
+#                     "choice1": 1, "choice1Count": 3,
+#                     "choice2": 2, "choice2Count": 2,
+#                     "choice3": None, "choice3Count": None,
+#                     "choice4": None, "choice4Count": None
+#                 },
+#                 "startTime": "18:00:00",
+#                 "endTime": "18:30:00",
+#                 "interval": 15,
+#                 "modeOn": True
+#             },
+#             {
+#                 "id": "2",
+#                 "deviceId": "B2",
+#                 "combination": {
+#                     "choice1": 2, "choice1Count": 2,
+#                     "choice2": 1, "choice2Count": 3,
+#                     "choice3": None, "choice3Count": None,
+#                     "choice4": None, "choice4Count": None
+#                 },
+#                 "startTime": "17:13:00",
+#                 "endTime": "18:20:40",
+#                 "interval": 0.3,
+#                 "modeOn": True
+#             },
+#             {
+#                 "id": "3",
+#                 "deviceId": "C3",
+#                 "combination": {
+#                     "choice1": 2, "choice1Count": 5,
+#                     "choice2": 5, "choice2Count": 2,
+#                     "choice3": 4, "choice3Count": 5,
+#                     "choice4": 3, "choice4Count": 4
+#                 },
+#                 "startTime": "17:02:10",
+#                 "endTime": "17:03:00",
+#                 "interval": 0.1,
+#                 "modeOn": True
+#             }
+#         ]
+#     }
 
-    json_msg = json.dumps(schedule_data)
-    handler.handler_schedule_init(json_msg)
+#     json_msg = json.dumps(schedule_data)
+#     handler.handler_schedule_init(json_msg)
 
-    mode_msg = {
-        "mode" : 0,
-    }
-    json_mode_msg = json.dumps(mode_msg)
-    asyncio.create_task(handler.handler_set_operation_mode(json_mode_msg))
+#     mode_msg = {
+#         "mode" : 0,
+#     }
+#     json_mode_msg = json.dumps(mode_msg)
+#     asyncio.create_task(handler.handler_set_operation_mode(json_mode_msg))
 
-    await asyncio.sleep(20)
-    print("request add")
+#     await asyncio.sleep(20)
+#     print("request add")
 
-    add_schedule_msg = {
-        "schedules" : [
-            {
-                "id": "3",
-                "deviceId": "C3",
-                "combination": {
-                    "choice1": 2, "choice1Count": 5,
-                    "choice2": 5, "choice2Count": 2,
-                    "choice3": 4, "choice3Count": 5,
-                    "choice4": 3, "choice4Count": 4
-                },
-                "startTime": "17:02:10",
-                "endTime": "17:50:00",
-                "interval": 0.1,
-                "modeOn": True
-            }
-        ]
-    }
-    json_add_schedule_msg = json.dumps(add_schedule_msg)
-    asyncio.create_task(handler.handler_schedule_add(json_add_schedule_msg))
+#     add_schedule_msg = {
+#         "schedules" : [
+#             {
+#                 "id": "3",
+#                 "deviceId": "C3",
+#                 "combination": {
+#                     "choice1": 2, "choice1Count": 5,
+#                     "choice2": 5, "choice2Count": 2,
+#                     "choice3": 4, "choice3Count": 5,
+#                     "choice4": 3, "choice4Count": 4
+#                 },
+#                 "startTime": "17:02:10",
+#                 "endTime": "17:50:00",
+#                 "interval": 0.1,
+#                 "modeOn": True
+#             }
+#         ]
+#     }
+#     json_add_schedule_msg = json.dumps(add_schedule_msg)
+#     asyncio.create_task(handler.handler_schedule_add(json_add_schedule_msg))
     
 
-    # print(handler.schedules)
-    while True:
-        await asyncio.sleep(2)
-
-asyncio.run(main())
+#     # print(handler.schedules)
+#     while True:
+#         await asyncio.sleep(2)

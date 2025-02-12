@@ -102,42 +102,43 @@ function EditPassword() {
   };
 
   return (
-    <div className="content pt-8 pb-8 h-full flex flex-col justify-between">
+    <div className="content pt-4 pb-8 h-full flex flex-col justify-between">
       <div>
         <h1 className="text-20 font-pre-bold text-center">비밀번호 변경</h1>
-
         {/* 기존 비밀번호 입력 */}
         <div className="mt-10 space-y-4">
-          <div className="flex items-center">
-            <label
-              className="text-12 font-pre-light mr-5"
-              htmlFor="current-password"
-            >
-              비밀번호
-            </label>
-            <input
-              id="current-password"
-              type="password"
-              value={currentPassword}
-              onChange={handleInputChange(setCurrentPassword)}
-              className="w-[170px] h-[34px] text-12 font-pre-light rounded-lg bg-component mr-4 px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-            />
-            <button
-              onClick={handlePasswordCheck} // 현재 비밀번호 검증 API 호출
-              className="w-[65px] h-[30px] text-12 font-pre-light border-[1px] border-lightgray rounded-lg"
-            >
-              확인
-            </button>
+          <div>
+            <div className="flex items-center">
+              <label
+                className="text-12 font-pre-light mr-5"
+                htmlFor="current-password"
+              >
+                비밀번호
+              </label>
+              <input
+                id="current-password"
+                type="password"
+                value={currentPassword}
+                onChange={handleInputChange(setCurrentPassword)}
+                className="w-[170px] h-[34px] text-12 font-pre-light rounded-lg bg-component mr-4 px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+              />
+              <button
+                onClick={handlePasswordCheck} // 현재 비밀번호 검증 API 호출
+                className="w-[65px] h-[30px] text-12 font-pre-light border-[1px] border-lightgray rounded-lg"
+              >
+                확인
+              </button>
+            </div>
+            {passwordCheckMessage && (
+              <p
+                className={`text-12 font-pre-light mt-2 ${
+                  passwordVerified ? "text-brand" : "text-red-500"
+                }`}
+              >
+                {passwordCheckMessage}
+              </p>
+            )}
           </div>
-          {passwordCheckMessage && (
-            <p
-              className={`font-pre-light text-[12px] mt-2 ${
-                passwordVerified ? "text-brand" : "text-red-500"
-              }`}
-            >
-              {passwordCheckMessage}
-            </p>
-          )}
 
           {/* 새 비밀번호 입력 */}
           <div>
@@ -155,7 +156,9 @@ function EditPassword() {
               className="w-[256px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             {passwordError && (
-              <p className="text-[12px] text-red-500">{passwordError}</p>
+              <p className="text-12 font-pre-light mt-2 text-red-500">
+                {passwordError}
+              </p>
             )}
           </div>
 
@@ -175,7 +178,9 @@ function EditPassword() {
               className="w-[235px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             {confirmPasswordError && (
-              <p className="text-[12px] text-red-500">{confirmPasswordError}</p>
+              <p className="text-12 font-pre-light mt-2 text-red-500">
+                {confirmPasswordError}
+              </p>
             )}
           </div>
         </div>

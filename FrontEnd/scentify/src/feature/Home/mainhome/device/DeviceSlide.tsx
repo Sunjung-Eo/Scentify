@@ -118,15 +118,23 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
               },
             });
           } else if (modeOn === 1) {
-            const autoSchedules = await fetchAutomations(
+            const autoSchedulesResponse = await fetchAutomations(
               currentDeviceId,
               accessToken
             );
+
+            // ✅ 불필요한 중첩 해제
+            const extractedAutoSchedules = Array.isArray(
+              autoSchedulesResponse.autoSchedules
+            )
+              ? autoSchedulesResponse.autoSchedules
+              : autoSchedulesResponse.autoSchedules.autoSchedules;
+
             setSchedules({
               [currentDeviceId]: {
                 type: 1,
                 schedules: {
-                  autoSchedules: autoSchedules,
+                  autoSchedules: extractedAutoSchedules,
                 },
               },
             });

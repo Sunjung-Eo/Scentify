@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MainDeviceState } from '../../../../../types/MainDeviceType.ts';
 import deviceImg from '../../../../../assets/images/device.svg';
 import PlayBtn from '../../../../../assets/icons/PlayBtn.svg';
@@ -15,6 +15,7 @@ interface DeviceInfoProps {
 }
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
+  const [showDropdown, setShowDropdown] = useState(false);
   // 즉시분사 뮤테이션 추가
   const sprayMutation = useMutation({
     mutationFn: sprayNow,
@@ -49,9 +50,54 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
             <img src={crownIcon} alt="Crown Icon" className="ml-1 h-4 w-4" />
           )}
         </p>
-        <Link to="/home/devicesetting" className="absolute right-5">
+
+        {/* <Link to="/home/devicesetting" className="absolute right-5">
           <img src={modifyIcon} alt="modifyIcon" className="w-6 h-6" />
-        </Link>
+        </Link> */}
+        <div className="absolute right-5 font-pre-light text-[12px]">
+          <div className="relative">
+            <img
+              src={modifyIcon}
+              alt="modifyIcon"
+              className="w-6 h-6 cursor-pointer"
+              onClick={() => setShowDropdown(!showDropdown)}
+            />
+            {showDropdown && (
+              <div className="absolute right-0 mt-1 w-24 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                <Link
+                  to="/home/devicesetting/capsule"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  state={{
+                    deviceId: device?.id,
+                    initialData: {
+                      name: device?.name,
+                      slot1: device?.slot1,
+                      slot2: device?.slot2,
+                      slot3: device?.slot3,
+                      slot4: device?.slot4,
+                      slot1RemainingRatio: device?.slot1RemainingRatio,
+                      slot2RemainingRatio: device?.slot2RemainingRatio,
+                      slot3RemainingRatio: device?.slot3RemainingRatio,
+                      slot4RemainingRatio: device?.slot4RemainingRatio,
+                    },
+                  }}
+                >
+                  캡슐 수정
+                </Link>
+                <Link
+                  to="/home/devicesetting/defaultscent"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  state={{
+                    deviceId: device?.id,
+                    defaultCombinationId: device?.defaultCombination,
+                  }}
+                >
+                  기본향 수정
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       {/* 기기 이미지 + 슬롯 정보 */}
       <div className="flex flex-row justify-between items-center w-full px-8">
@@ -60,11 +106,11 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
           <img
             src={PlayBtn}
             alt="btn"
-            className="absolute -bottom-4 -right-4 w-[60px] h-[60px]"
+            className="absolute -bottom-4 -right-2 w-[60px] h-[60px]"
             onClick={handleSprayClick}
           />
         </div>
-        <div className="flex justify-around gap-2.5 mt-8 font-pre-light text-[8px]">
+        <div className="flex justify-center gap-2.5 mt-8 font-pre-light text-[8px]">
           {[1, 2, 3, 4].map((slot) => {
             const remainingRatio =
               device?.[`slot${slot}RemainingRatio` as keyof MainDeviceState] ??
@@ -77,8 +123,21 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
                 ? mapIntToFragrance(fragranceInt)
                 : '미설정';
 
+            // 글자 수에 따라 줄바꿈 방식 조정
+            let firstLine = fragranceName;
+            let secondLine = '';
+
+            if (fragranceName.length === 4) {
+              firstLine = fragranceName.slice(0, 2);
+              secondLine = fragranceName.slice(2);
+            } else if (fragranceName.length >= 5) {
+              firstLine = fragranceName.slice(0, 3);
+              secondLine = fragranceName.slice(3);
+            }
+
             return (
-              <div key={slot} className="flex flex-col items-center">
+              <div key={slot} className="flex flex-col items-center w-[24px]">
+                {/* 막대 그래프 */}
                 <div className="relative w-5 h-[84px] flex-shrink-0 rounded-[4px] border-[0.5px] border-white overflow-hidden">
                   {/* 배경 막대 */}
                   <div className="absolute inset-0 bg-component" />
@@ -92,16 +151,18 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
                     }}
                   />
                 </div>
-                <span className="text-pre-light text-2 mt-2 leading-snug text-center">
-                  {fragranceName.length > 5 ? (
-                    <>
-                      {fragranceName.slice(0, 3)}
-                      <br />
-                      {fragranceName.slice(3)}
-                    </>
-                  ) : (
-                    fragranceName
-                  )}
+
+                {/* 향기 이름 (자동 줄바꿈) */}
+                <span
+                  className="text-pre-light text-[8px] mt-2 text-center leading-tight"
+                  style={{
+                    width: '40px',
+                    letterSpacing: '-0.5px', // 글자 간격 좁히기
+                  }}
+                >
+                  {firstLine}
+                  {secondLine && <br />}
+                  {secondLine}
                 </span>
               </div>
             );

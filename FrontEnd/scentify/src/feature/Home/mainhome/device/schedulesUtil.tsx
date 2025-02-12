@@ -1,4 +1,8 @@
-import { AutoSchedule, CustomSchedule } from '../../../../types/SchedulesType';
+import {
+  AutoSchedule,
+  CustomSchedule,
+  CustomScheduleWithStatus,
+} from '../../../../types/SchedulesType';
 
 /**
  * 
@@ -15,7 +19,7 @@ export const getClosestCustomSchedule = (
     type: 0 | 1 | null;
     schedules: CustomSchedule[];
   } | null
-): CustomSchedule | null => {
+): CustomScheduleWithStatus | null => {
   if (
     !scheduleData ||
     scheduleData.type !== 0 ||
@@ -58,8 +62,8 @@ export const getClosestCustomSchedule = (
 
   // 실행 중인 예약이 있다면 반환
   if (runningSchedule) {
-    console.log(`✅ 실행 중인 예약 찾음: ${runningSchedule.name}`);
-    return runningSchedule;
+    console.log(`✅ 실행 중인 예약: ${runningSchedule.name}`);
+    return { ...runningSchedule, isRunning: true }; // ✅ 실행 중인 예약 표시
   }
 
   // 2. 다음 실행될 예약 찾기
@@ -84,6 +88,7 @@ export const getClosestCustomSchedule = (
 
       return {
         ...schedule,
+        isRunning: false, // ✅ 다음 예약
         daysUntilNext,
         nextRunTime: startTimeMinutes + daysUntilNext * 24 * 60,
       };
@@ -93,7 +98,6 @@ export const getClosestCustomSchedule = (
 
   if (upcomingSchedules.length > 0) {
     const nextSchedule = upcomingSchedules[0];
-    console.log(`⏳ 다음 실행될 예약: ${nextSchedule.name}`);
     return nextSchedule;
   }
 
@@ -110,9 +114,10 @@ export const getActiveAutoSchedule = (
 
   if (
     !scheduleData ||
-    scheduleData.type !== 1 ||
+    scheduleData.type !== 1 || // ✅ 자동화 모드인지 확인
     !Array.isArray(scheduleData.schedules)
   ) {
+    console.log('🚨 유효한 자동화 스케줄이 없습니다.');
     return [];
   }
 

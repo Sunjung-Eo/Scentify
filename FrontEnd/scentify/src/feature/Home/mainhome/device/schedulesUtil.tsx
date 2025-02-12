@@ -36,10 +36,10 @@ export const getClosestCustomSchedule = (
   const DAY_BITS = [1, 64, 32, 16, 8, 4, 2];
   const todayBit = DAY_BITS[today];
 
-  console.log(
-    `🕒 현재 시간: ${now.getHours()}:${now.getMinutes()} (분 단위: ${nowMinutes})`
-  );
-  console.log(`📅 오늘 요일(${today})의 비트: ${todayBit}`);
+  // console.log(
+  //   `🕒 현재 시간: ${now.getHours()}:${now.getMinutes()} (분 단위: ${nowMinutes})`
+  // );
+  // console.log(`📅 오늘 요일(${today})의 비트: ${todayBit}`);
 
   // 1. 현재 실행 중인 예약 찾기
   const runningSchedule = schedules.find((schedule) => {
@@ -62,7 +62,6 @@ export const getClosestCustomSchedule = (
 
   // 실행 중인 예약이 있다면 반환
   if (runningSchedule) {
-    console.log(`✅ 실행 중인 예약: ${runningSchedule.name}`);
     return { ...runningSchedule, isRunning: true }; // ✅ 실행 중인 예약 표시
   }
 
@@ -116,18 +115,12 @@ export const getActiveAutoSchedule = (scheduleData: any): AutoSchedule[] => {
     scheduleData.type !== 1 || // ✅ 자동화 모드인지 확인
     !scheduleData.schedules
   ) {
-    console.log('🚨 유효한 자동화 스케줄이 없습니다.');
     return [];
   }
 
-  console.log('🔥 필터링 전 schedules:', scheduleData.schedules);
-
   const autoSchedules = scheduleData.schedules.autoSchedules;
-
-  console.log('🔥 autoSchedules:', autoSchedules);
   const activeSchedules = autoSchedules.filter(
     (schedule: any) => schedule.modeOn === 1
   );
-  console.log('✅ 활성화된 자동화 스케줄들:', activeSchedules);
   return activeSchedules;
 };

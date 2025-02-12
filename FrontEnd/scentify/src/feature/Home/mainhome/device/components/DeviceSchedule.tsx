@@ -27,7 +27,6 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   let activeAutoSchedules: AutoSchedule[] = [];
   let closestCustomSchedule: CustomScheduleWithStatus | null = null;
 
-  console.log('🐛🐛🐛 scheduleData : ', scheduleData);
   // 자동화 스케줄 처리
   if (scheduleData?.type === 1 && scheduleData.schedules?.autoSchedules) {
     activeAutoSchedules = getActiveAutoSchedule(scheduleData);

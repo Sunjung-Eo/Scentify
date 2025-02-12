@@ -82,9 +82,13 @@ public class WebSocketService {
 	    scheduleRequest.setInterval(scheduleDto.getInterval());
 	    scheduleRequest.setModeOn(scheduleDto.isModeOn());
 	    scheduleRequest.setCombination(combination);
+	    
+	    // 키값으로 매핑해서 전송
+	    Map<String, CustomScheduleRequest> response = new HashMap<>();
+ 		response.put("schedule", scheduleRequest);
 
 	    // 메시지 전송
-	    template.convertAndSend("/topic/Schedule/Change/" + deviceId, scheduleRequest);
+	    template.convertAndSend("/topic/Schedule/Change/" + deviceId, response);
 	}
 
 	// Combination 객체 생성 메서드

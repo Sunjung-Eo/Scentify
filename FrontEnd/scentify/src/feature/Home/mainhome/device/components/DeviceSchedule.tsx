@@ -4,7 +4,6 @@ import {
   CustomSchedule,
   AutoSchedule,
 } from '../../../../../types/SchedulesType';
-import scheduleBg from '../../../../../assets/images/scheduleBg.png';
 import {
   getClosestCustomSchedule,
   getActiveAutoSchedule,
@@ -28,19 +27,10 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
   let activeAutoSchedules: AutoSchedule[] = [];
   let closestCustomSchedule: CustomScheduleWithStatus | null = null;
 
-  console.log(
-    '🐛🐛🐛 scheduleData!!!!!!!!!!!!: ',
-    scheduleData?.schedules?.autoSchedules
-  );
-
+  console.log('🐛🐛🐛 scheduleData : ', scheduleData);
   // 자동화 스케줄 처리
   if (scheduleData?.type === 1 && scheduleData.schedules?.autoSchedules) {
-    activeAutoSchedules = getActiveAutoSchedule({
-      type: 1,
-      schedules: scheduleData.schedules.autoSchedules,
-    }).filter((schedule) => schedule.modeOn === true);
-
-    console.log('🔥 활성화된 자동화 스케줄들: ', activeAutoSchedules);
+    activeAutoSchedules = getActiveAutoSchedule(scheduleData);
   }
 
   // 커스텀 스케줄 처리
@@ -61,9 +51,8 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
     }) as CustomScheduleWithStatus;
   }
 
-  console.log('🐛🐛🐛 scheduleData: ', scheduleData);
-  console.log('🐛🐛🐛 closestCustomSchedule: ', closestCustomSchedule);
-  console.log('🐛🐛🐛 activeAutoSchedules: ', activeAutoSchedules);
+  // console.log('🐛🐛🐛 closestCustomSchedule: ', closestCustomSchedule);
+  // console.log('🐛🐛🐛 activeAutoSchedules: ', activeAutoSchedules);
 
   // 타임 포맷
   const formatTime = (timeString: string) => {
@@ -84,7 +73,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
         name: '예약 없음',
         timeText: '',
         endStartTime: '',
-        isRunning: false, // ✅ 기본값 추가
+        isRunning: false,
         schedules: [],
       };
     }
@@ -92,7 +81,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
     if (scheduleData.type === 1 && activeAutoSchedules.length > 0) {
       return {
         type: '자동화 모드',
-        isRunning: true, // ✅ 자동화 모드는 실행 중으로 간주(내부적으로 on off는 관리함)
+        isRunning: true,
         schedules: activeAutoSchedules.map((schedule) => {
           let modeName = '';
           switch (schedule.subMode) {
@@ -112,7 +101,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
             name: modeName,
             timeText: schedule.interval
               ? `${schedule.interval}분 간격`
-              : '간격 없음',
+              : '주기 없음', // ✅ 자동화 모드 실행 주기 표시
             endStartTime: '',
             isRunning: true,
           };
@@ -121,29 +110,12 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
     }
 
     if (closestCustomSchedule && scheduleData.type === 0) {
-      const [hours, minutes] = closestCustomSchedule.startTime
-        .split(':')
-        .map(Number);
-      const now = new Date();
-      const scheduleDate = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        hours,
-        minutes
-      );
-      const diffMinutes = Math.floor(
-        (scheduleDate.getTime() - now.getTime()) / (1000 * 60)
-      );
-      const diffHours = Math.floor(diffMinutes / 60);
-      const remainingMinutes = diffMinutes % 60;
-
       return {
         type: '예약 모드',
         name: closestCustomSchedule.name || '예약',
-        timeText: `${diffHours}시간 ${remainingMinutes}분 후`,
+        timeText: '',
         endStartTime: `${formatTime(closestCustomSchedule.startTime)} ~ ${formatTime(closestCustomSchedule.endTime)}`,
-        isRunning: closestCustomSchedule.isRunning ?? false, // isRunning 속성 사용
+        isRunning: closestCustomSchedule.isRunning ?? false,
         schedules: [],
       };
     }
@@ -153,18 +125,17 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
       name: '예약 없음',
       timeText: '',
       endStartTime: '',
-      isRunning: false, // ✅ 실행 여부 추가
+      isRunning: false,
       schedules: [],
     };
   };
 
   const currentSchedule = scheduleInfo();
-  console.log('🐛🐛🐛 currentSchedule : ', currentSchedule);
 
   return (
     <div className="w-[300px] h-[140px] mt-4 px-5">
       <div
-        className="flex flex-col relative w-full h-full bg-cover bg-center flex flex-col justify-center bg-white rounded-[12px] pt-3"
+        className="flex flex-col relative w-full h-full justify-start bg-white rounded-[12px] p-4"
         style={{
           filter: 'drop-shadow(0px 0px 15px rgba(0, 0, 0, 0.05))',
         }}
@@ -188,16 +159,20 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
           {currentSchedule.schedules.length > 0 ? (
             currentSchedule.schedules.map((schedule, index) => (
               <div key={index} className="mt-2">
-                <p className="font-pre-medium text-16 text-sub">
+                <div className="flex flex-row items-center font-pre-medium text-14 text-sub">
                   {schedule.name}
-                </p>
-                {/* <p className="font-pre-light text-brand text-10">
-                  {schedule.timeText && ` (${schedule.timeText})`}
-                </p> */}
+                  {currentSchedule.type === '자동화 모드' && (
+                    <span className="pl-2 font-pre-light text-brand text-12 ">
+                      {schedule.timeText}
+                    </span>
+                  )}{' '}
+                </div>
+
+                {/* ✅ 예약 모드에서는 주기 표시 X */}
                 {schedule.endStartTime && (
-                  <p className="font-pre-light text-brand text-10">
+                  <div className="font-pre-light text-brand text-10">
                     {schedule.endStartTime}
-                  </p>
+                  </div>
                 )}
                 {currentSchedule.type !== '자동화 모드' && (
                   <p className="font-pre-medium text-16 text-sub">
@@ -207,23 +182,27 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
               </div>
             ))
           ) : (
-            <div className="mt-2">
-              <p className="font-pre-medium text-16 text-sub">
+            <div className="flex flex-col justify-start items-start mt-2 gap-1">
+              <p className="flex flex-col font-pre-medium text-16 text-sub items-center">
                 {currentSchedule.name}
               </p>
-              {/* <p className="font-pre-light text-brand text-10">
-                {currentSchedule.timeText && ` (${currentSchedule.timeText})`}
-              </p> */}
-              {currentSchedule.endStartTime && (
+              {currentSchedule.type === '자동화 모드' && (
                 <p className="font-pre-light text-brand text-10">
-                  {currentSchedule.endStartTime}
+                  {currentSchedule.timeText}
                 </p>
               )}
-              {currentSchedule.type !== '자동화 모드' && (
-                <p className="font-pre-medium text-16 text-sub">
-                  {currentSchedule.isRunning ? '실행중' : '실행예정'}
-                </p>
-              )}
+              <div className="flex flex-row items-center">
+                {currentSchedule.endStartTime && (
+                  <p className="font-pre-light text-brand text-12">
+                    {currentSchedule.endStartTime}
+                  </p>
+                )}
+                {currentSchedule.type !== '자동화 모드' && (
+                  <span className="pl-2 font-pre-light text-12 text-sub">
+                    {currentSchedule.isRunning ? '실행중' : '실행예정'}
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -63,25 +63,34 @@ const Control = () => {
   const { data: fetchDeviceData = {}, isLoading } = useQuery({
     queryKey: ["deviceInfo"],
     queryFn: () => getDeviceInfo(deviceIds, accessToken),
+    enabled: deviceIds.length > 0 && !!accessToken,
   });
   const devicesInfo = fetchDeviceData;
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["deviceInfo"] });
+  }, [deviceIds]);
 
   // 예약 관리 컴포넌트로 전달
   const deviceSelectItems =
     deviceIds.length === 0 || !devicesInfo?.devices
       ? []
-      : deviceIds.map((deviceId) => {
-          const deviceInfo = devicesInfo.devices.find(
-            (device: any) => device.id === deviceId
-          );
-          return {
-            deviceId: deviceInfo.id,
-            name: deviceInfo.name,
-            roomType: deviceInfo.roomType,
-            isRepresentative: deviceInfo.id === mainDevice?.id ? true : false,
-            defaultScentId: deviceInfo.defaultCombination,
-          };
-        });
+      : deviceIds
+          .map((deviceId) => {
+            const deviceInfo = devicesInfo.devices.find(
+              (device: any) => device.id === deviceId
+            );
+            if (!deviceInfo) {
+              return null; // 데이터가 없는 경우 null 반환
+            }
+            return {
+              deviceId: deviceInfo.id,
+              name: deviceInfo.name,
+              roomType: deviceInfo.roomType,
+              isRepresentative: deviceInfo.id === mainDevice?.id ? true : false,
+              defaultScentId: deviceInfo.defaultCombination,
+            };
+          })
+          .filter(Boolean);
 
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
@@ -174,6 +183,10 @@ const Control = () => {
     }
     setActiveTab(tab);
   };
+
+  if (isLoading || !devicesInfo?.devices) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <div className="content pt-5">

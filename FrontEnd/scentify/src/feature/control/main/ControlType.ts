@@ -3,7 +3,7 @@ export type Mode = boolean;
 
 // ModeToggle 컴포넌트 props
 export interface ModeToggleProps {
-  currentMode: Mode;
+  currentMode: Mode | null;
   onModeChange: (mode: boolean) => void;
 }
 

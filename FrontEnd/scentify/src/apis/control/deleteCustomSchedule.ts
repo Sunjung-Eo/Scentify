@@ -12,6 +12,9 @@ export const deleteCustomSchedule = async (
     },
     body: JSON.stringify({ id: customScheduleId, deviceId: selectedDevice }),
   });
-
+  // 이미 진행중인 스케줄인 경우
+  if (response.status === 403) {
+    throw new Error("403");
+  }
   return response.status;
 };

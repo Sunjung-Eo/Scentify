@@ -8,6 +8,7 @@ import { useAuthStore } from "../../../stores/useAuthStore";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 import { updateCustomSchedule } from "../../../apis/control/updateCustomSchedule";
 
+import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
 import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
@@ -28,6 +29,15 @@ export default function ModifyReservation({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  // 모달창
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleModalOpen = () => {
+    setIsModalOpen(false);
+  };
+  useEffect(() => {
+    console.log("isModalOpen:", isModalOpen); // 상태 변경 로그
+  }, [isModalOpen]);
+
   // 예약 수정 - react query
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
@@ -38,7 +48,11 @@ export default function ModifyReservation({
       navigate("/control", { state: { reservationCreated: true } });
     },
     onError: (error) => {
-      console.error("예약 수정 실패:", error);
+      if (error.message === "403") {
+        setIsModalOpen(true);
+      } else {
+        console.error("예약 수정 실패:", error);
+      }
     },
   });
 
@@ -186,22 +200,24 @@ export default function ModifyReservation({
   const [formErrors, setFormErrors] = useState({
     reservationName: "",
     reservationNameLength: "",
-    noonTimeError: "",
-    timeError: "",
+    noonTime: "",
+    time: "",
     scentName: "",
     scentNameLength: "",
     scents: "",
+    day: "",
   });
   // 완료 버튼 누를 시 유효성 검사
   const handleComplete = () => {
     const errors = {
       reservationName: "",
       reservationNameLength: "",
-      noonTimeError: "",
-      timeError: "",
+      noonTime: "",
+      time: "",
       scentName: "",
       scentNameLength: "",
       scents: "",
+      day: "",
     };
     let isValid = true;
 
@@ -231,11 +247,16 @@ export default function ModifyReservation({
       isValid = false;
     }
 
+    if (getDaysBitMask(selectedDays) === 0) {
+      errors.day = "요일을 선택해주세요.";
+      isValid = false;
+    }
+
     if (start24Number >= 100 && end24Number < 100) {
-      errors.noonTimeError = "12:00 AM 이전 시간을 선택해주세요.";
+      errors.noonTime = "12:00 AM 이전 시간을 선택해주세요.";
       isValid = false;
     } else if (end24Number < start24Number) {
-      errors.timeError = "종료 시간을 시작 시간 이후로 선택해주세요.";
+      errors.time = "종료 시간을 시작 시간 이후로 선택해주세요.";
       isValid = false;
     }
 
@@ -294,6 +315,7 @@ export default function ModifyReservation({
       modeOn: modeOn,
     };
     updateMutation.mutate(reservationData);
+    console.log("수정", reservationData);
   };
 
   useEffect(() => {
@@ -366,6 +388,11 @@ export default function ModifyReservation({
                     </button>
                   ))}
                 </div>
+                {formErrors.day && (
+                  <p className="absolute ml-[5px] text-red-500 text-10">
+                    {formErrors.day}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -480,14 +507,14 @@ export default function ModifyReservation({
               </button>
             </div>
           </div>
-          {formErrors.noonTimeError && (
+          {formErrors.noonTime && (
             <p className="absolute bottom-[398px] left-[90px] text-red-500 text-10">
-              {formErrors.noonTimeError}
+              {formErrors.noonTime}
             </p>
           )}
-          {formErrors.timeError && (
+          {formErrors.time && (
             <p className="absolute bottom-[398px] left-[90px] text-red-500 text-10">
-              {formErrors.timeError}
+              {formErrors.time}
             </p>
           )}
           {/* 분사주기 */}
@@ -537,6 +564,15 @@ export default function ModifyReservation({
           </p>
         )}
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <AlertScheduleModal
+            message="해당 시간에 예약이 이미 존재합니다."
+            showButtons={true}
+            onConfirm={handleModalOpen}
+          />
+        </div>
+      )}
     </div>
   );
 }

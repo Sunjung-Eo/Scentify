@@ -27,6 +27,7 @@ const ScentMain = () => {
   const setFavoritesData = favoriteStore.setFavoritesData;
   const favoritesData = favoriteStore.favoritesData;
   const setFavorites = favoriteStore.setFavorites;
+  const setFavoriteIds = favoriteStore.setFavoriteIds;
 
   // 기존 db 찜 리스트
   // 찜 리스트 전체조회
@@ -50,10 +51,10 @@ const ScentMain = () => {
     mutationFn: (id: number) => deleteFavorite(id, accessToken),
     onSuccess: (_, deletedId) => {
       // 전역store 업데이트
-      const updatedFavorites = favoritesData.favorites
+      const updatedFavoriteIds = favoritesData.favorites
         .filter((item: any) => item.id !== deletedId)
         .map((item: any) => item.combination.id);
-      setFavorites(updatedFavorites);
+      setFavoriteIds(updatedFavoriteIds);
       queryClient.setQueryData(["favoritesData"], () => ({
         favorites: favoritesData.favorites.filter(
           (item: any) => item.id !== deletedId

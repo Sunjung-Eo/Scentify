@@ -100,16 +100,11 @@ class WebSocketResponseHandler:
             print("Handling Auto Mode Change ")
 
     async def handler_set_operation_mode(self, message):
-        # TODO
-        # Backend에서 Operation Mode 수신 안되는 문제 체크
-
         msg = json.loads(message)
-        if self.operation_mode == msg['mode']:
-            return
-
         self.operation_mode = msg['mode']
 
         if int(self.operation_mode) == 0:
+            print("스케줄 모드로 변경되어 스케줄을 요청합니다.")
             asyncio.create_task(self.handler_schedule())
             queue_msg = dict()
             queue_msg["type"] = "Schedule/Initial"
@@ -117,6 +112,7 @@ class WebSocketResponseHandler:
             await self.mqtt_client.work_queue.put(queue_msg)
 
         else:
+            print("자동화 모드로 변경되어 스케줄이 삭제됩니다.")
             self.schedules = dict()
             self.schedule_running = False
         
@@ -145,13 +141,17 @@ class WebSocketResponseHandler:
         payload = json.loads(message)
         schedule = payload["schedule"]
         if schedule["id"] not in self.schedules:
-            print("Schedule Change Error! -- Not Exist ID")
+            new_schedule = dict()
+            new_schedule["schedules"] = schedule
+            await self.handler_schedule_add(json.dumps(new_schedule))
+            print("Handler Change -- ID가 없어서 새로운 스케줄이 추가되었습니다.")
             return
 
         schedule["startTime"] = datetime.strptime(schedule["startTime"], "%H:%M:%S").time()
         schedule["endTime"] = datetime.strptime(schedule["endTime"], "%H:%M:%S").time()
         schedule["is_running"] = self.schedules[schedule["id"]]["is_running"]
         self.schedules[schedule["id"]] = schedule
+        print(self.schedules)
 
     async def handler_schedule_delete(self, message):
         payload = json.loads(message)
@@ -161,6 +161,8 @@ class WebSocketResponseHandler:
             del self.schedules[schedule_id]
         else:
             print("Schedule Delete Error! -- Not Exist ID")
+        
+        print(self.schedules)
 
     async def handler_schedule_add(self, message): 
         payload = json.loads(message)

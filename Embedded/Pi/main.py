@@ -41,7 +41,7 @@ async def main():
 
     asyncio.create_task(smart_hub.mqtt_client.connect())
     await asyncio.sleep(2)
-    # asyncio.create_task(smart_hub.websocket_client.connection())
+    asyncio.create_task(smart_hub.websocket_client.connection())
 
     # auto_mode_init = json.dumps(auto_mode_init_data)
     # await smart_hub.mqtt_client.publish(f"{smart_hub.mqtt_client.device_id_list[0]}/AutoModeInit", auto_mode_init)

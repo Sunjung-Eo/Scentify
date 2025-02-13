@@ -7,16 +7,32 @@ import { CreateCapsuleRequest } from './capsuletypes';
 
 interface CapsuleProps {
   name: string;
-  onSubmit: (requestData: CreateCapsuleRequest) => void;
+  onSubmit: (data: CreateCapsuleRequest) => void;
   initialData?: {
     slot1: number;
     slot2: number;
     slot3: number;
     slot4: number;
-  };
+  } | null;
 }
 
 const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
+  console.log('🩵 initialData', initialData);
+
+  const slot1Options = ['레몬', '유칼립투스', '페퍼민트'];
+  const slot2Options = ['라벤더', '시더우드', '카모마일'];
+  const slot3and4Options = [
+    '레몬',
+    '유칼립투스',
+    '페퍼민트',
+    '라벤더',
+    '시더우드',
+    '카모마일',
+    '샌달우드',
+    '화이트머스크',
+    '오렌지블라썸',
+  ];
+
   const [slot1, setSlot1] = useState<string>(() => {
     if (initialData && typeof initialData.slot1 === 'number') {
       return reverseFragranceMap[initialData.slot1] || '';
@@ -45,19 +61,15 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
     return '';
   });
 
-  const slot1Options = ['레몬', '유칼립투스', '페퍼민트'];
-  const slot2Options = ['라벤더', '시더우드', '카모마일'];
-  const slot3and4Options = [
-    '레몬',
-    '유칼립투스',
-    '페퍼민트',
-    '라벤더',
-    '시더우드',
-    '카모마일',
-    '샌달우드',
-    '화이트머스크',
-    '오렌지블라썸',
-  ];
+  // ✅ `initialData`가 변경될 때만 드롭다운 값 업데이트 (초기값 보장)
+  useEffect(() => {
+    if (!initialData) return;
+
+    setSlot1(reverseFragranceMap[initialData.slot1] || '');
+    setSlot2(reverseFragranceMap[initialData.slot2] || '');
+    setSlot3(reverseFragranceMap[initialData.slot3] || '');
+    setSlot4(reverseFragranceMap[initialData.slot4] || '');
+  }, [initialData]);
 
   useEffect(() => {
     onSubmit({

@@ -36,6 +36,14 @@ function EditDefaultScent() {
   const { setCompleteHandler } = useControlStore();
   const [message, setMessage] = useState<Message | null>(null);
 
+  console.log(
+    '🔥 EditDefaultScent 렌더링됨',
+    deviceId,
+    capsuleData,
+    name,
+    defaultCombination
+  );
+
   const slot1 = capsuleData?.slot1;
   const slot2 = capsuleData?.slot2;
   const slot3 = capsuleData?.slot3;
@@ -94,6 +102,7 @@ function EditDefaultScent() {
         choice4Count: scentCnt.slot4,
       };
 
+      console.log('🔥 combination', combination);
       // 2. 기본향 설정 수정
       await editDefaultScent(deviceId, roomTypeValue, combination);
       setTimeout(() => {

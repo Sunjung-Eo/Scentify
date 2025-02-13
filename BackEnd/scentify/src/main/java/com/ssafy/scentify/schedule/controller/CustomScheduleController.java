@@ -66,7 +66,7 @@ public class CustomScheduleController {
 					boolean isTimeOverlapping = (startTime.isBefore(existingEnd) && endTime.isAfter(existingStart)) || 
 			                					 startTime.equals(existingStart) || endTime.equals(existingEnd);
 					if (isTimeOverlapping) {
-						return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+						return new ResponseEntity<>(HttpStatus.FORBIDDEN); 
 					}
 				}
 			}
@@ -143,7 +143,7 @@ public class CustomScheduleController {
 					boolean isTimeOverlapping = (startTime.isBefore(existingEnd) && endTime.isAfter(existingStart)) || 
 			                					 startTime.equals(existingStart) || endTime.equals(existingEnd);
 					if (isTimeOverlapping) {
-						return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+						return new ResponseEntity<>(HttpStatus.FORBIDDEN); 
 					}
 				}
 			}

@@ -110,11 +110,11 @@ public class WebSocketService {
 	}
 	
 	// API 36번 : 사용자가 custom 스케줄 삭제 시 RB에 전송하는 메서드
-	public void sendCustomScheduleDelete(Map<String, Object> deleteScheduleMap) {
+	public void sendCustomScheduleDelete(Map<String, Integer> deleteScheduleMap) {
 		// 요청 객체 생성
-		int deviceId = (int) deleteScheduleMap.get("deviceId");
+		int deviceId = deleteScheduleMap.get("deviceId");
 		Map<String, Integer> scheduleRequest = new HashMap<>();
-		scheduleRequest.put("scheduleId", (int) deleteScheduleMap.get("id"));
+		scheduleRequest.put("scheduleId", deleteScheduleMap.get("id"));
 		
 		// 메시지 전송
         template.convertAndSend("/topic/Schedule/Delete/" + deviceId, scheduleRequest);

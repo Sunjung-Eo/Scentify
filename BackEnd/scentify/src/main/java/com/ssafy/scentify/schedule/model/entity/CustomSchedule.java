@@ -17,8 +17,6 @@ public class CustomSchedule {
     private String userId;
     private int combinationId;
     private String combinationName;
-    @JsonProperty("isFavorite") 
-    private Boolean isFavorite;
     private int day;
     private Time startTime;
     private Time endTime;
@@ -63,10 +61,6 @@ public class CustomSchedule {
         }
         this.combinationName = combinationName;
     }
-    
-	public void setIsFavorite(Boolean isFavorite) {
-		this.isFavorite = isFavorite;
-	}
 
     public void setDay(int day) {
         if (day < 0 || day > 0b1111111) { // 7비트 이내 값이어야 함 (0 ~ 127)

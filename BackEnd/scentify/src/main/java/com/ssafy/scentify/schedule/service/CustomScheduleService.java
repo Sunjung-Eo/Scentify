@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.schedule.model.dto.DeleteScheduleDto;
 import com.ssafy.scentify.schedule.model.repository.CustomScheduleRepository;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 
@@ -28,10 +29,14 @@ public class CustomScheduleService {
 		return customScheduleRepository.getDayById(customScheduleId, deviceId);
 	}
 	
+	public DeleteScheduleDto getDayAndTime(int customScheduleId, int deviceId) {
+		return customScheduleRepository.getDayAndTime(customScheduleId, deviceId);
+	}
+	
 	public boolean createCustomSchedule(CustomScheduleDto customScheduleDto, int combinationId, String combinationName) {
 		return customScheduleRepository.createCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}
-
+	
 	public boolean updateCustomSchedule(CustomScheduleDto customScheduleDto, int combinationId, String combinationName) {
 		return customScheduleRepository.updateCustomSchedule(customScheduleDto, combinationId, combinationName);
 	}

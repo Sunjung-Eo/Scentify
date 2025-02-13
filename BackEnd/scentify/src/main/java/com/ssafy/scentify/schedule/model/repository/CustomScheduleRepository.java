@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.*;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.schedule.model.dto.DeleteScheduleDto;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
 
 @Mapper
@@ -36,6 +37,10 @@ public interface CustomScheduleRepository {
 	@Select("SELECT day FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")
 	int getDayById(int id, int deviceId);
 	
+	// 요일 정보와 시작, 종료 시간을 조회
+	@Select("SELECT day, start_time, end_time FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")
+	DeleteScheduleDto getDayAndTime(int id, int deviceId);
+	
 	// 커스텀 스케줄 생성
 	@Insert("INSERT INTO customschedule (name, device_id, combination_id, combination_name, day, start_time, end_time, `interval`, mode_on, created_at, updated_at)" 
 		    + " VALUES (#{customSchedule.name}, #{customSchedule.deviceId}, #{combinationId}, #{conbinationName}, #{customSchedule.day},"
@@ -52,4 +57,5 @@ public interface CustomScheduleRepository {
 	// 커스텀 스케줄 삭제
 	@Delete("DELETE FROM customschedule WHERE id = #{id} AND device_id = #{deviceId}")
 	boolean deleteCustomScheduleById(int id, int deviceId);
+
 }

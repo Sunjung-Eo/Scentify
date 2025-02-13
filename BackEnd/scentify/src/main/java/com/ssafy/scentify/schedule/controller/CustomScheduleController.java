@@ -19,6 +19,7 @@ import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
+import com.ssafy.scentify.schedule.model.dto.DeleteScheduleDto;
 import com.ssafy.scentify.schedule.service.CustomScheduleService;
 import com.ssafy.scentify.websocket.WebSocketService;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto.CustomScheduleRequest;
@@ -126,7 +127,7 @@ public class CustomScheduleController {
 			LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
 			LocalTime now = LocalTime.now();
 			
-			if (!mode && (day & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
+			if (!mode && (beforeDay & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
 		        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		    }
 			
@@ -137,7 +138,7 @@ public class CustomScheduleController {
 			
 			// 이전 설정 요일이 현재 요일인데, 수정한 요일이 현재 요일이 아니라면 RB 스케줄 삭제 요청
 			if ((beforeDay & currentBit) > 0 && (day & currentBit) == 0) {
-				Map<String, Object> deleteScheduleMap = new HashMap<>();
+				Map<String, Integer> deleteScheduleMap = new HashMap<>();
 				deleteScheduleMap.put("deviceId", customScheduleDto.getDeviceId());
 				deleteScheduleMap.put("id", customScheduleDto.getId());
 				socketService.sendCustomScheduleDelete(deleteScheduleMap);
@@ -158,19 +159,19 @@ public class CustomScheduleController {
 	
 	// API 35번 : 시간 기반 예약 삭제
 	@PostMapping("/delete")
-	public ResponseEntity<?> deleteCustomSchedule(@RequestBody Map<String, Object> deleteScheduleMap) {
+	public ResponseEntity<?> deleteCustomSchedule(@RequestBody Map<String, Integer> deleteScheduleMap) {
 		try {
-			Integer customScheduleId = (Integer) deleteScheduleMap.get("id");
-			Integer deviceId = (Integer) deleteScheduleMap.get("deviceId");
-			
-			// day와 startTime, endTime을 가져옴
-			Integer day = (Integer) deleteScheduleMap.get("day");
-			Time start = (Time) deleteScheduleMap.get("startTime");
-			Time end = (Time) deleteScheduleMap.get("endTime");
-			
+			Integer customScheduleId = deleteScheduleMap.get("id");
+			Integer deviceId = deleteScheduleMap.get("deviceId");
+
 			// 요청 데이터 유효성 검사
 			if (customScheduleId == null || deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
-			if (day == null || start == null || end == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			
+			// day와 startTime, endTime을 가져옴
+			DeleteScheduleDto deleteScheduleDto = customScheduleService.getDayAndTime(customScheduleId, deviceId);
+			int day = deleteScheduleDto.getDay();
+			Time start = deleteScheduleDto.getStartTime();
+			Time end = deleteScheduleDto.getEndTime();
 			
 			// startTime과 endTime으로 변환
 			LocalTime startTime = start.toLocalTime();

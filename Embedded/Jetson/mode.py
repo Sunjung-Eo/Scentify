@@ -20,5 +20,5 @@ class AutoModeType:
 
 @dataclass
 class Mode:
-    operation_mode: int = 0
+    operation_mode: int = -1
     auto_operation_mode: Dict[int, AutoDetectionMode] = field(default_factory=dict)

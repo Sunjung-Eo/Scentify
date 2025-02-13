@@ -13,13 +13,19 @@ class Solenoid:
         GPIO.setup(self.gpio_in2, GPIO.OUT, initial=GPIO.LOW)        
 
     def operate_once(self, time_duration=1):
-        GPIO.output(self.gpio_in1, GPIO.HIGH)
-        GPIO.output(self.gpio_in2, GPIO.LOW)
+        self.operate_on()
         time.sleep(time_duration)
 
+        self.operate_off()
+        time.sleep(time_duration)
+
+    def operate_on(self):
+        GPIO.output(self.gpio_in1, GPIO.HIGH)
+        GPIO.output(self.gpio_in2, GPIO.LOW)
+
+    def operate_off(self):
         GPIO.output(self.gpio_in1, GPIO.LOW)
         GPIO.output(self.gpio_in2, GPIO.LOW)
-        time.sleep(time_duration)
         
 
     def operate_repeat(self, repeat_num, time_duration=1):
@@ -31,5 +37,5 @@ class Solenoid:
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    solenoid = Solenoid(31, 33)
-    solenoid.operate_repeat(repeat_num=3, time_duration=3)
+    solenoid = Solenoid(35, 37)
+    solenoid.operate_repeat(repeat_num=10, time_duration=3)

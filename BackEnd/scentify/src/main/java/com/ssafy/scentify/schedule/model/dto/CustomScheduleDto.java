@@ -41,7 +41,7 @@ public class CustomScheduleDto {
     }
     
     public void setDay(int day) {
-        if (day < 0 || day > 0b1111111) { // 7비트 이내 값이어야 함 (0 ~ 127)
+        if (day <= 0 || day > 0b1111111) { // 7비트 이내 값이어야 함 (0 ~ 127)
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.day = day;
@@ -65,7 +65,7 @@ public class CustomScheduleDto {
     }
 
     public void setInterval(int interval) {
-        if (interval < 0) {
+        if (interval <= 0) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.interval = interval;

@@ -13,7 +13,7 @@ interface FavoriteState {
   setDeleteFavoriteIds: (id: number[]) => void;
   deleteAddFavorite: (id: number) => void;
   deleteRemoveFavorite: (id: number) => void;
-  favoritesData: any; // 구체적인 타입으로 교체 권장
+  favoritesData: any;
   setFavoritesData: (data: any) => void;
 }
 

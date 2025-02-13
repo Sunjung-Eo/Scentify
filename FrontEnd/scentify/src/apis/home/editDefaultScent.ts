@@ -5,6 +5,7 @@ export const editDefaultScent = async (
   roomType: number, // 공간 크기
   combination: {
     id: number;
+    name: string;
     choice1: number;
     choice1Count: number;
     choice2: number;
@@ -17,27 +18,18 @@ export const editDefaultScent = async (
 ) => {
   try {
     const accessToken = useAuthStore.getState().accessToken;
+    const requestBody = {
+      id,
+      roomType,
+      combination,
+    };
     const response = await fetch('/v1/device/set/update', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        id,
-        roomType,
-        combination: {
-          id: combination.id,
-          choice1: combination.choice1,
-          choice1Count: combination.choice1Count,
-          choice2: combination.choice2,
-          choice2Count: combination.choice2Count,
-          choice3: combination.choice3,
-          choice3Count: combination.choice3Count,
-          choice4: combination.choice4,
-          choice4Count: combination.choice4Count,
-        },
-      }),
+      body: JSON.stringify(requestBody),
     });
     // ✅ 응답 상태 코드 체크 (본문이 없는 경우 대비)
     if (response.status === 200) {

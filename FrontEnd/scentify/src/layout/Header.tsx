@@ -53,8 +53,17 @@ const Header = ({
   };
 
   // 다음 버튼 핸들러:
+  // 다음 버튼 핸들러:
   const handleNextClick = () => {
-    navigate('/home/devicesetting/defaultscent');
+    console.log('🛑 Next 버튼 클릭됨!');
+
+    if (completeHandler) {
+      console.log('✅ completeHandler 실행됨!');
+      completeHandler(); // 🚀 `handleSubmit` 실행
+    } else {
+      console.log('❌ completeHandler가 없음! 직접 navigate 실행');
+      navigate('/home/devicesetting/defaultscent', { state: location.state });
+    }
   };
 
   return (

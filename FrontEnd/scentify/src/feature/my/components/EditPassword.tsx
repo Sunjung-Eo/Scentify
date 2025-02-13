@@ -32,12 +32,12 @@ function EditPassword() {
       setPasswordCheckMessage(""); // 입력 시 기존 메시지 초기화
     };
 
-  // 새 비밀번호 입력 (유효성 검사 메시지는 표시하지 않음)
+  // 새 비밀번호 입력
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(e.target.value);
   };
 
-  // 비밀번호 확인 입력 (유효성 검사 메시지는 표시하지 않음)
+  // 비밀번호 확인 입력
   const handleConfirmPasswordChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {

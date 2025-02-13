@@ -3,17 +3,17 @@ import {
   DeleteMemberRequest,
   DeleteGroupRequest,
 } from "../groupTypes";
-import React, { useState, useEffect, useRef, useMemo } from "react"; //useMemo는 객체 사용시 불필요한 렌더링 막기 위함
+import React, { useState, useEffect, useMemo } from "react"; //useMemo는 객체 사용시 불필요한 렌더링 막기 위함
 import MemberCard from "./MemberCard";
-import { useUserStore } from "../../../stores/useUserStore"; // 유저 상태 관리(사용자 기기정보)
+import { useUserStore } from "../../../stores/useUserStore"; //유저상태관리(사용자 기기정보)
 import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 정보 관리(토큰)
 import { getGroupByDeviceId } from "../../../apis/group/getGroupByDeviceId"; // 그룹 정보 조회 API
 import { deleteGroupMember } from "../../../apis/group/deleteGroupMember"; // 개별 멤버 삭제 API
 import { deleteGroup } from "../../../apis/group/deleteGroup"; // 그룹 삭제 API
 import { Link, useNavigate } from "react-router-dom";
 import rigtarrowIcon from "../../../assets/icons/rightarrow-icon.svg";
-import crownIcon from "../../../assets/icons/crown-icon.svg";
 import Modal from "../../../components/Alert/Modal";
+import MyDeviceSelect from "./MyDeviceSelect";
 
 export const GroupList = () => {
   // 사용자가 소유한 기기 ID 목록 가져오기 (등록된 디바이스가 없을 경우 빈 배열 사용)
@@ -25,24 +25,22 @@ export const GroupList = () => {
   );
   const mainDeviceId = useUserStore((state) => state.mainDeviceId);
   const userId = useUserStore((state) => state.id);
-  console.log("현재 로그인한 유저 ID:", userId);
 
-  // 기기 옵션 배열 (id는 number)
-  const deviceOptions = useMemo(
+  // 기기 리스트 (옵션)
+  const deviceList = useMemo(
     () =>
       Object.entries(memoizedDeviceIdsAndNames).map(([id, name]) => ({
-        id: Number(id),
+        deviceId: Number(id),
         name,
+        isRepresentative: Number(id) === mainDeviceId, // 메인 기기 여부
       })),
-    [memoizedDeviceIdsAndNames]
+    [memoizedDeviceIdsAndNames, mainDeviceId]
   );
 
-  //  선택된 기기 ID (초기값: 메인 기기)
+  // 선택된 기기 ID (초기값: 메인 기기)
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(
     mainDeviceId || null
   );
-  console.log("현재 선택된 기기 ID:", selectedDeviceId);
-
   // 현재 그룹에 속한 멤버 목록 (초기값: 빈 배열)
   const [members, setMembers] = useState<{ id: string; nickname: string }[]>(
     []
@@ -50,39 +48,14 @@ export const GroupList = () => {
   const [groupId, setGroupId] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
-  // 인증 관련 정보 가져오기 (토큰, 로그인 여부)
   const { accessToken } = useAuthStore();
-
   const [adminId, setAdminId] = useState<string>("");
   console.log("현재 관리자ID:", adminId);
-
   const navigate = useNavigate();
   // 그룹 삭제 모달 상태
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // 커스텀 드롭다운 열림 상태
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  // dropdownRef: 드롭다운 영역의 DOM 요소에 접근하기 위한 Ref.s
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // 드롭다운 영역 외부 클릭 시 닫기 처리(드롭다운 영역 밖을 클릭하면 드롭다운을 닫기 위해 이벤트를 등록)
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      //이벤트 발생 위치가 드롭다운 내부가 아니면 드롭다운을 닫음
-      if (
-        dropdownRef.current && // 드롭다운 ref가 존재하고
-        !dropdownRef.current.contains(event.target as Node) // 클릭한 요소가 드롭다운 내부가 아니면 닫음
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-    // document의 mousedown 이벤트에 핸들러를 추가하여 외부 클릭을 감지
-    document.addEventListener("mousedown", handleClickOutside);
-    // 클린업: 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // 선택한 기기의 그룹 정보를 불러오는 함수
+  // 선택한 기기의 그룹 정보 가져오기
   useEffect(() => {
     const fetchGroupData = async () => {
       if (selectedDeviceId === null) return; //기기가 선택되지 않으면 실행 X
@@ -104,7 +77,7 @@ export const GroupList = () => {
 
         // 멤버 목록을 객체 배열로 변환(각 멤버의 ID및 닉네임 저장)
         const formattedMembers = [
-          { id: group.adminId, nickname: group.adminNickname || "알 수 없음" }, // 어드민(관리자) 추가
+          { id: group.adminId, nickname: group.adminNickname || "알 수 없음" },
           ...(group.member1Id
             ? [
                 {
@@ -139,11 +112,7 @@ export const GroupList = () => {
             : []),
         ];
 
-        // 사용자(userId)를 제외한 멤버 목록 설정
-        const filteredMembers = formattedMembers.filter(
-          (member) => member.id !== userId
-        );
-        setMembers(filteredMembers); // 멤버 리스트 업데이트
+        setMembers(formattedMembers.filter((member) => member.id !== userId));
       } catch (err: any) {
         setError(err.message); // 에러 발생 시 메시지 저장
         setMembers([]); // 오류 시 멤버 상태 초기화
@@ -151,15 +120,9 @@ export const GroupList = () => {
     };
 
     fetchGroupData();
-  }, [selectedDeviceId, accessToken]); //선택한 기기 ID, 인증 상태, 또는 사용자 ID 변경 시 실행
+  }, [selectedDeviceId, accessToken]);
 
-  // 드롭다운에서 기기 선택 시 호출되는 함수
-  const handleDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const deviceId = parseInt(e.target.value, 10); // 선택한 기기 ID를 숫자로 변환
-    setSelectedDeviceId(deviceId); // 상태 업데이트
-  };
-
-  // 개별 멤버 삭제 함수
+  // 개별 멤버 삭제
   const handleDeleteMember = async (memberId: string) => {
     try {
       const requestData: DeleteMemberRequest = { groupId, memberId }; // API 요청 데이터 구성
@@ -170,7 +133,7 @@ export const GroupList = () => {
     }
   };
 
-  // 그룹 삭제 함수(모달 확인 후 호출)
+  // 그룹 삭제
   const handleDeleteGroup = async () => {
     try {
       const requestData: DeleteGroupRequest = { groupId }; // API 요청 데이터 구성
@@ -189,137 +152,79 @@ export const GroupList = () => {
     }
   };
 
-  // 현재 선택된 기기의 이름
-  const selectedDeviceName =
-    deviceOptions.find((option) => option.id === selectedDeviceId)?.name || "-";
-
   return (
     <div className="flex flex-col">
-      {/* 멤버 목록과 기기 선택 드롭다운 + 초대하기 버튼 묶음 */}
-      <div className="flex flex-row items-center justify-between mb-4">
-        <div className="font-pre-medium text-12 text-gray">멤버 목록</div>
-
-        {/* 기기 선택 드롭다운 + 초대하기 버튼 */}
-        <div className="flex flex-row items-center gap-x-5">
-          {/* 기기 선택 드롭다운
-          <select
-            onChange={handleDeviceChange}
-            className="w-auto min-w-[88px] max-w-[130px] h-[25px] text-center text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
-            defaultValue={mainDeviceId || ""}
+      <div className="relative">
+        <div className="flex flex-row items-center justify-between">
+          {/* "멤버 목록" 텍스트 */}
+          <div className="font-pre-medium text-12 text-gray whitespace-nowrap">
+            멤버 목록
+          </div>
+          {/* 드롭다운과 초대하기 버튼 컨테이너 */}
+          <div
+            className={`flex items-center ${userId === adminId ? "gap-x-4" : "justify-end w-full"}`}
           >
-            {Object.entries(memoizedDeviceIdsAndNames).length > 0 ? (
-              Object.entries(memoizedDeviceIdsAndNames).map(([id, name]) => (
-                <option key={id} value={id} className="text-12 font-pre-light">
-                  {name}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                -
-              </option>
-            )}
-          </select> */}
-          <div className="relative inline-block" ref={dropdownRef}>
-            <button
-              onClick={() => setDropdownOpen((prev) => !prev)}
-              className="relative w-auto min-w-[88px] max-w-[130px] h-[25px] text-center text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand flex items-center justify-center"
-            >
-              {/* 등록된 기기가 존재하고 선택된 기기가 메인 기기라면 왕관 아이콘 표시 */}
-              {deviceOptions.length > 0 &&
-                selectedDeviceId === mainDeviceId && (
-                  <img
-                    src={crownIcon}
-                    alt="Crown Icon"
-                    className="mr-1 w-4 h-4"
-                  />
-                )}
-              {/* 텍스트 줄바꿈 방지를 위해 whitespace-nowrap 사용 */}
-              <span className="whitespace-nowrap">{selectedDeviceName}</span>
-            </button>
-            {dropdownOpen && (
-              <div className="absolute z-10 mt-1 w-full bg-white border border-lightgray rounded-lg shadow-lg text-12 font-pre-light">
-                {deviceOptions.length > 0 ? (
-                  deviceOptions.map((option) => (
-                    <div
-                      key={option.id}
-                      onClick={() => {
-                        setSelectedDeviceId(option.id);
-                        setDropdownOpen(false);
-                      }}
-                      className="px-3 py-2 hover:bg-brand hover:text-white flex items-center justify-center whitespace-nowrap"
-                    >
-                      {/* 옵션에서는 메인 기기인 경우만 왕관 아이콘 표시 */}
-                      {option.id === mainDeviceId && (
-                        <img
-                          src={crownIcon}
-                          alt="Crown Icon"
-                          className="w-4 h-4 mr-1"
-                        />
-                      )}
-                      <span className="whitespace-nowrap">{option.name}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-2 text-center text-gray">-</div>
-                )}
-              </div>
+            {/* DeviceSelect 드롭다운 */}
+            <div className="relative">
+              <MyDeviceSelect
+                devices={deviceList}
+                selectedDevice={selectedDeviceId}
+                onDeviceChange={setSelectedDeviceId}
+              />
+            </div>
+            {/* 초대하기 버튼 */}
+            {userId === adminId && (
+              <button
+                onClick={handleInvite}
+                className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
+              >
+                초대하기
+              </button>
             )}
           </div>
-
-          {/* 초대하기 버튼 */}
-          {userId === adminId && (
-            <button
-              onClick={handleInvite}
-              className="w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand -ml-1"
-            >
-              초대하기
-            </button>
-          )}
         </div>
+
+        {/* 오류 메시지 표시 */}
+        {error && (
+          <div className="font-pre-light text-12 text-red-500 mb-2">
+            {error}
+          </div>
+        )}
+
+        {/* 멤버 리스트 */}
+        {!error && (
+          <div className="mt-4 space-y-4">
+            {members.length > 0
+              ? members.map((member) => (
+                  <MemberCard
+                    key={member.id}
+                    id={member.id}
+                    nickname={member.nickname}
+                    onDelete={() => handleDeleteMember(member.id)}
+                    showDeleteButton={userId === adminId}
+                    isAdmin={member.id === adminId}
+                  />
+                ))
+              : userId === adminId && (
+                  <p className="text-12 font-pre-light text-gray">
+                    그룹에 해당하는 멤버가 없습니다. 그룹 멤버를 초대해보세요.
+                  </p>
+                )}
+          </div>
+        )}
       </div>
-
-      {/* 오류 메시지 표시 */}
-      {error && (
-        <div className="font-pre-light text-12 text-red-500 mb-2">{error}</div>
-      )}
-
-      {/* 멤버 리스트 */}
-      {!error && (
-        <div className="mt-4 space-y-4">
-          {members.length > 0
-            ? members.map((member) => (
-                <MemberCard
-                  key={member.id}
-                  id={member.id}
-                  nickname={member.nickname}
-                  onDelete={() => handleDeleteMember(member.id)}
-                  showDeleteButton={userId === adminId}
-                  // 멤버 id가 adminId와 일치하면 관리자로 판단하여 isAdmin 전달
-                  isAdmin={member.id === adminId}
-                />
-              ))
-            : // 관리자 계정인 경우에만 "멤버가 없습니다" 메시지 표시
-              userId === adminId && (
-                <p className="text-12 font-pre-light text-gray">
-                  그룹에 해당하는 멤버가 없습니다. 그룹 멤버를 초대해보세요.
-                </p>
-              )}
-        </div>
-      )}
       {/* 초대코드 입력 & 그룹 삭제 버튼 */}
       <div className="absolute bottom-[33px] w-full flex flex-row items-center justify-between">
         {/* 초대코드입력 버튼 */}
         <Link to="/my/invitecodeinput">
-          <div>
-            <span className="text-12 font-pre-light flex items-center">
-              초대코드 입력
-              <img
-                src={rigtarrowIcon}
-                alt="초대 코드 입력"
-                className="w-4 h-4 ml-1"
-              />
-            </span>
-          </div>
+          <span className="text-12 font-pre-light flex items-center">
+            초대코드 입력
+            <img
+              src={rigtarrowIcon}
+              alt="초대 코드 입력"
+              className="w-4 h-4 ml-1"
+            />
+          </span>
         </Link>
 
         {/* 그룹 삭제 버튼: 클릭 시 모달을 띄움 */}
@@ -332,6 +237,7 @@ export const GroupList = () => {
           </button>
         )}
       </div>
+
       {/* 그룹 삭제 모달 */}
       {deleteModalOpen && (
         <Modal

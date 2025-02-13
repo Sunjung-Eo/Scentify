@@ -52,7 +52,8 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith('/control/reservation/create') ||
     location.pathname.startsWith('/control/reservation/modify') ||
     location.pathname.startsWith('/home/registcapsule') ||
-    location.pathname.startsWith('/home/defaultscent');
+    location.pathname.startsWith('/home/defaultscent') ||
+    location.pathname.startsWith('/home/devicesetting/defaultscent');
   const showDeviceManage = location.pathname === '/home';
   const showAdd =
     location.pathname.startsWith('/home/managedevice') ||

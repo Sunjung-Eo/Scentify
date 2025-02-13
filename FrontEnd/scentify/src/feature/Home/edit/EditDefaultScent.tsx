@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SpaceTab from '../defaultscent/SpaceTab';
 import SpaceDescription from '../defaultscent/SpaceDescription';
 import { useControlStore } from '../../../stores/useControlStore';
@@ -6,10 +6,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { editDefaultScent } from '../../../apis/home/editDefaultScent';
 import { registCapsule } from '../../../apis/home/registCapsule';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
-import { useQuery } from '@tanstack/react-query';
-import { getCombinationById } from '../../../apis/control/getCombinationById';
-import { useAuthStore } from '../../../stores/useAuthStore';
-import HomeScentSetting from '../../../components/Control/HomeScentSetting';
 
 interface FormData {
   roomType: 'small' | 'large' | null;
@@ -35,80 +31,43 @@ interface Message {
 function EditDefaultScent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { deviceId, capsuleData, defaultCombination } = location.state || {};
+  const { deviceId, capsuleData, name, defaultCombination } =
+    location.state || {};
   const { setCompleteHandler } = useControlStore();
   const [message, setMessage] = useState<Message | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
-    roomType: null,
-    scentNames: {
-      slot1: fragranceMap[capsuleData?.slot1] || '',
-      slot2: fragranceMap[capsuleData?.slot2] || '',
-      slot3: fragranceMap[capsuleData?.slot3] || '',
-      slot4: fragranceMap[capsuleData?.slot4] || '',
-    },
-    scentCnt: {
+  const slot1 = capsuleData?.slot1;
+  const slot2 = capsuleData?.slot2;
+  const slot3 = capsuleData?.slot3;
+  const slot4 = capsuleData?.slot4;
+
+  // ✅ 공간 크기 상태 추가
+  const [roomType, setRoomType] = useState<'small' | 'large' | null>(null);
+
+  // ✅ 이전 `capsuleData` 저장 (리렌더링 방지)
+  // const prevCapsuleData = useRef(capsuleData);
+
+  // ✅ 향 슬롯이 변하지 않도록 고정
+  // scentNames를 문자열로 변환
+  const [scentNames] = useState({
+    slot1: fragranceMap[slot1],
+    slot2: fragranceMap[slot2],
+    slot3: fragranceMap[slot3],
+    slot4: fragranceMap[slot4],
+  });
+
+  // ✅ 향 사용량을 설정하는 상태 (초기 상태에서 `totalEnergy`를 넘지 않도록 보정)
+  const [scentCnt, setScentCnt] = useState(() => {
+    return {
       slot1: 0,
       slot2: 0,
       slot3: 0,
       slot4: 0,
-    },
+    };
   });
-
-  // 기존 기본향 정보 조회
-  const { data: combinationData } = useQuery({
-    queryKey: ['combination', defaultCombination],
-    queryFn: async () => {
-      try {
-        const accessToken = useAuthStore.getState().accessToken;
-        const response = await getCombinationById(
-          defaultCombination,
-          accessToken
-        );
-
-        if (response) {
-          setFormData((prev) => ({
-            ...prev,
-            roomType: response.roomType === 0 ? 'small' : 'large',
-            scentCnt: {
-              slot1: response.choice1Count,
-              slot2: response.choice2Count,
-              slot3: response.choice3Count,
-              slot4: response.choice4Count,
-            },
-          }));
-        }
-        return response;
-      } catch (error) {
-        console.error('기본향 정보 조회 실패:', error);
-        return null;
-      }
-    },
-    enabled: !!defaultCombination,
-    staleTime: 0,
-    refetchOnWindowFocus: false,
-    retry: false,
-  });
-
-  const handleRoomTypeChange = (type: 'small' | 'large' | null) => {
-    setFormData((prev) => ({
-      ...prev,
-      roomType: type,
-    }));
-  };
 
   const handleComplete = useCallback(async () => {
-    if (!formData.roomType) {
-      setMessage({ type: 'error', text: '공간 크기를 선택해주세요.' });
-      return;
-    }
-
-    if (!capsuleData) {
-      setMessage({ type: 'error', text: '캡슐 데이터가 없습니다.' });
-      return;
-    }
-
-    const roomTypeValue = formData.roomType === 'small' ? 0 : 1;
+    const roomTypeValue = roomType === 'small' ? 0 : 1;
 
     try {
       // 1. 캡슐 정보 수정
@@ -121,20 +80,22 @@ function EditDefaultScent() {
         capsuleData.slot4
       );
 
-      // 2. 기본향 설정 수정
-      await editDefaultScent(deviceId, roomTypeValue, {
+      // 2. 기본향 설정 수정 (올바른 구조로 변환)
+      const combination = {
         id: defaultCombination,
-        choice1: combinationData?.choice1 || 0,
-        choice1Count: formData.scentCnt.slot1,
-        choice2: combinationData?.choice2 || 0,
-        choice2Count: formData.scentCnt.slot2,
-        choice3: combinationData?.choice3 || 0,
-        choice3Count: formData.scentCnt.slot3,
-        choice4: combinationData?.choice4 || 0,
-        choice4Count: formData.scentCnt.slot4,
-      });
+        name: name,
+        choice1: slot1,
+        choice1Count: scentCnt.slot1,
+        choice2: slot2,
+        choice2Count: scentCnt.slot2,
+        choice3: slot3,
+        choice3Count: scentCnt.slot3,
+        choice4: slot4,
+        choice4Count: scentCnt.slot4,
+      };
 
-      setMessage({ type: 'success', text: '수정이 완료되었습니다.' });
+      // 2. 기본향 설정 수정
+      await editDefaultScent(deviceId, roomTypeValue, combination);
       setTimeout(() => {
         navigate('/home');
       }, 1000);
@@ -142,18 +103,10 @@ function EditDefaultScent() {
       console.error('수정 실패:', error);
       setMessage({ type: 'error', text: '수정 중 오류가 발생했습니다.' });
     }
-  }, [
-    deviceId,
-    capsuleData,
-    defaultCombination,
-    formData,
-    combinationData,
-    navigate,
-  ]);
+  }, [deviceId, capsuleData, name, defaultCombination, navigate]);
 
   useEffect(() => {
     if (!deviceId) return;
-
     setCompleteHandler(handleComplete);
 
     return () => {
@@ -161,46 +114,24 @@ function EditDefaultScent() {
     };
   }, [deviceId, handleComplete]);
 
-  if (!combinationData && defaultCombination) {
-    return <div className="content">로딩 중...</div>;
-  }
-
   return (
     <div className="content px-4 flex flex-col items-center">
       <SpaceTab
-        roomType={formData.roomType}
-        setRoomType={handleRoomTypeChange}
+        setRoomType={setRoomType}
+        roomType={roomType}
+        scentCnt={scentCnt}
+        setScentCnt={setScentCnt}
+        scentNames={scentNames}
       />
-      <SpaceDescription />
-      <div className="mt-8">
-        <div className="flex justify-center">
-          <div className="flex flex-col w-[215px] h-[206px] p-2">
-            <p className="mt-1 font-pre-light text-10 text-gray text-right">
-              전체 {formData.roomType === 'small' ? 3 : 6}
-            </p>
-            <HomeScentSetting
-              scentCnt={formData.scentCnt}
-              scentNames={formData.scentNames}
-              setScentCnt={(newScentCnt) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  scentCnt: { ...prev.scentCnt, ...newScentCnt },
-                }))
-              }
-              totalEnergy={formData.roomType === 'small' ? 3 : 6}
-            />
-          </div>
-        </div>
-      </div>
-      {message && (
-        <p
-          className={`mt-4 text-12 font-pre-light self-start ${
-            message.type === 'error' ? 'text-red-500' : 'text-green-500'
-          }`}
-        >
-          {message.text}
+
+      {!roomType && (
+        <p className="text-red-500 text-12 font-pre-light self-start">
+          공간 크기를 먼저 선택해주세요.
         </p>
       )}
+      <div className="mt-4">
+        <SpaceDescription />
+      </div>
     </div>
   );
 }

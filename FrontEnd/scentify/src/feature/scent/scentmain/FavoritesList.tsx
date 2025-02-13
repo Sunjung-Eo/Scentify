@@ -30,7 +30,6 @@ const FavoritesList = ({
           combination={favorite.combination}
           isLiked={true} // 기본적으로 찜 상태로 표시
           onToggleLike={() => onToggleLike(favorite.combination.id)}
-          onShare={() => onShare(favorite.id)}
         />
       ))}
     </div>

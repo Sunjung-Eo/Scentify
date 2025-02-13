@@ -50,3 +50,12 @@ export interface FavoritesListProps {
   onToggleLike: (id: number) => void; // 찜 상태를 변경하는 함수
   onShare: (id: string) => void; // 공유 버튼 클릭 시 호출되는 함수
 }
+
+//shareFavoriteCombination API의 응답 데이터 구조 정의
+export interface ShareFavoriteResponse {
+  success: boolean;
+  combination?: Combination;
+  s3Url?: string;
+  shareUrl?: string;
+  message?: string;
+}

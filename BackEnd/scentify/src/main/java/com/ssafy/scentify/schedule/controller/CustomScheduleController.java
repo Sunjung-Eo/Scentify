@@ -115,16 +115,17 @@ public class CustomScheduleController {
 				}
 			}
 			
-			// 기기에 설정된 mode 정보를 가져옴
+			// 기기에 설정된 mode 정보와 기존에 스케줄에 설정되었던 day를 가져옴
 			boolean mode = deviceService.getMode(customScheduleDto.getDeviceId());
+			int beforeDay = customScheduleService.getDayById(customScheduleDto.getId(), customScheduleDto.getDeviceId());
+			int currentBit = codeProvider.getCurrentDayBit();
 			
-			// 요일과 시간을 통해 실행 중인 스케쥴이면 수정할 수 없음
+			// 현재 실행 중인 스케줄이면 수정할 수 없음
 			int day = customScheduleDto.getDay();
 			LocalTime startTime = customScheduleDto.getStartTime().toLocalTime();
 			LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
 			LocalTime now = LocalTime.now();
-
-			int currentBit = codeProvider.getCurrentDayBit();
+			
 			if (!mode && (day & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
 		        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		    }
@@ -133,8 +134,19 @@ public class CustomScheduleController {
 			if (!customScheduleService.updateCustomSchedule(customScheduleDto, combinationId, combination.getName())) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
-
-			socketService.sendCustomScheduleUpdate(customScheduleDto);
+			
+			// 이전 설정 요일이 현재 요일인데, 수정한 요일이 현재 요일이 아니라면 RB 스케줄 삭제 요청
+			if ((beforeDay & currentBit) > 0 && (day & currentBit) == 0) {
+				Map<String, Object> deleteScheduleMap = new HashMap<>();
+				deleteScheduleMap.put("deviceId", customScheduleDto.getDeviceId());
+				deleteScheduleMap.put("id", customScheduleDto.getId());
+				socketService.sendCustomScheduleDelete(deleteScheduleMap);
+			}
+			
+			// 수정한 요일이 현재 요일이면 RB에 스케쥴을 전송
+			if ( (day & currentBit) > 0) {
+				socketService.sendCustomScheduleUpdate(customScheduleDto);
+			}
 			
 			return new ResponseEntity<>(HttpStatus.OK); // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -146,27 +158,38 @@ public class CustomScheduleController {
 	
 	// API 35번 : 시간 기반 예약 삭제
 	@PostMapping("/delete")
-	public ResponseEntity<?> deleteCustomSchedule(@RequestBody Map<String, Integer> deleteScheduleMap) {
+	public ResponseEntity<?> deleteCustomSchedule(@RequestBody Map<String, Object> deleteScheduleMap) {
 		try {
-			Integer customScheduleId = deleteScheduleMap.get("id");
-			Integer deviceId = deleteScheduleMap.get("deviceId");
+			Integer customScheduleId = (Integer) deleteScheduleMap.get("id");
+			Integer deviceId = (Integer) deleteScheduleMap.get("deviceId");
+			
+			// day와 startTime, endTime을 가져옴
+			Integer day = (Integer) deleteScheduleMap.get("day");
+			Time start = (Time) deleteScheduleMap.get("startTime");
+			Time end = (Time) deleteScheduleMap.get("endTime");
 			
 			// 요청 데이터 유효성 검사
 			if (customScheduleId == null || deviceId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+			if (day == null || start == null || end == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
-			// 삭제 전 미리 요일 정보를 조회
-			int day = customScheduleService.getDayById(customScheduleId, deviceId);
+			// startTime과 endTime으로 변환
+			LocalTime startTime = start.toLocalTime();
+			LocalTime endTime = end.toLocalTime();
+			LocalTime now = LocalTime.now();
+			
+			// 현재 실행 중인 스케줄이면 삭제할 수 없음
+		    int currentBit = codeProvider.getCurrentDayBit();		
+			if ((day & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
+		        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		    }
 			
 			// 삭제가 이루어지지 않은 경우 400 반환
 			if (!customScheduleService.deleteCustomScheduleById(customScheduleId, deviceId)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
-			
-			// 현재 요일의 스케줄만 전송
-		    int currentBit = codeProvider.getCurrentDayBit();
 		    
-		    // 사용자가 선택한 요일 목록에 현재 요일이 포함되어 있는 경우만 실행
-		    if ((day & currentBit) != 0) {
+		    // 사용자가 선택한 요일 목록에 현재 요일이 포함되어 있는 경우 실행
+		    if ((day & currentBit) > 0) {
 		    	socketService.sendCustomScheduleDelete(deleteScheduleMap);
 		    }
 

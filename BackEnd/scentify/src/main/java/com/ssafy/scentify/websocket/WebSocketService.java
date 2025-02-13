@@ -64,12 +64,6 @@ public class WebSocketService {
 	public void sendCustomScheduleUpdate(CustomScheduleDto scheduleDto) {
 	    int deviceId = scheduleDto.getDeviceId();
 
-	    // 현재 요일의 스케줄만 전송
-	    int currentBit = codeProvider.getCurrentDayBit();
-	    if ((scheduleDto.getDay() & currentBit) == 0) {
-	        return; // 현재 요일이 포함되지 않으면 전송 안 함
-	    }
-
 	    // Combination 생성
 	    Combination combination = getCombination(scheduleDto);
 
@@ -116,11 +110,11 @@ public class WebSocketService {
 	}
 	
 	// API 36번 : 사용자가 custom 스케줄 삭제 시 RB에 전송하는 메서드
-	public void sendCustomScheduleDelete(Map<String, Integer> deleteScheduleMap) {
+	public void sendCustomScheduleDelete(Map<String, Object> deleteScheduleMap) {
 		// 요청 객체 생성
-		int deviceId = deleteScheduleMap.get("deviceId");
+		int deviceId = (int) deleteScheduleMap.get("deviceId");
 		Map<String, Integer> scheduleRequest = new HashMap<>();
-		scheduleRequest.put("scheduleId", deleteScheduleMap.get("id"));
+		scheduleRequest.put("scheduleId", (int) deleteScheduleMap.get("id"));
 		
 		// 메시지 전송
         template.convertAndSend("/topic/Schedule/Delete/" + deviceId, scheduleRequest);

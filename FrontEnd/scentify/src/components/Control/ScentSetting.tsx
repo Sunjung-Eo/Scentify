@@ -30,7 +30,6 @@ export default function ScentSetting({
 }: ScentSettingProps) {
   const totalUsage = Object.values(scents).reduce((acc, curr) => acc + curr, 0);
   const availableEnergy = totalEnergy - totalUsage;
-  console.log("향설정", defaultScentData);
   // 향 설정값 변경
   const handleScentChange = (scentKey: string, value: number) => {
     const newScents = { ...scents, [scentKey]: value };

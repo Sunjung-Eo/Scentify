@@ -13,6 +13,7 @@ import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
 import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
 import { ReservationData } from "./ReservationType";
 
 export default function CreateReservation({
@@ -26,6 +27,15 @@ export default function CreateReservation({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  // 모달창
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleModalOpen = () => {
+    setIsModalOpen(false);
+  };
+  useEffect(() => {
+    console.log("isModalOpen:", isModalOpen); // 상태 변경 로그
+  }, [isModalOpen]);
+
   // 예약하기 - react query
   const queryClient = useQueryClient();
   const createMutation = useMutation({
@@ -36,7 +46,11 @@ export default function CreateReservation({
       navigate("/control", { state: { reservationCreated: true } });
     },
     onError: (error) => {
-      console.error("예약 생성 실패:", error);
+      if (error.message === "403") {
+        setIsModalOpen(true);
+      } else {
+        console.error("예약 생성 실패:", error);
+      }
     },
   });
 
@@ -544,6 +558,15 @@ export default function CreateReservation({
           </p>
         )}
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <AlertScheduleModal
+            message="해당 시간에 예약이 이미 존재합니다."
+            showButtons={true}
+            onConfirm={handleModalOpen}
+          />
+        </div>
+      )}
     </div>
   );
 }

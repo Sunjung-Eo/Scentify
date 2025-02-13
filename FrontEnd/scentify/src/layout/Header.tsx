@@ -5,6 +5,7 @@ import FinishButton from '../components/Button/Button';
 import BackBtn from '../assets/icons/back-arrow-btn.svg?react';
 import AddBtn from '../assets/icons/add-btn.svg?react';
 import { useControlStore } from '../stores/useControlStore';
+import NextButton from '../components/Button/NextButton';
 
 interface HeaderProps {
   showBack: boolean;
@@ -12,6 +13,7 @@ interface HeaderProps {
   showDeviceManage: boolean;
   showAdd: boolean;
   title?: string;
+  nextDeviceEdit: boolean;
   onAddClick?: () => void;
   onDeviceManageClick?: () => void;
 }
@@ -22,6 +24,7 @@ const Header = ({
   showDeviceManage,
   showAdd,
   title,
+  nextDeviceEdit,
   onAddClick,
   onDeviceManageClick,
 }: HeaderProps) => {
@@ -49,6 +52,11 @@ const Header = ({
     }
   };
 
+  // 다음 버튼 핸들러:
+  const handleNextClick = () => {
+    navigate('/home/devicesetting/defaultscent');
+  };
+
   return (
     <header className="header flex w-full flex-row items-center justify-between px-5">
       {showBack ? (
@@ -67,6 +75,8 @@ const Header = ({
       </div>
       {showFinish ? (
         <FinishButton onClick={handleFinishClick} />
+      ) : nextDeviceEdit ? ( // ✅ nextDeviceEdit이 true일 때 NextButton 표시
+        <NextButton onClick={handleNextClick} />
       ) : showDeviceManage ? (
         <button
           className="font-pre-light text-14 tracking-[-1px] text-black"

@@ -40,7 +40,6 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
   // 폼 제출 핸들러
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('1. 폼 제출 시작');
     setErrors({}); // 에러 초기화
 
     let newErrors: { [key: string]: string } = {};
@@ -91,12 +90,9 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       mainDeviceId: 0, // 기본값 0
     };
 
-    console.log('3. 회원가입 데이터:', userData);
-
     try {
-      console.log('4. API 호출 시작');
+      // 일반 회원가입 API 호출
       const result = await registUser(userData);
-      console.log('5. API 호출 결과:', result);
       onRegist(); // 성공 시 부모 컴포넌트의 핸들러 호출
     } catch (error: any) {
       console.error('회원가입 에러:', error);

@@ -67,7 +67,7 @@ const InviteCodeInput = () => {
         {/* 등록 버튼 */}
         <button
           onClick={handleJoinGroup}
-          className="ml-4 w-[65px] h-[30px] border-[1px] border-lightgray rounded-lg"
+          className="ml-4 w-[65px] h-[30px] border-[1px] border-lightgray rounded-lg font-pre-light text-12"
         >
           등록
         </button>

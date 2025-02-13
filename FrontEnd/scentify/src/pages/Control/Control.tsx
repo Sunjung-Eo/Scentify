@@ -92,6 +92,8 @@ const Control = () => {
           })
           .filter(Boolean);
 
+  console.log("인포", deviceIds);
+
   // 전체 예약 조회 API 호출
   const { data: reservationData = [] } = useQuery({
     queryKey: ["reservations", deviceIds, accessToken],
@@ -184,8 +186,8 @@ const Control = () => {
     setActiveTab(tab);
   };
 
-  if (isLoading || !devicesInfo?.devices) {
-    return <div>로딩 중...</div>;
+  if (isLoading) {
+    return;
   }
 
   return (

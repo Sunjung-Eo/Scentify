@@ -20,7 +20,7 @@ export const shareFavoriteCombination = async (
 
     return await response.json();
   } catch (error) {
-    console.error("공유 요청 실패:", error);
-    return { success: false, message: "공유 요청 중 오류가 발생했습니다." };
+    console.error("API호출 실패:", error);
+    throw error;
   }
 };

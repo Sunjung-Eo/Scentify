@@ -49,6 +49,28 @@ public class CustomScheduleController {
 	@PostMapping("/add")
 	public ResponseEntity<?> setCustomSchedule(@RequestBody CustomScheduleDto customScheduleDto) {
 		try {
+			// 해당 deviceId로 설정된 모든 예약 정보를 가져옴
+			List<CustomScheduleHomeDto> customSchedules = customScheduleService.getSchedulesByDeviceId(customScheduleDto.getDeviceId());
+			int day = customScheduleDto.getDay();
+			
+			// 중복 시간 검사 후 있다면 등록하지 못함
+			for (CustomScheduleHomeDto customSchedule : customSchedules) {
+				int beforeDay = customSchedule.getDay();
+				
+				if ((day & beforeDay) > 0) {
+					LocalTime startTime = customScheduleDto.getStartTime().toLocalTime();
+					LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
+					LocalTime existingStart = customSchedule.getStartTime().toLocalTime();
+					LocalTime existingEnd = customSchedule.getEndTime().toLocalTime();
+					
+					boolean isTimeOverlapping = (startTime.isBefore(existingEnd) && endTime.isAfter(existingStart)) || 
+			                					 startTime.equals(existingStart) || endTime.equals(existingEnd);
+					if (isTimeOverlapping) {
+						return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+					}
+				}
+			}
+			
 			// 향 조합 등록 실패 시 400 반환
 			CombinationDto combination = customScheduleDto.getCombination();
 			Integer combinationId = combinationService.createCombination(combination);
@@ -63,7 +85,7 @@ public class CustomScheduleController {
 			
 			// 설정 날짜가 오늘이면 RB에 스케줄 보내주기
 		    int currentBit = codeProvider.getCurrentDayBit();
-		    if ((customScheduleDto.getDay() & currentBit) > 0) {
+		    if ((day & currentBit) > 0) {
 		        socketService.sendCustomScehdule(customScheduleDto);
 		        log.info("오늘 날짜의 스케줄 전송 완룡");
 		    }
@@ -104,6 +126,40 @@ public class CustomScheduleController {
 	@PostMapping("/update")
 	public ResponseEntity<?> updateCustomSchedule(@RequestBody CustomScheduleDto customScheduleDto) {
 		try {
+			// 해당 deviceId로 설정된 모든 예약 정보를 가져옴
+			List<CustomScheduleHomeDto> customSchedules = customScheduleService.getSchedulesByDeviceId(customScheduleDto.getDeviceId());
+			int day = customScheduleDto.getDay();
+			LocalTime startTime = customScheduleDto.getStartTime().toLocalTime();
+			LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
+			
+			// 중복 시간 검사 후 있다면 등록하지 못함
+			for (CustomScheduleHomeDto customSchedule : customSchedules) {
+				int beforeDay = customSchedule.getDay();
+				
+				if ((day & beforeDay) > 0) {
+					LocalTime existingStart = customSchedule.getStartTime().toLocalTime();
+					LocalTime existingEnd = customSchedule.getEndTime().toLocalTime();
+					
+					boolean isTimeOverlapping = (startTime.isBefore(existingEnd) && endTime.isAfter(existingStart)) || 
+			                					 startTime.equals(existingStart) || endTime.equals(existingEnd);
+					if (isTimeOverlapping) {
+						return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
+					}
+				}
+			}
+			
+			// 기기에 설정된 mode 정보와 기존에 스케줄에 설정되었던 day를 가져옴
+			boolean mode = deviceService.getMode(customScheduleDto.getDeviceId());
+			int beforeDay = customScheduleService.getDayById(customScheduleDto.getId(), customScheduleDto.getDeviceId());
+			int currentBit = codeProvider.getCurrentDayBit();
+			
+			// 현재 실행 중인 스케줄이면 수정할 수 없음
+			LocalTime now = LocalTime.now();
+			
+			if (!mode && (beforeDay & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
+		        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		    }
+			
 			// 향 조합이 바뀌지 않았다면 id 값이 있음
 			CombinationDto combination = customScheduleDto.getCombination();
 			Integer combinationId = combination.getId();
@@ -115,21 +171,6 @@ public class CustomScheduleController {
 					return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	
 				}
 			}
-			
-			// 기기에 설정된 mode 정보와 기존에 스케줄에 설정되었던 day를 가져옴
-			boolean mode = deviceService.getMode(customScheduleDto.getDeviceId());
-			int beforeDay = customScheduleService.getDayById(customScheduleDto.getId(), customScheduleDto.getDeviceId());
-			int currentBit = codeProvider.getCurrentDayBit();
-			
-			// 현재 실행 중인 스케줄이면 수정할 수 없음
-			int day = customScheduleDto.getDay();
-			LocalTime startTime = customScheduleDto.getStartTime().toLocalTime();
-			LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
-			LocalTime now = LocalTime.now();
-			
-			if (!mode && (beforeDay & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
-		        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		    }
 			
 			// 커스텀 스케줄 수정 실패 시 400 반환
 			if (!customScheduleService.updateCustomSchedule(customScheduleDto, combinationId, combination.getName())) {

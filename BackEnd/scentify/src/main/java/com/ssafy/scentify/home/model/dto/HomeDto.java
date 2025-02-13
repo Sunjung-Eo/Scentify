@@ -2,6 +2,8 @@ package com.ssafy.scentify.home.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,8 +76,8 @@ public class HomeDto {
 	    private int combinationId;
 	    private String combinationName;
 	    private int day;
-	    private String startTime;
-	    private String endTime;
+	    private Time startTime;
+	    private Time endTime;
 	    private int interval;
 	    private boolean modeOn;
 	}

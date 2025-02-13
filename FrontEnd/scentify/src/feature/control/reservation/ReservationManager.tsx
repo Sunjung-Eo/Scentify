@@ -11,7 +11,9 @@ import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
 import { createFavorite } from "../../../apis/scent/createFavorite";
 import { deleteAllFavorite } from "../../../apis/scent/deleteFavorite";
 
-import Modal from "../../../components/Alert/Modal";
+import { AlertDeleteSchedule } from "../../../components/Alert/AlertDeleteSchedule";
+import ModalDeleteSchedule from "../../../components/Alert/ModalDeleteSchedule";
+import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 import { ReservationManagerProps } from "./ReservationType";
@@ -35,6 +37,15 @@ export default function ReservationManager({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  // 모달창
+  const [isDeleteAlterOpen, setIsDeleteAlterOpen] = useState(false);
+  const handleDeleteAlter = () => {
+    setIsDeleteAlterOpen(false);
+  };
+  useEffect(() => {
+    console.log("isModalOpen:", isDeleteAlterOpen); // 상태 변경 로그
+  }, [isDeleteAlterOpen]);
+
   const customSchedules = reservationData?.customSchedules || []; // 기기 한개의 예약 데이터 저장
   const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
 
@@ -55,7 +66,13 @@ export default function ReservationManager({
       setReservationDelete(null);
     },
     onError: (error) => {
-      console.error("예약 삭제 실패:", error);
+      if (error.message === "403") {
+        setIsDeleteAlterOpen(true);
+        setModalOpen(false);
+        setReservationDelete(null);
+      } else {
+        console.error("예약 삭제 실패:", error);
+      }
     },
   });
   // 삭제 버튼 핸들러
@@ -122,7 +139,7 @@ export default function ReservationManager({
     initialData: { favorites: [] },
   });
 
-  console.log("제발되라", favoritesData);
+  // console.log("제발되라", favoritesData);
   // 찜 id 리스트
   const { setFavorites } = useFavoriteStore();
 
@@ -142,13 +159,13 @@ export default function ReservationManager({
     }
   }, [favorites, currentFavorites]);
 
-  console.log("DB저장", favorites);
+  // console.log("DB저장", favorites);
   const currentFavoritesRef = useRef(currentFavorites);
   useEffect(() => {
     currentFavoritesRef.current = currentFavorites;
   }, [currentFavorites]);
   useEffect(() => {
-    console.log("current", currentFavorites);
+    // console.log("current", currentFavorites);
   }, [favorites, currentFavorites]);
 
   // 현재 찜 추가 핸들러
@@ -205,6 +222,10 @@ export default function ReservationManager({
       }
     };
   }, []);
+
+  if (isLoading) {
+    return;
+  }
 
   return (
     <div>
@@ -302,7 +323,7 @@ export default function ReservationManager({
             );
           })}
           {modalOpen && (
-            <Modal
+            <ModalDeleteSchedule
               message={modalMessage}
               showButtons={true}
               confirmText="확인"
@@ -316,6 +337,15 @@ export default function ReservationManager({
         <p className="mt-40 font-pre-light text-14 text-gray text-center">
           + 버튼을 눌러 예약을 설정해주세요.
         </p>
+      )}
+      {isDeleteAlterOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <AlertDeleteSchedule
+            message="현재 예약이 종료된 후 삭제해주세요."
+            showButtons={true}
+            onConfirm={handleDeleteAlter}
+          />
+        </div>
       )}
     </div>
   );

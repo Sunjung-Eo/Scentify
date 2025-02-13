@@ -1,4 +1,4 @@
-interface ModalProps {
+interface ModalDeleteScheduleProps {
   message: string;
   showButtons?: boolean; // 버튼들을 모두 제어하는 prop
   onConfirm?: () => void; // 확인 버튼 클릭 시 실행할 함수
@@ -7,14 +7,14 @@ interface ModalProps {
   cancelText?: string; // 취소 버튼 텍스트
 }
 
-const Modal = ({
+const ModalDeleteSchedule = ({
   message,
   showButtons = true,
   onConfirm,
   onCancel,
   confirmText = "확인",
   cancelText = "취소",
-}: ModalProps) => {
+}: ModalDeleteScheduleProps) => {
   return (
     <div
       className="font-pre-light fixed inset-0 flex items-center justify-center bg-black/50 z-50"
@@ -48,4 +48,4 @@ const Modal = ({
   );
 };
 
-export default Modal;
+export default ModalDeleteSchedule;

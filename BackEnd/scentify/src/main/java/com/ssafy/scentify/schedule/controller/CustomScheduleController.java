@@ -1,5 +1,7 @@
 package com.ssafy.scentify.schedule.controller;
 
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.*;
 
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.scentify.combination.CombinationService;
 import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.common.util.CodeProvider;
+import com.ssafy.scentify.device.DeviceService;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleHomeDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.CustomScheduleListResponseDto;
 import com.ssafy.scentify.schedule.model.dto.CustomScheduleDto;
@@ -28,12 +31,14 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomScheduleController {
 	
 	private final WebSocketService socketService;
+	private final DeviceService deviceService;
 	private final CombinationService combinationService;
 	private final CustomScheduleService customScheduleService;
 	private final CodeProvider codeProvider;
 	
-	public CustomScheduleController(WebSocketService socketService, CombinationService combinationService, CustomScheduleService customScheduleService, CodeProvider codeProvider) {
+	public CustomScheduleController(WebSocketService socketService, DeviceService deviceService, CombinationService combinationService, CustomScheduleService customScheduleService, CodeProvider codeProvider) {
 		this.socketService = socketService;
+		this.deviceService = deviceService;
 		this.combinationService = combinationService;
 		this.customScheduleService = customScheduleService;
 		this.codeProvider =codeProvider;
@@ -109,6 +114,20 @@ public class CustomScheduleController {
 					return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 	
 				}
 			}
+			
+			// 기기에 설정된 mode 정보를 가져옴
+			boolean mode = deviceService.getMode(customScheduleDto.getDeviceId());
+			
+			// 요일과 시간을 통해 실행 중인 스케쥴이면 수정할 수 없음
+			int day = customScheduleDto.getDay();
+			LocalTime startTime = customScheduleDto.getStartTime().toLocalTime();
+			LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
+			LocalTime now = LocalTime.now();
+
+			int currentBit = codeProvider.getCurrentDayBit();
+			if (!mode && (day & currentBit) > 0 && (now.isAfter(startTime) || now.equals(startTime)) && now.isBefore(endTime)) {
+		        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		    }
 			
 			// 커스텀 스케줄 수정 실패 시 400 반환
 			if (!customScheduleService.updateCustomSchedule(customScheduleDto, combinationId, combination.getName())) {

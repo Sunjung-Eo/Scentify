@@ -131,9 +131,12 @@ public class CustomScheduleController {
 			int day = customScheduleDto.getDay();
 			LocalTime startTime = customScheduleDto.getStartTime().toLocalTime();
 			LocalTime endTime = customScheduleDto.getEndTime().toLocalTime();
+			int id = customScheduleDto.getId();
 			
 			// 중복 시간 검사 후 있다면 등록하지 못함
 			for (CustomScheduleHomeDto customSchedule : customSchedules) {
+				if (customSchedule.getId() == id) { continue; }
+				
 				int beforeDay = customSchedule.getDay();
 				
 				if ((day & beforeDay) > 0) {

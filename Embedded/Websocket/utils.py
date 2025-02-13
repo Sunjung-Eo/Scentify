@@ -3,12 +3,19 @@ import json
 import jwt
 import datetime
 import subprocess
+import base64
 from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ENV_PATH = os.path.join(BASE_DIR, "config", ".env")
 
 load_dotenv(dotenv_path=ENV_PATH)
+
+def get_websocket_url():
+    return os.getenv("WEBSOCKET_URL")
+
+def get_mqtt_url():
+    return os.getenv("MQTT_URL")
 
 def get_serial_number():
     return subprocess.run(
@@ -22,12 +29,15 @@ def get_access_token(token, private_key=os.getenv("JWT_SECRET_KEY")):
     if private_key is None:
         print("Private Key is None!!\n")
 
+    key_bytes = base64.b64decode(private_key)
+    exp_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+
     payload = {
         "token" : token,
-        "exp" : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+        "exp" : exp_time
     }
-    
-    return jwt.encode(payload, private_key, algorithm="HS256")
+
+    return jwt.encode(payload, key_bytes, algorithm="HS256")
 
 def get_temp_and_hum():
     script_path = os.path.expanduser("~/work/sample/dht11_by_lib.py")

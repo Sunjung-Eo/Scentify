@@ -52,37 +52,61 @@ class MQTTClient:
             message["type"] = "DeviceStatus/Capsule/Remainder"
             data = json.loads(payload)
             
-            message["Remainder"] = dict()
             for key, value in data.items():
                 key = key.strip()
-                message["Remainder"][key] = value
+                message[key] = value
 
-        elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
-            # 사람 단순 감지
-            if payload == '1':
-                message["type"] = "DeviceStatus/Camera/SimpleDetection"
-            # 운동 중
-            elif payload == '2': 
-                message["type"] = "DeviceStatus/Camera/UserAction/Exercise"
-            # 휴식 중
-            elif payload == '3':
-                message["type"] = "DeviceStatus/Camera/UserAction/Focus" 
-
-        elif topic == f"{self.device_id_list[0]}/Status/Stink":
-            message["type"] = "DeviceStatus/Sensor/Stink"
-        elif topic == f"{self.device_id_list[0]}/Setting":
-            pass
+        elif topic == f"{self.device_id_list[0]}/Request/AutoModeInfo":
+            message["type"] = "Auto/Schedule/Initial"
         
-        print(message)
+        elif topic == f"{self.device_id_list[0]}/Request/Combination":
+            data = json.loads(payload)
+            message["type"] = "DeviceStatus/Sensor"
+            message["combinationId"] = data["combinationId"]
+        
+        elif topic == f"{self.device_id_list[0]}/Request/OperationModeInfo":
+            message["type"] = "Mode"
+
+        elif topic == f"{self.device_id_list[0]}/Request/Capsule/Info":
+            message["type"] = "DeviceStatus/Capsule/Info"
+        
+
+        # elif topic == f"{self.device_id_list[0]}/Status/DetectionResult":
+        #     # 사람 단순 감지
+        #     if payload == '1':
+        #         message["type"] = "DeviceStatus/Camera/SimpleDetection"
+        #     # 운동 중
+        #     elif payload == '2': 
+        #         message["type"] = "DeviceStatus/Camera/UserAction/Exercise"
+        #     # 휴식 중
+        #     elif payload == '3':
+        #         message["type"] = "DeviceStatus/Camera/UserAction/Focus" 
+
+        # elif topic == f"{self.device_id_list[0]}/Status/Stink":
+        #     message["type"] = "DeviceStatus/Sensor/Stink"
+        # elif topic == f"{self.device_id_list[0]}/Setting":
+        #     pass
         
         await self.work_queue.put(message)
 
     async def subscribe(self):
         if self.client is not None:
+            # 캡슐 잔여량
             await self.client.subscribe(f"{self.device_id_list[0]}/Status/Remainder")
-            await self.client.subscribe(f"{self.device_id_list[0]}/Status/DetectionResult")
-            await self.client.subscribe(f"{self.device_id_list[0]}/Status/Stink")
-            await self.client.subscribe(f"{self.device_id_list[0]}/Setting")
+
+            # 자동화 모드 세부 정보
+            await self.client.subscribe(f"{self.device_id_list[0]}/Request/AutoModeInfo")
+
+            # 자동화 모드 결과에 따른 CombinationId에 대응하는 향 조합 요청
+            await self.client.subscribe(f"{self.device_id_list[0]}/Request/Combination")
+
+            # 스케줄 or 자동화 모드 요청
+            await self.client.subscribe(f"{self.device_id_list[0]}/Request/OperationModeInfo")
+
+            # 캡슐 정보 요청
+            await self.client.subscribe(f"{self.device_id_list[0]}/Request/Capsule/Info")
+
+            
             print("Complete Subscribe!")
 
     async def publish(self, topic, payload):
@@ -93,25 +117,25 @@ class MQTTClient:
         print(f"pub! topic : {topic}, payload : {payload}")
 
     
-async def main():
-    queue = asyncio.Queue()
-    mqtt_client = MQTTClient("localhost", queue)
-    asyncio.create_task(mqtt_client.connect())
-    await asyncio.sleep(2)
+# async def main():
+#     queue = asyncio.Queue()
+#     mqtt_client = MQTTClient("localhost", queue)
+#     asyncio.create_task(mqtt_client.connect())
+#     await asyncio.sleep(2)
 
-    # Test Code
-    test_capusle_data = {
-        "slot1" : 1,
-        "slot2" : 2,
-        "slot3" : 4,
-        "slot4" : 3,    
-    }
-    msg = json.dumps(test_capusle_data)
-    await mqtt_client.publish(f"{mqtt_client.device_id_list[0]}/CapsuleInfo", msg)
-    
-    while True:
-        data = await queue.get()
-        print(f"Data is {data}!!\n")
-        await asyncio.sleep(1)
+#     # Test Code
+#     test_capusle_data = {
+#         "slot1" : 1,
+#         "slot2" : 2,
+#         "slot3" : 4,
+#         "slot4" : 3,    
+#     }
+#     msg = json.dumps(test_capusle_data)
+#     await mqtt_client.publish(f"{mqtt_client.device_id_list[0]}/CapsuleInfo", msg)
 
-asyncio.run(main())
+#     while True:
+#         data = await queue.get()
+#         print(f"Data is {data}!!\n")
+#         await asyncio.sleep(1)
+
+# asyncio.run(main())

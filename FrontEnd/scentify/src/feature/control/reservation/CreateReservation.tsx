@@ -173,22 +173,24 @@ export default function CreateReservation({
   const [formErrors, setFormErrors] = useState({
     reservationName: "",
     reservationNameLength: "",
-    noonTimeError: "",
-    timeError: "",
+    noonTime: "",
+    time: "",
     scentName: "",
     scentNameLength: "",
     scents: "",
+    day: "",
   });
   // 완료 버튼 누를 시 유효성 검사
   const handleComplete = () => {
     const errors = {
       reservationName: "",
       reservationNameLength: "",
-      noonTimeError: "",
-      timeError: "",
+      noonTime: "",
+      time: "",
       scentName: "",
       scentNameLength: "",
       scents: "",
+      day: "",
     };
     let isValid = true;
 
@@ -218,11 +220,16 @@ export default function CreateReservation({
       isValid = false;
     }
 
+    if (getDaysBitMask(selectedDays) === 0) {
+      errors.day = "요일을 선택해주세요.";
+      isValid = false;
+    }
+
     if (start24Number >= 100 && end24Number < 100) {
-      errors.noonTimeError = "12:00 AM 이전 시간을 선택해주세요.";
+      errors.noonTime = "12:00 AM 이전 시간을 선택해주세요.";
       isValid = false;
     } else if (end24Number < start24Number) {
-      errors.timeError = "종료 시간을 시작 시간 이후로 선택해주세요.";
+      errors.time = "종료 시간을 시작 시간 이후로 선택해주세요.";
       isValid = false;
     }
 
@@ -346,7 +353,7 @@ export default function CreateReservation({
               요일 설정
             </label>
             <div>
-              <div>
+              <div className="relative">
                 <div className="flex font-pre-light items-center">
                   {["월", "화", "수", "목", "금", "토", "일"].map((day) => (
                     <button
@@ -360,6 +367,11 @@ export default function CreateReservation({
                     </button>
                   ))}
                 </div>
+                {formErrors.day && (
+                  <p className="absolute ml-[5px] text-red-500 text-10">
+                    {formErrors.day}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -475,14 +487,14 @@ export default function CreateReservation({
               </button>
             </div>
           </div>
-          {formErrors.noonTimeError && (
-            <p className="absolute bottom-[354px] left-[90px] text-red-500 text-10">
-              {formErrors.noonTimeError}
+          {formErrors.noonTime && (
+            <p className="absolute bottom-[350px] left-[90px] text-red-500 text-10">
+              {formErrors.noonTime}
             </p>
           )}
-          {formErrors.timeError && (
-            <p className="absolute bottom-[354px] left-[90px] text-red-500 text-10">
-              {formErrors.timeError}
+          {formErrors.time && (
+            <p className="absolute bottom-[350px] left-[90px] text-red-500 text-10">
+              {formErrors.time}
             </p>
           )}
           {/* 분사주기 */}

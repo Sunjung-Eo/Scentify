@@ -206,6 +206,10 @@ export default function ReservationManager({
     };
   }, []);
 
+  if (isLoading) {
+    return;
+  }
+
   return (
     <div>
       {customSchedules.length > 0 ? (

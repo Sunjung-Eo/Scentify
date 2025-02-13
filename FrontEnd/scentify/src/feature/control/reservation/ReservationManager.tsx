@@ -114,13 +114,14 @@ export default function ReservationManager({
     }
   }, [customSchedules]);
 
-  const { data: favoritesData } = useQuery({
+  const { data: favoritesData, isLoading } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
     staleTime: 0,
     refetchOnMount: "always",
     initialData: { favorites: [] },
   });
+
   console.log("제발되라", favoritesData);
   // 찜 id 리스트
   const { setFavorites } = useFavoriteStore();

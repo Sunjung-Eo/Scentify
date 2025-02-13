@@ -10,7 +10,7 @@ READ_MODE_POLLING_BASED = "--polling-based"
 
 class LoadCell:
     def __init__(self, pin_dt, pin_sck):
-        self.window_size = 10
+        self.window_size = 30
         self.pin_dt = pin_dt
         self.pin_sck = pin_sck
 
@@ -20,7 +20,7 @@ class LoadCell:
 
         self.initial_once_operation()
 
-        referenceUnit = 108
+        referenceUnit = 110
         print(f"[INFO] Setting the 'referenceUnit' at {referenceUnit}.")
         self.hx.setReferenceUnit(referenceUnit)
         print(f"[INFO] Finished setting the 'referenceUnit' at {referenceUnit}.")

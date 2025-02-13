@@ -32,7 +32,6 @@ def parse_stomp_message(stomp_message):
         
         if is_body:
             body = line.strip().split("\x00")[0] # Body 부분 (JSON)
-            print(body)
             break
         else:
             key_value = line.split(":", 1)  # "key: value" 형태 분리

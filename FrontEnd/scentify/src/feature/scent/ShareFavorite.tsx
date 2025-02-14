@@ -1,14 +1,17 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Combination } from "./scentmain/scenttypes";
 import { getScentName, getColor } from "../../utils/control/scentUtils";
 import { useEffect, useState } from "react";
 import { shareFavoriteCombination } from "../../apis/scent/shareFavoriteCombination";
 import { useAuthStore } from "../../stores/useAuthStore";
 import Spinner from "../Home/Loading/Spinner";
+import BackIcon from "../../assets/icons/back-arrow-btn.svg";
+import { useRef } from "react";
 
 const ShareFavorite = () => {
   // 🔹 이전 페이지에서 전달된 데이터 가져오기
   const location = useLocation();
+  const navigate = useNavigate();
   const { combination } = location.state || {}; // `FavoriteScent.tsx`에서 전달된 조합 정보
   const { accessToken } = useAuthStore();
   // 🔹 상태 변수 정의
@@ -18,12 +21,15 @@ const ShareFavorite = () => {
 
   //공유 링크복사 사용 시
   const [copied, setCopied] = useState(false); // 공유 링크 복사 상태
+  const [isMounted, setIsMounted] = useState(true);
+  const hasFetched = useRef(false); // API 중복 방지
 
   // 🔹 API 호출하여 imageUrl, shareUrl 가져오기
-  // 일반적인 상황에서는 페이지 최초 진입 시 한 번만 실행됨.
-  // 새로고침하거나 다른 공유 페이지에서 다시 들어오면 다시 실행됨. 뒤로가기 금지?
   useEffect(() => {
-    let isMounted = true; // ✅ 컴포넌트가 마운트되어 있는지 체크
+    if (hasFetched.current) return; // ✅ 이미 요청했으면 실행 안 함
+    hasFetched.current = true; // ✅ 첫 실행 이후 다시 실행 방지
+
+    setIsMounted(true); // ✅ 마운트 여부 상태 true 설정
 
     const fetchImage = async () => {
       try {
@@ -53,27 +59,9 @@ const ShareFavorite = () => {
     fetchImage();
 
     return () => {
-      isMounted = false; // ✅ 컴포넌트가 언마운트되면 API 실행 방지
+      setIsMounted(false); // ✅ 언마운트 시 false로 설정
     };
   }, [combination, accessToken]);
-
-  // // 🔹 공유 기능 (Web Share API 활용)
-  // const handleShare = async () => {
-  //   if (navigator.share && shareUrl) {
-  //     try {
-  //       await navigator.share({
-  //         title: combination?.name || "향기 공유",
-  //         text: `이 향기를 공유합니다: ${combination?.name}`,
-  //         url: shareUrl,
-  //       });
-  //       console.log("공유 성공");
-  //     } catch (error) {
-  //       console.error("공유 실패:", error);
-  //     }
-  //   } else {
-  //     alert("이 브라우저에서는 공유 기능을 지원하지 않습니다.");
-  //   }
-  // };
 
   // 🔹 공유 링크 복사 함수 (버튼 클릭 시 실행)
   const handleCopyLink = () => {
@@ -116,8 +104,22 @@ const ShareFavorite = () => {
     }
   };
 
+  // 🔹 뒤로 가기 버튼 클릭 시 '/scent' 페이지로 이동
+  const handleGoBack = () => {
+    navigate("/scent");
+  };
+
   return (
     <div className="mt-4">
+      {/* 🔹 뒤로 가기 버튼 (로딩 중에는 숨김) */}
+      {!loading && (
+        <img
+          src={BackIcon}
+          alt="뒤로 가기"
+          onClick={handleGoBack}
+          className="absolute top-4 left-4 w-6 h-6 cursor-pointer"
+        />
+      )}
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-12 font-pre-light text-sub mb-4">
           AI를 기반으로 향과 어울리는 이미지 파일을 생성해줍니다.
@@ -153,7 +155,7 @@ const ShareFavorite = () => {
             </h2>
 
             {/* 🔹 향기 정보 */}
-            <div className="text-10 text-sub font-pre-light flex justify-center gap-2 mt-6">
+            <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
               {[1, 2, 3, 4].map((num) => {
                 const scentName = getScentName(
                   combination?.[`choice${num}` as keyof Combination]
@@ -163,7 +165,10 @@ const ShareFavorite = () => {
 
                 if (!scentName || scentCount === 0) return null;
                 return (
-                  <span key={num} className="flex justify-center gap-1">
+                  <span
+                    key={num}
+                    className="flex flex items-center gap-1 min-w-fit"
+                  >
                     {scentName}
                     {Array.from({ length: scentCount }).map((_, i) => (
                       <div
@@ -179,14 +184,6 @@ const ShareFavorite = () => {
         )}
 
         {/* 🔹 버튼 그룹 (로딩 중에는 비활성화) */}
-        {/* <div className="flex gap-4 mt-4">
-          <button
-            onClick={handleShare}
-            className="px-4 py-2 bg-brand text-white rounded-lg"
-            disabled={loading}
-          >
-            공유
-          </button> */}
         <p className="text-10 font-pre-light text-brand mt-12">
           공유 링크와 이미지 저장 모두 10분간 유효합니다.
         </p>

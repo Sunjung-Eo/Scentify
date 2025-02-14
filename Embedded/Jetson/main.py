@@ -68,6 +68,14 @@ class SmartDiffuser:
              process_message=self.process_mqtt_message,
         )
 
+        # 디퓨저 정보 초기화
+        self.init_diffuser_info()
+        
+        # 모드 정보 초기화
+        self.init_mode_info()
+
+
+    def init_diffuser_info(self):
         # 디퓨저 정보
         self.slot_to_capsule = {
             "slot1" : 0,
@@ -83,6 +91,7 @@ class SmartDiffuser:
             "slot4RemainingRatio" : 100,
         }
 
+    def init_mode_info(self):
         self.mode_type = AutoModeType()
 
         # 동작 모드
@@ -105,6 +114,7 @@ class SmartDiffuser:
 
         self.running_state = self.mode_type.no_running
         self.min_interval = 0.3
+
 
     def is_valid_key(self,key):
         return key in self.capsule_to_slot
@@ -161,6 +171,7 @@ class SmartDiffuser:
             id = payload["id"]
             del payload["id"]
 
+            # TODO: 타이밍 어떻게 맞출지 생각하기
             if id not in self.mode.auto_operation_mode:
                 print("Not Exist Id for Auto Mode Operation")
                 return
@@ -200,6 +211,12 @@ class SmartDiffuser:
                 self.capsule_to_slot[capsule].append(slot_number)
 
             await self.send_remainder()
+
+        elif topic == f"{self.mqtt_client.device_id}/Websocket/Disconnect":
+            self.init_diffuser_info()
+            self.init_mode_info()
+            # self.init_weight()
+            await self.mqtt_client.initial_request()
 
     async def operate_solenoid(self, data):
         payload = json.loads(data)

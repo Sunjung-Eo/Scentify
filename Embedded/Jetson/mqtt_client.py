@@ -53,6 +53,7 @@ class MQTTClient:
             await self.client.subscribe(f"{self.device_id}/CapsuleInfo")
             await self.client.subscribe(f"{self.device_id}/AutoModeInit")
             await self.client.subscribe(f"{self.device_id}/AutoModeChange")
+            await self.client.subscribe(f"{self.device_id}/Websocket/Disconnect")
             print("Complete Subscribe!")
 
     async def publish(self, topic, payload):

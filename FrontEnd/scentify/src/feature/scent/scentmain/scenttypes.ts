@@ -59,3 +59,9 @@ export interface ShareFavoriteResponse {
   shareUrl?: string;
   message?: string;
 }
+
+//readShareFavorite.ts 공유된 향기 조합을 불러오는 API 응답 타입
+export interface ReadShareFavoriteResponse {
+  combination?: Combination;
+  s3Url?: string; // S3 Presigned URL
+}

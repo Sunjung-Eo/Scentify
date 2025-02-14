@@ -156,6 +156,7 @@ const ShareFavorite = () => {
               src={imageUrl!}
               alt="AI Generated Image"
               className="w-full h-auto rounded-lg"
+              crossOrigin="anonymous"
             />
             <h2 className="text-14 text-center font-pre-medium mt-6">
               {combination?.name || "이름 없는 조합"}
@@ -172,18 +173,20 @@ const ShareFavorite = () => {
 
                 if (!scentName || scentCount === 0) return null;
                 return (
-                  <span
+                  <div
                     key={num}
-                    className="flex flex items-center gap-1 min-w-fit"
+                    className="flex flex-col mr-1 items-center gap-2 min-w-fit"
                   >
                     {scentName}
-                    {Array.from({ length: scentCount }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-3 h-3 ${getColor(scentName)}`}
-                      ></div>
-                    ))}
-                  </span>
+                    <div className="flex gap-1">
+                      {Array.from({ length: scentCount }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-2 h-2 ${getColor(scentName)}`}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
                 );
               })}
             </div>
@@ -192,7 +195,7 @@ const ShareFavorite = () => {
 
         {/* 🔹 버튼 그룹 (로딩 중에는 비활성화) */}
         <p className="text-10 font-pre-light text-brand mt-12">
-          공유 링크와 이미지 저장 모두 10분간 유효합니다.
+          이미지 저장은 10분간 유효합니다.
         </p>
         <div className="flex gap-4 mt-1">
           <button

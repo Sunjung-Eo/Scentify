@@ -3,13 +3,13 @@ import ShareIcon from "../../../assets/icons/shareIcon.svg";
 import { getScentName } from "../../../utils/control/scentUtils";
 import { getColor } from "../../../utils/control/scentUtils";
 import { Combination } from "./scenttypes";
+import { useNavigate } from "react-router-dom";
 
 // FavoriteScent 컴포넌트 Props 타입 정의
 interface FavoriteScentProps {
   combination: Combination; // 향기 조합 데이터
   isLiked: boolean; // 찜 상태 여부(HeartButton 컴포넌트에 전달)
   onToggleLike: () => void; // 찜 상태를 변경하는 함수,isLiked 값을 반전(찜 or취소),하트버튼클릭시 호출
-  onShare: () => void; // 공유 버튼 클릭 시 호출되는 함수
 }
 
 // FavoriteScent 컴포넌트 정의
@@ -17,8 +17,18 @@ const FavoriteScent = ({
   combination,
   isLiked,
   onToggleLike,
-  onShare,
 }: FavoriteScentProps) => {
+  const navigate = useNavigate();
+
+  // 🔹 공유 버튼 클릭 핸들러 (API 호출 없이 먼저 이동)
+  const handleShareClick = () => {
+    navigate("/scent/share", {
+      state: {
+        combination, // 향기 조합 정보만 먼저 전달
+      },
+    });
+  };
+
   return (
     <div className="flex justify-between items-start">
       <div className="mb-[19px]">
@@ -30,7 +40,7 @@ const FavoriteScent = ({
           {/* 찜 & 공유 버튼 */}
           <div className="flex flex-row gap-3">
             <HeartButton isLiked={isLiked} onToggle={onToggleLike} />
-            <button onClick={onShare}>
+            <button onClick={handleShareClick}>
               <img
                 src={ShareIcon}
                 alt="공유 아이콘"
@@ -39,6 +49,7 @@ const FavoriteScent = ({
             </button>
           </div>
         </div>
+
         {/* 향기 정보 */}
         <div className="text-10 text-sub font-pre-light flex gap-1">
           {[1, 2, 3, 4].map((num) => {

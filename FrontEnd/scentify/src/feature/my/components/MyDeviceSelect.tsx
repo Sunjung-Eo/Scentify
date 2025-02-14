@@ -2,6 +2,8 @@ import { useState } from "react";
 import ArrowDownIcon from "../../../assets/icons/arrow-down-icon.svg";
 import CrownIcon from "../../../assets/icons/crown-icon.svg";
 
+//DeviceSelect와 다른 부분있음 해당 파일 지우면 안됨!
+
 // 기기 선택 타입
 export interface DeviceSelectItem {
   deviceId: number;
@@ -38,7 +40,7 @@ export default function MyDeviceSelect({
       {/* 드롭다운 버튼 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[120px] h-[36px] p-3 border border-lightgray font-pre-light text-12 justify-between items-center rounded-lg bg-white"
+        className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 justify-between items-center rounded-lg bg-white"
       >
         <div className="flex items-center">
           {selected?.isRepresentative && (
@@ -48,14 +50,18 @@ export default function MyDeviceSelect({
               className="w-[16px] h-[16px] mr-[4px]"
             />
           )}
-          <span className="text-left">{selected?.name}</span>
+          <span
+            className={`text-left ${!selected?.isRepresentative ? "pl-[19px]" : ""}`}
+          >
+            {selected?.name}
+          </span>
         </div>
         <img src={ArrowDownIcon} alt="아래 화살표 이미지" />
       </button>
 
       {/* 드롭다운 리스트 */}
       {isOpen && (
-        <div className="absolute top-full left-0 w-[120px] bg-white border border-lightgray rounded-lg shadow-lg z-50">
+        <div className="absolute top-full left-0 w-[120px] bg-white font-pre-light text-12 border-0.2 border-lightgray rounded-lg shadow-lg z-50">
           {sortedDevices.map((device, index) => (
             <div
               key={`device-${device.deviceId}-${index}`}
@@ -63,16 +69,20 @@ export default function MyDeviceSelect({
                 onDeviceChange(device.deviceId);
                 setIsOpen(false);
               }}
-              className="p-2 hover:bg-gray-100 cursor-pointer flex items-center"
+              className="flex p-1 pl-3"
             >
-              {device.isRepresentative && (
-                <img
-                  src={CrownIcon}
-                  alt="대표 기기 아이콘"
-                  className="w-[16px] h-[16px] mr-[4px]"
-                />
+              {device.isRepresentative ? (
+                <>
+                  <img
+                    src={CrownIcon}
+                    alt="대표 기기 아이콘"
+                    className="w-[16px] h-[16px] mr-[3px]"
+                  />
+                  <span>{device.name}</span>
+                </>
+              ) : (
+                <div className="ml-[19px]">{device.name}</div>
               )}
-              <span>{device.name}</span>
             </div>
           ))}
         </div>

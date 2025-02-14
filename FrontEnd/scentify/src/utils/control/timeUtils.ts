@@ -4,7 +4,6 @@ export const convertTo12Hour = (time24: string): [string, "오전" | "오후"] =
   const [hours, minutes] = time24.split(":");
   let hour = parseInt(hours, 10);
   const period = hour >= 12 ? "오후" : "오전";
-  // 자정(00시) 처리
   const paddedHour =
     period === "오전" && hour === 0
       ? "00" // 오전 00시 처리

@@ -18,7 +18,7 @@ export default function DetectionSetting() {
   const accessToken = location.state.accessToken;
   const roomType = location.state.roomType;
 
-  // react query
+  // 탐지 모드 - mutation
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: (data: detectionData) => updateDetection(data, accessToken),

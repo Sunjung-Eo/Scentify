@@ -3,6 +3,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useFavoriteStore } from "../../../stores/useFavoriteStore";
+import { useUserStore } from "../../../stores/useUserStore";
 
 import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
 import { deleteFavorite } from "../../../apis/scent/deleteFavorite";
@@ -10,11 +11,14 @@ import { deleteFavorite } from "../../../apis/scent/deleteFavorite";
 import ScentCarousel from "./scentcarousel";
 import FavoritesList from "./FavoritesList";
 import bookmarkIcon from "../../../assets/icons/bookmark.svg";
+import { homeInfo } from "../../../apis/home/homeInfo";
 
 const ScentMain = () => {
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
+
+  const userstore = useUserStore();
 
   // 마운트 시 동기화
   const queryClient = useQueryClient();
@@ -52,22 +56,34 @@ const ScentMain = () => {
     onSuccess: (_, deletedId) => {
       // 전역store 업데이트
       const updatedFavoriteIds = favoritesData.favorites
-        .filter((item: any) => item.id !== deletedId)
+        .filter((item: any) => item.combination.id !== deletedId)
         .map((item: any) => item.combination.id);
-      setFavoriteIds(updatedFavoriteIds);
+      console.log("삭제후 적용할 id들", updatedFavoriteIds);
+      console.log("delete", deletedId);
+      // setFavoriteIds(updatedFavoriteIds);
+      setFavorites(updatedFavoriteIds);
       queryClient.setQueryData(["favoritesData"], () => ({
         favorites: favoritesData.favorites.filter(
           (item: any) => item.id !== deletedId
         ),
       }));
+      console.log("1번이에요", favoriteStore);
       // query 업데이트
       queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
+      queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
+      console.log("2번에요", favoriteStore);
     },
   });
 
   // 찜 버튼 핸들러
-  const handleToggleLike = (id: number) => {
-    deleteSingleMutation.mutate(id);
+  const handleToggleLike = async (id: number) => {
+    try {
+      await deleteSingleMutation.mutateAsync(id);
+
+      // 추가 작업 수행 가능
+    } catch (error) {
+      console.error("삭제 실패:", error);
+    }
   };
 
   // 공유 버튼 클릭 함수(id는 공유할 향기의 ID)
@@ -79,6 +95,12 @@ const ScentMain = () => {
     console.log(`Shared combination for ID: ${id}`);
     alert(`${favorite!.combination.name} 향기를 공유합니다.`);
   };
+
+  // useEffect(() => {
+  //   return () => {
+  //     queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
+  //   };
+  // }, []);
 
   return (
     <div className="px-4 pt-[16px]">

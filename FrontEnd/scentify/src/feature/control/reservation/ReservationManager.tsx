@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useFavoriteStore } from "../../../stores/useFavoriteStore";
+import { useUserStore } from "../../../stores/useUserStore";
 
 import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
@@ -20,6 +21,7 @@ import { ReservationManagerProps } from "./ReservationType";
 
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import HeartButton from "../../../components/Button/HeartButton";
+import { homeInfo } from "../../../apis/home/homeInfo";
 
 export default function ReservationManager({
   reservationData,
@@ -37,14 +39,12 @@ export default function ReservationManager({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  const userstore = useUserStore();
   // 모달창
   const [isDeleteAlterOpen, setIsDeleteAlterOpen] = useState(false);
   const handleDeleteAlter = () => {
     setIsDeleteAlterOpen(false);
   };
-  useEffect(() => {
-    console.log("isModalOpen:", isDeleteAlterOpen); // 상태 변경 로그
-  }, [isDeleteAlterOpen]);
 
   const customSchedules = reservationData?.customSchedules || []; // 기기 한개의 예약 데이터 저장
   const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
@@ -131,33 +131,41 @@ export default function ReservationManager({
     }
   }, [customSchedules]);
 
-  const { data: favoritesData, isLoading } = useQuery({
-    queryKey: ["favoritesData"],
-    queryFn: () => getAllFavorite(accessToken),
-    staleTime: 0,
-    refetchOnMount: "always",
-    initialData: { favorites: [] },
-  });
-
-  // console.log("제발되라", favoritesData);
-  // 찜 id 리스트
-  const { setFavorites } = useFavoriteStore();
-
-  // DB 찜 리스트
-  const favorites =
-    favoritesData?.favorites
-      ?.filter((item) => item?.combination) // undefined 항목 제거
-      ?.map((item) => item.combination.id) || [];
-  // const favorites = useFavoriteStore((state) => state.favorites);
+  // 찜
+  const { setFavorites, favorites } = useFavoriteStore();
+  console.log("3번이에요", favorites);
   // 현재 찜 리스트
   const [currentFavorites, setCurrentFavorites] = useState<number[]>([
     ...favorites,
   ]);
   useEffect(() => {
-    if (favorites.length > 0 && currentFavorites.length === 0) {
-      setCurrentFavorites(favorites);
-    }
+    console.log("현재", currentFavorites);
   }, [favorites, currentFavorites]);
+
+  const { data: favoritesData, isLoading } = useQuery({
+    queryKey: ["favoritesData"],
+    queryFn: () => getAllFavorite(accessToken),
+    enabled: !!accessToken,
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+  // useEffect(() => {
+  //   setFavorites(
+  //     favoritesData?.favorites
+  //       ?.filter((item) => item?.combination) // undefined 항목 제거
+  //       ?.map((item) => item.combination.id) || []
+  //   );
+  // }, [favoritesData]);
+
+  // console.log("제발되라", favoritesData);
+  // 찜 id 리스트
+
+  // DB 찜 리스트
+  // const favorites =
+  //   favoritesData?.favorites
+  //     ?.filter((item) => item?.combination) // undefined 항목 제거
+  //     ?.map((item) => item.combination.id) || [];
+  // const favorites = useFavoriteStore((state) => state.favorites);
 
   // console.log("DB저장", favorites);
   const currentFavoritesRef = useRef(currentFavorites);
@@ -194,38 +202,50 @@ export default function ReservationManager({
   });
 
   useEffect(() => {
-    // 컴포넌트 언마운트 시 실행 (탭 이동 시)
     return () => {
-      const newAddFavorites = currentFavoritesRef.current.filter(
-        (fav) => !favorites.includes(fav)
-      );
-      const newDeleteFavorites = favorites.filter(
-        (fav) => !currentFavoritesRef.current.includes(fav)
-      );
+      const updateFavorites = async () => {
+        const newAddFavorites = currentFavoritesRef.current.filter(
+          (fav) => !favorites.includes(fav)
+        );
+        const newDeleteFavorites = favorites.filter(
+          (fav) => !currentFavoritesRef.current.includes(fav)
+        );
 
-      try {
-        if (newAddFavorites.length > 0) {
-          createFavoriteMutation.mutate(newAddFavorites);
+        try {
+          if (newAddFavorites.length > 0) {
+            await createFavoriteMutation.mutateAsync(newAddFavorites);
+          }
+          if (newDeleteFavorites.length > 0) {
+            await deleteFavoriteMutation.mutateAsync(newDeleteFavorites);
+          }
+
+          // API 요청이 완료된 후 store 업데이트
+          setFavorites([...currentFavoritesRef.current]);
+        } catch (error) {
+          console.error("Favorite 업데이트 실패:", error);
         }
-        if (newDeleteFavorites.length > 0) {
-          deleteFavoriteMutation.mutate(newDeleteFavorites);
-        }
+      };
 
-        setFavorites([...currentFavoritesRef.current]);
-
-        queryClient.setQueryData(["favoritesData"], (old: any) => ({
-          ...old,
-          favorites: currentFavoritesRef.current,
-        }));
-      } catch (error) {
-        console.error("Favorite 업데이트 실패:", error);
-      }
+      updateFavorites();
+      queryClient.setQueryData(["favoritesData"], (old: any) => ({
+        ...old,
+        favorites: currentFavoritesRef.current,
+      }));
+      queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
     };
   }, []);
 
   if (isLoading) {
     return;
   }
+
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     console.log("favoritesData", favoritesData.favorites);
+  //     console.log("DB저장", favorites);
+  //     console.log("current", currentFavorites);
+  //   }
+  // }, [isLoading]);
 
   return (
     <div>

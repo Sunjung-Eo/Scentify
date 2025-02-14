@@ -178,7 +178,11 @@ export default function DeodorizationSetting() {
       modeOn: deodorize,
       modeChange: deodorizeModeOn,
       interval: parseInt(String(selectedTime).replace(/[^0-9]/g, "")),
-      intervalChange: previousSelectedTime === selectedTime ? false : true,
+      intervalChange:
+        previousSelectedTime ===
+        parseInt(String(selectedTime).replace(/[^0-9]/g, ""))
+          ? false
+          : true,
     };
 
     updateMutation.mutate(deodorizationData);

@@ -79,12 +79,12 @@ class WebSocketClient:
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
             self.device_id = None
-            self.temp_hum_interval = 0.1
+            self.temp_hum_interval = 15
             self.is_initial_connection = True
             self.disconnected = False
             self.disconnection_event = asyncio.Event()
 
-            self.is_debug = False
+            self.is_debug = True
 
     # 연결 테스트 코드
     async def connection(self, ):
@@ -111,14 +111,14 @@ class WebSocketClient:
 
                     # websocket response handler 키 업데이트 (맨 뒤에 id 추가)
                     if self.is_initial_connection:
-                        original_key = {}
+                        original_dict = {}
                         for key, value in self.websocket_response_hanlder.items():
                             if "topic" not in key:
-                                original_key[key] = value
+                                original_dict[key] = value
                                 continue
-                            original_key[f'{key}{self.device_id}'] = value
+                            original_dict[f'{key}{self.device_id}'] = value
                         self.websocket_response_hanlder = {}
-                        self.websocket_response_hanlder = original_key
+                        self.websocket_response_hanlder = original_dict
                         self.is_initial_connection=False
                     
                     # await self.init_request()
@@ -137,7 +137,7 @@ class WebSocketClient:
                     # 서버에서 disconnection 했을 때, reconnect
                     await asyncio.sleep(10)
                     print("Reconnection....")
-                    await self.connection()
+                    # await self.connection()
 
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
@@ -317,13 +317,25 @@ class WebSocketClient:
         self.disconnection_event = asyncio.Event()
         self.device_id = None
         self.websocket = None
-        self.disconnected = True
+        self.is_initial_connection = True
         while not self.message_queue.empty():
             try:
                 self.message_queue.get_nowait()  
                 self.message_queue.task_done()   
             except asyncio.QueueEmpty:
                 break  
+
+        # 핸들러 초기화
+        original_handler = {}
+        for key, value in self.websocket_response_hanlder.items():
+            if "topic" not in key:
+                original_handler[key] = value
+                continue
+            original_key = key.rsplit("/", 1)[0]
+            print(original_key)
+            original_handler[f"{original_key}/"] = value
+        self.websocket_response_hanlder = {}
+        self.websocket_response_hanlder = original_handler
 
         handler = self.websocket_response_hanlder.get("/Connection/Close", self.websocket_response_hanlder.get("default"))
         await handler()

@@ -8,10 +8,10 @@ import { deleteDevice } from '../../../apis/home/deleteDevice';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
 import { setMainDevice } from '../../../apis/home/setMainDevice';
 import NoDeviceCard from './components/NoDeviceCard';
+import { homeInfo } from '../../../apis/home/homeInfo';
 interface Device {
   id: number;
   name: string;
-
   slot1: string;
   slot2: string;
   slot3: string;
@@ -62,23 +62,61 @@ const DeviceCard = () => {
   });
 
   // 삭제 뮤테이션 추가
+  // homeInfo와 deviceInfo의 타입을 정의
+  interface HomeInfo {
+    user?: {
+      mainDeviceId?: number | null;
+    };
+  }
+
+  interface DeviceInfo {
+    devices: Device[];
+  }
+
   const deleteMutation = useMutation({
     mutationFn: deleteDevice,
-    onSuccess: (_, deviceId) => {
-      // API 호출 성공 시 캐시 업데이트
-      queryClient.setQueryData(
-        ['deviceInfo', validDeviceIds],
-        (oldData: any) => {
-          if (!oldData) return { devices: [] };
-          return {
-            ...oldData,
-            devices: oldData.devices.filter((d: any) => d.id !== deviceId),
-          };
-        }
+    onSuccess: async (_, deviceId) => {
+      // 🔥 기존 캐시 무효화
+      await queryClient.invalidateQueries({ queryKey: ['deviceInfo'] });
+      await queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
+
+      // 🔄 최신 데이터를 직접 가져오기 (fetchQuery 사용)
+      const [updatedHomeInfo, updatedDeviceInfo] = await Promise.all([
+        queryClient.fetchQuery({
+          queryKey: ['homeInfo'],
+          queryFn: () => homeInfo(),
+        }),
+        queryClient.fetchQuery({
+          queryKey: ['deviceInfo'],
+          queryFn: () => deviceInfo(validDeviceIds),
+        }),
+      ]);
+
+      console.log('✅ updatedHomeInfo:', updatedHomeInfo);
+      console.log('✅ updatedDeviceInfo:', updatedDeviceInfo);
+
+      // homeInfo에서 mainDeviceId 가져오기 (기본값 처리)
+      const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
+
+      // deviceInfo에서 devices 목록 가져오기 (기본값 처리)
+      const updatedDevices = updatedDeviceInfo?.devices ?? [];
+
+      // ✅ 기기가 하나도 없으면 대표 기기 상태를 null로 설정
+      if (updatedDevices.length === 0) {
+        setCurrentMainDeviceId(null);
+        return;
+      }
+
+      // ✅ 새로운 대표 기기 찾기
+      const newMainDevice = updatedDevices.find(
+        (d: Device) => d.id === newMainDeviceId
       );
+
+      // 대표 기기 업데이트
+      setCurrentMainDeviceId(newMainDevice?.id ?? null);
     },
     onError: (error) => {
-      console.error('디바이스 삭제 실패:', error);
+      console.error('❌ 디바이스 삭제 실패:', error);
       alert('디바이스 삭제에 실패했습니다.');
     },
   });
@@ -130,7 +168,7 @@ const DeviceCard = () => {
       {sortedDevices.map((device: any, index: number) => (
         <div
           key={device.id || index}
-          className="relative mt-4 flex justify-end transition-all duration-700 ease-in-out"
+          className="font-pre-medium relative mt-4 flex justify-end transition-all duration-700 ease-in-out"
           style={{
             transform: `translateY(${device.id === currentMainDeviceId ? '0' : '0'}px)`,
             opacity:
@@ -140,18 +178,18 @@ const DeviceCard = () => {
           }}
         >
           <div
-            className={`card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-sub px-4 py-2 shadow-md transition-all duration-500 ${
+            className={`card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-brand p-4 shadow-md transition-all duration-500 ${
               device.id === currentMainDeviceId ? 'ring-2 ring-brand' : ''
             }`}
           >
             <img
               src={deviceImg}
               alt="Device Icon"
-              className="absolute -left-10 bottom-0"
+              className="absolute -left-8 bottom-0 w-30 h-30"
             />
 
             {/* 텍스트 내용 */}
-            <div className="ml-12 flex flex-col gap-1">
+            <div className="ml-20 flex flex-col gap-1">
               {/* 디바이스 이름 + 왕관 아이콘 */}
               <div className="text-pre-bold text-sm flex items-center gap-1 text-white">
                 {device.name}
@@ -165,20 +203,12 @@ const DeviceCard = () => {
               </div>
 
               {/* 장착된 향 표시 */}
-              <div className="text-pre-regular text-[9px] text-gray">
+              <div className="text-pre-regular text-[10px] text-bg">
                 <p>
                   {[device.slot1, device.slot2, device.slot3, device.slot4]
                     .map((slot) => fragranceMap[slot])
                     .join(', ')}
                 </p>
-              </div>
-
-              {/* 예약 모드 표시 */}
-              <div className="flex items-center">
-                <div className="border flex items-center rounded-full border-component px-3 py-0.5 text-[8px] text-component">
-                  예약 모드
-                  <span className="ml-1 h-1 w-1 rounded-full bg-green-500"></span>
-                </div>
               </div>
             </div>
 

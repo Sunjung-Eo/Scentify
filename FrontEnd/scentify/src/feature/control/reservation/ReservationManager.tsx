@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useFavoriteStore } from "../../../stores/useFavoriteStore";
+import { useUserStore } from "../../../stores/useUserStore";
 
 import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
@@ -20,6 +21,7 @@ import { ReservationManagerProps } from "./ReservationType";
 
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
 import HeartButton from "../../../components/Button/HeartButton";
+import { homeInfo } from "../../../apis/home/homeInfo";
 
 export default function ReservationManager({
   reservationData,
@@ -37,6 +39,7 @@ export default function ReservationManager({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  const userstore = useUserStore();
   // 모달창
   const [isDeleteAlterOpen, setIsDeleteAlterOpen] = useState(false);
   const handleDeleteAlter = () => {
@@ -130,7 +133,7 @@ export default function ReservationManager({
 
   // 찜
   const { setFavorites, favorites } = useFavoriteStore();
-  console.log("123", favorites);
+  console.log("3번이에요", favorites);
   // 현재 찜 리스트
   const [currentFavorites, setCurrentFavorites] = useState<number[]>([
     ...favorites,
@@ -146,6 +149,13 @@ export default function ReservationManager({
     staleTime: 0,
     refetchOnMount: "always",
   });
+  // useEffect(() => {
+  //   setFavorites(
+  //     favoritesData?.favorites
+  //       ?.filter((item) => item?.combination) // undefined 항목 제거
+  //       ?.map((item) => item.combination.id) || []
+  //   );
+  // }, [favoritesData]);
 
   // console.log("제발되라", favoritesData);
   // 찜 id 리스트

@@ -44,6 +44,7 @@ const HomeMain = () => {
       }
     },
     refetchOnWindowFocus: false,
+    refetchOnMount: true,
     staleTime: 0,
   });
 

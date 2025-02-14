@@ -21,7 +21,7 @@ import ReservationManager from "../../feature/control/reservation/ReservationMan
 import CreateReservation from "../../feature/control/reservation/CreateReservation";
 import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
 import DeviceSelect from "../../components/Control/DeviceSelect";
-import Modal from "../../components/Alert/Modal";
+import Modal from "../../components/Alert/ModalDeleteSchedule";
 import ProtectedRoute from "../../components/Control/ProtectedRoute";
 
 import "../../styles/global.css";
@@ -137,8 +137,8 @@ const Control = () => {
   const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
 
   // 다른 모드 클릭 시 모달 표시
-  const [modalOpen, setModalOpen] = useState(false); // 모달달 표시 여부
-  const [modalMessage, setModalMessage] = useState(""); // 모달달 메시지
+  const [modalOpen, setModalOpen] = useState(false); // 모달 표시 여부
+  const [modalMessage, setModalMessage] = useState(""); // 모달 메시지
   const handleModeChange = (newMode: Mode) => {
     if (deviceIds.length === 0) {
       return;
@@ -184,8 +184,8 @@ const Control = () => {
     setActiveTab(tab);
   };
 
-  if (isLoading || !devicesInfo?.devices) {
-    return <div>로딩 중...</div>;
+  if (isLoading) {
+    return;
   }
 
   return (

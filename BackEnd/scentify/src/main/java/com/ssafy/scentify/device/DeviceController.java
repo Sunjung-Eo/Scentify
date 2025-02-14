@@ -99,20 +99,20 @@ public class DeviceController {
 	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 	        	        
-	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
-	        int waitTime = 0;
-	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
-	        int sleepInterval = 500; // 0.5초마다 체크
-
-	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
-	            if (waitTime >= maxWaitTime) {
-	            	// 디바이스 삭제
-	            	deviceService.deleteDevice(deviceId, userId);
-	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
-	            }
-	            Thread.sleep(sleepInterval);
-	            waitTime += sleepInterval;
-	        }
+//	        // 핸드셰이킹 대기 (최대 5초 동안 확인)
+//	        int waitTime = 0;
+//	        int maxWaitTime = 5000; // 최대 대기 시간 (5초)
+//	        int sleepInterval = 500; // 0.5초마다 체크
+//
+//	        while (!stateManager.getHandshakeState(registerDto.getSerial())) {
+//	            if (waitTime >= maxWaitTime) {
+//	            	// 디바이스 삭제
+//	            	deviceService.deleteDevice(deviceId, userId);
+//	                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 403 반환
+//	            }
+//	            Thread.sleep(sleepInterval);
+//	            waitTime += sleepInterval;
+//	        }
 	        
 	        // 성공적으로 처리된 후 ID 반환
 	        Map<String, Object> response = new HashMap<>();
@@ -506,7 +506,7 @@ public class DeviceController {
 			socketService.closeConnection(deviceId, serial);
 			
 			// 그룹 모두의 메인 디바이스 업데이트
-			autoUpdateMainDevice(group, deviceId);
+			autoUpdateMainDevice(group);
 			
 			return new ResponseEntity<>(HttpStatus.OK);   // 성공적으로 처리됨
 		} catch (Exception e) {
@@ -516,7 +516,7 @@ public class DeviceController {
 		}
 	}
 	
-	public void autoUpdateMainDevice(Group group, int deviceId) {
+	public void autoUpdateMainDevice(Group group) {
 		List<String> memberList = new ArrayList<>();
 		memberList.add(group.getAdminId());
 		if (group.getMember1Id() != null) { memberList.add(group.getMember1Id()); }
@@ -526,10 +526,10 @@ public class DeviceController {
 		
 		for (String userId : memberList) {
 			// 유저의 메인 디바이스 id 조회
-			int mainDeviceId = userService.getMainDeviceById(userId);
+			Integer mainDeviceId = userService.getMainDeviceById(userId);
 			
-			// 만약 삭제 요청 기기가 메인 디바이스라면 새로운 기기를 등록해주기
-			if (mainDeviceId == deviceId) {
+			// 해당 유저의 메인 디바이스 id가 null인 경우 업데이트
+			if (mainDeviceId == null) {
 				List<Integer> deviceIds = groupService.getDeviceIdByUserId(userId);
 				if (deviceIds.size() > 0) {
 					userService.updateMainDeviceId(userId, deviceIds.get(0));

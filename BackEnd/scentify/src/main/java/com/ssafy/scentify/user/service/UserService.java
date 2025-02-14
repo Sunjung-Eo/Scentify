@@ -82,7 +82,7 @@ public class UserService {
 		return userRepository.getUserEmailById(id);
 	}
 	
-	public int getMainDeviceById(String id) {
+	public Integer getMainDeviceById(String id) {
 		return userRepository.getMainDeviceById(id);
 	}
 

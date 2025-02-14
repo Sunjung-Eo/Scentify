@@ -187,8 +187,10 @@ const ShareFavorite = () => {
           >
             공유
           </button> */}
-
-        <div className="flex gap-4 mt-12">
+        <p className="text-10 font-pre-light text-brand mt-12">
+          공유 링크와 이미지 저장 모두 10분간 유효합니다.
+        </p>
+        <div className="flex gap-4 mt-1">
           <button
             onClick={handleCopyLink} // 🔹 즉시 공유 링크 복사
             className="border-[1px] border-brand w-[150px] h-[40px] text-brand text-16 font-pre-medium rounded-lg"

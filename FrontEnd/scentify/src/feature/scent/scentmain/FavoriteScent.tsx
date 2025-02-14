@@ -22,6 +22,10 @@ const FavoriteScent = ({
 
   // 🔹 공유 버튼 클릭 핸들러 (API 호출 없이 먼저 이동)
   const handleShareClick = () => {
+    if (!combination || !combination.id) {
+      console.error("🚨 공유 버튼 클릭 오류: combination 데이터가 없습니다!");
+      return;
+    }
     navigate("/scent/share", {
       state: {
         combination, // 향기 조합 정보만 먼저 전달

@@ -1,5 +1,6 @@
-import { create } from "zustand";
-import { MainDeviceState } from "../types/MainDeviceType";
+import { create } from 'zustand';
+import { MainDeviceState } from '../types/MainDeviceType';
+import { persist } from 'zustand/middleware';
 
 // Device 타입은 => types/DeviceType.ts 로 불러옴.
 export interface MainDeviceStoreState {
@@ -9,12 +10,31 @@ export interface MainDeviceStoreState {
   resetMainDevice: () => void;
 }
 
-export const useMainDeviceStore = create<MainDeviceStoreState>((set) => ({
-  mainDevice: null,
+export const useMainDeviceStore = create<MainDeviceStoreState>()(
+  persist(
+    (set) => ({
+      mainDevice: null,
 
-  deviceIdsAndNames: null,
+      deviceIdsAndNames: null,
 
-  setMainDevice: (device) => set({ mainDevice: device }),
+      setMainDevice: (device) => set({ mainDevice: device }),
 
-  resetMainDevice: () => set({ mainDevice: null }),
-}));
+      resetMainDevice: () => set({ mainDevice: null }),
+    }),
+    {
+      name: 'main-device-storage',
+      storage: {
+        getItem: (name) => {
+          const item = sessionStorage.getItem(name);
+          return item ? JSON.parse(item) : null;
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => {
+          sessionStorage.removeItem(name);
+        },
+      },
+    }
+  )
+);

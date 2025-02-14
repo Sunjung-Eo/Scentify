@@ -75,8 +75,8 @@ public class WebSocketInterceptor implements HandshakeInterceptor, ChannelInterc
                 return false;
             }
             
-            // 핸드쉐이크 상태를 Redis에 저장 (유효 시간: 300초)
-            stateManager.setHandshakeState(serial, true, 300);
+            // 핸드쉐이크 상태를 Redis에 저장 (유효 시간: 10초)
+            stateManager.setHandshakeState(serial, true, 10);
             return true;
             
         }

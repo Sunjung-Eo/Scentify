@@ -643,24 +643,24 @@ public class UserController {
 		}
 	}
 	
-	// API 81번 : 새로고침 시 Access 토큰 헤더에 삽입
-	@PostMapping("/token/issue")
-	public ResponseEntity<?> isseueAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
-		try {
-			// access 토큰에서 id 정보, 만료시간 추출
-        	String accessToken = authorizationHeader.substring(7);
-            
-            // 응답 헤더 생성
-            HttpHeaders headers = new HttpHeaders();
-           
-            // 응답 헤더에 Access Token 추가
-            headers.add("Authorization", "Bearer " + accessToken);
-			
-            return ResponseEntity.ok().headers(headers).build();   // 성공적으로 처리됨	   
-		} catch (Exception e) {
-			// 예기치 못한 에러 처리
-			log.error("Exception: ", e);
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+//	// API 81번 : 새로고침 시 Access 토큰 헤더에 삽입
+//	@PostMapping("/token/issue")
+//	public ResponseEntity<?> isseueAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
+//		try {
+//			// access 토큰에서 id 정보, 만료시간 추출
+//        	String accessToken = authorizationHeader.substring(7);
+//            
+//            // 응답 헤더 생성
+//            HttpHeaders headers = new HttpHeaders();
+//           
+//            // 응답 헤더에 Access Token 추가
+//            headers.add("Authorization", "Bearer " + accessToken);
+//			
+//            return ResponseEntity.ok().headers(headers).build();   // 성공적으로 처리됨	   
+//		} catch (Exception e) {
+//			// 예기치 못한 에러 처리
+//			log.error("Exception: ", e);
+//			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//		}
+//	}
 }

@@ -17,7 +17,7 @@ public class AutoScheduleDto {
 	private Integer id;
 	private int deviceId;
 	private CombinationDto combination;
-	private int interval;
+	private Integer interval;
 	private Boolean intervalChange;
 	private boolean modeOn;
 	private boolean modeChange;
@@ -34,8 +34,8 @@ public class AutoScheduleDto {
 		this.combination = combination;
 	}
 	
-	public void setInterval(int interval) {
-        if (interval < 0) {
+	public void setInterval(Integer interval) {
+        if (interval != null && interval < 0) {
             throw new IllegalArgumentException("입력값이 형식에 맞지 않습니다.");
         }
         this.interval = interval;

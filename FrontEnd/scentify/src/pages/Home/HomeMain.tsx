@@ -30,13 +30,8 @@ const HomeMain = () => {
     ? Object.keys(deviceIdsAndNames).map(Number)
     : [];
 
-  useEffect(() => {
-    console.log("들어옴", deviceIdsAndNames);
-  }, [deviceIdsAndNames]);
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["homeInfo"],
-    // queryFn: homeInfo,
     queryFn: async () => {
       try {
         const response = await homeInfo();
@@ -56,10 +51,7 @@ const HomeMain = () => {
 
     console.log("업데이트 전 User:", useUserStore.getState());
     console.log("업데이트 전 Devices:", useMainDeviceStore.getState());
-    // const deviceIdsAndNames = data.deviceIdsAndNames || [];
-    // const deviceIds: number[] = deviceIdsAndNames
-    //   ? Object.keys(deviceIdsAndNames).map(Number)
-    //   : [];
+
     setUser({
       nickname: data.user.nickname,
       imgNum: data.user.imgNum ?? 0,

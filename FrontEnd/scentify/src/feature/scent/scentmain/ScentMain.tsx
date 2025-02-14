@@ -3,7 +3,6 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useFavoriteStore } from "../../../stores/useFavoriteStore";
-import { useUserStore } from "../../../stores/useUserStore";
 
 import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
 import { deleteFavorite } from "../../../apis/scent/deleteFavorite";
@@ -11,14 +10,11 @@ import { deleteFavorite } from "../../../apis/scent/deleteFavorite";
 import ScentCarousel from "./scentcarousel";
 import FavoritesList from "./FavoritesList";
 import bookmarkIcon from "../../../assets/icons/bookmark.svg";
-import { homeInfo } from "../../../apis/home/homeInfo";
 
 const ScentMain = () => {
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
-
-  const userstore = useUserStore();
 
   // 마운트 시 동기화
   const queryClient = useQueryClient();
@@ -31,7 +27,6 @@ const ScentMain = () => {
   const setFavoritesData = favoriteStore.setFavoritesData;
   const favoritesData = favoriteStore.favoritesData;
   const setFavorites = favoriteStore.setFavorites;
-  const setFavoriteIds = favoriteStore.setFavoriteIds;
 
   // 기존 db 찜 리스트
   // 찜 리스트 전체조회
@@ -60,18 +55,15 @@ const ScentMain = () => {
         .map((item: any) => item.combination.id);
       console.log("삭제후 적용할 id들", updatedFavoriteIds);
       console.log("delete", deletedId);
-      // setFavoriteIds(updatedFavoriteIds);
       setFavorites(updatedFavoriteIds);
       queryClient.setQueryData(["favoritesData"], () => ({
         favorites: favoritesData.favorites.filter(
           (item: any) => item.id !== deletedId
         ),
       }));
-      console.log("1번이에요", favoriteStore);
       // query 업데이트
       queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
       queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
-      console.log("2번에요", favoriteStore);
     },
   });
 
@@ -95,12 +87,6 @@ const ScentMain = () => {
     console.log(`Shared combination for ID: ${id}`);
     alert(`${favorite!.combination.name} 향기를 공유합니다.`);
   };
-
-  // useEffect(() => {
-  //   return () => {
-  //     queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
-  //   };
-  // }, []);
 
   return (
     <div className="px-4 pt-[16px]">
@@ -126,7 +112,11 @@ const ScentMain = () => {
               onShare={handleShare}
             />
           ) : (
-            ""
+            <p className="mt-10 font-pre-light text-14 text-gray text-center">
+              찜한 향기가 아직 없습니다.
+              <br />
+              마음에 드는 향을 발견하면 찜 목록에 추가해 보세요!
+            </p>
           )}
         </div>
       </div>

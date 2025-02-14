@@ -21,7 +21,6 @@ import com.ssafy.scentify.combination.model.dto.CombinationDto;
 import com.ssafy.scentify.combination.model.entity.Combination;
 import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
-import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
 import com.ssafy.scentify.device.model.entity.Device;
@@ -393,7 +392,7 @@ public class DeviceController {
 	        }
 			
 			// DB 조회
-			List<DeviceInfoDto> devices = deviceService.findDevicesByIds(deviceIds);
+			List<DeviceHomeDto> devices = deviceService.findDevicesByIds(deviceIds);
 
 	        // 조회 결과가 없을 경우
 	        if (devices.isEmpty()) {
@@ -401,7 +400,7 @@ public class DeviceController {
 	        }
 
 	        // 반환할 데이터 생성
-	        Map<String, List<DeviceInfoDto>> response = new HashMap<>();
+	        Map<String, List<DeviceHomeDto>> response = new HashMap<>();
 	        response.put("devices", devices);
 			
 	        return ResponseEntity.ok(response);

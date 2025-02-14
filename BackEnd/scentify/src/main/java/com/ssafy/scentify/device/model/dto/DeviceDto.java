@@ -131,25 +131,6 @@ public class DeviceDto {
 	
 	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
 	@Data
-	public static class DeviceInfoDto {
-	    private int id;
-	    private String name;
-	    private int groupId;
-	    private int roomType;
-	    private int slot1;
-	    private int slot1RemainingRatio;
-	    private Integer slot2;
-	    private Integer slot2RemainingRatio;
-	    private Integer slot3;
-	    private Integer slot3RemainingRatio;
-	    private Integer slot4;
-	    private Integer slot4RemainingRatio;
-	    private Integer mode;
-	    private int defaultCombination;
-	}
-	
-	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
-	@Data
 	public static class DeviceGroupInfoDto {
 		private int deviceId;
 		private int groupId;

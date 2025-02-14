@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.*;
 
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceGroupInfoDto;
-import com.ssafy.scentify.device.model.dto.DeviceDto.DeviceInfoDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.home.model.dto.HomeDto.DeviceHomeDto;
 import com.ssafy.scentify.websocket.model.dto.WebSocketDto;
@@ -54,7 +53,7 @@ public interface DeviceRepository {
 	String getDeviceName(int id);
     
     // 디바이스 id로 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
-   	List<DeviceInfoDto> selectDevicesByIds(List<Integer> deviceIds);
+   	List<DeviceHomeDto> selectDevicesByIds(List<Integer> deviceIds);
 
    	// 디바이스 id로 홈탭 정보 조회 및 반환 (별도 mapper에 쿼리 구현)
 	DeviceHomeDto getDeviceHomeInfoById(int deviceId);

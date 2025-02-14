@@ -7,8 +7,12 @@ import { useAuthStore } from "../../stores/useAuthStore";
 import Spinner from "../Home/Loading/Spinner";
 import BackIcon from "../../assets/icons/back-arrow-btn.svg";
 import { useRef } from "react";
+import html2canvas from "html2canvas";
+import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
 
 const ShareFavorite = () => {
+  const cardRef = useRef<HTMLDivElement>(null); // 📌 캡처할 카드 영역 참조
+
   // 🔹 이전 페이지에서 전달된 데이터 가져오기
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,36 +75,34 @@ const ShareFavorite = () => {
     setTimeout(() => setCopied(false), 2000); // 2초 후 복사 완료 메시지 숨기기
   };
 
-  // 🔹 이미지 다운로드 기능 (PC/모바일 지원)
-  const handleDownloadImage = async () => {
-    if (!imageUrl) return;
+  // 🔹 카드 영역을 캡처하여 이미지 다운로드
+  const handleDownloadCardImage = async () => {
+    if (!cardRef.current) return;
+
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      // 🔹 Blob을 가리키는 URL 생성
-      const blobUrl = URL.createObjectURL(blob);
-      // 🔹 <a> 태그 생성하여 다운로드 기능 구현
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null, // 📌 배경을 투명하게 유지
+        scale: 3, // 📌 해상도를 높이기 위해 3배 확대
+        useCORS: true, // 📌 외부 이미지를 캡처할 수 있도록 설정
+        logging: false,
+        allowTaint: true,
+        onclone: (document) => {
+          return document.fonts.ready;
+        },
+      });
+
+      const image = canvas.toDataURL("image/png");
+
       const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = "downloaded-image.jpg"; // 다운로드될 파일 이름 설정
-      // 🔹 <a> 태그 클릭하여 다운로드 실행
+      link.href = image;
+      link.download = "scent-card.png";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // 🔹 생성한 URL 해제하여 메모리 누수 방지
-      URL.revokeObjectURL(blobUrl); // 메모리 해제
-      console.log("이미지 다운로드 성공");
-    } catch (error) {
-      console.error("이미지 다운로드 실패:", error);
-    }
-  };
 
-  // 🔹 모바일에서 자동 저장이 어려우므로 새 창에서 열기
-  const handleMobileDownload = () => {
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-      window.open(imageUrl!, "_blank"); // 모바일에서는 새 창에서 이미지 열기
-    } else {
-      handleDownloadImage(); // PC에서는 이미지 다운로드 실행
+      console.log("카드 이미지 다운로드 성공");
+    } catch (error) {
+      console.error("카드 이미지 다운로드 실패:", error);
     }
   };
 
@@ -141,16 +143,21 @@ const ShareFavorite = () => {
           </div>
         ) : (
           // 🔹 이미지가 로딩 완료되면 정상적으로 표시
-          <div className="w-[280px] h-[400px] bg-component pt-2 p-4 rounded-xl">
-            <p className="text-center font-pre-medium text-12 text-brand ">
-              Scentify
-            </p>
+          <div
+            ref={cardRef}
+            className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
+          >
+            <img
+              src={scentifylogo}
+              alt="Scentify"
+              className="mx-auto max-w-7 h-auto mb-2"
+            />
             <img
               src={imageUrl!}
               alt="AI Generated Image"
-              className="w-full h-auto rounded-lg pt-1"
+              className="w-full h-auto rounded-lg"
             />
-            <h2 className="text-14 text-center font-pre-medium mt-8">
+            <h2 className="text-14 text-center font-pre-medium mt-6">
               {combination?.name || "이름 없는 조합"}
             </h2>
 
@@ -197,7 +204,7 @@ const ShareFavorite = () => {
           </button>
 
           <button
-            onClick={handleMobileDownload}
+            onClick={handleDownloadCardImage} // 🔹 카드 캡처 & 다운로드 버튼으로 변경
             className="border-[1px] border-brand w-[150px] h-[40px] text-brand text-16 font-pre-medium rounded-lg"
             disabled={loading}
           >

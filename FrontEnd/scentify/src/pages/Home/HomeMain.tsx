@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import DeviceSlide from '../../feature/Home/mainhome/device/DeviceSlide.tsx';
-import UserCard from '../../feature/Home/mainhome/user/UserCard.tsx';
-import { useMainDeviceStore } from '../../stores/useDeviceStore.ts';
-import { homeInfo } from '../../apis/home/homeInfo.ts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useUserStore } from '../../stores/useUserStore.ts';
-import { useFavoriteStore } from '../../stores/useFavoriteStore.ts';
-import { AutoSchedule, CustomSchedule } from '../../types/SchedulesType.ts';
+import { useEffect } from "react";
+import DeviceSlide from "../../feature/Home/mainhome/device/DeviceSlide.tsx";
+import UserCard from "../../feature/Home/mainhome/user/UserCard.tsx";
+import { useMainDeviceStore } from "../../stores/useDeviceStore.ts";
+import { homeInfo } from "../../apis/home/homeInfo.ts";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserStore } from "../../stores/useUserStore.ts";
+import { useFavoriteStore } from "../../stores/useFavoriteStore.ts";
+import { AutoSchedule, CustomSchedule } from "../../types/SchedulesType.ts";
 
 interface ExampleDataProps {
   mainDeviceId: number | null;
@@ -29,11 +29,11 @@ const HomeMain = () => {
     : [];
 
   useEffect(() => {
-    console.log('들어옴', deviceIdsAndNames);
+    console.log("들어옴", deviceIdsAndNames);
   }, [deviceIdsAndNames]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['homeInfo'],
+    queryKey: ["homeInfo"],
     // queryFn: homeInfo,
     queryFn: async () => {
       try {
@@ -51,8 +51,8 @@ const HomeMain = () => {
   useEffect(() => {
     if (!data || !data.user) return;
 
-    console.log('업데이트 전 User:', useUserStore.getState());
-    console.log('업데이트 전 Devices:', useMainDeviceStore.getState());
+    console.log("업데이트 전 User:", useUserStore.getState());
+    console.log("업데이트 전 Devices:", useMainDeviceStore.getState());
     // const deviceIdsAndNames = data.deviceIdsAndNames || [];
     // const deviceIds: number[] = deviceIdsAndNames
     //   ? Object.keys(deviceIdsAndNames).map(Number)
@@ -68,18 +68,16 @@ const HomeMain = () => {
       setMainDevice(data.mainDevice);
     }
 
-    if (data.favorites) {
-      setFavorites(data.favorites);
-    }
+    setFavorites(data.favorites);
 
     setTimeout(() => {
-      console.log('✅ 업데이트 후 User:', useUserStore.getState());
-      console.log('✅ 업데이트 후 Devices:', useMainDeviceStore.getState());
+      console.log("✅ 업데이트 후 User:", useUserStore.getState());
+      console.log("✅ 업데이트 후 Devices:", useMainDeviceStore.getState());
     }, 100);
   }, [data]); //  `setUser`, `setDevices`는 상태 변경을 트리거하는 함수라서 의존성 배열에서 제거해도 됨
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
+    queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
   }, [queryClient]);
 
   if (isLoading) return <p>로딩 중...</p>;

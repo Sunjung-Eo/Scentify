@@ -88,7 +88,10 @@ export default function BehaviorSetting() {
       },
       exerciseModeChange: exerciseModeOn,
       exerciseIntervalChange:
-        previousExerciseSelectedTime === exerciseSelectedTime ? false : true,
+        previousExerciseSelectedTime ===
+        parseInt(String(exerciseSelectedTime).replace(/[^0-9]/g, ""))
+          ? false
+          : true,
       restSchedule: {
         id: scheduleRest.id,
         deviceId: deviceId,
@@ -97,8 +100,12 @@ export default function BehaviorSetting() {
       },
       restModeChange: restModeOn,
       restIntervalChange:
-        previousRestSelectedTime === restSelectedTime ? false : true,
+        previousRestSelectedTime ===
+        parseInt(String(restSelectedTime).replace(/[^0-9]/g, ""))
+          ? false
+          : true,
     };
+    console.log(behaviorData);
 
     updateMutation.mutate(behaviorData);
     navigate("/control", {

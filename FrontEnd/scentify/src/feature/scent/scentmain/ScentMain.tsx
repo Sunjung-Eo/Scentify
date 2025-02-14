@@ -54,7 +54,8 @@ const ScentMain = () => {
       const updatedFavoriteIds = favoritesData.favorites
         .filter((item: any) => item.id !== deletedId)
         .map((item: any) => item.combination.id);
-      setFavoriteIds(updatedFavoriteIds);
+      // setFavoriteIds(updatedFavoriteIds);
+      setFavorites(updatedFavoriteIds);
       queryClient.setQueryData(["favoritesData"], () => ({
         favorites: favoritesData.favorites.filter(
           (item: any) => item.id !== deletedId
@@ -62,6 +63,7 @@ const ScentMain = () => {
       }));
       // query 업데이트
       queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
+      queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
     },
   });
 

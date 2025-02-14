@@ -19,6 +19,8 @@ interface DeviceSlideProps {
   data: {
     mainDeviceId: number | null;
     mainDeviceMode: number | null;
+    mainDeviceHumidity: number | null;
+    mainDeviceTemperature: number | null;
     deviceIds: number[];
     autoSchedules: AutoSchedule[];
     customSchedules: CustomSchedule[];
@@ -40,6 +42,8 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   const {
     mainDeviceId,
     mainDeviceMode,
+    mainDeviceHumidity,
+    mainDeviceTemperature,
     deviceIds,
     autoSchedules,
     customSchedules,
@@ -225,6 +229,23 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   const currentDeviceId = sortedDeviceIds[currentIndex];
   const currentScheduleData = schedules[currentDeviceId];
 
+  // 현재 선택된 디바이스의 온습도 정보를 결정하는 로직
+  const getCurrentDeviceEnvironment = () => {
+    if (currentDeviceId === mainDeviceId) {
+      // 메인 디바이스인 경우
+      return {
+        temperature: mainDeviceTemperature,
+        humidity: mainDeviceHumidity,
+      };
+    } else {
+      // 일반 디바이스인 경우
+      return {
+        temperature: deviceData?.devices?.[0]?.temperature ?? null,
+        humidity: deviceData?.devices?.[0]?.humidity ?? null,
+      };
+    }
+  };
+
   return (
     <div className="relative flex flex-col items-center h-[460px] justify-between">
       {deviceIds.length === 0 ? (
@@ -243,6 +264,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
           <DeviceSchedule
             deviceId={currentDeviceId}
             scheduleData={currentScheduleData}
+            {...getCurrentDeviceEnvironment()}
           />
           {deviceIds.length > 1 && (
             <div className="absolute inset-y-1/2 left-0 right-0 flex justify-between transform -translate-y-1/2">

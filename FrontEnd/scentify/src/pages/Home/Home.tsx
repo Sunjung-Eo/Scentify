@@ -8,8 +8,9 @@ import HomeMain from './HomeMain.tsx';
 import RegistCapsule from '../../feature/Home/capsule/RegistCapsule.tsx';
 import DefaultScent from '../../feature/Home/defaultscent/DefaultScent.tsx';
 import EditCapsule from '../../feature/Home/edit/EditCapsule.tsx';
-import EditDefaultScent from '../../feature/Home/edit/EditDefaultScent.tsx';
+import EditOnlyScent from '../../feature/Home/edit/EditOnlyScent.tsx';
 import ManageDevice from '../../feature/Home/managedevice/ManageDevice.tsx';
+import EditDefaultScent from '../../feature/Home/edit/EditDefaultScent.tsx';
 
 const Home = () => {
   return (
@@ -21,12 +22,10 @@ const Home = () => {
       <Route path="/connectsuccess" element={<ConnectSuccess />} />
       <Route path="/registcapsule" element={<RegistCapsule />} />
       <Route path="/defaultscent" element={<DefaultScent />} />
-      <Route path="/devicesetting/capsule" element={<EditCapsule />} />
       <Route path="/managedevice" element={<ManageDevice />} />
-      <Route
-        path="/devicesetting/defaultscent"
-        element={<EditDefaultScent />}
-      />
+      <Route path="/edit/capsule" element={<EditCapsule />} />
+      <Route path="/edit/capsule/defaultscent" element={<EditDefaultScent />} />
+      <Route path="/edit/defaultscent" element={<EditOnlyScent />} />
     </Routes>
   );
 };

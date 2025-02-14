@@ -52,13 +52,16 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith('/control/reservation/create') ||
     location.pathname.startsWith('/control/reservation/modify') ||
     location.pathname.startsWith('/home/registcapsule') ||
-    location.pathname.startsWith('/home/defaultscent') ||
-    location.pathname.startsWith('/home/devicesetting/defaultscent');
+    location.pathname.startsWith('/home/edit/capsule/defaultscent') ||
+    location.pathname.startsWith('/home/edit/defaultscent') ||
+    location.pathname.startsWith('/home/defaultscent');
+
   const showDeviceManage = location.pathname === '/home';
   const showAdd =
     location.pathname.startsWith('/home/managedevice') ||
     location.pathname.startsWith('/control');
-  const nextDeviceEdit = location.pathname.startsWith('/home/devicesetting');
+  const nextDeviceEdit = location.pathname.startsWith('/home/edit/capsule');
+  const showCancel = location.pathname.startsWith('/home/edit/capsule');
 
   // 로고 대신 title 출력
   const getHeaderTitle = (pathname: string) => {
@@ -95,6 +98,7 @@ const Layout = ({ children }: LayoutProps) => {
           showFinish={showFinish}
           showDeviceManage={showDeviceManage}
           showAdd={showAdd}
+          showCancel={showCancel}
           title={getHeaderTitle(location.pathname)}
           onAddClick={handleAddClick}
           onDeviceManageClick={handleDeviceManageClick}

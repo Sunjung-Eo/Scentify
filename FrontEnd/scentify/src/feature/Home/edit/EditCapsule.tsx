@@ -91,9 +91,9 @@ function EditCapsule() {
       name,
       deviceId,
       capsuleData: capsuleDataRef.current,
-      defaultCombination: deviceData?.defaultCombination,
+      defaultCombination: deviceData?.defaultCombination || {},
     };
-    navigate('/home/devicesetting/defaultscent', { state: navigationState });
+    navigate('/home/edit/capsule/defaultscent', { state: navigationState });
   }, [deviceId, navigate, deviceData]);
 
   useEffect(() => {

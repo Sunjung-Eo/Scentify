@@ -12,6 +12,7 @@ interface HeaderProps {
   showFinish: boolean;
   showDeviceManage: boolean;
   showAdd: boolean;
+  showCancel: boolean;
   title?: string;
   nextDeviceEdit: boolean;
   onAddClick?: () => void;
@@ -23,6 +24,7 @@ const Header = ({
   showFinish,
   showDeviceManage,
   showAdd,
+  showCancel,
   title,
   nextDeviceEdit,
   onAddClick,
@@ -52,17 +54,20 @@ const Header = ({
     }
   };
 
+  // 취소 버튼 핸들러 추가
+  const handleCancelClick = () => {
+    navigate('/home', { replace: true });
+  };
+
   // 다음 버튼 핸들러:
   // 다음 버튼 핸들러:
   const handleNextClick = () => {
     console.log('🛑 Next 버튼 클릭됨!');
 
     if (completeHandler) {
-      console.log('✅ completeHandler 실행됨!');
       completeHandler(); // 🚀 `handleSubmit` 실행
     } else {
-      console.log('❌ completeHandler가 없음! 직접 navigate 실행');
-      navigate('/home/devicesetting/defaultscent', { state: location.state });
+      navigate('/home/edit/capsule', { state: location.state });
     }
   };
 
@@ -71,6 +76,13 @@ const Header = ({
       {showBack ? (
         <button onClick={handleBackClick}>
           <BackBtn />
+        </button>
+      ) : showCancel ? (
+        <button
+          onClick={handleCancelClick}
+          className="font-pre-light text-14 tracking-[-1px] text-black"
+        >
+          취소
         </button>
       ) : (
         <div className="h-[30px] w-[65px]" />
@@ -82,6 +94,7 @@ const Header = ({
           <Logo />
         )}
       </div>
+
       {showFinish ? (
         <FinishButton onClick={handleFinishClick} />
       ) : nextDeviceEdit ? ( // ✅ nextDeviceEdit이 true일 때 NextButton 표시

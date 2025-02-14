@@ -488,7 +488,7 @@ public class DeviceController {
 			
 			// 디바이스 id에 해당하는 그룹 정보 조회
 			Group group = groupService.getGroup(deviceId);
-
+			
 			// 디바이스 삭제 권한 없음
 			if (!userId.equals(group.getAdminId())) {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

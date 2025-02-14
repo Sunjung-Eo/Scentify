@@ -36,6 +36,14 @@ function EditDefaultScent() {
   const { setCompleteHandler } = useControlStore();
   const [message, setMessage] = useState<Message | null>(null);
 
+  console.log(
+    '🔥 EditDefaultScent 렌더링됨',
+    deviceId,
+    capsuleData,
+    name,
+    defaultCombination
+  );
+
   const slot1 = capsuleData?.slot1;
   const slot2 = capsuleData?.slot2;
   const slot3 = capsuleData?.slot3;
@@ -84,16 +92,17 @@ function EditDefaultScent() {
       const combination = {
         id: defaultCombination,
         name: name,
-        choice1: slot1,
-        choice1Count: scentCnt.slot1,
-        choice2: slot2,
-        choice2Count: scentCnt.slot2,
-        choice3: slot3,
-        choice3Count: scentCnt.slot3,
-        choice4: slot4,
-        choice4Count: scentCnt.slot4,
+        choice1: Number(slot1) || 0,
+        choice1Count: Number(scentCnt.slot1) || 0,
+        choice2: Number(slot2) || 0,
+        choice2Count: Number(scentCnt.slot2) || 0,
+        choice3: Number(slot3) || 0,
+        choice3Count: Number(scentCnt.slot3) || 0,
+        choice4: Number(slot4) || 0,
+        choice4Count: Number(scentCnt.slot4) || 0,
       };
 
+      console.log('🔥 combination', combination);
       // 2. 기본향 설정 수정
       await editDefaultScent(deviceId, roomTypeValue, combination);
       setTimeout(() => {
@@ -103,7 +112,19 @@ function EditDefaultScent() {
       console.error('수정 실패:', error);
       setMessage({ type: 'error', text: '수정 중 오류가 발생했습니다.' });
     }
-  }, [deviceId, capsuleData, name, defaultCombination, navigate]);
+  }, [
+    deviceId,
+    capsuleData,
+    name,
+    defaultCombination,
+    navigate,
+    roomType,
+    slot1,
+    slot2,
+    slot3,
+    slot4,
+    scentCnt,
+  ]);
 
   useEffect(() => {
     if (!deviceId) return;

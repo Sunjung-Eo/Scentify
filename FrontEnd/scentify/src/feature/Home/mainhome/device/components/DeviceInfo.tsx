@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MainDeviceState } from '../../../../../types/MainDeviceType.ts';
 import deviceImg from '../../../../../assets/images/device.svg';
 import PlayBtn from '../../../../../assets/icons/PlayBtn.svg';
 import modifyIcon from '../../../../../assets/icons/modify-icon.svg';
 import crownIcon from '../../../../../assets/icons/crown-icon.svg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { mapIntToFragrance } from '../../../../../utils/fragranceUtils.ts';
 import { useMutation } from '@tanstack/react-query';
 import { sprayNow } from '../../../../../apis/home/schedule/sparyNow';
@@ -15,7 +15,9 @@ interface DeviceInfoProps {
 }
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
+  const location = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
+
   // 즉시분사 뮤테이션 추가
   const sprayMutation = useMutation({
     mutationFn: sprayNow,
@@ -39,6 +41,11 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
   // // 슬롯 정보 렌더링 함수
   // const renderSlotInfo = (slotNumber: number, remainingRatio: number | null) => {
   //   if (remainingRatio === null) return null;
+
+  // ✅ `device`가 없으면 로딩 화면 표시
+  if (!device || !device.defaultCombination) {
+    return <div className="content">로딩 중...</div>;
+  }
 
   return (
     <div className="flex flex-col items-center w-full my-2">
@@ -65,7 +72,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
             {showDropdown && (
               <div className="absolute right-0 mt-1 w-24 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                 <Link
-                  to="/home/devicesetting/capsule"
+                  to="/home/edit/capsule"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   state={{
                     deviceId: device?.id,
@@ -85,11 +92,11 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
                   캡슐 수정
                 </Link>
                 <Link
-                  to="/home/devicesetting/defaultscent"
+                  to="/home/edit/defaultscent"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   state={{
                     deviceId: device?.id,
-                    defaultCombinationId: device?.defaultCombination,
+                    defaultCombination: device?.defaultCombination || null, // ✅ undefined 방지
                   }}
                 >
                   기본향 수정

@@ -11,7 +11,7 @@ const Footer = () => {
 
   // 특정 경로에서 Footer 숨김
   const hideFooterPaths =
-    /^\/(?:user\/regist(?:\/.*)?|home\/(?:registdevice2|connectsuccess|registcapsule|defaultscent))$/;
+    /^\/(?:user\/regist(?:\/.*)?|home\/(?:registdevice2|connectsuccess|registcapsule|defaultscent|managedevice|edit\/capsule(?:\/defaultscent)?|edit\/defaultscent))$/;
 
   const tabs = [
     { id: 'home', icon: HomeIcon, path: '/home' },

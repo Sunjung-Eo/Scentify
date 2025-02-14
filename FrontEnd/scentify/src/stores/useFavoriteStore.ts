@@ -1,4 +1,5 @@
-import { create } from "zustand";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface FavoriteState {
   favorites: number[];
@@ -17,50 +18,71 @@ interface FavoriteState {
   setFavoritesData: (data: any) => void;
 }
 
-export const useFavoriteStore = create<FavoriteState>((set) => ({
-  favorites: [] as number[], // 서버에서 받아온 찜 id 리스트
-  setFavorites: (favorite) => set({ favorites: favorite }),
-  favoriteCombinationIds: [] as number[], // 찜 리스트의 향 id들
-  setFavoriteCombinationIds: (favoriteCombinationId) =>
-    set({ favoriteCombinationIds: favoriteCombinationId }), // 찜 리스트의 향 id들
+export const useFavoriteStore = create<FavoriteState>()(
+  persist(
+    (set) => ({
+      favorites: [] as number[], // 서버에서 받아온 찜 id 리스트
+      setFavorites: (favorite) => set({ favorites: favorite }),
+      favoriteCombinationIds: [] as number[], // 찜 리스트의 향 id들
+      setFavoriteCombinationIds: (favoriteCombinationId) =>
+        set({ favoriteCombinationIds: favoriteCombinationId }), // 찜 리스트의 향 id들
 
-  favoritesData: { favorites: [] },
-  setFavoritesData: (data) => {
-    set({ favoritesData: data });
-  },
+      favoritesData: { favorites: [] },
+      setFavoritesData: (data) => {
+        set({ favoritesData: data });
+      },
 
-  favoriteIds: [] as number[], // 새로 추가한 찜 id들
-  setFavoriteIds: (id: number[]) => set({ favoriteIds: id }),
-  // 찜 추가
-  addFavorite: (id: number) =>
-    set((state) => {
-      if (state.favoriteIds.includes(id)) return state;
-      return {
-        favoriteIds: [...state.favoriteIds, id],
-      };
+      favoriteIds: [] as number[], // 새로 추가한 찜 id들
+      setFavoriteIds: (id: number[]) => set({ favoriteIds: id }),
+      // 찜 추가
+      addFavorite: (id: number) =>
+        set((state) => {
+          if (state.favoriteIds.includes(id)) return state;
+          return {
+            favoriteIds: [...state.favoriteIds, id],
+          };
+        }),
+      // 찜 제거
+      removeFavorite: (id: number) =>
+        set((state) => ({
+          favoriteIds: state.favoriteIds.filter(
+            (favoriteId) => favoriteId !== id
+          ),
+        })),
+
+      deleteFavoriteIds: [] as number[], // 새로 삭제할 찜 id들
+      setDeleteFavoriteIds: (id: number[]) => set({ deleteFavoriteIds: id }),
+      // 찜 삭제에 추가
+      deleteAddFavorite: (id: number) =>
+        set((state) => {
+          if (state.deleteFavoriteIds.includes(id)) return state;
+
+          return {
+            deleteFavoriteIds: [...state.deleteFavoriteIds, id],
+          };
+        }),
+      // 찜 삭제에서 제거
+      deleteRemoveFavorite: (id: number) =>
+        set((state) => ({
+          deleteFavoriteIds: state.deleteFavoriteIds.filter(
+            (deleteFavoriteIds) => deleteFavoriteIds !== id
+          ),
+        })),
     }),
-  // 찜 제거
-  removeFavorite: (id: number) =>
-    set((state) => ({
-      favoriteIds: state.favoriteIds.filter((favoriteId) => favoriteId !== id),
-    })),
-
-  deleteFavoriteIds: [] as number[], // 새로 삭제할 찜 id들
-  setDeleteFavoriteIds: (id: number[]) => set({ deleteFavoriteIds: id }),
-  // 찜 삭제에 추가
-  deleteAddFavorite: (id: number) =>
-    set((state) => {
-      if (state.deleteFavoriteIds.includes(id)) return state;
-
-      return {
-        deleteFavoriteIds: [...state.deleteFavoriteIds, id],
-      };
-    }),
-  // 찜 삭제에서 제거
-  deleteRemoveFavorite: (id: number) =>
-    set((state) => ({
-      deleteFavoriteIds: state.deleteFavoriteIds.filter(
-        (deleteFavoriteIds) => deleteFavoriteIds !== id
-      ),
-    })),
-}));
+    {
+      name: 'favorite-storage',
+      storage: {
+        getItem: (name) => {
+          const item = sessionStorage.getItem(name);
+          return item ? JSON.parse(item) : null;
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => {
+          sessionStorage.removeItem(name);
+        },
+      },
+    }
+  )
+);

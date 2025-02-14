@@ -83,8 +83,9 @@ export default function AutoManager({
     setRoomType(newRoomType ?? 0);
   }, [selectedDevice, devices]);
 
-  // 자동화 모드 세부 설정 버튼 클릭
+  // 자동화 모드 세부 설정 버튼 클릭 핸들러
   const handleSettingClick = (autoType: number) => {
+    // 탐지 모드, 동작 모드, 탈취 모드 순
     if (autoType === 0) {
       navigate(`/control/auto/detect`, {
         state: {

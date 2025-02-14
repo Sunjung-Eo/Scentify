@@ -17,7 +17,7 @@ export default function BehaviorSetting() {
   const deviceId = location.state.deviceId;
   const accessToken = location.state.accessToken;
 
-  // react query
+  //동작 모드 - mutation
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: (data: behaviorData) => updateBehavior(data, accessToken),
@@ -79,6 +79,7 @@ export default function BehaviorSetting() {
   // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
+    // API request
     const behaviorData: behaviorData = {
       exerciseSchedule: {
         id: scheduleExercise.id,
@@ -105,7 +106,6 @@ export default function BehaviorSetting() {
           ? false
           : true,
     };
-    console.log(behaviorData);
 
     updateMutation.mutate(behaviorData);
     navigate("/control", {

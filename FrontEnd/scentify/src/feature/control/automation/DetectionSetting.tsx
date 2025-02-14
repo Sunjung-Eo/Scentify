@@ -126,7 +126,8 @@ export default function DetectionSetting() {
   const [formErrors, setFormErrors] = useState({
     scents: "",
   });
-  // 완료 버튼
+
+  // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
     // 유효성 검사
@@ -147,7 +148,7 @@ export default function DetectionSetting() {
     if (!isValid) {
       return;
     }
-
+    // API request
     const detectionData: detectionData = {
       id: schedule.id,
       deviceId: deviceId,

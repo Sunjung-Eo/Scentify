@@ -19,7 +19,7 @@ export default function DeodorizationSetting() {
   const accessToken = location.state.accessToken;
   const roomType = location.state.roomType;
 
-  // react query
+  // 탈취 모드 - mutation
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: (data: deodorizationData) =>
@@ -138,6 +138,7 @@ export default function DeodorizationSetting() {
   const [formErrors, setFormErrors] = useState({
     scents: "",
   });
+
   // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
@@ -159,7 +160,7 @@ export default function DeodorizationSetting() {
     if (!isValid) {
       return;
     }
-
+    // API request
     const deodorizationData: deodorizationData = {
       id: schedule.id,
       deviceId: deviceId,

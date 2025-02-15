@@ -24,17 +24,18 @@ function RegistCapsule() {
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
     if (message) setMessage(null);
+    if (capsuleDataRef.current) {
+      capsuleDataRef.current.name = e.target.value; // Ref 최신 상태 유지
+    }
   };
 
-  // 캡슐 데이터 수신 (Capsule 컴포넌트에서 전달된 데이터가 capsuleDataRef.current에 저장)
+  // ✅ 캡슐 데이터 수신 (정확한 데이터 저장)
   const handleCapsuleData = (data: CreateCapsuleRequest) => {
-    // 전달받은 데이터를 Ref에 저장하고, name도 포함(캡슐 데이터가 변경될때  Ref에 저장)
-    capsuleDataRef.current = { ...data, name: name || '' };
+    capsuleDataRef.current = { ...data, name };
   };
 
   // API 호출
   const handleSubmit = useCallback(async () => {
-    console.log('handleSubmit 호출됨');
     console.log('현재 캡슐 데이터:', capsuleDataRef.current);
 
     if (!id) {
@@ -49,13 +50,8 @@ function RegistCapsule() {
     }
 
     const { name, slot1, slot2, slot3, slot4 } = capsuleData;
-    if (
-      !name ||
-      slot1 === undefined ||
-      slot2 === undefined ||
-      slot3 === undefined ||
-      slot4 === undefined
-    ) {
+
+    if (!name || slot1 === -1 || slot2 === -1 || slot3 === -1 || slot4 === -1) {
       setMessage({ type: 'error', text: '이름과 모든 슬롯을 선택해주세요.' });
       return;
     }

@@ -4,9 +4,8 @@ import arrowIcon from "../../../assets/icons/rightarrow-icon.svg";
 import { useUserStore } from "../../../stores/useUserStore";
 import { getProfileImage } from "../../../utils/profileImageMapper";
 import { validatePassword } from "../../../apis/user/editaccount/validatepassword";
-import { deleteUserAccount } from "../../../apis/user/editaccount/deleteUserAccount"; // 회원 탈퇴 API
+import { deleteUserAccount } from "../../../apis/user/editaccount/deleteUserAccount";
 import { useAuthStore } from "../../../stores/useAuthStore";
-import Modal from "../../../components/Alert/Modal";
 
 const ManageAccount = () => {
   const navigate = useNavigate();

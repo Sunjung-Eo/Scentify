@@ -1,7 +1,6 @@
 import navigateIcon from "../../../assets/icons/navigatewhite.svg";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../../stores/useUserStore";
-// 유틸 함수로 프로필 이미지 번호에 따른 이미지 URL을 반환합니다.
 import { getProfileImage } from "../../../utils/profileImageMapper";
 
 /**
@@ -26,10 +25,10 @@ const MyUserCard = (): JSX.Element => {
         <img
           src={profileImg}
           alt="Profile"
-          className="w-12 h-12 rounded-full"
+          className="w-[46px] h-[46px] rounded-full"
         />
-        <p className="text-[20px]">
-          <span className="font-pre-bold">{user.nickname}</span>
+        <p className="text-20">
+          <span className="font-pre-medium">{user.nickname}</span>
         </p>
       </div>
 

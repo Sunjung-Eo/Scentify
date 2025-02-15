@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Modal from "../../../components/Alert/ModalDeleteSchedule";
 import { MemberCardProps } from "../groupTypes";
 import crownIcon from "../../../assets/icons/crown-icon.svg";
@@ -29,14 +29,14 @@ const MemberCard = ({
 
   return (
     <>
-      <div className="flex items-center justify-between py-2">
-        {/* 닉네임 영역 */}
+      <div className="flex items-center justify-between w-[320px] h-[70px] border-b-[0.7px] border-gray">
+        {/*개인 멤버 박스 */}
         <div className="flex flex-col ml-4">
           <div className="flex items-center">
-            <p className="text-16 font-pre-medium">{nickname}</p>
             {isAdmin && (
-              <img src={crownIcon} alt="Admin" className="w-4 h-4 ml-2" />
+              <img src={crownIcon} alt="Admin" className="w-4 h-4 mr-2" />
             )}
+            <p className="text-16 font-pre-medium">{nickname}</p>
           </div>
         </div>
 
@@ -44,13 +44,13 @@ const MemberCard = ({
         {showDeleteButton && (
           <button
             onClick={handleDeleteButtonClick}
-            className="ml-auto w-[65px] h-[25px] text-[12px] text-sub font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-1 focus:ring-brand"
+            className="ml-auto w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
           >
             삭제
           </button>
         )}
       </div>
-      {/* 모달창: 삭제 버튼 클릭 시 "멤버를 삭제하시겠습니까?" 메시지와 함께 표시 */}
+      {/* 삭제 버튼 클릭 시 모달창 */}
       {modalOpen && (
         <Modal
           message="멤버를 삭제하시겠습니까?"

@@ -1,6 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
-import UserCard from "../../feature/Home/mainhome/user/UserCard";
 import { GroupList } from "../../feature/my/components/GroupList";
 import { Routes, Route } from "react-router-dom";
 import ManageAccount from "../../feature/my/components/ManageAccount";
@@ -35,35 +34,35 @@ const My = () => {
           index
           element={
             <>
-              {/** 계정 관리 */}
+              {/* 계정 관리 */}
               <div>
-                <div className="flex flex-row justify-between items-center text-center">
-                  <div className="flex items-center py-4 font-pre-medium text-16">
+                <div className="flex flex-row justify-between items-center text-center mt-2">
+                  <div className="flex items-center font-pre-medium text-16">
                     <img
                       src={manageaccountIcon}
                       alt="계정 관리 아이콘"
-                      className="w-6 h-6 mr-2"
+                      className="w-5 h-5 mr-1"
                     />
                     <span>계정 관리</span>
                   </div>
                   <button
-                    className="w-[70px] h-[32px] text-[12px] font-pre-light border-0.2 border-lightgray rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                    className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
                     onClick={handleLogout}
                   >
                     로그아웃
                   </button>
                 </div>
-                <MyUserCard />
+                <div className="mt-3">
+                  <MyUserCard />
+                </div>
               </div>
-              <div className="h-[25px]"></div>
-
               {/** 그룹 관리 */}
-              <div>
-                <div className="flex items-center py-4 font-pre-medium text-16">
+              <div className="mt-10">
+                <div className="flex items-center font-pre-medium text-16">
                   <img
                     src={managegroupsIcon}
                     alt="그룹 관리 아이콘"
-                    className="w-6 h-6 mr-2"
+                    className="w-5 h-5 mr-1"
                   />
                   <span>그룹 관리</span>
                 </div>

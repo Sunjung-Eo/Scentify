@@ -1,24 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import arrowIcon from "../../../assets/icons/rightarrow-icon.svg";
 import { useUserStore } from "../../../stores/useUserStore";
 import { getProfileImage } from "../../../utils/profileImageMapper";
 import { validatePassword } from "../../../apis/user/editaccount/validatepassword";
 import { deleteUserAccount } from "../../../apis/user/editaccount/deleteUserAccount"; // 회원 탈퇴 API
-import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
-import Modal from "../../../components/Alert/ModalDeleteSchedule";
+import { useAuthStore } from "../../../stores/useAuthStore";
 
 const ManageAccount = () => {
   const navigate = useNavigate();
   const { nickname, imgNum } = useUserStore();
 
-  console.log("현재 상태 확인:", { nickname, imgNum }); // 상태 확인
-
-  const { accessToken } = useAuthStore(); // 토큰 가져오기
-
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 창 상태
-  const [inputPassword, setInputPassword] = useState(""); // 입력된 비밀번호
-  const [error, setError] = useState(""); // 에러 메시지 상태
+  const { accessToken } = useAuthStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputPassword, setInputPassword] = useState("");
+  const [error, setError] = useState("");
 
   // 닉네임 변경 페이지로 이동
   const handleNicknameChangePage = () => {
@@ -42,14 +38,14 @@ const ManageAccount = () => {
 
   // 탈퇴 버튼 클릭 핸들러
   const handleAccountDeletion = () => {
-    setIsModalOpen(true); // 모달 열기
+    setIsModalOpen(true);
   };
 
   // 모달 닫기 핸들러
   const closeModal = () => {
     setIsModalOpen(false);
-    setInputPassword(""); // 입력값 초기화
-    setError(""); // 에러 메시지 초기화
+    setInputPassword("");
+    setError("");
   };
 
   // 비밀번호 확인 후 탈퇴 진행
@@ -86,56 +82,52 @@ const ManageAccount = () => {
         <img
           src={getProfileImage(imgNum)} // 유틸 함수에서 이미지 배열을 가져옴
           alt="ProfileImg"
-          className="w-[63px] h-[63px] mr-7"
+          className="w-[46px] h-[46px] mr-3"
         />
         <div>
-          <p className="text-16 font-pre-medium">{nickname}</p>
+          <p className="text-20 font-pre-medium">{nickname}</p>
         </div>
       </div>
       {/* 버튼 그룹 */}
-      <div className="flex justify-between gap-3 mb-8">
+      <div className="flex justify-between gap-3">
         <button
           onClick={handleProfileImageChangePage}
-          className="w-[143px] h-[30px] text-12 font-pre-regular rounded-lg border-[1px] border-lightgray"
+          className="w-[143px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
         >
           프로필 이미지 변경
         </button>
         <button
           onClick={handleNicknameChangePage}
-          className="w-[143px] h-[30px] text-12 font-pre-regular rounded-lg border-[1px] border-lightgray"
+          className="w-[143px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
         >
           닉네임 변경
         </button>
       </div>
       {/* 변경 항목 리스트 */}
-      <div>
-        {/* 구분선 */}
-        <div className="border-t-[1px] border-b-[1px] border-lightgray">
-          <div
-            onClick={handleMemberInfoChange}
-            className="flex justify-between items-center py-6"
-          >
-            <p className="text-sm">회원정보 변경</p>
-            <img src={arrowIcon} alt="arrowIcon" />
-          </div>
+      <div className="mt-3">
+        {/* 회원정보 변경 박스 */}
+        <div
+          onClick={handleMemberInfoChange}
+          className="w-[320px] h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
+        >
+          <p className="text-16 font-pre-medium">회원정보 변경</p>
+          <img src={arrowIcon} alt="arrowIcon" />
         </div>
-
-        {/* 구분선 */}
-        <div className="border-b-[1px] border-lightgray">
-          <div
-            onClick={handlePasswordChange}
-            className="flex justify-between items-center py-6"
-          >
-            <p className="text-sm">비밀번호 변경</p>
-            <img src={arrowIcon} alt="arrowIcon" />
-          </div>
+        {/* 비밀번호 변경 박스 */}
+        <div
+          onClick={handlePasswordChange}
+          className="w-[320px] h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
+        >
+          <p className="text-16 font-pre-medium">비밀번호 변경</p>
+          <img src={arrowIcon} alt="arrowIcon" />
         </div>
       </div>
+
       {/* 탈퇴하기 버튼 */}
-      <div className="mt-8 flex justify-end">
+      <div className="absolute bottom-[20px] w-full mt-8 flex justify-end">
         <button
           onClick={handleAccountDeletion}
-          className="w-[65px] h-[25px] text-12 font-pre-regular border-[1px] border-lightgray rounded-lg"
+          className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
         >
           탈퇴하기
         </button>
@@ -143,15 +135,16 @@ const ManageAccount = () => {
       {/* 모달 창 */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="flex flex-col max-w-[260px] w-full h-[300px] p-6 rounded-2xl border-black/10 bg-white shadow-lg relative">
-            <p className="text-center text-12 text-gray-700 mt-[60px]">
-              탈퇴하시겠습니까?<br></br> 비밀번호를 입력해주세요.
+          <div className="flex flex-col items-center justify-center max-w-[260px] w-full h-[300px] p-6 rounded-2xl border-black/10 bg-white shadow-lg relative">
+            <p className="text-center text-12 font-pre-light mt-[40px]">
+              탈퇴하시겠습니까?
+              <br /> 비밀번호를 입력해주세요.
             </p>
             <input
               type="password"
               value={inputPassword}
               onChange={(e) => setInputPassword(e.target.value)}
-              className="w-full h-[34px] px-3 bg-component rounded-lg mt-4 focus:outline-none focus:ring-2 focus:ring-brand"
+              className="w-[200px] h-[34px] px-3 bg-component rounded-lg mt-4 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             {/* 에러 메시지 영역의 높이를 고정 */}
             <div className="min-h-[20px] mt-2 text-center">
@@ -159,15 +152,17 @@ const ManageAccount = () => {
                 <p className="text-red-500 font-pre-light text-10">{error}</p>
               )}
             </div>
-            <div className="flex p-3 pt-[25px] justify-between gap-2">
+            {/* 버튼 컨테이너 - 200px 안에서 양 끝 배치 */}
+            <div className="flex w-[200px] mt-[40px] justify-between">
               <button
                 className="w-[60px] h-[30px] py-2 border-0.2 border-sub rounded-lg bg-gray-300 text-sub text-12 hover:opacity-90 flex items-center justify-center"
                 onClick={closeModal}
               >
                 취소
               </button>
+
               <button
-                className="w-[60px] h-[30px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90 flex items-center justify-center "
+                className="w-[60px] h-[30px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90 flex items-center justify-center"
                 onClick={handlePasswordCheck}
               >
                 확인

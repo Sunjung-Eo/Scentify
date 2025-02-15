@@ -2,8 +2,6 @@ import { useState } from "react";
 import ArrowDownIcon from "../../../assets/icons/arrow-down-icon.svg";
 import CrownIcon from "../../../assets/icons/crown-icon.svg";
 
-//DeviceSelect와 다른 부분있음 해당 파일 지우면 안됨!
-
 // 기기 선택 타입
 export interface DeviceSelectItem {
   deviceId: number;
@@ -25,7 +23,7 @@ export default function MyDeviceSelect({
 }: DeviceSelectProps) {
   // 드롭박스 오픈 여부
   const [isOpen, setIsOpen] = useState(false);
-  // 현재 선택된 기기
+  // 현재 선택된 기기 (기기가 없으면 undefined)
   const selected = devices.find((device) => device.deviceId === selectedDevice);
   // 기기 정렬
   const sortedDevices = [...devices].sort((a, b) => {
@@ -40,7 +38,8 @@ export default function MyDeviceSelect({
       {/* 드롭다운 버튼 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 justify-between items-center rounded-lg bg-white"
+        className="flex w-[120px] h-[30px] p-3 border-[0.7px] border-gray font-pre-light text-12 justify-between items-center rounded-lg bg-white"
+        disabled={devices.length === 0} // 기기가 없으면 클릭 방지
       >
         <div className="flex items-center">
           {selected?.isRepresentative && (
@@ -53,14 +52,15 @@ export default function MyDeviceSelect({
           <span
             className={`text-left ${!selected?.isRepresentative ? "pl-[19px]" : ""}`}
           >
-            {selected?.name}
+            {devices.length > 0 ? selected?.name || "-" : "-"}{" "}
+            {/* 기기가 없으면 "-" 표시 */}
           </span>
         </div>
         <img src={ArrowDownIcon} alt="아래 화살표 이미지" />
       </button>
 
       {/* 드롭다운 리스트 */}
-      {isOpen && (
+      {isOpen && devices.length > 0 && (
         <div className="absolute top-full left-0 w-[120px] bg-white font-pre-light text-12 border-0.2 border-lightgray rounded-lg shadow-lg z-50">
           {sortedDevices.map((device, index) => (
             <div

@@ -7,13 +7,6 @@ export interface ModeToggleProps {
   onModeChange: (mode: boolean) => void;
 }
 
-// ModeChangeModal 관련 타입
-export interface ModeChangeModalProps {
-  nextMode: Mode;
-  onConfirm: () => void;
-  onCancel: () => void;
-}
-
 // 기기 상세 정보 타입
 export interface DeviceInfo {
   id: number;

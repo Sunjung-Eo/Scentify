@@ -14,13 +14,11 @@ export const AlertDeleteSchedule = ({
       className="flex flex-col max-w-[260px] w-full h-[300px] p-6 font-pre-light rounded-2xl border-black/10 bg-white shadow-[20px_20px_20px_rgba(0,0,0,0.08)]"
       onClick={(e) => e.stopPropagation()}
     >
-      <p className="text-center text-12 text-gray-700 mb-4 mt-[100px]">
-        {message}
-      </p>
+      <p className="text-center text-12 text-sub mb-4 mt-[100px]">{message}</p>
       {showButtons && (
         <div className="text-center p-3 pt-[70px]">
           <button
-            className="w-[60px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90"
+            className="w-[60px] h-[30px] rounded-lg bg-[#2D3319] text-bg text-12 hover:opacity-90"
             onClick={onConfirm}
           >
             확인

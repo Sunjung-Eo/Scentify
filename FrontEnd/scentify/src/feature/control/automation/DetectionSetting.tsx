@@ -205,7 +205,7 @@ export default function DetectionSetting() {
           defaultScentData={previousScentData}
         />
         {formErrors.scents && (
-          <p className="absolute ml-[70px] text-red-500 text-10">
+          <p className="absolute top-[305px] ml-[70px] text-red-500 text-10">
             {formErrors.scents}
           </p>
         )}

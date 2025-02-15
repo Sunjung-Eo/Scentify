@@ -21,7 +21,7 @@ export default function SprayIntervalSelector({
     <div className="text-black">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[82px] h-[36px] p-3 bg-white border-0.2 border-lightgray font-pre-light text-12 items-center justify-between rounded-lg"
+        className="flex w-[82px] h-[30px] p-3 bg-white border-0.2 border-lightgray font-pre-light text-12 items-center justify-between rounded-lg"
       >
         {selectedTime} <img src={ArrowDownIcon} alt="아래 화살표 이미지" />
       </button>

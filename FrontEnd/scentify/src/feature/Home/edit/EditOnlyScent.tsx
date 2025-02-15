@@ -132,11 +132,7 @@ function EditOnlyScent() {
       };
 
       console.log('🔥 updatedCombination', updatedCombination);
-      await editDefaultScent(
-        deviceId,
-        roomType === 'large' ? 1 : 0,
-        updatedCombination
-      );
+      await editDefaultScent(deviceId, updatedCombination);
 
       setTimeout(() => {
         navigate('/home');

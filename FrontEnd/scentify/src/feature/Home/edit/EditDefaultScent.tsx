@@ -3,7 +3,7 @@ import SpaceTab from '../defaultscent/SpaceTab';
 import SpaceDescription from '../defaultscent/SpaceDescription';
 import { useControlStore } from '../../../stores/useControlStore';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { editDefaultScent } from '../../../apis/home/editDefaultScent';
+import { editCapsuleAndDefaultScent } from '../../../apis/home/editCapsuleAndDefaultScent';
 import { registCapsule } from '../../../apis/home/registCapsule';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
 
@@ -104,7 +104,7 @@ function EditDefaultScent() {
 
       console.log('🔥 combination', combination);
       // 2. 기본향 설정 수정
-      await editDefaultScent(deviceId, roomTypeValue, combination);
+      await editCapsuleAndDefaultScent(deviceId, roomTypeValue, combination);
       setTimeout(() => {
         navigate('/home');
       }, 1000);

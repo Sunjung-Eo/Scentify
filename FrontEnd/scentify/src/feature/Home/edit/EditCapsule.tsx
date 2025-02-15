@@ -133,6 +133,11 @@ function EditCapsule() {
           {message.text}
         </p>
       )}
+
+      <div className=" outline-red-500 mt-4 border-2 border-solid border-[#EE9D7F] bg-white rounded-lg p-4 flex flex-col w-full justify-center items-start font-pre-light text-12 text-gray">
+        <p> ⚠️ 캡슐 변경 시 향기 조합 변경을 위해 </p>
+        <p>기존 설정 스케줄이 초기화됩니다.</p>
+      </div>
     </div>
   );
 }

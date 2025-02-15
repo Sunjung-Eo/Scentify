@@ -1,5 +1,5 @@
-import React from 'react';
-import ScentSetting from '../../../components/Control/HomeScentSetting';
+import React, { useEffect } from 'react';
+import HomeScentSetting from '../../../components/Control/HomeScentSetting';
 
 const SpaceTab = ({
   setRoomType,
@@ -11,6 +11,30 @@ const SpaceTab = ({
   const handleTabChange = (tab: 'small' | 'large') => {
     setRoomType(tab);
   };
+
+  // totalEnergy 변경될 때 scentCnt 조장
+  const totalEnergy = roomType === 'large' ? 6 : 3;
+
+  useEffect(() => {
+    const totalUsage = Object.values(scentCnt).reduce<number>(
+      (acc, curr) => acc + (curr as number),
+      0
+    );
+
+    // 현재 사용량이 totalEnergy보다 크다면 조정이 필요함
+    if (totalUsage > totalEnergy) {
+      const scaleFactor = totalUsage > 0 ? totalEnergy / totalUsage : 1;
+
+      const adjustedScentCnt = Object.fromEntries(
+        Object.entries(scentCnt).map(([key, value]) => [
+          key,
+          Math.floor((value as number) * scaleFactor), // 새로운 totalEnergy에 맞춰 비율 조정
+        ])
+      );
+
+      setScentCnt(adjustedScentCnt);
+    }
+  }, [totalEnergy, scentCnt, setScentCnt]);
 
   return (
     <div>
@@ -39,7 +63,7 @@ const SpaceTab = ({
           </button>
         </div>
       </div>
-      <ScentSetting
+      <HomeScentSetting
         scentCnt={scentCnt || { slot1: 0, slot2: 0, slot3: 0, slot4: 0 }}
         scentNames={scentNames}
         setScentCnt={setScentCnt}

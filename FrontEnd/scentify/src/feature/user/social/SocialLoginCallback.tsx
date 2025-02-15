@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/useAuthStore';
 import { useUserStore } from '../../../stores/useUserStore';
+import Spinner from '../../../components/Loading/Spinner';
 
 const SocialLoginCallback = () => {
   const navigate = useNavigate();
@@ -92,8 +93,14 @@ const SocialLoginCallback = () => {
   }, [searchParams, navigate, loginWithSocial, setUser]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <p className="text-lg">카카오 로그인 처리 중...</p>
+    <div className="flex flex-col justify-center items-center h-screen">
+      <div className="mb-8">
+        <Spinner />
+      </div>
+      <p className="text-14 text-gay font-pre-light">소셜 로그인 처리 중...</p>
+      <p className="text-12 text-gray mt-4 font-pre-light">
+        잠시만 기다려 주세요.
+      </p>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { updateDetection } from "../../../apis/control/updateDetection";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 import ScentSetting from "../../../components/Control/ScentSetting";
+
 import { detectionData } from "./AutoModeType";
 
 export default function DetectionSetting() {
@@ -38,7 +39,7 @@ export default function DetectionSetting() {
 
   // 탐지 모드 토글
   const toggleDetect = () => {
-    setDetect((prev: any) => {
+    setDetect((prev: boolean) => {
       const newState = !prev;
       setDetectModeOn(newState != detect);
       return newState;

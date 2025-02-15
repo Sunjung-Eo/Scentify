@@ -11,9 +11,10 @@ import { getCombinationById } from "../../../apis/control/getCombinationById";
 import DeviceSelect from "../../../components/Control/DeviceSelect";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
+
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { ReservationData } from "./ReservationType";
 
 export default function CreateReservation({
@@ -63,7 +64,9 @@ export default function CreateReservation({
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const handleDaySelect = (day: string) => {
     if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
+      setSelectedDays(
+        selectedDays.filter((selectedDay) => selectedDay !== day)
+      );
     } else {
       setSelectedDays([...selectedDays, day]);
     }

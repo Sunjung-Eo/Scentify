@@ -7,6 +7,7 @@ import { useControlStore } from "../../../stores/useControlStore";
 import { updateBehavior } from "../../../apis/control/updateBehavior";
 
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+
 import { behaviorData } from "./AutoModeType";
 
 export default function BehaviorSetting() {
@@ -41,7 +42,7 @@ export default function BehaviorSetting() {
 
   // 집중 모드 토글
   const toggleExercise = () => {
-    setExercise((prev: any) => {
+    setExercise((prev: boolean) => {
       const newState = !prev;
       setExerciseModeOn(newState != exercise);
       return newState;
@@ -49,7 +50,7 @@ export default function BehaviorSetting() {
   };
   // 휴식 모드 토글
   const toggleRest = () => {
-    setRest((prev: any) => {
+    setRest((prev: boolean) => {
       const newState = !prev;
       setRestModeOn(newState != rest);
       return newState;

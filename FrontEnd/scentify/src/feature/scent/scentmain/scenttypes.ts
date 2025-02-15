@@ -14,21 +14,21 @@ export interface ScentCard {
 // 찜한 향기의 조합 데이터 타입
 export interface Combination {
   id: number;
-  name: string | null; // 조합 이름
-  choice1: number; // 첫 번째 선택된 향기 ID
-  choice1Count: number; // 첫 번째 선택의 사용 횟수
-  choice2: number; // 두 번째 선택된 향기 ID
-  choice2Count: number; // 두 번째 선택의 사용 횟수
-  choice3: number; // 세 번째 선택된 향기 ID
-  choice3Count: number; // 세 번째 선택의 사용 횟수
-  choice4: number; // 네 번째 선택된 향기 ID
-  choice4Count: number; // 네 번째 선택의 사용 횟수
+  name: string | null;
+  choice1: number;
+  choice1Count: number;
+  choice2: number;
+  choice2Count: number;
+  choice3: number;
+  choice3Count: number;
+  choice4: number;
+  choice4Count: number;
 }
 
 // 찜한 향기 데이터 타입
 export interface Favorite {
-  id: number; // 찜한 항목의 고유 ID
-  combination: Combination; // 향기 조합 데이터
+  id: number;
+  combination: Combination;
 }
 
 export interface FetchFavoritesData {

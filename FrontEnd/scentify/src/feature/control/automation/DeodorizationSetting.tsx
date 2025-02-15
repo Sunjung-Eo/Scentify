@@ -9,6 +9,7 @@ import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+
 import { deodorizationData } from "./AutoModeType";
 
 export default function DeodorizationSetting() {
@@ -40,7 +41,7 @@ export default function DeodorizationSetting() {
 
   // 탈취 모드 토글
   const toggleDeodorize = () => {
-    setDeodorize((prev: any) => {
+    setDeodorize((prev: boolean) => {
       const newState = !prev;
       setDeodorizeModeOn(newState != deodorize);
       return newState;

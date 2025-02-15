@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import HeartIcon from "../../assets/icons/heart-icon.svg";
 import FillHeartIcon from "../../assets/icons/fill-heart-icon.svg";
 

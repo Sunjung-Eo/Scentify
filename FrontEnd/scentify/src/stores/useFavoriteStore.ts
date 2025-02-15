@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import { FetchFavoritesData } from "../feature/scent/scentmain/scenttypes";
+
 interface FavoriteState {
   favorites: number[];
   setFavorites: (ids: number[]) => void;
-  favoritesData: any;
-  setFavoritesData: (data: any) => void;
+  favoritesData: FetchFavoritesData;
+  setFavoritesData: (data: FetchFavoritesData) => void;
 }
 
 export const useFavoriteStore = create<FavoriteState>()(

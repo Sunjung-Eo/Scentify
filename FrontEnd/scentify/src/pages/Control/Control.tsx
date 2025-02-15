@@ -11,7 +11,6 @@ import { getAllDevicesAutomationMode } from "../../apis/control/getAllDevicesMod
 import { getDeviceInfo } from "../../apis/control/getDeviceInfo";
 import { switchMode } from "../../apis/control/switchMode";
 
-import { Mode } from "../../feature/control/main/ControlType";
 import ModeToggle from "../../feature/control/main/ModeToggle";
 import AutoManager from "../../feature/control/automation/AutoManager";
 import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
@@ -23,6 +22,9 @@ import ModifyReservation from "../../feature/control/reservation/ModifyReservati
 import DeviceSelect from "../../components/Control/DeviceSelect";
 import Modal from "../../components/Alert/ModalDeleteSchedule";
 import ProtectedRoute from "../../components/Control/ProtectedRoute";
+
+import { Mode, DeviceInfo } from "../../feature/control/main/ControlType";
+import { DeviceSelectItem } from "../../components/Control/DeviceSelect";
 
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
@@ -74,7 +76,7 @@ const Control = () => {
       : deviceIds
           .map((deviceId) => {
             const deviceInfo = devicesInfo.devices.find(
-              (device: any) => device.id === deviceId
+              (device: DeviceInfo) => device.id === deviceId
             );
             if (!deviceInfo) {
               return null;
@@ -87,7 +89,7 @@ const Control = () => {
               defaultScentId: deviceInfo.defaultCombination,
             };
           })
-          .filter(Boolean);
+          .filter((device): device is DeviceSelectItem => device !== null);
 
   // 예약 모드 정보 - query
   const { data: reservationData = [] } = useQuery({
@@ -126,7 +128,7 @@ const Control = () => {
 
   // 최신 모드 동기화
   const selectedDeviceData = devicesInfo?.devices?.find(
-    (device: any) => device.id === selectedDevice
+    (device: DeviceInfo) => device.id === selectedDevice
   );
   useEffect(() => {
     if (selectedDeviceData?.mode !== undefined) {
@@ -306,7 +308,6 @@ const Control = () => {
             <ModifyReservation
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
-              onDeviceChange={handleDeviceChange}
             />
           }
         />

@@ -1,14 +1,3 @@
-// 예약 목록 관련 타입
-export interface Reservations {
-  [key: string]: string[];
-}
-
-// 삭제 모달 props 타입
-export interface DeleteModalProps {
-  onConfirm: () => void;
-  onCancel: () => void;
-}
-
 // 예약 리스트 조회
 export interface Reservation {
   id: number;

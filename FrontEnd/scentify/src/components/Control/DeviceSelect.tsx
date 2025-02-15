@@ -17,6 +17,11 @@ export interface DeviceSelectProps {
   onDeviceChange: (deviceId: number) => void;
 }
 
+export interface DeviceSelectStateProps {
+  devices: DeviceSelectItem[];
+  selectedDevice: number | null;
+}
+
 // 기기 선택
 export default function DeviceSelect({
   devices,

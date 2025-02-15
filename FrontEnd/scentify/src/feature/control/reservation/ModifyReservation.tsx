@@ -11,15 +11,15 @@ import { updateCustomSchedule } from "../../../apis/control/updateCustomSchedule
 import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+
+import { DeviceSelectStateProps } from "../../../components/Control/DeviceSelect";
 import { ReservationData, UpdateReservationData } from "./ReservationType";
 
 export default function ModifyReservation({
   devices,
   selectedDevice,
-  onDeviceChange,
-}: DeviceSelectProps) {
+}: DeviceSelectStateProps) {
   const navigate = useNavigate();
   // 선택한 예약 정보 가져오기
   const location = useLocation();
@@ -74,7 +74,9 @@ export default function ModifyReservation({
   );
   const handleDaySelect = (day: string) => {
     if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
+      setSelectedDays(
+        selectedDays.filter((selectedDay) => selectedDay !== day)
+      );
     } else {
       setSelectedDays([...selectedDays, day]);
     }

@@ -37,6 +37,11 @@ const DeviceCard = () => {
 
   const validDeviceIds = deviceIds ?? []; // 가능한 deviceIds
 
+  // validDeviceIds가 비어있을 때 NoDeviceCard 표시
+  if (validDeviceIds.length === 0) {
+    return <NoDeviceCard />;
+  }
+
   // ✅ React Query를 사용하여 현재 선택된 기기의 정보 가져오기
   const {
     data, // 빈 배열 선언해서 오류 방지
@@ -45,7 +50,7 @@ const DeviceCard = () => {
   } = useQuery({
     queryKey: ['deviceInfo', validDeviceIds],
     queryFn: () => deviceInfo(validDeviceIds),
-    enabled: validDeviceIds.length > 0,
+    enabled: validDeviceIds.length > 0, // 기기가 있을 때만 API 호출
     staleTime: 0,
     refetchOnWindowFocus: false,
   });
@@ -61,59 +66,64 @@ const DeviceCard = () => {
     return 0;
   });
 
-  // 삭제 뮤테이션 추가
-  // homeInfo와 deviceInfo의 타입을 정의
-  interface HomeInfo {
-    user?: {
-      mainDeviceId?: number | null;
-    };
-  }
-
-  interface DeviceInfo {
-    devices: Device[];
-  }
-
+  // 삭제 뮤테이션
   const deleteMutation = useMutation({
     mutationFn: deleteDevice,
     onSuccess: async (_, deviceId) => {
-      // 🔥 기존 캐시 무효화
-      await queryClient.invalidateQueries({ queryKey: ['deviceInfo'] });
-      await queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
+      try {
+        // 🔥 기존 캐시 무효화
+        await queryClient.invalidateQueries({ queryKey: ['deviceInfo'] });
+        await queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
 
-      // 🔄 최신 데이터를 직접 가져오기 (fetchQuery 사용)
-      const [updatedHomeInfo, updatedDeviceInfo] = await Promise.all([
-        queryClient.fetchQuery({
-          queryKey: ['homeInfo'],
-          queryFn: () => homeInfo(),
-        }),
-        queryClient.fetchQuery({
-          queryKey: ['deviceInfo'],
-          queryFn: () => deviceInfo(validDeviceIds),
-        }),
-      ]);
+        // 기기가 남아있는지 확인
+        const remainingDeviceIds = validDeviceIds.filter(
+          (id) => id !== deviceId
+        );
 
-      console.log('✅ updatedHomeInfo:', updatedHomeInfo);
-      console.log('✅ updatedDeviceInfo:', updatedDeviceInfo);
+        if (remainingDeviceIds.length === 0) {
+          // 마지막 기기가 삭제된 경우
+          setCurrentMainDeviceId(null);
+          return;
+        }
 
-      // homeInfo에서 mainDeviceId 가져오기 (기본값 처리)
-      const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
+        // 기기가 남아있는 경우에만 새로운 데이터 fetch (fetchQuery 사용)
+        const [updatedHomeInfo, updatedDeviceInfo] = await Promise.all([
+          queryClient.fetchQuery({
+            queryKey: ['homeInfo'],
+            queryFn: () => homeInfo(),
+          }),
+          queryClient.fetchQuery({
+            queryKey: ['deviceInfo'],
+            queryFn: () => deviceInfo(validDeviceIds),
+          }),
+        ]);
 
-      // deviceInfo에서 devices 목록 가져오기 (기본값 처리)
-      const updatedDevices = updatedDeviceInfo?.devices ?? [];
+        // homeInfo에서 mainDeviceId 가져오기 (기본값 처리)
+        // const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
 
-      // ✅ 기기가 하나도 없으면 대표 기기 상태를 null로 설정
-      if (updatedDevices.length === 0) {
-        setCurrentMainDeviceId(null);
-        return;
+        // deviceInfo에서 devices 목록 가져오기 (기본값 처리)
+        // const updatedDevices = updatedDeviceInfo?.devices ?? [];
+
+        // ✅ 기기가 하나도 없으면 대표 기기 상태를 null로 설정
+        // if (updatedDevices.length === 0) {
+        //   setCurrentMainDeviceId(null);
+        //   return;
+        // }
+
+        // ✅ 새로운 대표 기기 찾기
+        // const newMainDevice = updatedDevices.find(
+        //   (d: Device) => d.id === newMainDeviceId
+        // );
+        //
+        // // 대표 기기 업데이트
+        // setCurrentMainDeviceId(newMainDevice?.id ?? null);
+
+        // homeInfo에서 mainDeviceId 가져오기
+        const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
+        setCurrentMainDeviceId(newMainDeviceId);
+      } catch (error) {
+        console.error('❌ 데이터 업데이트 실패:', error);
       }
-
-      // ✅ 새로운 대표 기기 찾기
-      const newMainDevice = updatedDevices.find(
-        (d: Device) => d.id === newMainDeviceId
-      );
-
-      // 대표 기기 업데이트
-      setCurrentMainDeviceId(newMainDevice?.id ?? null);
     },
     onError: (error) => {
       console.error('❌ 디바이스 삭제 실패:', error);
@@ -151,13 +161,14 @@ const DeviceCard = () => {
     },
   });
 
-  if (isLoading)
-    return <p className="text-brand">기기 정보를 불러오는 중...</p>;
-  if (isError)
-    return <p className="text-red-500">기기 정보를 불러오지 못했습니다.</p>;
+  console.log('devices.length', devices.length);
 
-  // devices가 비어있을 때 NoDeviceCard 표시
-  if (devices.length === 0) {
+  if (isLoading) {
+    return <p className="text-brand">기기 정보를 불러오는 중...</p>;
+  }
+
+  if (isError || !devices || devices.length === 0) {
+    // isError의 경우에도 일단 NoDeviceCard 표시
     return <NoDeviceCard />;
   }
 

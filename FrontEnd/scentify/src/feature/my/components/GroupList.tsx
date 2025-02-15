@@ -12,7 +12,7 @@ import { deleteGroupMember } from "../../../apis/group/deleteGroupMember"; // �
 import { deleteGroup } from "../../../apis/group/deleteGroup"; // 그룹 삭제 API
 import { Link, useNavigate } from "react-router-dom";
 import rigtarrowIcon from "../../../assets/icons/rightarrow-icon.svg";
-import Modal from "../../../components/Alert/ModalDeleteSchedule";
+import Modal from "../../../components/Alert/Modal";
 import MyDeviceSelect from "./MyDeviceSelect";
 
 export const GroupList = () => {

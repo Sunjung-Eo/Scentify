@@ -120,13 +120,13 @@ export default function AutoManager({
   };
 
   return (
-    <div className="flex flex-col mt-6 gap-4">
+    <div className="flex flex-col mt-6 font-pre-medium text-14 gap-4">
       {/* 탈취 모드 */}
-      <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
+      <div className="w-[320px] h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div>탈취 모드</div>
-          <div className="flex items-center gap-2">
-            <p>{autoSchedules[0].modeOn === 1 ? "ON" : "OFF"}</p>
+          <div className="flex items-center font-pre-light text-12 text-brand gap-2">
+            <p>{autoSchedules[0].modeOn === 1 ? "on" : "off"}</p>
             <button
               onClick={() => handleSettingClick(autoSchedules[0].subMode)}
             >
@@ -137,14 +137,14 @@ export default function AutoManager({
       </div>
 
       {/* 동작 모드 */}
-      <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
+      <div className="w-[320px] h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div>동작 모드</div>
           <div className="flex flex-col gap-2">
             <div className="flex">
-              <div className="flex flex-col pr-2 items-center gap-1 font-pre-light text-10">
-                <p>운동 {autoSchedules[2].modeOn === 1 ? "ON" : "OFF"}</p>
-                <p>휴식 {autoSchedules[3].modeOn === 1 ? "ON" : "OFF"}</p>
+              <div className="flex flex-col pr-2 items-center gap-1 font-pre-light text-10font-pre-light text-brand text-12">
+                <p>운동 {autoSchedules[2].modeOn === 1 ? "on" : "off"}</p>
+                <p>휴식 {autoSchedules[3].modeOn === 1 ? "on" : "off"}</p>
               </div>
               <button
                 onClick={() => handleSettingClick(autoSchedules[2].subMode)}
@@ -157,11 +157,11 @@ export default function AutoManager({
       </div>
 
       {/* 탐지 모드 */}
-      <div className="w-[328px] h-[40px] px-4 bg-component text-14 flex justify-between items-center rounded-lg">
+      <div className="w-[320px] h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div>탐지 모드</div>
-          <div className="flex items-center gap-2">
-            <p>{autoSchedules[1].modeOn === 1 ? "ON" : "OFF"}</p>
+          <div className="flex items-center font-pre-light text-12 text-brand gap-2">
+            <p>{autoSchedules[1].modeOn === 1 ? "on" : "off"}</p>
             <button
               onClick={() => handleSettingClick(autoSchedules[1].subMode)}
             >

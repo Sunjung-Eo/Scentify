@@ -74,10 +74,10 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
   useEffect(() => {
     onSubmit({
       name,
-      slot1: fragranceMap[slot1] || 0,
-      slot2: fragranceMap[slot2] || 0,
-      slot3: fragranceMap[slot3] || 0,
-      slot4: fragranceMap[slot4] || 0,
+      slot1: slot1 ? fragranceMap[slot1] : -1,
+      slot2: slot2 ? fragranceMap[slot2] : -1,
+      slot3: slot3 ? fragranceMap[slot3] : -1,
+      slot4: slot4 ? fragranceMap[slot4] : -1,
     });
   }, [name, slot1, slot2, slot3, slot4, onSubmit]);
 

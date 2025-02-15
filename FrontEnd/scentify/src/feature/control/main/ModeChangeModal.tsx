@@ -1,7 +1,7 @@
 import { ModeChangeModalProps } from "./ControlType";
 
 // 모드 변경 모달창
-export default function ModeChangeModal({
+export default function ModalModeChange({
   nextMode,
   onConfirm,
   onCancel,

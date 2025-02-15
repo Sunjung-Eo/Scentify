@@ -11,9 +11,10 @@ import { getCombinationById } from "../../../apis/control/getCombinationById";
 import DeviceSelect from "../../../components/Control/DeviceSelect";
 import ScentSetting from "../../../components/Control/ScentSetting";
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
-import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
 import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
+
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
 import { ReservationData } from "./ReservationType";
 
 export default function CreateReservation({
@@ -27,17 +28,15 @@ export default function CreateReservation({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
+  const queryClient = useQueryClient();
+
   // 모달창
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleModalOpen = () => {
     setIsModalOpen(false);
   };
-  useEffect(() => {
-    console.log("isModalOpen:", isModalOpen); // 상태 변경 로그
-  }, [isModalOpen]);
 
-  // 예약하기 - react query
-  const queryClient = useQueryClient();
+  // 예약하기 - query
   const createMutation = useMutation({
     mutationFn: (data: ReservationData) =>
       createCustomSchedule(data, accessToken),
@@ -45,6 +44,7 @@ export default function CreateReservation({
       queryClient.invalidateQueries({ queryKey: ["reservations"] });
       navigate("/control", { state: { reservationCreated: true } });
     },
+    // 403 반환 시 모달창 띄우기
     onError: (error) => {
       if (error.message === "403") {
         setIsModalOpen(true);
@@ -64,7 +64,9 @@ export default function CreateReservation({
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const handleDaySelect = (day: string) => {
     if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
+      setSelectedDays(
+        selectedDays.filter((selectedDay) => selectedDay !== day)
+      );
     } else {
       setSelectedDays([...selectedDays, day]);
     }
@@ -226,6 +228,7 @@ export default function CreateReservation({
     const start24Number = parseTimeToNumber(start24);
     const end24Number = parseTimeToNumber(end24);
 
+    // 유효성 검사 메세지
     if (!reservationName.trim()) {
       errors.reservationName = "예약 이름을 입력해주세요.";
       isValid = false;
@@ -269,6 +272,7 @@ export default function CreateReservation({
       return;
     }
 
+    // API request 데이터
     const reservationData: ReservationData = {
       name: reservationName,
       deviceId: selectedDevice,

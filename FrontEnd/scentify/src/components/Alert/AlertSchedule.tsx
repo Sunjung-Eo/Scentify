@@ -1,9 +1,9 @@
 interface AlertScheduleProps {
   message: string;
-  showButtons?: boolean; // 버튼들을 모두 제어하는 prop
-  onConfirm?: () => void; // 확인 버튼 클릭 시 실행할 함수
+  showButtons?: boolean;
+  onConfirm?: () => void;
 }
-
+// 기존에 존재하는 시간을 예약한 경우 알람창
 export const AlertScheduleModal = ({
   message,
   showButtons = true,

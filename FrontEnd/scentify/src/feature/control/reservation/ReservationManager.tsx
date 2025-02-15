@@ -15,6 +15,7 @@ import { AlertDeleteSchedule } from "../../../components/Alert/AlertDeleteSchedu
 import ModalDeleteSchedule from "../../../components/Alert/ModalDeleteSchedule";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
+
 import { ReservationManagerProps } from "./ReservationType";
 
 import ModifyIcon from "../../../assets/icons/modify-icon.svg";
@@ -32,15 +33,11 @@ export default function ReservationManager({
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
 
-  // 모달창
+  // 삭제할 수 없는 경우 추가 알림창
   const [isDeleteAlterOpen, setIsDeleteAlterOpen] = useState(false);
   const handleDeleteAlter = () => {
     setIsDeleteAlterOpen(false);
   };
-
-  const customSchedules = reservationData?.customSchedules || []; // 기기 한개의 예약 데이터 저장
-  const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
-
   // 삭제 모달
   const [reservationDelete, setReservationDelete] = useState<number | null>(
     null
@@ -58,6 +55,7 @@ export default function ReservationManager({
       setReservationDelete(null);
     },
     onError: (error) => {
+      // 403에러의 경우 추가 알림창
       if (error.message === "403") {
         setIsDeleteAlterOpen(true);
         setModalOpen(false);
@@ -94,6 +92,8 @@ export default function ReservationManager({
   };
 
   // 해당 예약의 향 정보 가져오기
+  const customSchedules = reservationData?.customSchedules || []; // 기기 한개의 예약 데이터 저장
+  const [combinations, setCombinations] = useState<{ [key: number]: any }>({}); // 해당 예약의 조합 데이터 저장
   useEffect(() => {
     const fetchCombinationData = async () => {
       try {
@@ -130,7 +130,8 @@ export default function ReservationManager({
     ...favorites,
   ]);
 
-  const { data: favoritesData, isLoading } = useQuery({
+  // 찜 세부 정보 query
+  const { data: fetchedFavoritesData, isLoading } = useQuery({
     queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
     enabled: !!accessToken,
@@ -138,6 +139,7 @@ export default function ReservationManager({
     refetchOnMount: "always",
   });
 
+  // 언마운트 시 ref 사용
   const currentFavoritesRef = useRef(currentFavorites);
   useEffect(() => {
     currentFavoritesRef.current = currentFavorites;
@@ -168,6 +170,7 @@ export default function ReservationManager({
     },
   });
 
+  // 언마운트 시 동작작
   useEffect(() => {
     return () => {
       const updateFavorites = async () => {
@@ -194,6 +197,7 @@ export default function ReservationManager({
       };
 
       updateFavorites();
+      // query 즉시 업데이트
       queryClient.setQueryData(["favoritesData"], (old: any) => ({
         ...old,
         favorites: currentFavoritesRef.current,
@@ -253,7 +257,7 @@ export default function ReservationManager({
                         isLiked={
                           (currentFavorites?.length > 0
                             ? currentFavorites
-                            : favoritesData?.favorites
+                            : fetchedFavoritesData?.favorites
                           )?.includes(schedule.combinationId) ?? false
                         }
                         onToggle={(newState) => {

@@ -1,19 +1,22 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import { FetchFavoritesData } from "../feature/scent/scentmain/scenttypes";
+
 interface FavoriteState {
   favorites: number[];
   setFavorites: (ids: number[]) => void;
-  favoritesData: any;
-  setFavoritesData: (data: any) => void;
+  favoritesData: FetchFavoritesData;
+  setFavoritesData: (data: FetchFavoritesData) => void;
 }
 
 export const useFavoriteStore = create<FavoriteState>()(
   persist(
     (set) => ({
-      favorites: [] as number[], // 서버에서 받아온 찜 id 리스트
+      // 서버에서 받아온 찜 id 리스트
+      favorites: [] as number[],
       setFavorites: (favorite) => set({ favorites: favorite }),
-
+      // 해당 찜의 세부 정보
       favoritesData: { favorites: [] },
       setFavoritesData: (data) => {
         set({ favoritesData: data });

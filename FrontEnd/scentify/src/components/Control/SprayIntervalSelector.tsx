@@ -6,6 +6,7 @@ interface SprayIntervalSelectorProps {
   onTimeSelect: (time: string) => void;
 }
 
+// 분사 주기
 export default function SprayIntervalSelector({
   selectedTime,
   onTimeSelect,

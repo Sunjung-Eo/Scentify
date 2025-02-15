@@ -1,12 +1,12 @@
 interface ModalDeleteScheduleProps {
   message: string;
-  showButtons?: boolean; // 버튼들을 모두 제어하는 prop
-  onConfirm?: () => void; // 확인 버튼 클릭 시 실행할 함수
-  onCancel?: () => void; // 취소 버튼 클릭 시 실행할 함수
-  confirmText?: string; // 확인 버튼 텍스트
-  cancelText?: string; // 취소 버튼 텍스트
+  showButtons?: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
 }
-
+// 예약 삭제 모달창
 const ModalDeleteSchedule = ({
   message,
   showButtons = true,

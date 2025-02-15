@@ -13,3 +13,26 @@ export interface ModeChangeModalProps {
   onConfirm: () => void;
   onCancel: () => void;
 }
+
+// 기기 상세 정보 타입
+export interface DeviceInfo {
+  id: number;
+  name: string | null;
+  roomType: number | null;
+  defaultCombination: number;
+  groupId: number;
+  humidity: number;
+  mode: number;
+  slot1: number;
+  slot2: number;
+  slot3: number;
+  slot4: number;
+  slotRemainingRatio: number;
+  slot2RemainingRatio: number;
+  slot3RemainingRatio: number;
+  slot4RemainingRatio: number;
+  temperature: number;
+}
+export interface DevicesInfo {
+  devices: DeviceInfo[];
+}

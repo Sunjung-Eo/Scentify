@@ -8,6 +8,7 @@ import { updateDetection } from "../../../apis/control/updateDetection";
 import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 import ScentSetting from "../../../components/Control/ScentSetting";
+
 import { detectionData } from "./AutoModeType";
 
 export default function DetectionSetting() {
@@ -18,7 +19,7 @@ export default function DetectionSetting() {
   const accessToken = location.state.accessToken;
   const roomType = location.state.roomType;
 
-  // react query
+  // 탐지 모드 - mutation
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: (data: detectionData) => updateDetection(data, accessToken),
@@ -38,7 +39,7 @@ export default function DetectionSetting() {
 
   // 탐지 모드 토글
   const toggleDetect = () => {
-    setDetect((prev: any) => {
+    setDetect((prev: boolean) => {
       const newState = !prev;
       setDetectModeOn(newState != detect);
       return newState;
@@ -126,7 +127,8 @@ export default function DetectionSetting() {
   const [formErrors, setFormErrors] = useState({
     scents: "",
   });
-  // 완료 버튼
+
+  // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
     // 유효성 검사
@@ -147,7 +149,7 @@ export default function DetectionSetting() {
     if (!isValid) {
       return;
     }
-
+    // API request
     const detectionData: detectionData = {
       id: schedule.id,
       deviceId: deviceId,

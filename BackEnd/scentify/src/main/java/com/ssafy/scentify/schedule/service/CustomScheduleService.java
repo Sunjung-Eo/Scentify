@@ -44,6 +44,11 @@ public class CustomScheduleService {
 	public boolean deleteCustomScheduleById(int customScheduleId, int deviceId) {
 		return customScheduleRepository.deleteCustomScheduleById(customScheduleId, deviceId);
 	}
+	
+
+	public boolean deleteCustomSchedules(int deviceId) {
+		return customScheduleRepository.deleteCustomSchedules(deviceId);
+	}
 
 	public Map<Integer, List<CustomScheduleRequest>> getGroupedSchedules(int currentBit) {
 		List<CustomScheduleRequest> allSchedules = customScheduleRepository.selectAllySchedules(currentBit);

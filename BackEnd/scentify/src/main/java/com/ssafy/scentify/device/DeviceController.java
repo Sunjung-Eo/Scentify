@@ -29,6 +29,7 @@ import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
 import com.ssafy.scentify.group.model.entity.Group;
 import com.ssafy.scentify.home.model.dto.HomeDto.DeviceHomeDto;
 import com.ssafy.scentify.schedule.service.AutoScheduleService;
+import com.ssafy.scentify.schedule.service.CustomScheduleService;
 import com.ssafy.scentify.user.service.UserService;
 import com.ssafy.scentify.websocket.HandshakeStateManager;
 import com.ssafy.scentify.websocket.WebSocketController;
@@ -49,16 +50,18 @@ public class DeviceController {
 	private final DeviceService deviceService;
 	private final GroupService groupService;
 	private final CombinationService combinationService;
+	private final CustomScheduleService customScheduleService;
 	private final AutoScheduleService autoScheduleService; 
 	private final HandshakeStateManager stateManager;
 	private final TokenProvider tokenProvider;
 	
-	public DeviceController(UserService userService, WebSocketService socketService, DeviceService deviceService, GroupService groupService, CombinationService combinationService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
+	public DeviceController(UserService userService, WebSocketService socketService, DeviceService deviceService, GroupService groupService, CombinationService combinationService, CustomScheduleService customScheduleService, AutoScheduleService autoScheduleService, HandshakeStateManager stateManager, TokenProvider tokenProvider) {
 		this.userService = userService;
 		this.socketService = socketService;
 		this.deviceService = deviceService;
 		this.groupService = groupService;
 		this.combinationService = combinationService;
+		this.customScheduleService = customScheduleService;
 		this.autoScheduleService = autoScheduleService;
 		this.stateManager = stateManager;
 		this.tokenProvider = tokenProvider;
@@ -306,6 +309,11 @@ public class DeviceController {
 	    			session.invalidate();
 	    			return new ResponseEntity<>(HttpStatus.OK);
 	        	}	        	
+	        }
+	        
+	        // 기존 커스텀 스케쥴 삭제
+	        if (!customScheduleService.deleteCustomSchedules(deviceId)) {
+	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 			
 	        // 기존 자동화 스케줄 삭제

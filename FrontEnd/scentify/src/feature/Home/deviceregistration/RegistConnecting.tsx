@@ -1,4 +1,4 @@
-import Spinner from '../Loading/Spinner';
+import Spinner from '../../../components/Loading/Spinner';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { registDevice } from '../../../apis/home/registdevice';

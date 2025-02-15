@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useEffect, useRef } from 'react';
-interface ScentSCntettingProps {
+interface HomeScentSettingProps {
   scentCnt: {
     slot1: number;
     slot2: number;
@@ -24,12 +24,12 @@ interface ScentSCntettingProps {
   totalEnergy: number;
 }
 
-export default function ScentSCntetting({
+export default function HomeScentSetting({
   scentCnt,
   scentNames,
   setScentCnt,
   totalEnergy, // 3, 6
-}: ScentSCntettingProps) {
+}: HomeScentSettingProps) {
   if (!scentCnt || !scentNames) {
     return null;
   }

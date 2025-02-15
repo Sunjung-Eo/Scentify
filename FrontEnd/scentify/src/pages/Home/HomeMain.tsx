@@ -11,6 +11,8 @@ import { AutoSchedule, CustomSchedule } from "../../types/SchedulesType.ts";
 interface ExampleDataProps {
   mainDeviceId: number | null;
   mainDeviceMode: number | null;
+  mainDeviceHumidity: number | null;
+  mainDeviceTemperature: number | null;
   deviceIds: number[];
   autoSchedules: AutoSchedule[];
   customSchedules: CustomSchedule[];
@@ -80,10 +82,14 @@ const HomeMain = () => {
   const exampleData: ExampleDataProps = {
     mainDeviceId: mainDevice?.id ?? null,
     mainDeviceMode: data?.mainDevice?.mode ?? null,
+    mainDeviceHumidity: data?.mainDevice?.humidity ?? null,
+    mainDeviceTemperature: data?.mainDevice?.temperature ?? null,
     deviceIds: deviceIds.length > 0 ? deviceIds : [],
     autoSchedules: data?.autoSchedules ?? [],
     customSchedules: data?.customSchedules ?? [],
   };
+
+  console.log('🔥 exampleData:', exampleData);
 
   return (
     <div className="flex flex-col content px-4 py-1">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import HeartIcon from "../../assets/icons/heart-icon.svg";
 import FillHeartIcon from "../../assets/icons/fill-heart-icon.svg";
 
@@ -8,10 +8,9 @@ interface HeartButtonProps {
 }
 
 export default function HeartButton({ isLiked, onToggle }: HeartButtonProps) {
+  // 하트 색칠
   const [isFilled, setIsFilled] = useState(isLiked);
-  useEffect(() => {
-    // console.log(isFilled);
-  }, [isFilled]);
+  // 하트 클릭 핸들러
   const handleClick = () => {
     const newState = !isFilled;
     setIsFilled(newState);

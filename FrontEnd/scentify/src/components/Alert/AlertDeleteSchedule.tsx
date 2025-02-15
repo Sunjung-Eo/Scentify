@@ -1,9 +1,9 @@
 interface AlertDeleteScheduleProps {
   message: string;
-  showButtons?: boolean; // 버튼들을 모두 제어하는 prop
-  onConfirm?: () => void; // 확인 버튼 클릭 시 실행할 함수
+  showButtons?: boolean;
+  onConfirm?: () => void;
 }
-
+// 예약 삭제 시 이미 실행 중인 예약인 경우 띄우는 알람창
 export const AlertDeleteSchedule = ({
   message,
   showButtons = true,

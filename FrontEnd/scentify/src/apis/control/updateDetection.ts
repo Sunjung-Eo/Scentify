@@ -13,7 +13,6 @@ export const updateDetection = async (
     },
     body: JSON.stringify(deodorizationData),
   });
-  console.log("탐지모드", deodorizationData);
 
   return response.status;
 };

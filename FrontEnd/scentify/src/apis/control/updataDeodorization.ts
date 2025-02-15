@@ -13,7 +13,6 @@ export const updateDeodorization = async (
     },
     body: JSON.stringify(deodorizationData),
   });
-  console.log("탈취모드", deodorizationData);
 
   return response.status;
 };

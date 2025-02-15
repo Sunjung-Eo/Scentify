@@ -12,7 +12,7 @@ export const getAllFavorite = async (accessToken: string) => {
     if (!response.ok) {
       throw new Error(`API 호출 실패: ${response.status}`);
     }
-    // console.log("찜하기 api!!!!!!!!!", response.json);
+
     return response.json();
   } catch (error) {
     console.error("예약 데이터 가져오기 실패:", error);

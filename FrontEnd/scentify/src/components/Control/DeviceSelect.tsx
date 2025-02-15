@@ -17,6 +17,11 @@ export interface DeviceSelectProps {
   onDeviceChange: (deviceId: number) => void;
 }
 
+export interface DeviceSelectStateProps {
+  devices: DeviceSelectItem[];
+  selectedDevice: number | null;
+}
+
 // 기기 선택
 export default function DeviceSelect({
   devices,
@@ -27,7 +32,7 @@ export default function DeviceSelect({
   const [isOpen, setIsOpen] = useState(false);
   // 현재 선택된 기기
   const selected = devices.find((device) => device.deviceId === selectedDevice);
-  // 기기 정렬렬
+  // 기기 정렬
   const sortedDevices = [...devices].sort((a, b) => {
     if (a.name && b.name) {
       return a.name.localeCompare(b.name); // 이름 기준 오름차순

@@ -13,7 +13,6 @@ export const updateBehavior = async (
     },
     body: JSON.stringify(behaviorData),
   });
-  console.log("동작모드", behaviorData);
 
   return response.status;
 };

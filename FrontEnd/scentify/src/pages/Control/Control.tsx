@@ -11,7 +11,6 @@ import { getAllDevicesAutomationMode } from "../../apis/control/getAllDevicesMod
 import { getDeviceInfo } from "../../apis/control/getDeviceInfo";
 import { switchMode } from "../../apis/control/switchMode";
 
-import { Mode } from "../../feature/control/main/ControlType";
 import ModeToggle from "../../feature/control/main/ModeToggle";
 import AutoManager from "../../feature/control/automation/AutoManager";
 import BehaviorSetting from "../../feature/control/automation/BehaviorSetting";
@@ -23,6 +22,9 @@ import ModifyReservation from "../../feature/control/reservation/ModifyReservati
 import DeviceSelect from "../../components/Control/DeviceSelect";
 import Modal from "../../components/Alert/ModalDeleteSchedule";
 import ProtectedRoute from "../../components/Control/ProtectedRoute";
+
+import { Mode, DeviceInfo } from "../../feature/control/main/ControlType";
+import { DeviceSelectItem } from "../../components/Control/DeviceSelect";
 
 import "../../styles/global.css";
 import RemoteIcon from "../../assets/icons/remote-icon.svg";
@@ -38,17 +40,14 @@ const Control = () => {
   // 기기 정보
   const { deviceIdsAndNames } = useUserStore();
   const { mainDevice } = useMainDeviceStore();
-
   // 기기 id들
   const deviceIds = deviceIdsAndNames
     ? Object.keys(deviceIdsAndNames).map(Number)
     : [];
-
-  // 선택한 기기(기본값: 대표기기 - 등록순)
+  // 선택한 기기(기본값: 대표기기)
   const [selectedDevice, setSelectedDevice] = useState<number | null>(
     mainDevice?.id ?? null
   );
-
   // 기기 선택
   const handleDeviceChange = (deviceId: number) => {
     setSelectedDevice(deviceId);
@@ -77,10 +76,10 @@ const Control = () => {
       : deviceIds
           .map((deviceId) => {
             const deviceInfo = devicesInfo.devices.find(
-              (device: any) => device.id === deviceId
+              (device: DeviceInfo) => device.id === deviceId
             );
             if (!deviceInfo) {
-              return null; // 데이터가 없는 경우 null 반환
+              return null;
             }
             return {
               deviceId: deviceInfo.id,
@@ -90,11 +89,12 @@ const Control = () => {
               defaultScentId: deviceInfo.defaultCombination,
             };
           })
-          .filter(Boolean);
+          .filter((device): device is DeviceSelectItem => device !== null);
 
-  // 전체 예약 조회 API 호출
+  // 예약 모드 정보 - query
   const { data: reservationData = [] } = useQuery({
     queryKey: ["reservations", deviceIds, accessToken],
+    // 전체 예약 조회 API 호출
     queryFn: () => getAllDevicesReservationMode(deviceIds, accessToken),
     enabled: deviceIds.length > 0 && !!accessToken,
   });
@@ -104,9 +104,10 @@ const Control = () => {
         ?.reservations || []
     : [];
 
-  // 전체 예약 조회 API 호출
+  // 자동화 모드 정보 - query
   const { data: automationData = [] } = useQuery({
     queryKey: ["automations", deviceIds, accessToken],
+    // 전체 예약 조회 API 호출
     queryFn: () => getAllDevicesAutomationMode(deviceIds, accessToken),
     enabled: deviceIds.length > 0 && !!accessToken,
   });
@@ -117,9 +118,6 @@ const Control = () => {
     : [];
 
   // 모드
-  const selectedDeviceData = devicesInfo?.devices?.find(
-    (device: any) => device.id === selectedDevice
-  );
   // 현재 설정된 모드
   const [mode, setMode] = useState<boolean | null>(null);
   useEffect(() => {
@@ -127,18 +125,22 @@ const Control = () => {
       queryClient.invalidateQueries({ queryKey: ["deviceInfo"] });
     }
   }, [selectedDevice]);
+
   // 최신 모드 동기화
+  const selectedDeviceData = devicesInfo?.devices?.find(
+    (device: DeviceInfo) => device.id === selectedDevice
+  );
   useEffect(() => {
     if (selectedDeviceData?.mode !== undefined) {
       setMode(selectedDeviceData.mode);
     }
   }, [selectedDeviceData]);
 
-  const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
-
   // 다른 모드 클릭 시 모달 표시
+  const [nextMode, setNextMode] = useState<Mode>(false); // 모달창 확인 버튼
   const [modalOpen, setModalOpen] = useState(false); // 모달 표시 여부
   const [modalMessage, setModalMessage] = useState(""); // 모달 메시지
+  // 모드 변경 핸들러
   const handleModeChange = (newMode: Mode) => {
     if (deviceIds.length === 0) {
       return;
@@ -164,12 +166,6 @@ const Control = () => {
       }
     }
   };
-  // useEffect(() => {
-  //   if (selectedDeviceData?.mode !== undefined) {
-  //     setMode(selectedDeviceData.mode);
-  //   }
-  // }, [selectedDeviceData?.mode]);
-
   // 모달 창 취소 버튼
   const handleCancel = () => {
     setModalOpen(false);
@@ -312,7 +308,6 @@ const Control = () => {
             <ModifyReservation
               devices={deviceSelectItems}
               selectedDevice={selectedDevice}
-              onDeviceChange={handleDeviceChange}
             />
           }
         />

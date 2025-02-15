@@ -7,6 +7,7 @@ import { useControlStore } from "../../../stores/useControlStore";
 import { updateBehavior } from "../../../apis/control/updateBehavior";
 
 import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+
 import { behaviorData } from "./AutoModeType";
 
 export default function BehaviorSetting() {
@@ -17,7 +18,7 @@ export default function BehaviorSetting() {
   const deviceId = location.state.deviceId;
   const accessToken = location.state.accessToken;
 
-  // react query
+  //동작 모드 - mutation
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: (data: behaviorData) => updateBehavior(data, accessToken),
@@ -41,7 +42,7 @@ export default function BehaviorSetting() {
 
   // 집중 모드 토글
   const toggleExercise = () => {
-    setExercise((prev: any) => {
+    setExercise((prev: boolean) => {
       const newState = !prev;
       setExerciseModeOn(newState != exercise);
       return newState;
@@ -49,7 +50,7 @@ export default function BehaviorSetting() {
   };
   // 휴식 모드 토글
   const toggleRest = () => {
-    setRest((prev: any) => {
+    setRest((prev: boolean) => {
       const newState = !prev;
       setRestModeOn(newState != rest);
       return newState;
@@ -79,6 +80,7 @@ export default function BehaviorSetting() {
   // 완료 버튼 핸들러
   const { setCompleteHandler } = useControlStore();
   const handleComplete = () => {
+    // API request
     const behaviorData: behaviorData = {
       exerciseSchedule: {
         id: scheduleExercise.id,
@@ -105,7 +107,6 @@ export default function BehaviorSetting() {
           ? false
           : true,
     };
-    console.log(behaviorData);
 
     updateMutation.mutate(behaviorData);
     navigate("/control", {

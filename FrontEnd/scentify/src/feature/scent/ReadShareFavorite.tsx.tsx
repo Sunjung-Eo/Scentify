@@ -1,13 +1,13 @@
-import { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import { readShareFavorite } from "../../apis/scent/readShareFavorite"; // API 호출 함수 가져오기
-import { Combination } from "../../feature/scent/scentmain/scenttypes";
-import { getScentName, getColor } from "../../utils/control/scentUtils";
-import Spinner from "../Home/Loading/Spinner";
-import html2canvas from "html2canvas";
-import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
-import Header from "../../layout/Header";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { readShareFavorite } from '../../apis/scent/readShareFavorite'; // API 호출 함수 가져오기
+import { Combination } from '../../feature/scent/scentmain/scenttypes';
+import { getScentName, getColor } from '../../utils/control/scentUtils';
+import Spinner from '../../components/Loading/Spinner';
+import html2canvas from 'html2canvas';
+import scentifylogo from '../../assets/icons/scentify-green-logo.svg';
+import Header from '../../layout/Header';
+import { useNavigate } from 'react-router-dom';
 
 const ReadShareFavorite = () => {
   const navigate = useNavigate();
@@ -16,8 +16,8 @@ const ReadShareFavorite = () => {
 
   // 🔹 URL에서 combinationId와 imageName 추출
   const queryParams = new URLSearchParams(location.search);
-  const combinationId = queryParams.get("combinationId");
-  const imageName = queryParams.get("imageName");
+  const combinationId = queryParams.get('combinationId');
+  const imageName = queryParams.get('imageName');
 
   // 🔹 상태 변수
   const [combination, setCombination] = useState<Combination | null>(null);
@@ -27,7 +27,7 @@ const ReadShareFavorite = () => {
   // 🔹 API 호출
   useEffect(() => {
     if (!combinationId || !imageName) {
-      console.error("❌ 잘못된 URL입니다.");
+      console.error('❌ 잘못된 URL입니다.');
       setLoading(false);
       return;
     }
@@ -42,7 +42,7 @@ const ReadShareFavorite = () => {
       );
 
       if (!data) {
-        console.error("❌ 공유된 향기 정보를 불러오지 못했습니다.");
+        console.error('❌ 공유된 향기 정보를 불러오지 못했습니다.');
       } else {
         setCombination(data.combination ?? null); // 🔹 undefined 방지
         setImageUrl(data.s3Url ?? null);
@@ -70,18 +70,18 @@ const ReadShareFavorite = () => {
         },
       });
 
-      const image = canvas.toDataURL("image/png");
+      const image = canvas.toDataURL('image/png');
 
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = image;
-      link.download = "shared-scent-card.png";
+      link.download = 'shared-scent-card.png';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      console.log("✅ 카드 이미지 다운로드 성공");
+      console.log('✅ 카드 이미지 다운로드 성공');
     } catch (error) {
-      console.error("❌ 카드 이미지 다운로드 실패:", error);
+      console.error('❌ 카드 이미지 다운로드 실패:', error);
     }
   };
 
@@ -124,7 +124,7 @@ const ReadShareFavorite = () => {
               </p>
             )}
             <h2 className="text-14 text-center font-pre-medium mt-6">
-              {combination?.name || "이름 없는 조합"}
+              {combination?.name || '이름 없는 조합'}
             </h2>
 
             {/* 🔹 향기 정보 */}
@@ -173,7 +173,7 @@ const ReadShareFavorite = () => {
           </button>
         )}
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate('/')}
           className="border-[1px] border-brand w-[167.3px] h-[40px] text-brand text-16 font-pre-medium rounded-lg "
         >
           Scentify 시작하기

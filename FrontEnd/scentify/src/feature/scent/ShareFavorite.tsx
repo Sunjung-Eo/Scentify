@@ -1,14 +1,14 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { Combination } from "./scentmain/scenttypes";
-import { getScentName, getColor } from "../../utils/control/scentUtils";
-import { useEffect, useState } from "react";
-import { shareFavoriteCombination } from "../../apis/scent/shareFavoriteCombination";
-import { useAuthStore } from "../../stores/useAuthStore";
-import Spinner from "../Home/Loading/Spinner";
-import BackIcon from "../../assets/icons/back-arrow-btn.svg";
-import { useRef } from "react";
-import html2canvas from "html2canvas";
-import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Combination } from './scentmain/scenttypes';
+import { getScentName, getColor } from '../../utils/control/scentUtils';
+import { useEffect, useState } from 'react';
+import { shareFavoriteCombination } from '../../apis/scent/shareFavoriteCombination';
+import { useAuthStore } from '../../stores/useAuthStore';
+import Spinner from '../../components/Loading/Spinner';
+import BackIcon from '../../assets/icons/back-arrow-btn.svg';
+import { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import scentifylogo from '../../assets/icons/scentify-green-logo.svg';
 
 const ShareFavorite = () => {
   const cardRef = useRef<HTMLDivElement>(null); // 📌 캡처할 카드 영역 참조
@@ -45,14 +45,14 @@ const ShareFavorite = () => {
           combination.id,
           accessToken
         );
-        console.log("🔹 API 응답:", response);
+        console.log('🔹 API 응답:', response);
 
         if (response && response.combination && isMounted) {
           setImageUrl(response.s3Url ?? null);
           setShareUrl(response.shareUrl ?? null);
         }
       } catch (error) {
-        console.error("공유 요청 실패:", error);
+        console.error('공유 요청 실패:', error);
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -91,24 +91,24 @@ const ShareFavorite = () => {
         },
       });
 
-      const image = canvas.toDataURL("image/png");
+      const image = canvas.toDataURL('image/png');
 
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = image;
-      link.download = "scent-card.png";
+      link.download = 'scent-card.png';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      console.log("카드 이미지 다운로드 성공");
+      console.log('카드 이미지 다운로드 성공');
     } catch (error) {
-      console.error("카드 이미지 다운로드 실패:", error);
+      console.error('카드 이미지 다운로드 실패:', error);
     }
   };
 
   // 🔹 뒤로 가기 버튼 클릭 시 '/scent' 페이지로 이동
   const handleGoBack = () => {
-    navigate("/scent");
+    navigate('/scent');
   };
 
   return (
@@ -159,7 +159,7 @@ const ShareFavorite = () => {
               crossOrigin="anonymous"
             />
             <h2 className="text-14 text-center font-pre-medium mt-6">
-              {combination?.name || "이름 없는 조합"}
+              {combination?.name || '이름 없는 조합'}
             </h2>
 
             {/* 🔹 향기 정보 */}
@@ -203,7 +203,7 @@ const ShareFavorite = () => {
             className="border-[1px] border-brand w-[150px] h-[40px] text-brand text-16 font-pre-medium rounded-lg"
             disabled={loading}
           >
-            {copied ? "링크 복사 완료" : "공유 링크"}
+            {copied ? '링크 복사 완료' : '공유 링크'}
           </button>
 
           <button

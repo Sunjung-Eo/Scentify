@@ -87,36 +87,12 @@ const DeviceCard = () => {
         }
 
         // 기기가 남아있는 경우에만 새로운 데이터 fetch (fetchQuery 사용)
-        const [updatedHomeInfo, updatedDeviceInfo] = await Promise.all([
+        const [updatedHomeInfo] = await Promise.all([
           queryClient.fetchQuery({
             queryKey: ['homeInfo'],
             queryFn: () => homeInfo(),
           }),
-          queryClient.fetchQuery({
-            queryKey: ['deviceInfo'],
-            queryFn: () => deviceInfo(validDeviceIds),
-          }),
         ]);
-
-        // homeInfo에서 mainDeviceId 가져오기 (기본값 처리)
-        // const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
-
-        // deviceInfo에서 devices 목록 가져오기 (기본값 처리)
-        // const updatedDevices = updatedDeviceInfo?.devices ?? [];
-
-        // ✅ 기기가 하나도 없으면 대표 기기 상태를 null로 설정
-        // if (updatedDevices.length === 0) {
-        //   setCurrentMainDeviceId(null);
-        //   return;
-        // }
-
-        // ✅ 새로운 대표 기기 찾기
-        // const newMainDevice = updatedDevices.find(
-        //   (d: Device) => d.id === newMainDeviceId
-        // );
-        //
-        // // 대표 기기 업데이트
-        // setCurrentMainDeviceId(newMainDevice?.id ?? null);
 
         // homeInfo에서 mainDeviceId 가져오기
         const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
@@ -125,9 +101,13 @@ const DeviceCard = () => {
         console.error('❌ 데이터 업데이트 실패:', error);
       }
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('❌ 디바이스 삭제 실패:', error);
-      alert('디바이스 삭제에 실패했습니다.');
+      if (error.status === 403) {
+        alert('관리자가 아니므로 기기를 삭제할 수 없습니다.');
+      } else {
+        alert('디바이스 삭제에 실패했습니다.');
+      }
     },
   });
 

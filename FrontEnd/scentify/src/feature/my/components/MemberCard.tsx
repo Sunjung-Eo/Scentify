@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Modal from "../../../components/Alert/ModalDeleteSchedule";
+import Modal from "../../../components/Alert/Modal";
 import { MemberCardProps } from "../groupTypes";
 import crownIcon from "../../../assets/icons/crown-icon.svg";
 

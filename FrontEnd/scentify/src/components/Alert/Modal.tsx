@@ -1,4 +1,4 @@
-interface ModalDeleteScheduleProps {
+interface ModalProps {
   message: string;
   showButtons?: boolean;
   onConfirm?: () => void;
@@ -7,14 +7,14 @@ interface ModalDeleteScheduleProps {
   cancelText?: string;
 }
 // 예약 삭제 모달창
-const ModalDeleteSchedule = ({
+const Modal = ({
   message,
   showButtons = true,
   onConfirm,
   onCancel,
   confirmText = "확인",
   cancelText = "취소",
-}: ModalDeleteScheduleProps) => {
+}: ModalProps) => {
   return (
     <div
       className="font-pre-light fixed inset-0 flex items-center justify-center bg-black/50 z-50"
@@ -24,19 +24,19 @@ const ModalDeleteSchedule = ({
         className="flex flex-col max-w-[260px] w-full h-[300px] p-6 rounded-2xl border-black/10 bg-white shadow-[20px_20px_20px_rgba(0,0,0,0.08)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-center text-12 text-gray-700 mb-4 mt-[100px]">
+        <p className="text-center text-12 text-sub mb-4 mt-[100px]">
           {message}
         </p>
         {showButtons && (
           <div className="flex p-3 pt-[70px] justify-between gap-2">
             <button
-              className="w-[60px] py-2 border-0.2 border-sub rounded-lg bg-gray-300 text-sub text-12 hover:opacity-90"
+              className="w-[60px] h-[30px] border-0.2 border-gray rounded-lg bg-gray-300 text-black text-12 hover:opacity-90 active:text-component active:bg-brand active:border-0"
               onClick={onCancel}
             >
               {cancelText}
             </button>
             <button
-              className="w-[60px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90"
+              className="w-[60px] h-[30px] rounded-lg bg-[#2D3319] text-bg text-12 hover:opacity-90"
               onClick={onConfirm}
             >
               {confirmText}
@@ -48,4 +48,4 @@ const ModalDeleteSchedule = ({
   );
 };
 
-export default ModalDeleteSchedule;
+export default Modal;

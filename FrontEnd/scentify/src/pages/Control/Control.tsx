@@ -20,7 +20,7 @@ import ReservationManager from "../../feature/control/reservation/ReservationMan
 import CreateReservation from "../../feature/control/reservation/CreateReservation";
 import ModifyReservation from "../../feature/control/reservation/ModifyReservation";
 import DeviceSelect from "../../components/Control/DeviceSelect";
-import Modal from "../../components/Alert/ModalDeleteSchedule";
+import Modal from "../../components/Alert/Modal";
 import ProtectedRoute from "../../components/Control/ProtectedRoute";
 
 import { Mode, DeviceInfo } from "../../feature/control/main/ControlType";
@@ -185,39 +185,52 @@ const Control = () => {
   }
 
   return (
-    <div className="content pt-5">
+    <div className="content pt-[13px]">
       <Routes>
         <Route
           index
           element={
             <div className="relative flex flex-col w-full px-4">
               <div className="flex flex-col">
-                <div className="flex justify-between">
-                  <div className="flex mb-4 items-center gap-1">
+                <div className="flex flex-col">
+                  <div className="flex mb-[16px] items-center gap-1">
                     <img src={RemoteIcon} alt="리모컨 이미지" />
-                    <h2 className="mt-0.5 font-pre-medium text-16">
-                      모드 변경 버튼
-                    </h2>
+                    <h2 className="font-pre-medium text-16">모드 변경 버튼</h2>
                   </div>
-                  <ModeToggle
-                    currentMode={mode}
-                    onModeChange={handleModeChange}
-                  />
-                </div>
-                <div className="mt-2 border-0.2 border-sub text-center pre-light text-12 rounded-lg">
-                  {isLoading
-                    ? ""
-                    : deviceIds.length === 0
-                      ? "기기를 먼저 등록해주세요."
-                      : mode === null
-                        ? ""
-                        : mode
-                          ? "지금은 자동화 모드입니다."
-                          : "지금은 예약 모드입니다."}
+                  <div className="flex items-center">
+                    <div>
+                      <ModeToggle
+                        currentMode={mode}
+                        onModeChange={handleModeChange}
+                      />
+                    </div>
+                    <div className="ml-[20px] text-center pre-light text-10 text-sub">
+                      {isLoading ? (
+                        ""
+                      ) : deviceIds.length === 0 ? (
+                        <div className="flex items-center">
+                          <div className="w-[4px] h-[4px] mr-[4px] bg-brand rounded-full"></div>
+                          기기를 먼저 등록해주세요.
+                        </div>
+                      ) : mode === null ? (
+                        ""
+                      ) : mode ? (
+                        <div className="flex items-center">
+                          <div className="w-[4px] h-[4px] mr-[4px] bg-brand rounded-full"></div>
+                          현재 자동화 모드입니다.
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <div className="w-[4px] h-[4px] mr-[4px] bg-brand rounded-full"></div>
+                          현재 예약 모드입니다.
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className={"mt-12 font-pre-medium text-16"}>
-                <div className="absolute left-[225px] top-[115px] z-40">
+              <div className={"mt-[40px] font-pre-medium text-16"}>
+                <div className="absolute left-[225px] top-[105px] z-40">
                   <DeviceSelect
                     devices={deviceSelectItems}
                     selectedDevice={selectedDevice}
@@ -229,7 +242,7 @@ const Control = () => {
                     <img src={AlarmIcon} alt="알람 이미지" />
                     <h2>스케줄 관리</h2>
                   </div>
-                  <div className="flex mt-6 ml-3 text-14 gap-8">
+                  <div className="flex mt-6 ml-[7px] text-14 gap-6">
                     <div
                       onClick={() => handleTabChange(false)}
                       className={`w-[50px] text-center cursor-pointer ${

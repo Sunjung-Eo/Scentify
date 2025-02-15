@@ -12,7 +12,7 @@ import { createFavorite } from "../../../apis/scent/createFavorite";
 import { deleteAllFavorite } from "../../../apis/scent/deleteFavorite";
 
 import { AlertDeleteSchedule } from "../../../components/Alert/AlertDeleteSchedule";
-import ModalDeleteSchedule from "../../../components/Alert/ModalDeleteSchedule";
+import Modal from "../../../components/Alert/Modal";
 import { mapIntToFragrance } from "../../../utils/fragranceUtils";
 import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 
@@ -213,7 +213,7 @@ export default function ReservationManager({
   return (
     <div>
       {customSchedules.length > 0 ? (
-        <div className="mt-3 pb-3 max-h-[350px] overflow-y-auto">
+        <div className="pb-3 overflow-y-auto max-h-[calc(100vh-20rem)]">
           {customSchedules.map((schedule) => {
             const selectedDays = getDaysFromBitMask(schedule.day);
             const [startTime, startPeriod] = convertTo12Hour(
@@ -247,66 +247,68 @@ export default function ReservationManager({
             return (
               <div
                 key={schedule.id}
-                className="flex flex-col p-3 border-b-0.2 border-lightgray"
+                className="flex mt-[10px] justify-between border-b-0.2 border-lightgray"
               >
-                <div className="flex justify-between">
+                <div className="flex flex-col pt-[7.5px] pl-[10px] justify-between">
                   <div className="text-16 font-pre-medium">{schedule.name}</div>
-                  <div className="flex flex-col justify-between gap-3">
-                    <div className="flex justify-between gap-2">
-                      <HeartButton
-                        isLiked={
-                          (currentFavorites?.length > 0
-                            ? currentFavorites
-                            : fetchedFavoritesData?.favorites
-                          )?.includes(schedule.combinationId) ?? false
-                        }
-                        onToggle={(newState) => {
-                          if (newState) {
-                            addCurrentFavorites(schedule.combinationId);
-                          } else {
-                            removeCurrentFavorites(schedule.combinationId);
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={() =>
-                          navigate("/control/reservation/modify", {
-                            state: { schedule },
-                          })
-                        }
-                      >
-                        <img src={ModifyIcon} alt="수정 이미지" />
-                      </button>
+                  <div className="flex justify-between">
+                    <div className="flex flex-col font-pre-light text-sub text-12">
+                      <div className="mt-[10px]">
+                        <div>{selectedDays.join(", ")}</div>
+                        <div>
+                          {startPeriod} {startTime} ~ {endPeriod} {endTime}
+                        </div>
+                      </div>
+                      <div className="mt-[10px] mb-[17.5px] text-gray">
+                        {fragrances}
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-between">
-                  <div className="flex flex-col font-pre-light text-12">
-                    <div className="mt-3">
-                      <div>{selectedDays.join(", ")}</div>
-                      <div>
-                        {startPeriod} {startTime} ~ {endPeriod} {endTime}
-                      </div>
-                    </div>
-                    <div className="mt-2">{fragrances}</div>
-                  </div>
-                  <div className="font-pre-light text-12">
-                    <div className="mt-4 text-16 text-right">
-                      {schedule.modeOn ? "On" : "Off"}
-                    </div>
+                <div className="flex flex-col mr-[12.75px] justify-between font-pre-light text-12 ">
+                  <div className="flex pr-[8px] justify-end gap-2">
+                    <HeartButton
+                      isLiked={
+                        (currentFavorites?.length > 0
+                          ? currentFavorites
+                          : fetchedFavoritesData?.favorites
+                        )?.includes(schedule.combinationId) ?? false
+                      }
+                      onToggle={(newState) => {
+                        if (newState) {
+                          addCurrentFavorites(schedule.combinationId);
+                        } else {
+                          removeCurrentFavorites(schedule.combinationId);
+                        }
+                      }}
+                    />
                     <button
-                      onClick={() => handleDeleteClick(schedule.id)}
-                      className="w-[65px] h-[30px] mt-2 border-0.2 border-lightgray rounded-lg"
+                      onClick={() =>
+                        navigate("/control/reservation/modify", {
+                          state: { schedule },
+                        })
+                      }
                     >
-                      삭제
+                      <img src={ModifyIcon} alt="수정 이미지" />
                     </button>
                   </div>
+                  <div>
+                    <div className="text-brand text-right">
+                      {schedule.modeOn ? "on" : "off"}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteClick(schedule.id)}
+                    className="w-[60px] h-[24px] mt-2 mb-[10px] border-[0.7px] border-gray rounded-lg active:text-component active:bg-brand active:border-0"
+                  >
+                    삭제
+                  </button>
                 </div>
               </div>
             );
           })}
           {modalOpen && (
-            <ModalDeleteSchedule
+            <Modal
               message={modalMessage}
               showButtons={true}
               confirmText="확인"
@@ -317,7 +319,7 @@ export default function ReservationManager({
           )}
         </div>
       ) : (
-        <p className="mt-40 font-pre-light text-14 text-gray text-center">
+        <p className="mt-40 font-pre-light text-12 text-gray text-center">
           + 버튼을 눌러 예약을 설정해주세요.
         </p>
       )}

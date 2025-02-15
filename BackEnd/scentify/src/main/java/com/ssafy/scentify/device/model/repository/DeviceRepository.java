@@ -44,6 +44,10 @@ public interface DeviceRepository {
     @Select("SELECT mode FROM device WHERE id = #{id}")
 	boolean getMode(int id);
     
+    // room type 조회 쿼리
+    @Select("SELECT room_type FROM device WHERE id = #{id}")
+	int getRoomType(int id);
+    
     // 캡슐 정보 조회 쿼리
     @Select("SELECT slot_1, slot_2, slot_3, slot_4 FROM device WHERE id = #{id}")
 	CapsuleInfoRequest getCapsuleInfo(int id);

@@ -58,6 +58,9 @@ public class DeviceService {
 		return deviceRepository.getMode(deviceId);
 	}
 	
+	public int getRoomType(int deviceId) {
+		return deviceRepository.getRoomType(deviceId);
+	}
 
 	public String getDeviceName(int deviceId) {
 		return deviceRepository.getDeviceName(deviceId);

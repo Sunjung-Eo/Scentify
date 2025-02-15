@@ -23,6 +23,7 @@ import com.ssafy.scentify.common.util.TokenProvider;
 import com.ssafy.scentify.device.model.dto.DeviceDto.CapsuleInfo;
 import com.ssafy.scentify.device.model.dto.DeviceDto.RegisterDto;
 import com.ssafy.scentify.device.model.dto.DeviceDto.defaultCombinationDto;
+import com.ssafy.scentify.device.model.dto.DeviceDto.updateDefaultCombinationDto;
 import com.ssafy.scentify.device.model.entity.Device;
 import com.ssafy.scentify.group.GroupService;
 import com.ssafy.scentify.group.model.dto.GroupDto.CreateDto;
@@ -339,22 +340,19 @@ public class DeviceController {
 	
 	// API 75번 : 기본 향 수정
 	@PostMapping("/set/update")
-	public ResponseEntity<?> updateDefultCombination(@RequestBody defaultCombinationDto combinationDto) {
+	public ResponseEntity<?> updateDefultCombination(@RequestBody updateDefaultCombinationDto combinationDto) {
 		try {
 			// combaintion 추출
 			CombinationDto combination = combinationDto.getCombination();
+			
 			// 전달 데이터 검사
 			if (combination == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
-			// 디바이스 id와 room type 추출
-			Integer deviceId = combinationDto.getId();
-			Integer roomType = combinationDto.getRoomType();
-			// 전달 데이터 검사
-			if (deviceId == null || roomType == null) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
+			// 디바이스 id를 바탕으로 DB에 저장된 room type 정보 찾아옴
+			int deviceId = combinationDto.getId();
+			int roomType = deviceService.getRoomType(deviceId);
 			
 			// roomType에 따라 분사량 선택
 			int count = switch (roomType) {
@@ -372,11 +370,6 @@ public class DeviceController {
 			
 			// 조합 업데이트 (실패 시 400 반환)
 			if (!combinationService.updateCombination(combination)) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			
-			// 방 정보 업데이트 (실패 시 400 반환)
-			if (!deviceService.updateRoomType(deviceId, roomType)) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			

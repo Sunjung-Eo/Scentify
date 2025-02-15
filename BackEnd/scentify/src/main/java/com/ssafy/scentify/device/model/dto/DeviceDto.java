@@ -129,6 +129,15 @@ public class DeviceDto {
 	    }
 	}
 	
+	@Getter
+	@AllArgsConstructor
+	public static class updateDefaultCombinationDto {
+		@NotNull
+	    private int id;
+		@Setter
+		private CombinationDto combination; 
+	}
+	
 	// DB에서 넘어오는 정보를 담을 객체이므로 별도의 유효성 검사 생략
 	@Data
 	public static class DeviceGroupInfoDto {

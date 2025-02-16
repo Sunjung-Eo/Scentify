@@ -44,12 +44,15 @@ html,
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
+  overflow-x: hidden; /* ✅ 가로 스크롤 방지 */
 }
 
 .app {
   /* max-width: 360px; */
   width: 100%;
-  height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
+  height: 100%;
   margin: 0 auto;
   background-color: #fafafa;
   display: flex;

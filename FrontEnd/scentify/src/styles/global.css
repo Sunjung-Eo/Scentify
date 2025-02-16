@@ -61,23 +61,23 @@ body {
   justify-content: center;
   position: relative;
   /* min-height: 600px; */
+  overflow: hidden;
 }
 
 /* 헤더 고정 및 중앙 정렬 */
 .header,
 .footer {
   width: 100%;
-  max-width: 480px;
+  max-width: 360px;
   height: 60px;
-  background-color: #fafafa;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   /* position: fixed;
   left: 50%;
   transform: translateX(-50%); */
-  position: fixed;
-  z-index: 1000;
+  position: absolute;
 }
 
 .header {
@@ -90,10 +90,9 @@ body {
 }
 /* 메인 콘텐츠 패딩 설정 (헤더, 푸터 고려) */
 .content {
-  flex: 1;
+  flex-grow: 1;
   padding-top: 60px; /* 헤더 높이만큼 */
   padding-bottom: 60px; /* 푸터 높이만큼 */
-  justify-content: center;
   width: 100%;
   max-width: 480px; /*360*/
   /* overflow: hidden;  */

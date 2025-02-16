@@ -247,7 +247,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center min-h-[300px] flex-grow w-full">
+    <div className="relative flex flex-col flex-grow w-full items-center min-h-[300px]">
       {deviceIds.length === 0 ? (
         <NoDeviceInfo />
       ) : isLoading ? (
@@ -284,7 +284,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
               </button>
             </div>
           )}
-          <div className="mt-2">
+          <div className="absolute bottom-0 mt-2">
             {/* <p className="text-[10px]">{`기기 ID: ${currentDeviceId || '없음'} (${currentIndex + 1}/${deviceIds.length})`}</p> */}
             <p className="text-gray text-[10px]">{`${currentIndex + 1}/${deviceIds.length}`}</p>
           </div>

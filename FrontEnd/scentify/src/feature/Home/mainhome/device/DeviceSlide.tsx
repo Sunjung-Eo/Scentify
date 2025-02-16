@@ -247,7 +247,7 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center h-[460px] justify-between">
+    <div className="relative flex flex-col items-center min-h-[300px] flex-grow w-full">
       {deviceIds.length === 0 ? (
         <NoDeviceInfo />
       ) : isLoading ? (

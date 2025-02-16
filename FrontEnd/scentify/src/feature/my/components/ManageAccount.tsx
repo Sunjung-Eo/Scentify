@@ -108,7 +108,7 @@ const ManageAccount = () => {
         {/* 회원정보 변경 박스 */}
         <div
           onClick={handleMemberInfoChange}
-          className="w-full h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
+          className="w-full h-[70px] flex justify-between items-center border-b-0.2 border-lightgray"
         >
           <p className="text-16 font-pre-medium">회원정보 변경</p>
           <img src={arrowIcon} alt="arrowIcon" className="mr-2" />
@@ -116,7 +116,7 @@ const ManageAccount = () => {
         {/* 비밀번호 변경 박스 */}
         <div
           onClick={handlePasswordChange}
-          className="w-full h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
+          className="w-full h-[70px] flex justify-between items-center border-b-0.2 border-lightgray"
         >
           <p className="text-16 font-pre-medium">비밀번호 변경</p>
           <img src={arrowIcon} alt="arrowIcon" className="mr-2" />

@@ -29,7 +29,7 @@ const MemberCard = ({
 
   return (
     <>
-      <div className="flex items-center justify-between w-full h-[70px] border-b-[0.7px] border-gray">
+      <div className="flex items-center justify-between w-full h-[70px] border-b-0.2 border-lightgray">
         {/*개인 멤버 박스 */}
         <div className="flex flex-col ml-3">
           <div className="flex items-center">

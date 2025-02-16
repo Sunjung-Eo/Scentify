@@ -27,48 +27,51 @@ const My = () => {
   };
 
   return (
-    <div className="userComponent w-full mx-5 relative">
+    <>
       <Routes>
         {/* 기본 경로: 계정 관리 페이지 */}
         <Route
           index
           element={
-            <>
+            <div className="flex flex-col h-full w-full">
               {/* 계정 관리 */}
-              <div>
-                <div className="flex flex-row justify-between items-center text-center mt-2">
+
+              <div className="flex flex-col h-full mt-4 w-full">
+                <div className="flex flex-col">
+                  <div className="flex flex-row justify-between items-center text-center">
+                    <div className="flex items-center font-pre-medium text-16">
+                      <img
+                        src={manageaccountIcon}
+                        alt="계정 관리 아이콘"
+                        className="w-5 h-5 mr-1"
+                      />
+                      <span>계정 관리</span>
+                    </div>
+                    <button
+                      className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+                      onClick={handleLogout}
+                    >
+                      로그아웃
+                    </button>
+                  </div>
+                  <div className="mt-3">
+                    <MyUserCard />
+                  </div>
+                </div>
+                {/** 그룹 관리 */}
+                <div className="relative flex flex-col h-full mt-10">
                   <div className="flex items-center font-pre-medium text-16">
                     <img
-                      src={manageaccountIcon}
-                      alt="계정 관리 아이콘"
+                      src={managegroupsIcon}
+                      alt="그룹 관리 아이콘"
                       className="w-5 h-5 mr-1"
                     />
-                    <span>계정 관리</span>
+                    <span>그룹 관리</span>
                   </div>
-                  <button
-                    className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
-                    onClick={handleLogout}
-                  >
-                    로그아웃
-                  </button>
-                </div>
-                <div className="mt-3">
-                  <MyUserCard />
+                  <GroupList />
                 </div>
               </div>
-              {/** 그룹 관리 */}
-              <div className="mt-10">
-                <div className="flex items-center font-pre-medium text-16">
-                  <img
-                    src={managegroupsIcon}
-                    alt="그룹 관리 아이콘"
-                    className="w-5 h-5 mr-1"
-                  />
-                  <span>그룹 관리</span>
-                </div>
-                <GroupList />
-              </div>
-            </>
+            </div>
           }
         />
         <Route path="manageaccount" element={<ManageAccount />} />
@@ -79,7 +82,7 @@ const My = () => {
         <Route path="invite" element={<Invite />} />
         <Route path="invitecodeinput" element={<InviteCodeInput />} />
       </Routes>
-    </div>
+    </>
   );
 };
 

@@ -34,7 +34,7 @@ const InviteCodeInput = () => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col mt-4">
       {/* 제목 */}
       <h1 className="text-20 font-pre-bold mb-[80px] text-center">
         초대코드 입력하기

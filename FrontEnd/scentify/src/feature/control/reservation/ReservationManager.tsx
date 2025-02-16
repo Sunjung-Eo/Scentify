@@ -265,7 +265,7 @@ export default function ReservationManager({
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col mr-[12.75px] justify-between font-pre-light text-12 ">
+                <div className="flex flex-col justify-between font-pre-light text-12 ">
                   <div className="flex pr-[8px] justify-end gap-2">
                     <HeartButton
                       isLiked={

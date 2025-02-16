@@ -123,9 +123,9 @@ export default function BehaviorSetting() {
   }, [exercise, rest, exerciseSelectedTime, restSelectedTime]);
 
   return (
-    <div className="content p-0 overflow-visible">
+    <div className="p-0 overflow-visible">
       <div className="relative">
-        <div className="flex flex-col w-[320px] h-[130px] p-5 ml-5 bg-sub text-white rounded-xl">
+        <div className="flex flex-col h-[130px] p-5 bg-sub text-white rounded-xl">
           <div className="flex justify-between">
             <h3 className="font-pre-medium text-20">운동</h3>
             <div onClick={() => toggleExercise()}>
@@ -138,7 +138,7 @@ export default function BehaviorSetting() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
+          <div className="fixed top-[150px] right-[120px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
               <div className="absolute top-[1px] left-[59px]">
@@ -152,7 +152,7 @@ export default function BehaviorSetting() {
         </div>
       </div>
       <div className="relative mt-6">
-        <div className="flex flex-col w-[320px] h-[130px] p-5 ml-5 bg-sub text-white rounded-xl">
+        <div className="flex flex-col h-[130px] p-5 bg-sub text-white rounded-xl">
           <div className="flex justify-between">
             <h3 className="font-pre-medium text-20">휴식</h3>
             <div onClick={() => toggleRest()}>
@@ -165,7 +165,7 @@ export default function BehaviorSetting() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
+          <div className="fixed top-[305px] right-[120px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
               <div className="absolute top-[1px] left-[59px]">

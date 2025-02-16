@@ -23,7 +23,7 @@ const FavoritesList = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col w-full mb-[20px] space-y-4">
       {favorites.map((favorite: any) => (
         <FavoriteScent
           key={favorite.id}

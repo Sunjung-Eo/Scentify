@@ -502,12 +502,12 @@ export default function CreateReservation({
             </div>
           </div>
           {formErrors.noonTime && (
-            <p className="absolute bottom-[53px] left-[68px] text-red-500 text-10">
+            <p className="absolute bottom-[53px] left-[70px] text-red-500 text-10">
               {formErrors.noonTime}
             </p>
           )}
           {formErrors.time && (
-            <p className="absolute bottom-[53px] left-[68px] text-red-500 text-10">
+            <p className="absolute bottom-[53px] left-[70px] text-red-500 text-10">
               {formErrors.time}
             </p>
           )}

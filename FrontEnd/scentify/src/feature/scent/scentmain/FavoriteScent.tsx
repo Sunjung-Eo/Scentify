@@ -34,49 +34,49 @@ const FavoriteScent = ({
   };
 
   return (
-    <div className="flex justify-between items-start">
-      <div className="mb-[19px]">
-        <div className="flex w-[310px] mb-[10px] mr-[10px] justify-between">
-          {/* 조합 이름 */}
-          <h3 className="text-14 text-brand font-pre-medium mb-1">
-            {combination.name || "이름 없는 조합"}
-          </h3>
-          {/* 찜 & 공유 버튼 */}
-          <div className="flex flex-row gap-3">
-            <HeartButton isLiked={isLiked} onToggle={onToggleLike} />
-            <button onClick={handleShareClick}>
-              <img
-                src={ShareIcon}
-                alt="공유 아이콘"
-                className="w-[17px] h-[18px]"
-              />
-            </button>
-          </div>
+    <div className="flex flex-col w-full pb-[20px] justify-between items-start border-b-0.2 border-lightgray">
+      <div className="flex w-full mb-[4px] justify-between">
+        {/* 조합 이름 */}
+        <h3 className="text-14 text-brand font-pre-medium mb-1">
+          {combination.name || "이름 없는 조합"}
+        </h3>
+        {/* 찜 & 공유 버튼 */}
+        <div className="flex flex-row gap-3">
+          <HeartButton isLiked={isLiked} onToggle={onToggleLike} />
+          <button onClick={handleShareClick}>
+            <img
+              src={ShareIcon}
+              alt="공유 아이콘"
+              className="w-[17px] h-[18px]"
+            />
+          </button>
         </div>
+      </div>
 
-        {/* 향기 정보 */}
-        <div className="text-10 text-sub font-pre-light flex gap-1">
-          {[1, 2, 3, 4].map((num) => {
-            const scentName = getScentName(
-              (combination as any)[`choice${num}`]
-            );
-            const scentCount = (combination as any)[`choice${num}Count`] || 0;
+      {/* 향기 정보 */}
+      <div className="text-10 text-sub font-pre-light flex gap-1">
+        {[1, 2, 3, 4].map((num) => {
+          const scentName = getScentName((combination as any)[`choice${num}`]);
+          const scentCount = (combination as any)[`choice${num}Count`] || 0;
 
-            if (scentCount === 0) return null;
+          if (scentCount === 0) return null;
 
-            return (
-              <span key={num} className="mr-1 flex items-center gap-1">
-                {scentName}
-                {Array.from({ length: scentCount }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-3 h-3 ${getColor(scentName)}`}
-                  ></div>
-                ))}
-              </span>
-            );
-          })}
-        </div>
+          return (
+            <span
+              key={num}
+              className="mr-[8px] flex items-center -space-x-[4px]"
+            >
+              {scentName}
+              {Array.from({ length: scentCount }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-[14px] h-[6px] ml-[2px] rounded-full ${getColor(scentName)}`}
+                  style={{ transform: "rotate(-65deg)" }}
+                ></div>
+              ))}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

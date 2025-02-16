@@ -146,7 +146,7 @@ function EditPassword() {
           <div className="flex flex-col w-full">
             <div className="flex items-center w-full">
               <label
-                className="text-12 font-pre-light mr-1"
+                className="text-12 font-pre-light mr-2"
                 htmlFor="new-password"
               >
                 새 비밀번호

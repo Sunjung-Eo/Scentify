@@ -184,7 +184,7 @@ export default function DetectionSetting() {
   }, [detect, scents]);
 
   return (
-    <div className="content p-0">
+    <div className="p-0">
       <div className="font-pre-medium text-16 ml-5 mr-5">
         <div className="flex relative justify-between mb-6">
           <h3>향 설정</h3>

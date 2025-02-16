@@ -76,7 +76,7 @@ const ManageAccount = () => {
   };
 
   return (
-    <div className="mt-4 ">
+    <div className="flex flex-col relative h-full mt-4">
       {/* 프로필 정보 */}
       <div className="flex items-center mb-8">
         <img

@@ -62,7 +62,7 @@ function EditUserinfo() {
   };
 
   return (
-    <div className="content pt-4 pb-5 h-full flex flex-col justify-between">
+    <div className="pt-4 pb-5 h-full w-full flex flex-col justify-between">
       {/* 제목 */}
       <h1 className="text-20 font-pre-bold text-center">회원정보 변경</h1>
 

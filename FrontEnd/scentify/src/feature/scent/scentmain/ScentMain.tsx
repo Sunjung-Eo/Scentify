@@ -78,7 +78,7 @@ const ScentMain = () => {
   };
 
   return (
-    <div className="px-4 pt-[16px]">
+    <div className="pt-[16px]">
       {/* 브랜드 향기 카드를 보여주는 캐러셀 */}
       <div className="mb-[60px]">
         <h2 className="text-10 text-sub font-pre-light mb-2">
@@ -90,10 +90,10 @@ const ScentMain = () => {
       {/* 찜한 향기 목록 */}
       <div>
         <div className="flex items-center mb-4">
-          <img src={bookmarkIcon} alt="북마크" className="w-6 h-6 mr-2" />
-          <h3 className="text-20 text-sub font-pre-medium">찜한 향기</h3>
+          <img src={bookmarkIcon} alt="북마크" className="w-6 h-6 mr-[2px]" />
+          <h3 className="text-16 text-sub font-pre-medium">찜한 향기</h3>
         </div>
-        <div className="overflow-y-auto max-h-[259px]">
+        <div className="overflow-y-auto max-h-[calc(100vh-25rem)]">
           {favoritesData.favorites.length > 0 ? (
             <FavoritesList
               favorites={favoritesData.favorites}

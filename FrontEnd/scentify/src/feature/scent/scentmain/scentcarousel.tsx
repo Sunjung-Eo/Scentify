@@ -40,6 +40,7 @@ const ScentCarousel = () => {
           image={selectedCard.modalImage}
           title={selectedCard.alt}
           description={selectedCard.description}
+          use={selectedCard.use}
         />
       )}
     </div>

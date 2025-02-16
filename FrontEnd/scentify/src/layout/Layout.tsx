@@ -106,7 +106,7 @@ const Layout = ({ children }: LayoutProps) => {
           nextDeviceEdit={nextDeviceEdit}
         />
       )}
-      <main className="content flex flex-col w-full min-h-screen mx-auto">
+      <main className="content flex flex-col w-full max-w-[calc(100%-40px)] min-h-screen mx-auto">
         {children}
       </main>
       {showFooter && <Footer />} {/* ✅ 조건부로 Footer 표시 */}

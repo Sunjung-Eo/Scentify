@@ -92,7 +92,7 @@ const HomeMain = () => {
   console.log('🔥 exampleData:', exampleData);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <div className="mb-5">
         <UserCard
           nickname={data?.user?.nickname}

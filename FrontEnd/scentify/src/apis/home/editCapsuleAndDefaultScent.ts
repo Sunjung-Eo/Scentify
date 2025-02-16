@@ -1,7 +1,8 @@
 import { useAuthStore } from '../../stores/useAuthStore';
 
-export const editDefaultScent = async (
+export const editCapsuleAndDefaultScent = async (
   id: number, // 디바이스 아이디
+  roomType: number, // 공간 크기
   combination: {
     id: number;
     name: string;
@@ -19,9 +20,10 @@ export const editDefaultScent = async (
     const accessToken = useAuthStore.getState().accessToken;
     const requestBody = {
       id,
+      roomType,
       combination,
     };
-    const response = await fetch('/v1/device/set/update', {
+    const response = await fetch('/v1/device/set/change', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,

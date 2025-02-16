@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validatePassword as verifyCurrentPassword } from "../../../apis/user/editaccount/validatepassword"; // 현재 비밀번호 검증 API
 import { updateUserPassword } from "../../../apis/user/editaccount/updatepassword";
-import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
-import { validatePassword as validateNewPassword } from "../../../utils/validation"; // 유효성 검사
+import { useAuthStore } from "../../../stores/useAuthStore";
+import { validatePassword as validateNewPassword } from "../../../utils/validation";
 import Alert from "../../../components/Alert/AlertMy";
 
 function EditPassword() {
   const authStore = useAuthStore();
   const navigate = useNavigate();
-  const accessToken = authStore.accessToken; // 로그인된 사용자의 인증 토큰
+  const accessToken = authStore.accessToken;
 
   const [currentPassword, setCurrentPassword] = useState<string>(""); // 현재 비밀번호 입력값
   const [newPassword, setNewPassword] = useState<string>(""); // 변경할 새 비밀번호 입력값
@@ -62,7 +62,7 @@ function EditPassword() {
     }
   };
 
-  // 저장 버튼 클릭 시 실행되는 함수 (여기에서만 에러 메시지 설정)
+  // 저장 버튼 클릭 시 실행되는 함수 (여기만 에러 메시지 설정)
   const handleSave = async () => {
     if (!passwordVerified) {
       setPasswordCheckMessage("기존 비밀번호를 확인해주세요.");
@@ -93,7 +93,7 @@ function EditPassword() {
     // 비밀번호 변경 API 호출
     const result = await updateUserPassword(newPassword, accessToken);
     if (result.success) {
-      setShowAlert(true); // 모달창 띄우기
+      setShowAlert(true);
     } else {
       setPasswordCheckMessage(
         result.message || "비밀번호 변경에 실패했습니다."
@@ -102,7 +102,7 @@ function EditPassword() {
   };
 
   return (
-    <div className="content pt-4 pb-8 h-full flex flex-col justify-between">
+    <div className="content pt-4 pb-5 h-full flex flex-col justify-between">
       <div>
         <h1 className="text-20 font-pre-bold text-center">비밀번호 변경</h1>
         {/* 기존 비밀번호 입력 */}
@@ -190,7 +190,7 @@ function EditPassword() {
       <div className="mt-auto">
         <button
           onClick={handleSave} // 저장 버튼 클릭 시 API 호출
-          className="w-full h-[48px] rounded-lg text-brand font-pre-bold border-[1px] border-brand"
+          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-component active:bg-brand active:border-0"
         >
           저장
         </button>

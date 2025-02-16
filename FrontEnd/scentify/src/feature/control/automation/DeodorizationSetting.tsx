@@ -223,20 +223,17 @@ export default function DeodorizationSetting() {
           defaultScentData={previousScentData}
         />
         {formErrors.scents && (
-          <p className="absolute ml-[70px] text-red-500 text-10">
+          <p className="absolute top-[305px] ml-[70px] text-red-500 text-10">
             {formErrors.scents}
           </p>
         )}
-        <div className="mt-12">
-          <h3>분사 설정</h3>
-          <div className="relative pt-4 items-center font-pre-light text-12">
-            <p className="ml-[50px] pr-12">분사 주기</p>
-            <div className="absolute top-[6px] right-[50px] z-110">
-              <SprayIntervalSelector
-                selectedTime={selectedTime}
-                onTimeSelect={handleSelectTime}
-              />
-            </div>
+        <div className="relative mt-12">
+          <h3>분사 주기</h3>
+          <div className="absolute top-[-3px] left-[94px] z-110">
+            <SprayIntervalSelector
+              selectedTime={selectedTime}
+              onTimeSelect={handleSelectTime}
+            />
           </div>
         </div>
       </div>

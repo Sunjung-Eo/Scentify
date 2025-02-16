@@ -43,18 +43,18 @@ export default function DeviceSelect({
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[120px] h-[36px] p-3 border-0.2 border-lightgray font-pre-light text-12 justify-between items-center rounded-lg"
+        className="flex w-[120px] h-[30px] p-3 border-[0.7px] border-gray font-pre-light text-12 justify-between items-center rounded-lg"
       >
         <div className="flex items-center">
           {selected?.isRepresentative && (
             <img
               src={CrownIcon}
               alt="대표 기기 아이콘"
-              className="w-[16px] h-[16px] mr-[4px]"
+              className="w-[16px] h-[16px] mr-[7px]"
             />
           )}
           <span
-            className={`text-left ${!selected?.isRepresentative ? "pl-[19px]" : ""}`}
+            className={`text-left ${!selected?.isRepresentative ? "pl-[21px]" : ""}`}
           >
             {selected?.name}
           </span>
@@ -78,12 +78,12 @@ export default function DeviceSelect({
                     <img
                       src={CrownIcon}
                       alt="대표 기기 아이콘"
-                      className="w-[16px] h-[16px] mr-[3px]"
+                      className="w-[16px] h-[16px] mr-[7px]"
                     />
                     <span>{device.name}</span>
                   </>
                 ) : (
-                  <div className="ml-[19px]">{device.name}</div>
+                  <div className="ml-[23px]">{device.name}</div>
                 )}
               </div>
             ))}

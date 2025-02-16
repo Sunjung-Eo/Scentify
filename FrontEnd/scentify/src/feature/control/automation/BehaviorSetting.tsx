@@ -141,7 +141,7 @@ export default function BehaviorSetting() {
           <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
-              <div className="absolute top-[0px] left-[59px]">
+              <div className="absolute top-[1px] left-[59px]">
                 <SprayIntervalSelector
                   selectedTime={exerciseSelectedTime}
                   onTimeSelect={handleExerciseSelectTime}
@@ -168,7 +168,7 @@ export default function BehaviorSetting() {
           <div className="absolute bottom-[20px] left-[180px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
-              <div className="absolute top-[0px] left-[59px]">
+              <div className="absolute top-[1px] left-[59px]">
                 <SprayIntervalSelector
                   selectedTime={restSelectedTime}
                   onTimeSelect={handleRestSelectTime}

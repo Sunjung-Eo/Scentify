@@ -101,7 +101,7 @@ const ScentMain = () => {
               onShare={handleShare}
             />
           ) : (
-            <p className="mt-10 font-pre-light text-14 text-gray text-center">
+            <p className="mt-10 font-pre-light text-12 text-gray text-center">
               찜한 향기가 아직 없습니다.
               <br />
               마음에 드는 향을 발견하면 찜 목록에 추가해 보세요!

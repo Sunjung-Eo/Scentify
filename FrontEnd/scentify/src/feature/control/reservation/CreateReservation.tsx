@@ -243,7 +243,7 @@ export default function CreateReservation({
     }
 
     if (start24Number >= 100 && end24Number < 100) {
-      errors.noonTime = "12:00 AM 이전 시간을 선택해주세요.";
+      errors.noonTime = "자정 이전 시간을 선택해주세요.";
       isValid = false;
     } else if (end24Number < start24Number) {
       errors.time = "종료 시간을 시작 시간 이후로 선택해주세요.";
@@ -324,9 +324,9 @@ export default function CreateReservation({
   ]);
 
   return (
-    <div className="content p-0 font-pre-medium text-12">
+    <div className="content p-0 font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)]">
       {/* 예약 이름 */}
-      <div className="ml-5 mr-5 mb-[25px]">
+      <div className="relative ml-5 mr-5 mb-[25px]">
         <label htmlFor="reservatioName" className="m-0 mb-3">
           {"예약 이름"}
           <input
@@ -334,7 +334,7 @@ export default function CreateReservation({
             id="reservationName"
             value={reservationName}
             onChange={(e) => setReservationName(e.target.value)}
-            className="relative w-[255px] h-[34px] ml-[20px] pl-2 bg-component rounded-lg"
+            className="w-[255px] h-[34px] ml-[20px] pl-2 bg-component rounded-lg"
           />
         </label>
         {formErrors.reservationName && (
@@ -354,7 +354,7 @@ export default function CreateReservation({
         <label htmlFor="deviceSelect" className="mr-[20px]">
           기기 선택
         </label>
-        <div className="absolute top-[-9px] left-[63px] z-50">
+        <div className="absolute top-[-7px] left-[63px] z-50">
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
@@ -372,11 +372,11 @@ export default function CreateReservation({
             </label>
             <div>
               <div className="relative">
-                <div className="flex font-pre-light items-center">
+                <div className="flex font-pre-light text-10 items-center">
                   {["월", "화", "수", "목", "금", "토", "일"].map((day) => (
                     <button
                       key={day}
-                      className={`mr-[8.5px] w-7 h-7 border-0.2 border-brand text-black rounded-full ${
+                      className={`mr-[8.5px] w-7 h-7 text-black rounded-full ${
                         selectedDays.includes(day) ? "bg-brand text-white" : ""
                       }`}
                       onClick={() => handleDaySelect(day)}
@@ -411,12 +411,14 @@ export default function CreateReservation({
       </div>
 
       {/* 시간 설정 */}
-      <div className="flex ml-5 mr-5">
-        <label htmlFor="timeSelect">시간 설정</label>
-        <div className="flex flex-col m-5 mb-[10px] mt-0 gap-2">
+      <div className="relative flex ml-5 mr-5">
+        <label className="mt-[7px]" htmlFor="timeSelect">
+          시간 설정
+        </label>
+        <div className="flex flex-col m-5 mb-[10px] mt-0 text-10 gap-2">
           {/* 시작 시간 */}
           <div className="flex items-center gap-1 justify-end">
-            <span className="mr-[15px]">시작 시간</span>
+            <span className="mr-[15px] text-gray">시작 시간</span>
             <select
               className="w-[34px] h-[34px] border p-2 rounded-lg bg-white shadow-sm text-center appearance-none"
               value={startHour}
@@ -428,7 +430,6 @@ export default function CreateReservation({
                 </option>
               ))}
             </select>
-            :
             <select
               className="w-[34px] h-[34px] border p-2 rounded-lg bg-white shadow-sm text-center appearance-none"
               value={startMinute}
@@ -440,29 +441,29 @@ export default function CreateReservation({
                 </option>
               ))}
             </select>
-            <div className="flex">
-              <button
-                className={`w-[40px] h-[34px] rounded-l-lg ${
-                  startPeriod === "AM" ? "bg-brand text-white" : "bg-component"
+            <div className="flex w-[89px] h-[30px] p-[3px] items-center justify-center bg-white border-[0.5px] border-brand font-pre-light text-10 rounded-lg">
+              <div
+                className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
+                  startPeriod === "AM" ? "bg-brand text-bg" : "text-brand"
                 }`}
                 onClick={() => setStartPeriod("AM")}
               >
                 AM
-              </button>
-              <button
-                className={`w-[40px] h-[34px] rounded-r-lg ${
-                  startPeriod === "PM" ? "bg-brand text-white" : "bg-component"
+              </div>
+              <div
+                className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
+                  startPeriod === "PM" ? "bg-brand text-bg" : "text-brand"
                 }`}
                 onClick={() => setStartPeriod("PM")}
               >
                 PM
-              </button>
+              </div>
             </div>
           </div>
 
           {/* 종료 시간 */}
-          <div className="relative flex items-center gap-1 justify-end">
-            <span className="mr-[15px]">종료 시간</span>
+          <div className="flex items-center gap-1 justify-end">
+            <span className="mr-[15px] text-gray">종료 시간</span>
             <select
               className="w-[34px] h-[34px] border p-2 rounded-lg bg-white shadow-sm text-center appearance-none"
               value={endHour}
@@ -474,7 +475,6 @@ export default function CreateReservation({
                 </option>
               ))}
             </select>
-            :
             <select
               className="w-[34px] h-[34px] border p-2 rounded-lg bg-white shadow-sm text-center appearance-none"
               value={endMinute}
@@ -486,39 +486,39 @@ export default function CreateReservation({
                 </option>
               ))}
             </select>
-            <div className="flex">
-              <button
-                className={`w-[40px] h-[34px] rounded-l-lg ${
-                  endPeriod === "AM" ? "bg-brand text-white" : "bg-component"
+            <div className="flex w-[89px] h-[30px] p-[3px] items-center justify-center bg-white border-[0.5px] border-brand font-pre-light text-10 rounded-lg">
+              <div
+                className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
+                  endPeriod === "AM" ? "bg-brand text-bg" : "text-brand"
                 }`}
                 onClick={() => setEndPeriod("AM")}
               >
                 AM
-              </button>
-              <button
-                className={`w-[40px] h-[34px] rounded-r-lg ${
-                  endPeriod === "PM" ? "bg-brand text-white" : "bg-component"
+              </div>
+              <div
+                className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
+                  endPeriod === "PM" ? "bg-brand text-bg" : "text-brand"
                 }`}
                 onClick={() => setEndPeriod("PM")}
               >
                 PM
-              </button>
+              </div>
             </div>
           </div>
           {formErrors.noonTime && (
-            <p className="absolute bottom-[350px] left-[90px] text-red-500 text-10">
+            <p className="absolute bottom-[53px] left-[68px] text-red-500 text-10">
               {formErrors.noonTime}
             </p>
           )}
           {formErrors.time && (
-            <p className="absolute bottom-[350px] left-[90px] text-red-500 text-10">
+            <p className="absolute bottom-[53px] left-[68px] text-red-500 text-10">
               {formErrors.time}
             </p>
           )}
           {/* 분사주기 */}
-          <div className="relative flex items-center mt-4 mb-[10px]">
-            <span className="mr-[15px]">분사 주기</span>
-            <div className="absolute top-[-9px] left-[63px] z-50">
+          <div className="relative flex items-center mt-4 mb-[20px]">
+            <span className="mr-[15px] text-gray">분사 주기</span>
+            <div className="absolute top-[-7px] left-[54px] z-50">
               <SprayIntervalSelector
                 selectedTime={spraySelectedTime}
                 onTimeSelect={handleSelectTime}

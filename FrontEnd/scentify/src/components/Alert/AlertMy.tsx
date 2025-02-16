@@ -13,25 +13,23 @@ const Alert = ({
 }: AlertProps) => {
   return (
     <div
-      className="font-pre-light fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
       onClick={onClose}
     >
       <div
-        className="flex flex-col items-center max-w-[320px] w-full p-6 rounded-2xl border-black/10 bg-white shadow-lg"
+        className="w-[260px] h-[120px] bg-white rounded-2xl border-[1px] border-gray flex flex-col items-center justify-center shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 메시지 가운데 정렬 */}
-        <p className="text-12 text-gray-700 mb-4 text-center">{message}</p>
+        {/* 모달 메시지 */}
+        <p className="text-12 font-pre-regular mb-5 text-center">{message}</p>
 
-        {/* 확인 버튼을 중앙 정렬 & 크기 조정 */}
-        <div className="flex justify-center w-full">
-          <button
-            className="w-[60px] h-[30px] px-3 py-1 rounded-lg bg-[#2D3319] text-white text-12 font-medium hover:opacity-90"
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
-        </div>
+        {/* 확인 버튼 */}
+        <button
+          className="w-[60px] h-[30px] bg-sub font-pre-light text-12 text-white rounded-lg focus:outline-none"
+          onClick={onConfirm}
+        >
+          {confirmText}
+        </button>
       </div>
     </div>
   );

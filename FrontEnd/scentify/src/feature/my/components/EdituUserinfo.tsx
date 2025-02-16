@@ -62,7 +62,7 @@ function EditUserinfo() {
   };
 
   return (
-    <div className="content pt-4 pb-8 h-full flex flex-col justify-between">
+    <div className="content pt-4 pb-5 h-full flex flex-col justify-between">
       {/* 제목 */}
       <h1 className="text-20 font-pre-bold text-center">회원정보 변경</h1>
 
@@ -87,7 +87,7 @@ function EditUserinfo() {
               onChange={(e) => setBirthMonth(e.target.value)}
               className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-2 focus:ring-brand"
             >
-              <option value="">월</option> {/*option의 기본 선택값은 빈 값 */}
+              <option value="">월</option>
               {[...Array(12)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
                   {i + 1}
@@ -152,7 +152,7 @@ function EditUserinfo() {
       <div className="mt-auto">
         <button
           onClick={handleSave}
-          className="w-full h-[48px] rounded-lg text-brand font-pre-bold border-[1px] border-brand"
+          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-component active:bg-brand active:border-0"
         >
           저장
         </button>

@@ -1,14 +1,14 @@
 import { createInviteCode } from "../../apis/invite/createInviteCode";
 import { useAuthStore } from "../../stores/useAuthStore";
-import { useLocation } from "react-router-dom"; //  추가 (GroupList에서 받은 데이터 받기)
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-// 초대 코드를 생성하고 화면에 표시하는 컴포넌트
+// 초대 코드 생성 페이지
 function Invite() {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { accessToken } = useAuthStore(); // 인증 토큰 가져오기
+  const { accessToken } = useAuthStore();
   const location = useLocation(); // GroupList에서 전달된 데이터 받기
   const selectedDeviceId = location.state?.deviceId; // 선택된 기기 ID
 
@@ -31,7 +31,7 @@ function Invite() {
     };
 
     fetchInviteCode();
-  }, [selectedDeviceId, accessToken]); // 택된 기기 ID가 변경될 때마다 실행
+  }, [selectedDeviceId, accessToken]); // 선택된 기기 ID가 변경될 때마다 실행
 
   return (
     <div className="flex flex-col items-center">

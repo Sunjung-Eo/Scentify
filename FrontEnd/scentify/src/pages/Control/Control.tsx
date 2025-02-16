@@ -185,12 +185,12 @@ const Control = () => {
   }
 
   return (
-    <div className="content pt-[13px]">
+    <div className="pt-[13px]">
       <Routes>
         <Route
           index
           element={
-            <div className="relative flex flex-col w-full px-4">
+            <div className="flex flex-col w-full">
               <div className="flex flex-col">
                 <div className="flex flex-col">
                   <div className="flex mb-[16px] items-center gap-1">
@@ -230,17 +230,19 @@ const Control = () => {
                 </div>
               </div>
               <div className={"mt-[40px] font-pre-medium text-16"}>
-                <div className="absolute left-[225px] top-[105px] z-40">
-                  <DeviceSelect
-                    devices={deviceSelectItems}
-                    selectedDevice={selectedDevice}
-                    onDeviceChange={handleDeviceChange}
-                  />
-                </div>
                 <div>
-                  <div className="flex items-start gap-1">
-                    <img src={AlarmIcon} alt="알람 이미지" />
-                    <h2>스케줄 관리</h2>
+                  <div className="flex justify-between">
+                    <div className="flex items-start gap-1">
+                      <img src={AlarmIcon} alt="알람 이미지" />
+                      <h2>스케줄 관리</h2>
+                    </div>
+                    <div className="fixed top-[178px] right-[20px] z-40">
+                      <DeviceSelect
+                        devices={deviceSelectItems}
+                        selectedDevice={selectedDevice}
+                        onDeviceChange={handleDeviceChange}
+                      />
+                    </div>
                   </div>
                   <div className="flex mt-6 ml-[7px] text-14 gap-6">
                     <div
@@ -261,18 +263,20 @@ const Control = () => {
                     </div>
                   </div>
                 </div>
-                {activeTab === false ? (
-                  <ReservationManager
-                    reservationData={filteredReservations}
-                    selectedDevice={selectedDevice}
-                  />
-                ) : (
-                  <AutoManager
-                    automationData={filteredAutomations}
-                    devices={deviceSelectItems}
-                    selectedDevice={selectedDevice}
-                  />
-                )}
+                <div className="">
+                  {activeTab === false ? (
+                    <ReservationManager
+                      reservationData={filteredReservations}
+                      selectedDevice={selectedDevice}
+                    />
+                  ) : (
+                    <AutoManager
+                      automationData={filteredAutomations}
+                      devices={deviceSelectItems}
+                      selectedDevice={selectedDevice}
+                    />
+                  )}
+                </div>
               </div>
               {modalOpen && (
                 <Modal

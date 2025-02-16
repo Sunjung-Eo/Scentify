@@ -324,37 +324,37 @@ export default function CreateReservation({
   ]);
 
   return (
-    <div className="content p-0 font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)]">
+    <div className="font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)] w-full">
       {/* 예약 이름 */}
-      <div className="relative ml-5 mr-5 mb-[25px]">
-        <label htmlFor="reservatioName" className="m-0 mb-3">
+      <div className="relative flex items-center mb-[25px] w-full">
+        <label htmlFor="reservatioName" className="mr-[20px]">
           {"예약 이름"}
-          <input
-            type="text"
-            id="reservationName"
-            value={reservationName}
-            onChange={(e) => setReservationName(e.target.value)}
-            className="w-[255px] h-[34px] ml-[20px] pl-2 bg-component rounded-lg"
-          />
         </label>
+        <input
+          type="text"
+          id="reservationName"
+          value={reservationName}
+          onChange={(e) => setReservationName(e.target.value)}
+          className="flex-1 w-full h-[34px] pl-2 bg-component rounded-lg"
+        />
         {formErrors.reservationName && (
-          <p className="absolute ml-[70px] text-red-500 text-10">
+          <p className="absolute top-[34px] ml-[70px] text-red-500 text-10">
             {formErrors.reservationName}
           </p>
         )}
         {formErrors.reservationNameLength && (
-          <p className="absolute ml-[70px] text-red-500 text-10">
+          <p className="absolute top-[34px] ml-[70px] text-red-500 text-10">
             {formErrors.reservationNameLength}
           </p>
         )}
       </div>
 
       {/* 기기 선택 */}
-      <div className="relative flex ml-5 mr-5 mb-[25px] items-center">
+      <div className="relative flex mb-[25px] w-full items-center">
         <label htmlFor="deviceSelect" className="mr-[20px]">
           기기 선택
         </label>
-        <div className="absolute top-[-7px] left-[63px] z-50">
+        <div className="absolute top-[-7px] left-[65px] z-50">
           <DeviceSelect
             devices={devices}
             selectedDevice={selectedDevice}
@@ -364,34 +364,30 @@ export default function CreateReservation({
       </div>
 
       {/* 요일 설정 */}
-      <div className="ml-5 mr-5">
-        <div className="flex">
-          <div className="flex items-center">
-            <label htmlFor="weekdaySelect" className="mr-[20px]">
-              요일 설정
-            </label>
-            <div>
-              <div className="relative">
-                <div className="flex font-pre-light text-10 items-center">
-                  {["월", "화", "수", "목", "금", "토", "일"].map((day) => (
-                    <button
-                      key={day}
-                      className={`mr-[8.5px] w-7 h-7 text-black rounded-full ${
-                        selectedDays.includes(day) ? "bg-brand text-white" : ""
-                      }`}
-                      onClick={() => handleDaySelect(day)}
-                    >
-                      {day}
-                    </button>
-                  ))}
-                </div>
-                {formErrors.day && (
-                  <p className="absolute ml-[5px] text-red-500 text-10">
-                    {formErrors.day}
-                  </p>
-                )}
-              </div>
+      <div className="w-full">
+        <div className="flex items-center">
+          <label htmlFor="weekdaySelect" className="mr-[20px]">
+            요일 설정
+          </label>
+          <div className="relative">
+            <div className="flex font-pre-light text-10 items-center justify-center">
+              {["월", "화", "수", "목", "금", "토", "일"].map((day) => (
+                <button
+                  key={day}
+                  className={`mr-[8.5px] w-7 h-7 text-black rounded-full ${
+                    selectedDays.includes(day) ? "bg-brand text-white" : ""
+                  }`}
+                  onClick={() => handleDaySelect(day)}
+                >
+                  {day}
+                </button>
+              ))}
             </div>
+            {formErrors.day && (
+              <p className="absolute ml-[5px] text-red-500 text-10">
+                {formErrors.day}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex mb-[10px] justify-end items-center">
@@ -411,7 +407,7 @@ export default function CreateReservation({
       </div>
 
       {/* 시간 설정 */}
-      <div className="relative flex ml-5 mr-5">
+      <div className="relative flex">
         <label className="mt-[7px]" htmlFor="timeSelect">
           시간 설정
         </label>
@@ -529,27 +525,29 @@ export default function CreateReservation({
       </div>
 
       {/* 향 설정 */}
-      <div className="relative flex flex-col ml-5 mr-5">
-        <label htmlFor="scentName" className="m-0">
-          {"향 설정"}
+      <div className="relative flex flex-col w-full">
+        <div className="flex items-center">
+          <label htmlFor="scentName" className="m-0">
+            {"향 설정"}
+          </label>
           <input
             type="text"
             id="scentName"
             value={scentName}
             onChange={(e) => setScentName(e.target.value)}
-            className="w-[255px] h-[34px] ml-[30px] pl-2 bg-component rounded-lg"
+            className="flex-1 w-full h-[34px] ml-[25px] pl-2 bg-component rounded-lg"
           />
-        </label>
-        {formErrors.scentName && (
-          <p className="absolute mt-[35px] ml-[70px] text-red-500 text-10">
-            {formErrors.scentName}
-          </p>
-        )}
-        {formErrors.scentNameLength && (
-          <p className="absolute mt-[35px] ml-[70px] text-red-500 text-10">
-            {formErrors.scentNameLength}
-          </p>
-        )}
+          {formErrors.scentName && (
+            <p className="absolute mt-[48px] ml-[70px] text-red-500 text-10">
+              {formErrors.scentName}
+            </p>
+          )}
+          {formErrors.scentNameLength && (
+            <p className="absolute mt-[48px] ml-[70px] text-red-500 text-10">
+              {formErrors.scentNameLength}
+            </p>
+          )}
+        </div>
         <ScentSetting
           scents={scents}
           setScents={setScents}

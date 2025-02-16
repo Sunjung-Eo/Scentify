@@ -56,7 +56,7 @@ export default function DeviceSelect({
           <span
             className={`text-left ${!selected?.isRepresentative ? "pl-[21px]" : ""}`}
           >
-            {selected?.name}
+            {devices.length > 0 ? selected?.name || "-" : "-"}{" "}
           </span>
         </div>
         <img src={ArrowDownIcon} alt="아래 화살표 이미지" />

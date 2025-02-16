@@ -44,12 +44,15 @@ html,
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  min-height: calc(var(--vh) * 100); /* ✅ 최소 높이 적용 */
+  overflow-x: hidden; /* ✅ 가로 스크롤 방지 */
 }
 
 .app {
   /* max-width: 360px; */
-  width: 100%;
   height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
+  width: 100%;
   margin: 0 auto;
   background-color: #fafafa;
   display: flex;
@@ -57,7 +60,8 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  min-height: 600px;
+  /* min-height: 600px; */
+  overflow: hidden;
 }
 
 /* 헤더 고정 및 중앙 정렬 */
@@ -90,7 +94,7 @@ body {
   padding-top: 60px; /* 헤더 높이만큼 */
   padding-bottom: 60px; /* 푸터 높이만큼 */
   width: 100%;
-  max-width: 360px;
-  overflow: hidden; /* 넘치는 콘텐츠 방지 */
+  max-width: 480px; /*360*/
+  /* overflow: hidden;  */
   box-sizing: border-box; /* 패딩 및 보더를 포함한 크기 계산 */
 }

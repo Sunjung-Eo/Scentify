@@ -19,24 +19,24 @@ export const getScentName = (choice: number): string => {
 export const getColor = (scent: string) => {
   switch (scent) {
     case "레몬":
-      return "bg-yellow-400";
+      return "bg-lemon";
     case "유칼립투스":
-      return "bg-green-500";
+      return "bg-eucalyptus";
     case "페퍼민트":
-      return "bg-teal-400";
+      return "bg-peppermint";
     case "라벤더":
-      return "bg-purple-500";
+      return "bg-lavender";
     case "시더우드":
-      return "bg-amber-800";
+      return "bg-cedarwood";
     case "카모마일":
-      return "bg-orange-300";
+      return "bg-chamomile";
     case "샌달우드":
-      return "bg-green-700";
+      return "bg-sandalwood";
     case "화이트머스크":
-      return "bg-blue-100";
+      return "bg-whitemusk border-0.2 border-gray";
     case "오렌지블라썸":
-      return "bg-orange-500";
+      return "bg-orangeblossom";
     default:
-      return "bg-yellow-400";
+      return "bg-lemon";
   }
 };

@@ -116,20 +116,20 @@ const FindPassword = () => {
   };
 
   const inputStyles =
-    "border w-[150px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand";
+    "flex-1 w-full border w-[150px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand";
 
   return (
-    <>
+    <div className="w-full h-full flex flex-col items-center">
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12 px-4 mt-[16px]"
+        className="flex flex-col w-full h-full gap-3 font-pre-light text-12 mt-[16px]"
       >
         <h1 className="text-20 font-pre-bold text-center mb-[52px]">
           비밀번호 찾기
         </h1>
         {/* 아이디 입력 필드 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <label htmlFor="id" className="w-[80px] text-left">
             아이디
           </label>
@@ -141,10 +141,15 @@ const FindPassword = () => {
             onChange={handleChange}
             className={inputStyles}
           />
+          <button
+            type="button"
+            className="ml-auto w-[80px] h-[34px] "
+            onClick={handleVerifyCode}
+          ></button>
         </div>
         {errors.id && <p className="text-[12px] text-red-500">{errors.id}</p>}
         {/* 이메일 입력 필드 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <label htmlFor="email" className="w-[80px] text-left">
             이메일
           </label>
@@ -158,7 +163,7 @@ const FindPassword = () => {
           />
           <button
             type="button"
-            className="w-[80px] h-[34px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+            className="w-[80px] h-[34px] ml-auto text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
             onClick={handleSendEmailCode}
           >
             인증번호 전송
@@ -168,7 +173,7 @@ const FindPassword = () => {
           <p className="text-[12px] text-red-500">{errors.email}</p>
         )}
         {/* 인증번호 입력 필드 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <label htmlFor="verificationCode" className="w-[80px] text-left">
             인증 번호
           </label>
@@ -182,7 +187,7 @@ const FindPassword = () => {
           />
           <button
             type="button"
-            className="ml-1 w-[80px] h-[34px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+            className="ml-auto w-[80px] h-[34px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
             onClick={handleVerifyCode}
           >
             확인
@@ -204,7 +209,7 @@ const FindPassword = () => {
       {alertMessage && (
         <Alert message={alertMessage} onClose={() => setAlertMessage("")} />
       )}
-    </>
+    </div>
   );
 };
 

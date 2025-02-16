@@ -1,39 +1,38 @@
-import { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { readShareFavorite } from '../../apis/scent/readShareFavorite'; // API 호출 함수 가져오기
-import { Combination } from '../../feature/scent/scentmain/scenttypes';
-import { getScentName, getColor } from '../../utils/control/scentUtils';
-import Spinner from '../../components/Loading/Spinner';
-import html2canvas from 'html2canvas';
-import scentifylogo from '../../assets/icons/scentify-green-logo.svg';
-import Header from '../../layout/Header';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import { readShareFavorite } from "../../apis/scent/readShareFavorite"; // API 호출 함수 가져오기
+import { Combination } from "../../feature/scent/scentmain/scenttypes";
+import { getScentName, getColor } from "../../utils/control/scentUtils";
+import Spinner from "../../components/Loading/Spinner";
+import html2canvas from "html2canvas";
+import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
+import Header from "../../layout/Header";
+import { useNavigate } from "react-router-dom";
 
 const ReadShareFavorite = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const cardRef = useRef<HTMLDivElement>(null); // 📌 캡처할 카드 영역
+  const cardRef = useRef<HTMLDivElement>(null); // 캡처할 카드 영역
 
-  // 🔹 URL에서 combinationId와 imageName 추출
+  //URL에서 combinationId와 imageName 추출
   const queryParams = new URLSearchParams(location.search);
-  const combinationId = queryParams.get('combinationId');
-  const imageName = queryParams.get('imageName');
+  const combinationId = queryParams.get("combinationId");
+  const imageName = queryParams.get("imageName");
 
-  // 🔹 상태 변수
+  // 상태 변수
   const [combination, setCombination] = useState<Combination | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 API 호출
+  // API 호출
   useEffect(() => {
     if (!combinationId || !imageName) {
-      console.error('❌ 잘못된 URL입니다.');
       setLoading(false);
       return;
     }
 
-    const numericCombinationId = parseInt(combinationId, 10); // 🔹 string → number 변환
-    const decodedImageName = decodeURIComponent(imageName); // 🔹 URL 인코딩 해제
+    const numericCombinationId = parseInt(combinationId, 10); //number로 변환
+    const decodedImageName = decodeURIComponent(imageName); //URL 인코딩 해제
 
     const fetchData = async () => {
       const data = await readShareFavorite(
@@ -42,9 +41,8 @@ const ReadShareFavorite = () => {
       );
 
       if (!data) {
-        console.error('❌ 공유된 향기 정보를 불러오지 못했습니다.');
       } else {
-        setCombination(data.combination ?? null); // 🔹 undefined 방지
+        setCombination(data.combination ?? null);
         setImageUrl(data.s3Url ?? null);
       }
 
@@ -54,7 +52,7 @@ const ReadShareFavorite = () => {
     fetchData();
   }, [combinationId, imageName]);
 
-  // 🔹 카드 캡처 및 다운로드
+  //카드 캡처 및 다운로드
   const handleDownloadCardImage = async () => {
     if (!cardRef.current) return;
 
@@ -70,34 +68,33 @@ const ReadShareFavorite = () => {
         },
       });
 
-      const image = canvas.toDataURL('image/png');
+      const image = canvas.toDataURL("image/png");
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = image;
-      link.download = 'shared-scent-card.png';
+      link.download = "shared-scent-card.png";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      console.log('✅ 카드 이미지 다운로드 성공');
-    } catch (error) {
-      console.error('❌ 카드 이미지 다운로드 실패:', error);
-    }
+    } catch (error) {}
   };
 
   return (
     <div className="app">
       <Header
-        showBack={false} // 뒤로가기 버튼 활성화
+        showBack={false}
         showFinish={false}
         showDeviceManage={false}
         showAdd={false}
       />
-      <div className="mt-4 flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center mt-4">
+        <h1 className="text-12 font-pre-light text-brand mb-4">
+          AI를 기반으로 향과 어울리는 이미지 파일을 생성해줍니다.
+        </h1>
         {loading ? (
           <div className="w-[280px] h-[400px] bg-component p-4 rounded-xl flex flex-col items-center justify-center">
             <Spinner />
-            <p className="text-14 font-pre-light mt-16">
+            <p className="text-12 font-pre-light mt-16">
               이미지를 불러오는 중입니다.
             </p>
           </div>
@@ -124,22 +121,25 @@ const ReadShareFavorite = () => {
               </p>
             )}
             <h2 className="text-14 text-center font-pre-medium mt-6">
-              {combination?.name || '이름 없는 조합'}
+              {combination?.name || "이름 없는 조합"}
             </h2>
 
-            {/* 🔹 향기 정보 */}
+            {/* 향기 정보 */}
             <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
               {[1, 2, 3, 4].map((num) => {
-                const scentName = getScentName(
-                  (combination?.[
-                    `choice${num}` as keyof Combination
-                  ] as number) ?? 0
-                );
+                // choice 값 가져오기
+                const scentChoice =
+                  combination?.[`choice${num}` as keyof Combination];
+                const scentName =
+                  typeof scentChoice === "number"
+                    ? getScentName(scentChoice)
+                    : null;
 
+                // choiceCount 값 가져오기
+                const rawScentCount =
+                  combination?.[`choice${num}Count` as keyof Combination];
                 const scentCount =
-                  Number(
-                    combination?.[`choice${num}Count` as keyof Combination]
-                  ) ?? 0;
+                  typeof rawScentCount === "number" ? rawScentCount : 0;
 
                 if (!scentName || scentCount === 0) return null;
                 return (
@@ -148,11 +148,12 @@ const ReadShareFavorite = () => {
                     className="flex flex-col mr-1 items-center gap-2 min-w-fit"
                   >
                     {scentName}
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 -space-x-[8px]">
                       {Array.from({ length: scentCount }).map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-2 ${getColor(scentName)}`}
+                          className={`w-[14px] h-[6px] ml-[2px] rounded-full ${getColor(scentName)}`}
+                          style={{ transform: "rotate(-65deg)" }}
                         ></div>
                       ))}
                     </div>
@@ -163,21 +164,26 @@ const ReadShareFavorite = () => {
           </div>
         )}
 
-        {/* 🔹 이미지 저장 버튼 */}
-        {!loading && (
+        {/*버튼 그룹*/}
+        <p className="text-10 font-pre-light text-brand mt-12">
+          이미지 저장은 10분간 유효합니다.
+        </p>
+        <div className="flex gap-4 mt-1">
+          {!loading && (
+            <button
+              onClick={handleDownloadCardImage}
+              className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg"
+            >
+              이미지 저장
+            </button>
+          )}
           <button
-            onClick={handleDownloadCardImage}
-            className="border-[1px] border-brand w-[167.3px] h-[40px] text-brand text-16 font-pre-medium rounded-lg mt-4"
+            onClick={() => navigate("/")}
+            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg"
           >
-            이미지 저장
+            Scentify 시작하기
           </button>
-        )}
-        <button
-          onClick={() => navigate('/')}
-          className="border-[1px] border-brand w-[167.3px] h-[40px] text-brand text-16 font-pre-medium rounded-lg "
-        >
-          Scentify 시작하기
-        </button>
+        </div>
       </div>
     </div>
   );

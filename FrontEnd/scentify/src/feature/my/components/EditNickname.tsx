@@ -38,22 +38,27 @@ function EditNickname() {
   }
 
   return (
-    <div className="content pt-4 pb-5 h-full flex flex-col justify-between">
+    <div className="pt-4 pb-5 h-full flex flex-col justify-between w-full">
       <div>
         {/* 제목 */}
         <h1 className="text-20 font-pre-bold text-center">닉네임 변경</h1>
         {/* 입력 필드 */}
-        <div className="mt-8">
-          <label className="text-12 font-pre-light mr-7" htmlFor="nickname">
-            닉네임
-          </label>
-          <input
-            id="nickname"
-            type="text"
-            value={nickname}
-            onChange={handleInputChange}
-            className="w-[256px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
-          />
+        <div className="mt-10 w-full">
+          <div className="flex justify-between items-center gap-x-6 w-full">
+            <label
+              className="text-12 font-pre-light whitespace-nowrap"
+              htmlFor="nickname"
+            >
+              닉네임
+            </label>
+            <input
+              id="nickname"
+              type="text"
+              value={nickname}
+              onChange={handleInputChange}
+              className="w-full h-[34px] text-12 font-pre-light rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
+            />
+          </div>
           {/* 에러 메시지 */}
           {error && (
             <p className="text-red-500 text-12 font-pre-light mt-2">{error}</p>

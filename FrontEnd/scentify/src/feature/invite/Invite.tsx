@@ -34,7 +34,7 @@ function Invite() {
   }, [selectedDeviceId, accessToken]); // 선택된 기기 ID가 변경될 때마다 실행
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mt-4">
       <h1 className="text-20 font-pre-bold mb-12">초대하기</h1>
       <div className="bg-white p-6 rounded-2xl w-[260px] h-[300px] border-[1px] border-gray flex justify-center items-center">
         {inviteCode ? (

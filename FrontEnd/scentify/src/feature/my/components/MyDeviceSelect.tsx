@@ -38,7 +38,7 @@ export default function MyDeviceSelect({
       {/* 드롭다운 버튼 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-[120px] h-[30px] p-3 border-[0.7px] border-gray font-pre-light text-12 justify-between items-center rounded-lg bg-white"
+        className="flex w-[120px] h-[30px] p-3 border-[0.7px] border-gray font-pre-light text-12 justify-between items-center rounded-lg"
         disabled={devices.length === 0} // 기기가 없으면 클릭 방지
       >
         <div className="flex items-center">

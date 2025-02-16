@@ -29,9 +29,9 @@ const MemberCard = ({
 
   return (
     <>
-      <div className="flex items-center justify-between w-[320px] h-[70px] border-b-[0.7px] border-gray">
+      <div className="flex items-center justify-between w-full h-[70px] border-b-[0.7px] border-gray">
         {/*개인 멤버 박스 */}
-        <div className="flex flex-col ml-4">
+        <div className="flex flex-col ml-3">
           <div className="flex items-center">
             {isAdmin && (
               <img src={crownIcon} alt="Admin" className="w-4 h-4 mr-2" />
@@ -44,7 +44,7 @@ const MemberCard = ({
         {showDeleteButton && (
           <button
             onClick={handleDeleteButtonClick}
-            className="ml-auto w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+            className="ml-auto mr-3 w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
           >
             삭제
           </button>

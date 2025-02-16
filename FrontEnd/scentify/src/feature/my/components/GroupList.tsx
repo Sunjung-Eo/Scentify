@@ -144,7 +144,7 @@ export const GroupList = () => {
   };
 
   return (
-    <div className="flex flex-col">
+    <>
       <div className="relative">
         <div className="flex flex-row items-center justify-between mt-[10px]">
           <div className="font-pre-light text-14 text-gray whitespace-nowrap">
@@ -182,7 +182,7 @@ export const GroupList = () => {
         )}
         {/* 멤버 리스트 */}
         {!error && (
-          <div className="mt-2">
+          <div className="flex flex-col mt-2 ">
             {deviceList.length === 0 ? (
               <div className="flex flex-col justify-center items-center h-[270px]">
                 <p className="text-12 font-pre-light text-lightgray text-center leading-[1.5]">
@@ -217,6 +217,7 @@ export const GroupList = () => {
           </div>
         )}
       </div>
+
       {/* 초대코드 입력 & 그룹 삭제 버튼 */}
       <div className="absolute bottom-[20px] w-full flex flex-row items-center justify-between">
         {/* 초대코드입력 버튼 */}
@@ -253,6 +254,6 @@ export const GroupList = () => {
           onCancel={() => setDeleteModalOpen(false)}
         />
       )}
-    </div>
+    </>
   );
 };

@@ -34,7 +34,7 @@ const InviteCodeInput = () => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col mt-4">
       {/* 제목 */}
       <h1 className="text-20 font-pre-bold mb-[80px] text-center">
         초대코드 입력하기
@@ -45,7 +45,7 @@ const InviteCodeInput = () => {
           type="text"
           value={inviteCode}
           onChange={(e) => setInviteCode(e.target.value)}
-          className="px-3 w-[235px] h-[34px] rounded-lg bg-component focus:outline-none focus:ring-2 focus:ring-brand"
+          className="mr-5 flex-1 w-full px-3 w-[235px] h-[34px] rounded-lg bg-component focus:outline-none focus:ring-2 focus:ring-brand"
         />
         {/* 등록 버튼 */}
         <button

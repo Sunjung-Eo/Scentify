@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserInfo } from "../../../apis/user/editaccount/getUserInfo";
 import { updateUserInfo } from "../../../apis/user/editaccount/updateUserInfo";
-import { useAuthStore } from "../../../stores/useAuthStore"; // 인증 상태 (accessToken)
+import { useAuthStore } from "../../../stores/useAuthStore";
 import Alert from "../../../components/Alert/AlertMy";
 
 function EditUserinfo() {
@@ -62,7 +62,7 @@ function EditUserinfo() {
   };
 
   return (
-    <div className="content pt-4 pb-5 h-full flex flex-col justify-between">
+    <div className="pt-4 pb-5 h-full w-full flex flex-col justify-between">
       {/* 제목 */}
       <h1 className="text-20 font-pre-bold text-center">회원정보 변경</h1>
 
@@ -70,7 +70,10 @@ function EditUserinfo() {
       <div className="mt-10">
         {/* 생년월일 입력 */}
         <div className="mb-4 flex items-center">
-          <label className="text-12 font-pre-light mr-3" htmlFor="birth">
+          <label
+            className="text-12 font-pre-light mr-3 whitespace-nowrap"
+            htmlFor="birth"
+          >
             생년월일
           </label>
           <div className="flex gap-2">
@@ -80,12 +83,12 @@ function EditUserinfo() {
               maxLength={4}
               value={birthYear}
               onChange={(e) => setBirthYear(e.target.value)}
-              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black focus:outline-none focus:ring-2 focus:ring-brand"
+              className="flex-1 w-full w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black focus:outline-none focus:ring-2 focus:ring-brand"
             />
             <select
               value={birthMonth}
               onChange={(e) => setBirthMonth(e.target.value)}
-              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-2 focus:ring-brand"
+              className="flex-1 w-full w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray focus:outline-none focus:ring-2 focus:ring-brand"
             >
               <option value="">월</option>
               {[...Array(12)].map((_, i) => (
@@ -100,7 +103,7 @@ function EditUserinfo() {
               maxLength={2}
               value={birthDay}
               onChange={(e) => setBirthDay(e.target.value)}
-              className="w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black focus:outline-none focus:ring-2 focus:ring-brand"
+              className="flex-1 w-full w-[82px] h-[30px] px-3 text-12 font-pre-light rounded-lg border-[1px] border-lightgray placeholder-black focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
         </div>

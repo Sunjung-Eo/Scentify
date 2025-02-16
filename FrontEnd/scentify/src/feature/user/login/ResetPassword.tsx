@@ -69,12 +69,12 @@ const ResetPassword = () => {
   };
 
   return (
-    <>
+    <div className="w-full h-full flex flex-col items-center">
       <form
         id="resetPasswordForm"
         onSubmit={handleSubmit}
         noValidate
-        className="flex w-full max-w-[360px] flex-col gap-3 font-pre-light text-12 px-4 mt-[16px]"
+        className="flex w-full h-full flex-col gap-3 font-pre-light text-12 mt-[16px]"
       >
         <div>
           <h1 className="text-20 font-pre-bold text-center mb-[52px]">
@@ -84,7 +84,7 @@ const ResetPassword = () => {
           <div className="flex items-center justify-between mb-3">
             <label
               htmlFor="new-password"
-              className="text-12 font-pre-light mr-1"
+              className="text-12 font-pre-light mr-5"
             >
               새 비밀번호
             </label>
@@ -93,14 +93,14 @@ const ResetPassword = () => {
               type="password"
               value={newPassword}
               onChange={handleInputChange(setNewPassword)}
-              className="w-[256px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
+              className="flex-1 w-full border w-[235px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
           {/* 새 비밀번호 확인 입력 필드 */}
           <div className="flex items-center justify-between">
             <label
               htmlFor="confirm-password"
-              className="text-12 font-pre-light mr-1"
+              className="text-12 font-pre-light mr-5"
             >
               새 비밀번호 확인
             </label>
@@ -109,7 +109,7 @@ const ResetPassword = () => {
               type="password"
               value={confirmPassword}
               onChange={handleInputChange(setConfirmPassword)}
-              className="w-[235px] h-[34px] px-3 text-12 font-pre-light rounded-lg bg-component"
+              className="flex-1 w-full border w-[235px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
           {error && (
@@ -135,7 +135,7 @@ const ResetPassword = () => {
           }}
         />
       )}
-    </>
+    </div>
   );
 };
 

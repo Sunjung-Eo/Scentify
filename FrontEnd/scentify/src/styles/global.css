@@ -45,7 +45,7 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: calc(var(--vh) * 100); /* ✅ 최소 높이 적용 */
+  /* min-height: calc(var(--vh) * 100); ✅ 최소 높이 적용 */
   overflow-x: hidden; /* ✅ 가로 스크롤 방지 */
 }
 
@@ -70,7 +70,7 @@ body {
   width: 100%;
   max-width: 360px;
   height: 60px;
-  color: white;
+  background-color: #fafafa;
   display: flex;
   align-items: center;
   justify-content: center;

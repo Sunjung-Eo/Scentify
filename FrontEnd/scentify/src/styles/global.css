@@ -57,7 +57,8 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  min-height: 600px;
+  /* min-height: 600px; */
+  overflow: hidden;
 }
 
 /* 헤더 고정 및 중앙 정렬 */

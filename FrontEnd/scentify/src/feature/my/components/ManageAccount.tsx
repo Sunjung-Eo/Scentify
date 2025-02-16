@@ -76,7 +76,7 @@ const ManageAccount = () => {
   };
 
   return (
-    <div className="content pt-4 ">
+    <div className="flex flex-col relative h-full mt-4">
       {/* 프로필 정보 */}
       <div className="flex items-center mb-8">
         <img
@@ -108,18 +108,18 @@ const ManageAccount = () => {
         {/* 회원정보 변경 박스 */}
         <div
           onClick={handleMemberInfoChange}
-          className="w-[320px] h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
+          className="w-full h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
         >
           <p className="text-16 font-pre-medium">회원정보 변경</p>
-          <img src={arrowIcon} alt="arrowIcon" />
+          <img src={arrowIcon} alt="arrowIcon" className="mr-2" />
         </div>
         {/* 비밀번호 변경 박스 */}
         <div
           onClick={handlePasswordChange}
-          className="w-[320px] h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
+          className="w-full h-[70px] flex justify-between items-center border-b-[0.7px] border-gray"
         >
           <p className="text-16 font-pre-medium">비밀번호 변경</p>
-          <img src={arrowIcon} alt="arrowIcon" />
+          <img src={arrowIcon} alt="arrowIcon" className="mr-2" />
         </div>
       </div>
 

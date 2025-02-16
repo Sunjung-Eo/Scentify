@@ -102,32 +102,34 @@ function EditPassword() {
   };
 
   return (
-    <div className="content pt-4 pb-5 h-full flex flex-col justify-between">
+    <div className="pt-4 pb-5 h-full w-full flex flex-col justify-between">
       <div>
         <h1 className="text-20 font-pre-bold text-center">비밀번호 변경</h1>
-        {/* 기존 비밀번호 입력 */}
-        <div className="mt-10 space-y-4">
-          <div>
-            <div className="flex items-center">
-              <label
-                className="text-12 font-pre-light mr-5"
-                htmlFor="current-password"
-              >
-                비밀번호
-              </label>
-              <input
-                id="current-password"
-                type="password"
-                value={currentPassword}
-                onChange={handleInputChange(setCurrentPassword)}
-                className="w-[170px] h-[34px] text-12 font-pre-light rounded-lg bg-component mr-4 px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-              />
-              <button
-                onClick={handlePasswordCheck} // 현재 비밀번호 검증 API 호출
-                className="w-[65px] h-[30px] text-12 font-pre-light border-[1px] border-lightgray rounded-lg"
-              >
-                확인
-              </button>
+        <div className="mt-10 w-full space-y-4">
+          {/* 기존 비밀번호 입력 */}
+          <div className="flex flex-col w-full">
+            <div className="flex items-center w-full">
+              <div className="flex items-center w-full">
+                <label
+                  className="text-12 font-pre-light mr-5"
+                  htmlFor="current-password"
+                >
+                  비밀번호
+                </label>
+                <input
+                  id="current-password"
+                  type="password"
+                  value={currentPassword}
+                  onChange={handleInputChange(setCurrentPassword)}
+                  className="flex-1 w-full h-[34px] text-12 font-pre-light rounded-lg bg-component mr-4 px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+                <button
+                  onClick={handlePasswordCheck} // 현재 비밀번호 검증 API 호출
+                  className="w-[65px] h-[30px] text-12 font-pre-light border-[1px] border-lightgray rounded-lg"
+                >
+                  확인
+                </button>
+              </div>
             </div>
             {passwordCheckMessage && (
               <p
@@ -141,20 +143,22 @@ function EditPassword() {
           </div>
 
           {/* 새 비밀번호 입력 */}
-          <div>
-            <label
-              className="text-12 font-pre-light mr-1"
-              htmlFor="new-password"
-            >
-              새 비밀번호
-            </label>
-            <input
-              id="new-password"
-              type="password"
-              value={newPassword}
-              onChange={handleNewPasswordChange} // 유효성 검사 적용
-              className="w-[256px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-            />
+          <div className="flex flex-col w-full">
+            <div className="flex items-center w-full">
+              <label
+                className="text-12 font-pre-light mr-2"
+                htmlFor="new-password"
+              >
+                새 비밀번호
+              </label>
+              <input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={handleNewPasswordChange} // 유효성 검사 적용
+                className="flex-1 w-full h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+              />
+            </div>
             {passwordError && (
               <p className="text-12 font-pre-light mt-2 text-red-500">
                 {passwordError}
@@ -163,20 +167,22 @@ function EditPassword() {
           </div>
 
           {/* 새 비밀번호 확인 입력 */}
-          <div>
-            <label
-              className="text-12 font-pre-light mr-1"
-              htmlFor="confirm-password"
-            >
-              새 비밀번호 확인
-            </label>
-            <input
-              id="confirm-password"
-              type="password"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              className="w-[235px] h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-            />
+          <div className="flex flex-col w-full">
+            <div className="flex items-center w-full">
+              <label
+                className="text-12 font-pre-light mr-1"
+                htmlFor="confirm-password"
+              >
+                새 비밀번호 확인
+              </label>
+              <input
+                id="confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                className="flex-1 w-fulls h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+              />
+            </div>
             {confirmPasswordError && (
               <p className="text-12 font-pre-light mt-2 text-red-500">
                 {confirmPasswordError}

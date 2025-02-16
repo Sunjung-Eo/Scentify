@@ -1,5 +1,5 @@
-import FavoriteScent from "./FavoriteScent";
-import { Favorite } from "./scenttypes";
+import FavoriteScent from './FavoriteScent';
+import { Favorite } from './scenttypes';
 
 interface FavoritesListProps {
   favorites: Favorite[];
@@ -23,7 +23,7 @@ const FavoritesList = ({
   }
 
   return (
-    <div className="flex flex-col w-full mb-[20px] space-y-4">
+    <div className="flex flex-col w-full mb-[20px] py-5 px-[10px]">
       {favorites.map((favorite: any) => (
         <FavoriteScent
           key={favorite.id}

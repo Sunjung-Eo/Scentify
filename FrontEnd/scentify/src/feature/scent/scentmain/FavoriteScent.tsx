@@ -1,9 +1,9 @@
-import HeartButton from "../../../components/Button/HeartButton";
-import ShareIcon from "../../../assets/icons/shareIcon.svg";
-import { getScentName } from "../../../utils/control/scentUtils";
-import { getColor } from "../../../utils/control/scentUtils";
-import { Combination } from "./scenttypes";
-import { useNavigate } from "react-router-dom";
+import HeartButton from '../../../components/Button/HeartButton';
+import ShareIcon from '../../../assets/icons/shareIcon.svg';
+import { getScentName } from '../../../utils/control/scentUtils';
+import { getColor } from '../../../utils/control/scentUtils';
+import { Combination } from './scenttypes';
+import { useNavigate } from 'react-router-dom';
 
 // FavoriteScent 컴포넌트 Props 타입 정의
 interface FavoriteScentProps {
@@ -23,10 +23,10 @@ const FavoriteScent = ({
   // 🔹 공유 버튼 클릭 핸들러 (API 호출 없이 먼저 이동)
   const handleShareClick = () => {
     if (!combination || !combination.id) {
-      console.error("🚨 공유 버튼 클릭 오류: combination 데이터가 없습니다!");
+      console.error('🚨 공유 버튼 클릭 오류: combination 데이터가 없습니다!');
       return;
     }
-    navigate("/scent/share", {
+    navigate('/scent/share', {
       state: {
         combination, // 향기 조합 정보만 먼저 전달
       },
@@ -37,8 +37,8 @@ const FavoriteScent = ({
     <div className="flex flex-col w-full pb-[20px] justify-between items-start border-b-0.2 border-lightgray">
       <div className="flex w-full mb-[4px] justify-between">
         {/* 조합 이름 */}
-        <h3 className="text-14 text-brand font-pre-medium mb-1">
-          {combination.name || "이름 없는 조합"}
+        <h3 className="text-16 text-brand font-pre-medium mb-1">
+          {combination.name || '이름 없는 조합'}
         </h3>
         {/* 찜 & 공유 버튼 */}
         <div className="flex flex-row gap-3">
@@ -71,7 +71,7 @@ const FavoriteScent = ({
                 <div
                   key={i}
                   className={`w-[14px] h-[6px] ml-[2px] rounded-full ${getColor(scentName)}`}
-                  style={{ transform: "rotate(-65deg)" }}
+                  style={{ transform: 'rotate(-65deg)' }}
                 ></div>
               ))}
             </span>

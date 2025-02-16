@@ -1,7 +1,7 @@
-import { useState } from "react";
-import Modal from "./modal";
-import scentImages from "./scentImages";
-import { ScentCard } from "./scenttypes";
+import { useState } from 'react';
+import Modal from './modal';
+import scentImages from './scentImages';
+import { ScentCard } from './scenttypes';
 
 const ScentCarousel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +27,7 @@ const ScentCarousel = () => {
               src={scent.cardImage}
               alt={scent.alt}
               onClick={() => openModal(scent)}
-              className="w-[70px] h-[150px] rounded-md cursor-pointer"
+              className="w-[60px] h-[120px] rounded-md cursor-pointer"
             />
           ))}
         </div>

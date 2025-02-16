@@ -72,7 +72,7 @@ const Header = ({
   };
 
   return (
-    <header className="header flex w-full flex-row items-center justify-between px-5">
+    <header className="header flex w-full max-w-[calc(100%-40px)] flex-row items-center justify-between">
       {showBack ? (
         <button onClick={handleBackClick}>
           <BackBtn />

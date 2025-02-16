@@ -122,7 +122,7 @@ export default function AutoManager({
   return (
     <div className="flex flex-col mt-6 font-pre-medium text-14 gap-4">
       {/* 탈취 모드 */}
-      <div className="w-[320px] h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
+      <div className="h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div>탈취 모드</div>
           <div className="flex items-center font-pre-light text-12 text-brand gap-2">
@@ -137,7 +137,7 @@ export default function AutoManager({
       </div>
 
       {/* 동작 모드 */}
-      <div className="w-[320px] h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
+      <div className="h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div>동작 모드</div>
           <div className="flex flex-col gap-2">
@@ -157,7 +157,7 @@ export default function AutoManager({
       </div>
 
       {/* 탐지 모드 */}
-      <div className="w-[320px] h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
+      <div className="h-[60px] px-4 bg-component flex justify-between items-center rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div>탐지 모드</div>
           <div className="flex items-center font-pre-light text-12 text-brand gap-2">

@@ -9,6 +9,7 @@ export interface ScentCard {
   modalImage: string; // 모달에 표시될 이미지 경로
   alt: string; // 이미지 대체 텍스트
   description: string; // 모달 설명
+  use: string; // 모달 설명
 }
 
 // 찜한 향기의 조합 데이터 타입
@@ -42,6 +43,7 @@ export interface ModalProps {
   image: string; // 모달에 표시될 이미지 경로
   title: string; // 모달 제목
   description: string; // 모달 설명
+  use: string;
 }
 
 // FavoritesList 컴포넌트의 Props 타입

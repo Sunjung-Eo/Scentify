@@ -11,6 +11,15 @@ export default {
         gray: '#888888',
         lightgray: '#BEBEBE',
         point: '#EE9D7F',
+        lemon: '#FFE99F',
+        eucalyptus: '#C9E4BC',
+        peppermint: '#B8E0D7',
+        lavender: '#C0B7CA',
+        cedarwood: '#B5A488',
+        chamomile: '#EFD4D4',
+        sandalwood: '#716A64',
+        whitemusk: '#FFFFFF',
+        orangeblossom: '#F8C8A8',
       },
       borderColor: {
         point: '#EE9D7F', // point 색상을 border color로 추가

@@ -53,7 +53,7 @@ body {
   /* max-width: 360px; */
   /* height: calc(var(--vh, 1vh) * 100); */
   width: 100%;
-  min-height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   margin: 0 auto;
   background-color: #fafafa;
   display: flex;
@@ -68,7 +68,7 @@ body {
 .header,
 .footer {
   width: 100%;
-  max-width: 360px;
+  max-width: 480px;
   height: 60px;
   background-color: #fafafa;
   display: flex;
@@ -95,8 +95,7 @@ body {
   padding-bottom: 60px; /* 푸터 높이만큼 */
   width: 100%;
   max-width: 480px; /*360*/
+  /* height: calc(var(--vh, 1vh) * 100 - 120px); */
+  /* overflow: hidden;  */
   box-sizing: border-box; /* 패딩 및 보더를 포함한 크기 계산 */
-  height: calc(var(--vh, 1vh) * 100 - 120px);
-  overflow-y: auto; /* ✅ 내부 스크롤 가능하도록 변경 */
-  -webkit-overflow-scrolling: touch; /* ✅ 모바일에서 부드러운 스크롤 */
 }

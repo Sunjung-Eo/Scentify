@@ -96,8 +96,8 @@ body {
   flex-grow: 1;
   padding-top: 60px; /* 헤더 높이만큼 */
   padding-bottom: 60px; /* 푸터 높이만큼 */
-  padding-left: 20px; /* 좌측 패딩 추가 */
-  padding-right: 20px; /* 우측 패딩 추가 */
+  padding-left: 20px;
+  padding-right: 20px;
   width: 100%;
   max-width: 440px; /*360*/
   /* height: calc(var(--vh, 1vh) * 100 - 120px); */

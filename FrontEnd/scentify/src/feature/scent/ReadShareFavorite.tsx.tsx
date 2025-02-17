@@ -83,107 +83,112 @@ const ReadShareFavorite = () => {
 
   return (
     <div className="app">
-      <Header
-        showBack={false}
-        showFinish={false}
-        showDeviceManage={false}
-        showAdd={false}
-        showCancel={false}
-        nextDeviceEdit={false}
-      />
-      <div className="flex flex-col items-center justify-center mt-4">
-        <h1 className="text-12 font-pre-light text-brand mb-4">
-          AI를 기반으로 향과 어울리는 이미지 파일을 생성해줍니다.
-        </h1>
-        {loading ? (
-          <div className="w-[280px] h-[400px] bg-component p-4 rounded-xl flex flex-col items-center justify-center">
-            <Spinner />
-            <p className="text-12 font-pre-light mt-16">
-              이미지를 불러오는 중입니다.
-            </p>
-          </div>
-        ) : (
-          <div
-            ref={cardRef}
-            className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
-          >
-            <img
-              src={scentifylogo}
-              alt="Scentify"
-              className="mx-auto max-w-7 h-auto mb-2"
-            />
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="AI Generated Image"
-                className="w-full h-auto rounded-lg"
-                crossOrigin="anonymous"
-              />
-            ) : (
-              <p className="text-center text-sub font-pre-light text-sm">
-                이미지를 불러올 수 없습니다.
+      <div className="content">
+        <Header
+          showBack={false}
+          showFinish={false}
+          showDeviceManage={false}
+          showAdd={false}
+          showCancel={false}
+          nextDeviceEdit={false}
+        />
+        <div className="flex flex-col items-center justify-center mt-4">
+          <h1 className="text-12 font-pre-light text-brand mb-4">
+            AI를 기반으로 향과 어울리는 이미지 파일을 생성해줍니다.
+          </h1>
+          {loading ? (
+            <div className="w-[280px] h-[400px] bg-component p-4 rounded-xl flex flex-col items-center justify-center">
+              <Spinner />
+              <p className="text-12 font-pre-light mt-16">
+                이미지를 불러오는 중입니다.
               </p>
-            )}
-            <h2 className="text-14 text-center font-pre-medium mt-6">
-              {combination?.name || "이름 없는 조합"}
-            </h2>
-
-            {/* 향기 정보 */}
-            <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
-              {[1, 2, 3, 4].map((num) => {
-                const scentChoice =
-                  combination?.[`choice${num}` as keyof Combination];
-                const scentName =
-                  typeof scentChoice === "number"
-                    ? getScentName(scentChoice)
-                    : null;
-                const rawScentCount =
-                  combination?.[`choice${num}Count` as keyof Combination];
-                const scentCount =
-                  typeof rawScentCount === "number" ? rawScentCount : 0;
-
-                if (!scentName || scentCount === 0) return null;
-                return (
-                  <div
-                    key={num}
-                    className="flex flex-col mr-1 items-center gap-2 min-w-fit"
-                  >
-                    {scentName}
-                    <div className="flex gap-1 -space-x-[8px]">
-                      {Array.from({ length: scentCount }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-[14px] h-[6px] ml-[2px] rounded-full ${getColor(scentName)}`}
-                          style={{ transform: "rotate(-65deg)" }}
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
             </div>
-          </div>
-        )}
+          ) : (
+            <div
+              ref={cardRef}
+              className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
+            >
+              <img
+                src={scentifylogo}
+                alt="Scentify"
+                className="mx-auto max-w-7 h-auto mb-2"
+              />
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt="AI Generated Image"
+                  className="w-full h-auto rounded-lg"
+                  crossOrigin="anonymous"
+                />
+              ) : (
+                <p className="text-center text-sub font-pre-light text-sm">
+                  이미지를 불러올 수 없습니다.
+                </p>
+              )}
+              <h2 className="text-14 text-center font-pre-medium mt-6">
+                {combination?.name || "이름 없는 조합"}
+              </h2>
 
-        {/*버튼 그룹*/}
-        <p className="text-10 font-pre-light text-brand mt-12">
-          이미지 저장은 10분간 유효합니다.
-        </p>
-        <div className="flex gap-4 mt-1">
-          {!loading && (
+              {/* 향기 정보 */}
+              <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
+                {[1, 2, 3, 4].map((num) => {
+                  // choice 값 가져오기
+                  const scentChoice =
+                    combination?.[`choice${num}` as keyof Combination];
+                  const scentName =
+                    typeof scentChoice === "number"
+                      ? getScentName(scentChoice)
+                      : null;
+
+                  // choiceCount 값 가져오기
+                  const rawScentCount =
+                    combination?.[`choice${num}Count` as keyof Combination];
+                  const scentCount =
+                    typeof rawScentCount === "number" ? rawScentCount : 0;
+
+                  if (!scentName || scentCount === 0) return null;
+                  return (
+                    <div
+                      key={num}
+                      className="flex flex-col mr-1 items-center gap-2 min-w-fit"
+                    >
+                      {scentName}
+                      <div className="flex gap-1 -space-x-[8px]">
+                        {Array.from({ length: scentCount }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-[14px] h-[6px] ml-[2px] rounded-full ${getColor(scentName)}`}
+                            style={{ transform: "rotate(-65deg)" }}
+                          ></div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/*버튼 그룹*/}
+          <p className="text-10 font-pre-light text-brand mt-12">
+            이미지 저장은 10분간 유효합니다.
+          </p>
+          <div className="flex gap-4 mt-1">
+            {!loading && (
+              <button
+                onClick={handleDownloadCardImage}
+                className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
+              >
+                이미지 저장
+              </button>
+            )}
             <button
-              onClick={handleDownloadCardImage}
+              onClick={() => navigate("/")}
               className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
             >
-              이미지 저장
+              Scentify 시작하기
             </button>
-          )}
-          <button
-            onClick={() => navigate("/")}
-            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
-          >
-            Scentify 시작하기
-          </button>
+          </div>
         </div>
       </div>
     </div>

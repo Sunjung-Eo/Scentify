@@ -166,7 +166,7 @@ export const GroupList = () => {
             {userId === adminId && (
               <button
                 onClick={handleInvite}
-                className="w-[65px] h-[30px] text-[12px] font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+                className="w-[65px] h-[30px] text-[12px] font-pre-light rounded-lg border-[0.7px] border-gray active:text-bg active:bg-brand active:border-0"
               >
                 초대하기
               </button>
@@ -186,7 +186,7 @@ export const GroupList = () => {
             <div className="flex flex-col">
               {deviceList.length === 0 ? (
                 <div className="flex flex-col justify-center items-center h-[210px]">
-                  <p className="text-12 font-pre-light text-lightgray text-center leading-[1.5]">
+                  <p className="text-12 font-pre-light text-gray text-center leading-[1.5]">
                     현재 등록된 기기가 없습니다.
                     <br />
                     홈에서 기기 추가를 해보세요.
@@ -207,7 +207,7 @@ export const GroupList = () => {
                 // userId === adminId && members.length === 0 인 경우,
                 userId === adminId && (
                   <div className="flex flex-col justify-center items-center h-[210px]">
-                    <p className="text-12 font-pre-light text-lightgray text-center leading-[1.5]">
+                    <p className="text-12 font-pre-light text-gray text-center leading-[1.5]">
                       그룹에 해당하는 멤버가 없습니다.
                       <br />
                       그룹 멤버를 초대해보세요.

@@ -127,7 +127,7 @@ const ManageAccount = () => {
       <div className="absolute bottom-[20px] w-full mt-8 flex justify-end">
         <button
           onClick={handleAccountDeletion}
-          className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+          className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-bg active:bg-brand active:border-0"
         >
           탈퇴하기
         </button>

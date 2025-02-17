@@ -154,10 +154,9 @@ public class CustomScheduleController {
 					if (!mode && (scheduleDay & currentBit) > 0 && (now.isAfter(beforeStartTime) || now.equals(beforeStartTime)) && now.isBefore(beforeEndTime)) {
 				        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 				    }
-					continue; 
 				}
 						
-				if ((scheduleDay & beforeDay) > 0) {
+				if ((scheduleDay & day) > 0) {
 					LocalTime existingStart = customSchedule.getStartTime().toLocalTime();
 					LocalTime existingEnd = customSchedule.getEndTime().toLocalTime();
 					

@@ -83,10 +83,10 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
     'w-[200px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:border-2 focus:border-brand';
 
   return (
-    <div>
+    <>
       <div className="text-pre-regular font-pre-light text-12">
         <div className="flex items-center justify-between mb-4">
-          <label className="mr-4 text-[12px]">캡슐 슬롯 1</label>
+          <label className="mr-4 text-gray">캡슐 슬롯 1</label>
           <select
             value={slot1}
             onChange={(e) => setSlot1(e.target.value)}
@@ -104,7 +104,7 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <label className="mr-4 text-[12px]">캡슐 슬롯 2</label>
+          <label className="mr-4 text-gray">캡슐 슬롯 2</label>
           <select
             value={slot2}
             onChange={(e) => setSlot2(e.target.value)}
@@ -122,7 +122,7 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <label className="mr-4 text-[12px]">캡슐 슬롯 3</label>
+          <label className="mr-4 text-gray">캡슐 슬롯 3</label>
           <select
             value={slot3}
             onChange={(e) => setSlot3(e.target.value)}
@@ -140,7 +140,7 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <label className="mr-4 text-[12px]">캡슐 슬롯 4</label>
+          <label className="mr-4 text-gray">캡슐 슬롯 4</label>
           <select
             value={slot4}
             onChange={(e) => setSlot4(e.target.value)}
@@ -157,7 +157,7 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
           </select>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

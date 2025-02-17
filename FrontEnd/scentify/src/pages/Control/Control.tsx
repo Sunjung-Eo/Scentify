@@ -230,13 +230,13 @@ const Control = () => {
                 </div>
               </div>
               <div className={"mt-[40px] font-pre-medium text-16"}>
-                <div>
+                <div className="relative">
                   <div className="flex justify-between">
                     <div className="flex items-start gap-1">
                       <img src={AlarmIcon} alt="알람 이미지" />
                       <h2>스케줄 관리</h2>
                     </div>
-                    <div className="fixed top-[178px] right-[20px] z-40">
+                    <div className="absolute top-[-4px] right-[4px] z-40">
                       <DeviceSelect
                         devices={deviceSelectItems}
                         selectedDevice={selectedDevice}

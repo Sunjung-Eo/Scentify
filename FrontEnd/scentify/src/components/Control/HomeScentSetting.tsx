@@ -90,7 +90,7 @@ export default function HomeScentSetting({
         <div className="space-y-3">
           {Object.keys(scentCnt).map((slot) => (
             <div key={slot} className="flex justify-between items-center">
-              <p className="font-pre-light text-12 mr-2">
+              <p className="font-pre-light text-12 mr-2 text-gray">
                 {scentNames[slot as keyof typeof scentNames]}
               </p>
               <div className="relative w-[150px] h-[30px]">

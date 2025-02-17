@@ -104,12 +104,12 @@ function EditCapsule() {
   }
 
   return (
-    <div className="content px-4 flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-[220px] h-[34px] p-2 mb-4 rounded-[8px] bg-component focus:outline-none"
+        className="w-[220px] h-[34px] mt-5 mb-4 rounded-[8px] bg-component focus:outline-none text-center font-pre-light"
       />
       <img
         src={deviceImg}

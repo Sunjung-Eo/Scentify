@@ -127,7 +127,7 @@ function EditDefaultScent() {
   }, [deviceId, handleComplete]);
 
   return (
-    <div className="content px-4 flex flex-col items-center">
+    <div className="flex flex-col items-center pt-5">
       <SpaceTab
         setRoomType={setRoomType}
         roomType={roomType}

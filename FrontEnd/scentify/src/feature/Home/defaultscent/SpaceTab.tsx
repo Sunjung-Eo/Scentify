@@ -38,25 +38,21 @@ const SpaceTab = ({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex gap-5 items-center mb-6">
         <h2 className="font-pre-light text-12">공간 크기</h2>
         <div className="flex space-x-2">
           <button
             onClick={() => handleTabChange('small')}
-            className={`px-4 w-[116px] h-[30px] font-pre-medium text-[12px] rounded-xl border-[1px] border-brand ${
-              roomType === 'small'
-                ? 'bg-brand text-component'
-                : 'bg-white text-sub'
+            className={`px-4 w-[80px] h-[30px] font-pre-medium text-[12px] rounded-xl border-[1px] border-brand ${
+              roomType === 'small' ? 'bg-brand text-bg' : 'text-brand'
             }`}
           >
             소형 공간
           </button>
           <button
             onClick={() => handleTabChange('large')}
-            className={`px-4 w-[130px] h-[30px] font-pre-medium text-[12px] rounded-xl border-[1px] border-brand ${
-              roomType === 'large'
-                ? 'bg-brand text-component'
-                : 'bg-white text-sub'
+            className={`px-4 w-[100px] h-[30px] font-pre-medium text-[12px] rounded-xl border-[1px] border-brand ${
+              roomType === 'large' ? 'bg-brand text-bg' : 'text-brand'
             }`}
           >
             중/대형 공간

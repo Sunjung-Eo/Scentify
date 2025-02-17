@@ -85,7 +85,7 @@ function RegistDevice() {
       <div>
         <button
           onClick={handleRegisterDevice}
-          className="w-full h-[48px] rounded-lg text-gray font-pre-bold border-[1px] border-lightgray"
+          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand"
         >
           저장
         </button>

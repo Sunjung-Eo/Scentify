@@ -31,7 +31,7 @@ function ConnectSuccess() {
       {/* 다음 버튼 영역 */}
       <div>
         <Link to="/home/registcapsule" state={{ id: id }}>
-          <button className="w-full h-[48px] rounded-lg text-gray font-pre-bold border-[1px] border-lightgray">
+          <button className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand">
             다음
           </button>
         </Link>

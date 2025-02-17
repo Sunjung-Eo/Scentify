@@ -195,7 +195,7 @@ const ShareFavorite = () => {
         <div className="flex gap-4 mt-1">
           <button
             onClick={handleCopyLink} // 즉시 공유 링크 복사
-            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg"
+            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
             disabled={loading}
           >
             {copied ? "링크 복사 완료" : "공유 링크"}
@@ -203,7 +203,7 @@ const ShareFavorite = () => {
 
           <button
             onClick={handleDownloadCardImage} // 카드 캡처 & 다운로드 버튼으로 변경
-            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg"
+            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
             disabled={loading}
           >
             이미지 저장

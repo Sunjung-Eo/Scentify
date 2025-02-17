@@ -25,7 +25,7 @@ function RegistDevice1() {
 
         <div className="w-full">
           <Link to="/home/registdevice2">
-            <button className="w-full h-12 px-6 rounded-lg bg-brand text-white text-16 font-pre-medium">
+            <button className="w-full h-12 px-6 rounded-lg bg-brand text-bg text-16 font-pre-medium">
               기기 등록하기
             </button>
           </Link>

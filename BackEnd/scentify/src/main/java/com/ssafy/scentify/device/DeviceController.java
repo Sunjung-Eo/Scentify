@@ -266,6 +266,51 @@ public class DeviceController {
 		return true;
 	}
 	
+	// API 84번 : 캡슐 변경
+	@PostMapping("/capsules/change")
+	public ResponseEntity<?> changeCapsuleInfo(@RequestBody CapsuleInfo capsuleInfo, HttpServletRequest request) {
+		try {
+			// 기존 캡슐 정보를 리스트로 만듦
+			HttpSession session =  request.getSession();
+			Integer deviceId = capsuleInfo.getId();
+			DeviceHomeDto deviceInfo = deviceService.getDeviceHomeInfoById(deviceId);
+			
+			// 기존 roomType 정보를 가져옴
+			int beforeRoomType = deviceInfo.getRoomType();
+			session.setAttribute("beforeRoomType", beforeRoomType);
+			
+	        List<Integer> beforeCapsules = new ArrayList<>();
+	        beforeCapsules.add(deviceInfo.getSlot1());    beforeCapsules.add(deviceInfo.getSlot2());
+	        beforeCapsules.add(deviceInfo.getSlot3());    beforeCapsules.add(deviceInfo.getSlot4());
+	        
+			// 캡슐 정보 업데이트
+			if (!deviceService.updateCapsuleInfo(capsuleInfo)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			
+			// 캡슐 정보 웹소켓에 전송
+			CapsuleInfoRequest infoRequest = new CapsuleInfoRequest(capsuleInfo.getSlot1(), capsuleInfo.getSlot2(),
+																	capsuleInfo.getSlot3(), capsuleInfo.getSlot4());
+			socketService.sendCapsuleInfo(capsuleInfo.getId(), infoRequest);
+			
+			// 세션에 캡슐 정보 저장
+			List<Integer> capsules = new ArrayList<>();
+			capsules.add(capsuleInfo.getSlot1());
+			capsules.add(capsuleInfo.getSlot2());
+			capsules.add(capsuleInfo.getSlot3());
+			capsules.add(capsuleInfo.getSlot4());
+			session.setAttribute("capsules", capsules);
+			
+			// 기존 등록 캡슐과 이전 캡슐 비교
+			boolean isEqual = new HashSet<>(capsules).equals(new HashSet<>(beforeCapsules));
+			session.setAttribute("isEqual", isEqual);
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			 // 예기치 않은 에러 처리
+			log.error("Exception: ", e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	// API 83번 : 캡슐 변경에 따른 기본향 재등록
 	@PostMapping("/set/change")
 	public ResponseEntity<?> changeDefaultCombination(@RequestBody defaultCombinationDto combinationDto, HttpServletRequest request) {
@@ -291,16 +336,12 @@ public class DeviceController {
 			
 			// 등록된 디바이스 정보를 받아옴
 	        Integer deviceId = combinationDto.getId();
-	        DeviceHomeDto deviceInfo = deviceService.getDeviceHomeInfoById(deviceId);
-	        
-	        // 기존 캡슐 정보를 리스트로 만듦
-	        List<Integer> beforeCapsules = new ArrayList<>();
-	        beforeCapsules.add(deviceInfo.getSlot1());    beforeCapsules.add(deviceInfo.getSlot2());
-	        beforeCapsules.add(deviceInfo.getSlot3());    beforeCapsules.add(deviceInfo.getSlot4());
+	        Boolean isEqual = (Boolean) session.getAttribute("isEqual");
+	        if (isEqual == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	        
 	        // 만약 기존에 설정한 방 정보와 캡슐 정보가 같다면 그냥 기본향만 수정해줌
-	        if (deviceInfo.getRoomType() == combinationDto.getRoomType()) {
-	        	boolean isEqual = new HashSet<>(capsules).equals(new HashSet<>(beforeCapsules));
+	        Integer beforeRoomType = (Integer) session.getAttribute("beforeRoomType");
+	        if (beforeRoomType != null && beforeRoomType == combinationDto.getRoomType()) {
 	        	if (isEqual) {
 	        		// 조합을 먼저 등록
 	        		Integer combinationId = addDefaultCombination(count, deviceId, roomType, combination);

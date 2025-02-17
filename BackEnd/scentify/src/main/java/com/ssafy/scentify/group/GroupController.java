@@ -273,8 +273,8 @@ public class GroupController {
 
 	 		if (memberPosition == null && memberId.equals(group.getMember1Id())) { memberPosition = "member_1"; }
 	 		if (memberPosition == null && memberId.equals(group.getMember2Id())) { memberPosition = "member_2"; }
-	 		if (memberPosition == null && userId.equals(group.getMember3Id())) { memberPosition = "member_3"; }
-	 		if (memberPosition == null && userId.equals(group.getMember4Id())) { memberPosition = "member_4"; }
+	 		if (memberPosition == null && memberId.equals(group.getMember3Id())) { memberPosition = "member_3"; }
+	 		if (memberPosition == null && memberId.equals(group.getMember4Id())) { memberPosition = "member_4"; }
 	
 	 		if (memberPosition == null) { return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
  			

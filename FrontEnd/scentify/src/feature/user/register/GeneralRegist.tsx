@@ -23,6 +23,8 @@ const GeneralRegist = () => {
         showFinish={false}
         showDeviceManage={false}
         showAdd={false}
+        showCancel={false}
+        nextDeviceEdit={false}
       />
       <main className="content flex flex-grow justify-center">
         <div className="flex flex-col items-center justify-between">

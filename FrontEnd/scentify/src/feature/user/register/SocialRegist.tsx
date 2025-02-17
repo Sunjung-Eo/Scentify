@@ -22,8 +22,10 @@ const SocialRegist = () => {
         showFinish={false}
         showDeviceManage={false}
         showAdd={false}
+        showCancel={false}
+        nextDeviceEdit={false}
       />
-      <main className="content flex flex-grow justify-center">
+      <main className="content flex flex-col w-full max-w-[calc(100%-40px)] min-h-screen mx-auto">
         <div className="flex flex-col items-center justify-between">
           <div className="top-4 p-4 font-pre-bold text-20">소셜 회원가입</div>
           <RegistFormSocial

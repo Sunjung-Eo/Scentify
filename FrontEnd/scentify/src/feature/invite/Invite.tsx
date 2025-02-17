@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 function Invite() {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  const [copied, setCopied] = useState(false);
   const { accessToken } = useAuthStore();
   const location = useLocation(); // GroupList에서 전달된 데이터 받기
   const selectedDeviceId = location.state?.deviceId; // 선택된 기기 ID
@@ -33,6 +33,13 @@ function Invite() {
     fetchInviteCode();
   }, [selectedDeviceId, accessToken]); // 선택된 기기 ID가 변경될 때마다 실행
 
+  const handleCopyCode = () => {
+    if (!inviteCode) return;
+    navigator.clipboard.writeText(inviteCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="flex flex-col items-center mt-4">
       <h1 className="text-20 font-pre-bold mb-12">초대하기</h1>
@@ -43,7 +50,13 @@ function Invite() {
             <p className="font-pre-regular text-12 mb-3 block">
               나의 초대 코드
             </p>
-            <p className="font-pre-regular text-[32px]">{inviteCode}</p>
+            <p className="font-pre-regular text-[32px] mb-12">{inviteCode}</p>
+            <button
+              onClick={handleCopyCode}
+              className="border-[0.7px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
+            >
+              {copied ? "복사 완료" : "코드 복사"}
+            </button>
           </div>
         ) : error ? (
           <div className="text-center">

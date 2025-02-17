@@ -138,7 +138,7 @@ export default function BehaviorSetting() {
               </div>
             </div>
           </div>
-          <div className="fixed top-[150px] right-[120px] z-40 font-pre-light text-12">
+          <div className="absolute top-[80px] right-[100px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
               <div className="absolute top-[1px] left-[59px]">
@@ -165,7 +165,7 @@ export default function BehaviorSetting() {
               </div>
             </div>
           </div>
-          <div className="fixed top-[305px] right-[120px] z-40 font-pre-light text-12">
+          <div className="absolute top-[80px] right-[100px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
               <p className="p-2">분사 주기</p>
               <div className="absolute top-[1px] left-[59px]">

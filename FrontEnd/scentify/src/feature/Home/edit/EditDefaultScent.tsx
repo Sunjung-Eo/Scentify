@@ -4,7 +4,7 @@ import SpaceDescription from '../defaultscent/SpaceDescription';
 import { useControlStore } from '../../../stores/useControlStore';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { editCapsuleAndDefaultScent } from '../../../apis/home/editCapsuleAndDefaultScent';
-import { registCapsule } from '../../../apis/home/registCapsule';
+import { editCapsule } from '../../../apis/home/editCapsule';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
 
 interface FormData {
@@ -70,8 +70,20 @@ function EditDefaultScent() {
     const roomTypeValue = roomType === 'small' ? 0 : 1;
 
     try {
+      console.log(
+        '🍀 캡슐 정보 수정',
+        'id: ',
+        deviceId,
+        ' name:',
+        capsuleData.name,
+        ' 슬롯정보',
+        capsuleData.slot1,
+        capsuleData.slot2,
+        capsuleData.slot3,
+        capsuleData.slot4
+      );
       // 1. 캡슐 정보 수정
-      await registCapsule(
+      await editCapsule(
         deviceId,
         capsuleData.name,
         capsuleData.slot1,

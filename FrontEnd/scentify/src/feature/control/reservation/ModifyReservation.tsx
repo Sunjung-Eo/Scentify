@@ -33,6 +33,7 @@ export default function ModifyReservation({
 
   // 모달창
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const handleModalOpen = () => {
     setIsModalOpen(false);
   };
@@ -51,6 +52,10 @@ export default function ModifyReservation({
     // 403 반환 시 모달창 띄우기
     onError: (error) => {
       if (error.message === "403") {
+        setErrorMessage("현재 예약이 종료된 후 수정해주세요.");
+        setIsModalOpen(true);
+      } else if (error.message === "409") {
+        setErrorMessage("해당 시간에 예약이 이미 존재합니다.");
         setIsModalOpen(true);
       } else {
         console.error("예약 수정 실패:", error);
@@ -570,7 +575,7 @@ export default function ModifyReservation({
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <AlertScheduleModal
-            message="해당 시간에 예약이 이미 존재합니다."
+            message={errorMessage}
             showButtons={true}
             onConfirm={handleModalOpen}
           />

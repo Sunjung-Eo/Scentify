@@ -70,7 +70,7 @@ function EditNickname() {
       <div>
         <button
           onClick={handleSave}
-          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-component active:bg-brand active:border-0"
+          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-bg active:bg-brand active:border-0"
         >
           저장
         </button>

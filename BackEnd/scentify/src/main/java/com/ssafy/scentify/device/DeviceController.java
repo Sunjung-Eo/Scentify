@@ -331,6 +331,7 @@ public class DeviceController {
 	        
 	        // roomType에 따라 분사량 선택
 			int roomType = combinationDto.getRoomType();
+			
 			int count = getVaildCountAboutRoomType(roomType, combination);
 			if (count == 0) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 			
@@ -341,11 +342,12 @@ public class DeviceController {
 	        
 	        // 만약 기존에 설정한 방 정보와 캡슐 정보가 같다면 그냥 기본향만 수정해줌
 	        Integer beforeRoomType = (Integer) session.getAttribute("beforeRoomType");
+	        
 	        if (beforeRoomType != null && beforeRoomType == combinationDto.getRoomType()) {
 	        	if (isEqual) {
 	        		// 조합을 먼저 등록
 	        		Integer combinationId = addDefaultCombination(count, deviceId, roomType, combination);
-	    			if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
+	        		if (combinationId == null) { return new ResponseEntity<>(HttpStatus.BAD_REQUEST); }
 	    			
 	    			// 로직 수행 후 세션 만료
 	    			session.invalidate();
@@ -354,9 +356,7 @@ public class DeviceController {
 	        }
 	        
 	        // 기존 커스텀 스케쥴 삭제
-	        if (!customScheduleService.deleteCustomSchedules(deviceId)) {
-	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-	        }
+	        customScheduleService.deleteCustomSchedules(deviceId);
 			
 	        // 기존 자동화 스케줄 삭제
 	        if (!autoScheduleService.deleteAutoSchedules(deviceId)) {

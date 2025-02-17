@@ -60,5 +60,5 @@ public interface CustomScheduleRepository {
 	
 	// 기기의 모든 커스텀 스케줄 삭제
 	@Delete("DELETE FROM customschedule WHERE device_id = #{deviceId}")
-	boolean deleteCustomSchedules(int deviceId);
+	int deleteCustomSchedules(int deviceId);
 }

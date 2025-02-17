@@ -45,7 +45,7 @@ public class CustomScheduleService {
 		return customScheduleRepository.deleteCustomScheduleById(customScheduleId, deviceId);
 	}
 	
-	public boolean deleteCustomSchedules(int deviceId) {
+	public int deleteCustomSchedules(int deviceId) {
 		return customScheduleRepository.deleteCustomSchedules(deviceId);
 	}
 

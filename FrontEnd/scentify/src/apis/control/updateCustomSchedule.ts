@@ -17,6 +17,9 @@ export const updateCustomSchedule = async (
   if (response.status === 403) {
     throw new Error("403");
   }
+  if (response.status === 409) {
+    throw new Error("409");
+  }
 
   return response.status;
 };

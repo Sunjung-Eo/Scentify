@@ -136,33 +136,35 @@ public class CustomScheduleController {
 			// 기기에 설정된 mode 정보와 기존에 스케줄에 설정되었던 day를 가져옴
 			boolean mode = deviceService.getMode(customScheduleDto.getDeviceId());
 			int currentBit = codeProvider.getCurrentDayBit();
+			int beforeDay = 0;
 			
 			// 현재 실행 중인 스케줄이면 수정할 수 없음
 			LocalTime now = LocalTime.now();
 			
 			// 중복 시간 검사 후 있다면 수정하지 못함 & 수정하려는 스케줄이 현재 실행 중이면 수정할 수 없음
 			for (CustomScheduleHomeDto customSchedule : customSchedules) {
-				int beforeDay = customSchedule.getDay();
+				int scheduleDay = customSchedule.getDay();
 				
 				if (customSchedule.getId() == id) { 
+					beforeDay = scheduleDay;
+					
 					LocalTime beforeStartTime = customSchedule.getStartTime().toLocalTime();
 					LocalTime beforeEndTime = customSchedule.getEndTime().toLocalTime();
 					
-					if (!mode && (beforeDay & currentBit) > 0 && (now.isAfter(beforeStartTime) || now.equals(beforeStartTime)) && now.isBefore(beforeEndTime)) {
+					if (!mode && (scheduleDay & currentBit) > 0 && (now.isAfter(beforeStartTime) || now.equals(beforeStartTime)) && now.isBefore(beforeEndTime)) {
 				        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 				    }
-					
 					continue; 
 				}
 						
-				if ((day & beforeDay) > 0) {
+				if ((scheduleDay & beforeDay) > 0) {
 					LocalTime existingStart = customSchedule.getStartTime().toLocalTime();
 					LocalTime existingEnd = customSchedule.getEndTime().toLocalTime();
 					
 					boolean isTimeOverlapping = (startTime.isBefore(existingEnd) && endTime.isAfter(existingStart)) || 
 			                					 startTime.equals(existingStart) || endTime.equals(existingEnd);
 					if (isTimeOverlapping) {
-						return new ResponseEntity<>(HttpStatus.FORBIDDEN); 
+						return new ResponseEntity<>(HttpStatus.CONFLICT); 
 					}
 				}
 			}

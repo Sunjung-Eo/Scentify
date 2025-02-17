@@ -1,13 +1,15 @@
 import { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 import { readShareFavorite } from "../../apis/scent/readShareFavorite"; // API 호출 함수 가져오기
+
 import { Combination } from "../../feature/scent/scentmain/scenttypes";
 import { getScentName, getColor } from "../../utils/control/scentUtils";
 import Spinner from "../../components/Loading/Spinner";
+import Header from "../../layout/Header";
+
 import html2canvas from "html2canvas";
 import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
-import Header from "../../layout/Header";
-import { useNavigate } from "react-router-dom";
 
 const ReadShareFavorite = () => {
   const navigate = useNavigate();
@@ -86,6 +88,8 @@ const ReadShareFavorite = () => {
         showFinish={false}
         showDeviceManage={false}
         showAdd={false}
+        showCancel={false}
+        nextDeviceEdit={false}
       />
       <div className="flex flex-col items-center justify-center mt-4">
         <h1 className="text-12 font-pre-light text-brand mb-4">
@@ -127,15 +131,12 @@ const ReadShareFavorite = () => {
             {/* 향기 정보 */}
             <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
               {[1, 2, 3, 4].map((num) => {
-                // choice 값 가져오기
                 const scentChoice =
                   combination?.[`choice${num}` as keyof Combination];
                 const scentName =
                   typeof scentChoice === "number"
                     ? getScentName(scentChoice)
                     : null;
-
-                // choiceCount 값 가져오기
                 const rawScentCount =
                   combination?.[`choice${num}Count` as keyof Combination];
                 const scentCount =

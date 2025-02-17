@@ -1,5 +1,5 @@
-import FavoriteScent from './FavoriteScent';
-import { Favorite } from './scenttypes';
+import FavoriteScent from "./FavoriteScent";
+import { Favorite } from "./scenttypes";
 
 interface FavoritesListProps {
   favorites: Favorite[];
@@ -7,12 +7,7 @@ interface FavoritesListProps {
   onShare: (id: string) => void;
 }
 
-// FavoritesList 컴포넌트 정의
-const FavoritesList = ({
-  favorites,
-  onToggleLike,
-  onShare,
-}: FavoritesListProps) => {
+const FavoritesList = ({ favorites, onToggleLike }: FavoritesListProps) => {
   // 초기 렌더링 전 로딩
   if (
     !favorites ||

@@ -1,38 +1,34 @@
 import { useAuthStore } from '../../stores/useAuthStore';
 
-export const editCapsuleAndDefaultScent = async (
-  id: number, // 디바이스 아이디
-  roomType: number, // 공간 크기
-  combination: {
-    choice1: number;
-    choice1Count: number;
-    choice2: number;
-    choice2Count: number;
-    choice3: number;
-    choice3Count: number;
-    choice4: number;
-    choice4Count: number;
-  }
+export const registCapsule = async (
+  id: number,
+  name: string,
+  slot1: number,
+  slot2: number,
+  slot3: number,
+  slot4: number
 ) => {
   try {
     const accessToken = useAuthStore.getState().accessToken;
-    const requestBody = {
-      id,
-      roomType,
-      combination,
-    };
-
     const response = await fetch('/v1/device/capsules/change', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({
+        id,
+        name,
+        slot1,
+        slot2,
+        slot3,
+        slot4,
+      }),
     });
+
     // ✅ 응답 상태 코드 체크 (본문이 없는 경우 대비)
     if (response.status === 200) {
-      console.log('기본향 수정 성공');
+      console.log('캡슐 등록 성공');
       return { success: true }; // 빈 응답 대비
     } else {
       const errorText = await response.text(); // 오류 메시지 읽기
@@ -41,7 +37,7 @@ export const editCapsuleAndDefaultScent = async (
       );
     }
   } catch (error) {
-    console.error('기본향 수정 실패:', error);
+    console.error('디바이스 등록 실패:', error);
     throw error;
   }
 };

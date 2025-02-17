@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import Modal from './modal';
-import scentImages from './scentImages';
-import { ScentCard } from './scenttypes';
+import { useState } from "react";
+
+import Modal from "./modal";
+import scentImages from "./scentImages";
+import { ScentCard } from "./scenttypes";
 
 const ScentCarousel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

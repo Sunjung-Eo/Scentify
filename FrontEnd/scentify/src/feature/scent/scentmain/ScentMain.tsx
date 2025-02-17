@@ -1,16 +1,17 @@
-import { useEffect } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useEffect } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
-import { useAuthStore } from '../../../stores/useAuthStore';
-import { useFavoriteStore } from '../../../stores/useFavoriteStore';
+import { useAuthStore } from "../../../stores/useAuthStore";
+import { useFavoriteStore } from "../../../stores/useFavoriteStore";
 
-import { getAllFavorite } from '../../../apis/scent/getAllFavorite';
-import { deleteFavorite } from '../../../apis/scent/deleteFavorite';
+import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
+import { deleteFavorite } from "../../../apis/scent/deleteFavorite";
 
-import ScentCarousel from './scentcarousel';
-import FavoritesList from './FavoritesList';
-import { Favorite } from './scenttypes';
-import bookmarkIcon from '../../../assets/icons/bookmark.svg';
+import ScentCarousel from "./scentcarousel";
+import FavoritesList from "./FavoritesList";
+import { Favorite } from "./scenttypes";
+
+import bookmarkIcon from "../../../assets/icons/bookmark.svg";
 
 const ScentMain = () => {
   // 인증토큰
@@ -20,7 +21,7 @@ const ScentMain = () => {
   // 마운트 시 동기화
   const queryClient = useQueryClient();
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
+    queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
     refetch();
   }, []);
 
@@ -29,10 +30,10 @@ const ScentMain = () => {
 
   // 찜 세부 정보 query
   const { data: fetchedFavoritesData, refetch } = useQuery({
-    queryKey: ['favoritesData'],
+    queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
     staleTime: 0,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     initialData: { favorites: [] },
   });
 
@@ -53,8 +54,8 @@ const ScentMain = () => {
       setFavorites(updatedFavoriteIds);
 
       // query 업데이트
-      queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
-      queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
+      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
+      queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
     },
   });
 
@@ -63,30 +64,25 @@ const ScentMain = () => {
     try {
       await deleteSingleMutation.mutateAsync(id);
     } catch (error) {
-      console.error('삭제 실패:', error);
+      console.error("삭제 실패:", error);
     }
   };
 
   // 공유 버튼 클릭 함수(id는 공유할 향기의 ID)
   const handleShare = (id: string) => {
-    // `favoritesData`에서 해당 ID에 맞는 항목을 찾기
     const favorite = favoritesData.favorites.find((fav: any) => fav.id === id);
-
-    // 불필요한 if문 제거하고 바로 실행
-    console.log(`Shared combination for ID: ${id}`);
     alert(`${favorite!.combination.name} 향기를 공유합니다.`);
   };
 
   return (
     <div className="pt-[16px]">
-      {/* 브랜드 향기 카드를 보여주는 캐러셀 */}
+      {/* 브랜드 향기 카드 캐러셀 */}
       <div className="mb-[60px]">
         <h2 className="text-12 text-sub font-pre-light mb-2">
           각 카드를 눌러 브랜드 향을 알아보세요.
         </h2>
         <ScentCarousel />
       </div>
-
       {/* 찜한 향기 목록 */}
       <div>
         <div className="flex items-center">

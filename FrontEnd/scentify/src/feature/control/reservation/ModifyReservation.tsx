@@ -350,7 +350,7 @@ export default function ModifyReservation({
   ]);
 
   return (
-    <div className="font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)] w-full">
+    <div className="p-1 font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)] w-full">
       {/* 예약 이름 */}
       <div className="relative flex items-center mb-[25px] w-full">
         <label htmlFor="reservatioName" className="mr-[20px]">

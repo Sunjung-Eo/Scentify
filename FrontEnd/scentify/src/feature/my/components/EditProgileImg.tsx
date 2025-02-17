@@ -88,7 +88,7 @@ function EditProfileImg() {
       <div>
         <button
           onClick={handleSave} // 저장 버튼 클릭 시 API 호출
-          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-component active:bg-brand active:border-0"
+          className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-bg active:bg-brand active:border-0"
         >
           저장
         </button>

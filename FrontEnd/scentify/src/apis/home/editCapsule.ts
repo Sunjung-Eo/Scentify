@@ -1,6 +1,6 @@
 import { useAuthStore } from '../../stores/useAuthStore';
 
-export const registCapsule = async (
+export const editCapsule = async (
   id: number,
   name: string,
   slot1: number,

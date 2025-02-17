@@ -103,7 +103,7 @@ const DeviceCard = () => {
     },
     onError: (error: any) => {
       console.error('❌ 디바이스 삭제 실패:', error);
-      if (error.status === 403) {
+      if (error.status === 401) {
         alert('관리자가 아니므로 기기를 삭제할 수 없습니다.');
       } else {
         alert('디바이스 삭제에 실패했습니다.');

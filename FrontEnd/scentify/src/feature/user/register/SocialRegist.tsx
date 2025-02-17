@@ -25,13 +25,15 @@ const SocialRegist = () => {
         showCancel={false}
         nextDeviceEdit={false}
       />
-      <main className="content flex flex-col w-full max-w-[calc(100%-40px)] min-h-screen mx-auto">
-        <div className="flex flex-col items-center justify-between">
-          <div className="top-4 p-4 font-pre-bold text-20">소셜 회원가입</div>
-          <RegistFormSocial
-            onRegist={handleSocialRegistrationComplete}
-            email={email || ''}
-          />
+      <main className="content flex flex-col w-full min-h-screen mx-auto">
+        <div className="flex flex-col items-center justify-between h-full">
+          <div className="p-2 font-pre-bold text-20">소셜 회원가입</div>
+          <div className="flex-1 overflow-y-auto w-full">
+            <RegistFormSocial
+              onRegist={handleSocialRegistrationComplete}
+              email={email || ''}
+            />
+          </div>
           <button
             type="submit"
             form="registFormSocial"

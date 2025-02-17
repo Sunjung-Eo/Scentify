@@ -26,17 +26,22 @@ const GeneralRegist = () => {
         showCancel={false}
         nextDeviceEdit={false}
       />
-      <main className="content flex flex-grow justify-center">
-        <div className="flex flex-col items-center justify-between">
-          <div className="top-4 p-4 font-pre-bold text-20">일반 회원가입</div>
-          <RegistForm onRegist={handleRegistrationComplete} />
-          <button
-            type="submit"
-            form="registForm"
-            className=" h-12 w-full rounded-lg bg-brand text-white font-pre-light text-16"
-          >
-            Scentify 시작하기
-          </button>
+      <main className="content flex flex-col w-full min-h-screen mx-auto">
+        <div className="flex flex-col items-center justify-between h-full">
+          <div className="p-2 font-pre-bold text-20">일반 회원가입</div>
+          <div className="flex-1 overflow-y-auto w-full">
+            <RegistForm onRegist={handleRegistrationComplete} />
+          </div>
+
+          <div className="w-full pt-4">
+            <button
+              type="submit"
+              form="registForm"
+              className="h-12 w-full rounded-lg bg-brand text-white font-pre-light text-16"
+            >
+              Scentify 시작하기
+            </button>
+          </div>
         </div>
       </main>
       {alertMessage && (

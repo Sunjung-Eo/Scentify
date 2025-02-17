@@ -105,10 +105,10 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
   };
 
   const inputStyles =
-    'border h-9 flex-1 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand';
+    'flex-1 border h-9 min-w-[40px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand';
 
   const miniBtnStyles =
-    'h-9 px-4 rounded-lg border-0.5 focus:outline-none focus:ring-2 focus:ring-brand';
+    'h-9 px-4 rounded-lg border-0.5 focus:outline-none focus:ring-2 focus:ring-brand whitespace-nowrap';
 
   return (
     <>
@@ -116,11 +116,13 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
         id="registForm"
         onSubmit={handleSubmit}
         noValidate
-        className="flex w-full flex-col gap-3 font-pre-light text-12 min-h-[400px] overflow-y-auto p-[2px]"
+        className="flex w-full flex-col p-2 gap-3 font-pre-light text-12 overflow-y-auto"
       >
         {/* 아이디 */}
-        <div className="flex items-center gap-2 ">
-          <label htmlFor="id">아이디</label>
+        <div className="flex flex-wrap items-center gap-2 w-full">
+          <label htmlFor="id" className=" shrink-0">
+            아이디
+          </label>
           <input
             id="id"
             type="text"
@@ -200,8 +202,8 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
         )}
 
         {/* 생년월일 */}
-        <fieldset id="birth" className="flex items-center gap-2">
-          <label className="flex text-12">생년월일</label>
+        <fieldset id="birth" className="flex items-center gap-2 w-full">
+          <label className="flex text-12 shrink-0">생년월일</label>
           <input
             type="text"
             name="birthYear"
@@ -209,14 +211,14 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             placeholder="년(4자)"
             maxLength={4}
             onChange={handleChange}
-            className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+            className="border w-full h-9 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
           />
           <select
             id="birthMonth"
             name="birthMonth"
             value={formData.birthMonth}
             onChange={handleChange}
-            className={inputStyles}
+            className={`${inputStyles} w-full max-w-[80px]`}
           >
             <option value="">월</option>
             {Array.from({ length: 12 }, (_, i) => (
@@ -233,7 +235,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             placeholder="일"
             maxLength={2}
             onChange={handleChange}
-            className="border h-9 w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+            className="border h-9 w-full max-w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
           />
         </fieldset>
         {errors.birth && (

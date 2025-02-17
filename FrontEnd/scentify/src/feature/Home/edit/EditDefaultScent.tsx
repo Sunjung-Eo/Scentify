@@ -36,14 +36,6 @@ function EditDefaultScent() {
   const { setCompleteHandler } = useControlStore();
   const [message, setMessage] = useState<Message | null>(null);
 
-  console.log(
-    '🔥 EditDefaultScent 렌더링됨',
-    deviceId,
-    capsuleData,
-    name,
-    defaultCombination
-  );
-
   const slot1 = capsuleData?.slot1;
   const slot2 = capsuleData?.slot2;
   const slot3 = capsuleData?.slot3;
@@ -90,8 +82,6 @@ function EditDefaultScent() {
 
       // 2. 기본향 설정 수정 (올바른 구조로 변환)
       const combination = {
-        id: defaultCombination,
-        name: name,
         choice1: Number(slot1) || 0,
         choice1Count: Number(scentCnt.slot1) || 0,
         choice2: Number(slot2) || 0,
@@ -102,9 +92,10 @@ function EditDefaultScent() {
         choice4Count: Number(scentCnt.slot4) || 0,
       };
 
-      console.log('🔥 combination', combination);
+      console.log('🍀 combination', combination);
       // 2. 기본향 설정 수정
       await editCapsuleAndDefaultScent(deviceId, roomTypeValue, combination);
+      console.log('🍀 combination', combination);
       setTimeout(() => {
         navigate('/home');
       }, 1000);

@@ -4,7 +4,6 @@ export const editDefaultScent = async (
   id: number, // 디바이스 아이디
   combination: {
     id: number;
-    name: string;
     choice1: number;
     choice1Count: number;
     choice2: number;

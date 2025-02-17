@@ -22,7 +22,8 @@ export const editCapsuleAndDefaultScent = async (
       combination,
     };
 
-    const response = await fetch('/v1/device/capsules/change', {
+    console.log('🍀🍀🍀🍀🍀 requestBody', requestBody);
+    const response = await fetch('/v1/device/set/change', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,

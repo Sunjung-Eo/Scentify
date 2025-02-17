@@ -181,41 +181,43 @@ export const GroupList = () => {
           </div>
         )}
         {/* 멤버 리스트 */}
-        {!error && (
-          <div className="flex flex-col mt-2 ">
-            {deviceList.length === 0 ? (
-              <div className="flex flex-col justify-center items-center h-[270px]">
-                <p className="text-12 font-pre-light text-lightgray text-center leading-[1.5]">
-                  현재 등록된 기기가 없습니다.
-                  <br />
-                  홈에서 기기 추가를 해보세요.
-                </p>
-              </div>
-            ) : members.length > 0 ? (
-              members.map((member) => (
-                <MemberCard
-                  key={member.id}
-                  id={member.id}
-                  nickname={member.nickname}
-                  onDelete={() => handleDeleteMember(member.id)}
-                  showDeleteButton={userId === adminId}
-                  isAdmin={member.id === adminId}
-                />
-              ))
-            ) : (
-              // userId === adminId && members.length === 0 인 경우,
-              userId === adminId && (
-                <div className="flex flex-col justify-center items-center h-[270px]">
+        <div className="h-full overflow-y-auto pb-[60px] max-h-[calc(100vh-180px)] sm:max-h-[calc(100vh-150px)]">
+          {!error && (
+            <div className="flex flex-col">
+              {deviceList.length === 0 ? (
+                <div className="flex flex-col justify-center items-center h-[210px]">
                   <p className="text-12 font-pre-light text-lightgray text-center leading-[1.5]">
-                    그룹에 해당하는 멤버가 없습니다.
+                    현재 등록된 기기가 없습니다.
                     <br />
-                    그룹 멤버를 초대해보세요.
+                    홈에서 기기 추가를 해보세요.
                   </p>
                 </div>
-              )
-            )}
-          </div>
-        )}
+              ) : members.length > 0 ? (
+                members.map((member) => (
+                  <MemberCard
+                    key={member.id}
+                    id={member.id}
+                    nickname={member.nickname}
+                    onDelete={() => handleDeleteMember(member.id)}
+                    showDeleteButton={userId === adminId}
+                    isAdmin={member.id === adminId}
+                  />
+                ))
+              ) : (
+                // userId === adminId && members.length === 0 인 경우,
+                userId === adminId && (
+                  <div className="flex flex-col justify-center items-center h-[210px]">
+                    <p className="text-12 font-pre-light text-lightgray text-center leading-[1.5]">
+                      그룹에 해당하는 멤버가 없습니다.
+                      <br />
+                      그룹 멤버를 초대해보세요.
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 초대코드 입력 & 그룹 삭제 버튼 */}

@@ -172,14 +172,14 @@ const ReadShareFavorite = () => {
           {!loading && (
             <button
               onClick={handleDownloadCardImage}
-              className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg"
+              className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
             >
               이미지 저장
             </button>
           )}
           <button
             onClick={() => navigate("/")}
-            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg"
+            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
           >
             Scentify 시작하기
           </button>

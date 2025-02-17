@@ -4,8 +4,6 @@ export const editCapsuleAndDefaultScent = async (
   id: number, // 디바이스 아이디
   roomType: number, // 공간 크기
   combination: {
-    id: number;
-    name: string;
     choice1: number;
     choice1Count: number;
     choice2: number;
@@ -23,6 +21,8 @@ export const editCapsuleAndDefaultScent = async (
       roomType,
       combination,
     };
+
+    console.log('🍀🍀🍀🍀🍀 requestBody', requestBody);
     const response = await fetch('/v1/device/set/change', {
       method: 'POST',
       headers: {

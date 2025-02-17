@@ -58,8 +58,6 @@ function EditCapsule() {
     capsuleDataRef.current = initialCapsuleData; // 여기가 캡슐 업데이트
     setName(deviceData.name || ''); // 이름 업데이트
     setCapsuleState(initialCapsuleData);
-
-    console.log('🔥🔥🔥 initialCapsuleData', initialCapsuleData);
   }, [deviceData]);
 
   // ✅ `Capsule` 컴포넌트에서 데이터를 받아 최신 상태 유지

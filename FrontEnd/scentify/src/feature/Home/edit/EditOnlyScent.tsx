@@ -120,7 +120,6 @@ function EditOnlyScent() {
 
       const updatedCombination = {
         id: defaultCombination,
-        name: combinationData.name,
         choice1: combinationData.choice1,
         choice1Count: scentCnt.slot1,
         choice2: combinationData.choice2,

@@ -26,9 +26,9 @@ const GeneralRegist = () => {
         showCancel={false}
         nextDeviceEdit={false}
       />
-      <main className="content flex flex-grow justify-center">
+      <main className="content flex flex-col w-full min-h-screen mx-auto">
         <div className="flex flex-col items-center justify-between">
-          <div className="top-4 p-4 font-pre-bold text-20">일반 회원가입</div>
+          <div className="p-4 pb-10 font-pre-bold text-20">일반 회원가입</div>
           <RegistForm onRegist={handleRegistrationComplete} />
           <button
             type="submit"

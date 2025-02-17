@@ -2,7 +2,6 @@ import { useAuthStore } from '../../stores/useAuthStore';
 
 export const registDefaultScent = async (
   id: number,
-  name: string,
   slot1: number,
   slot1Count: number,
   slot2: number,
@@ -24,7 +23,6 @@ export const registDefaultScent = async (
       body: JSON.stringify({
         id: id,
         combination: {
-          name: name,
           choice1: slot1,
           choice1Count: slot1Count,
           choice2: slot2,

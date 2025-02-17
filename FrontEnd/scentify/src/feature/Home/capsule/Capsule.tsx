@@ -17,8 +17,6 @@ interface CapsuleProps {
 }
 
 const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
-  console.log('🩵 initialData', initialData);
-
   const slot1Options = ['레몬', '유칼립투스', '페퍼민트'];
   const slot2Options = ['라벤더', '시더우드', '카모마일'];
   const slot3and4Options = [

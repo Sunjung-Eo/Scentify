@@ -116,7 +116,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
         id="registForm"
         onSubmit={handleSubmit}
         noValidate
-        className="flex w-full flex-col gap-3 font-pre-light text-12 min-h-[400px] overflow-y-auto p-[2px]"
+        className="flex w-full flex-col gap-3 font-pre-light text-12 overflow-y-auto"
       >
         {/* 아이디 */}
         <div className="flex items-center gap-2 ">

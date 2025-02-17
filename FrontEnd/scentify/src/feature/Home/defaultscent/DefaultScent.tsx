@@ -78,7 +78,6 @@ function DefaultScent() {
     try {
       await registDefaultScent(
         id,
-        name,
         slot1,
         scentCnt.slot1,
         slot2,

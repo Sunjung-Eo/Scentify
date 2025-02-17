@@ -16,6 +16,7 @@ export default function DetectionSetting() {
   const location = useLocation();
   const schedule = location.state.schedule;
   const deviceId = location.state.deviceId;
+  const defaultScentId = location.state.defaultScentId;
   const accessToken = location.state.accessToken;
   const roomType = location.state.roomType;
 
@@ -47,7 +48,7 @@ export default function DetectionSetting() {
   };
 
   // 기존 향 설정
-  const [previousScentId] = useState(schedule.combinationId);
+  const [previousScentId] = useState(defaultScentId);
   const [previousScentData, setPreviousScentData] = useState({
     slot1: { slot: 0, count: 0 },
     slot2: { slot: 0, count: 0 },

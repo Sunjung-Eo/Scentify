@@ -92,6 +92,7 @@ export default function AutoManager({
           schedule: automationData.autoSchedules[1],
           defaultScentData: defaultScentData,
           deviceId: selectedDevice,
+          defaultScentId: defaultScentId,
           accessToken: accessToken,
           roomType: roomType,
         },
@@ -103,6 +104,7 @@ export default function AutoManager({
           schedule2: automationData.autoSchedules[3],
           defaultScentData: defaultScentData,
           deviceId: selectedDevice,
+          defaultScentId: defaultScentId,
           accessToken: accessToken,
         },
       });
@@ -112,6 +114,7 @@ export default function AutoManager({
           schedule: automationData.autoSchedules[0],
           defaultScentData: defaultScentData,
           deviceId: selectedDevice,
+          defaultScentId: defaultScentId,
           accessToken: accessToken,
           roomType: roomType,
         },

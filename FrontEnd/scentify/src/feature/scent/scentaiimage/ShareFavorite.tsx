@@ -17,8 +17,7 @@ const ShareFavorite = () => {
   const cardRef = useRef<HTMLDivElement>(null); // 캡처할 카드 영역 참조
 
   const navigate = useNavigate();
-  // FavoriteScent에서 전달된 데이터 가져오기
-  const location = useLocation();
+  const location = useLocation(); // FavoriteScent에서 전달된 데이터 가져오기
   const { combination } = location.state || {};
   const { accessToken } = useAuthStore();
   // 상태 변수 정의
@@ -64,7 +63,7 @@ const ShareFavorite = () => {
     };
   }, [combination, accessToken]);
 
-  // 공유 링크 복사 함수 (버튼 클릭 시 실행)
+  // 공유 링크 복사 함수
   const handleCopyLink = () => {
     if (!shareUrl) return;
     navigator.clipboard.writeText(shareUrl);
@@ -78,8 +77,8 @@ const ShareFavorite = () => {
 
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null, // 배경을 투명하게 유지
-        scale: 3, // 해상도를 높이기 위해 3배 확대
+        backgroundColor: null,
+        scale: 3, // 해상도 위해 3배 확대
         useCORS: true, // 외부 이미지를 캡처할 수 있도록 설정
         logging: false,
         allowTaint: true,
@@ -99,7 +98,6 @@ const ShareFavorite = () => {
     } catch (error) {}
   };
 
-  // 뒤로 가기 버튼 클릭 시 '/scent' 페이지로 이동
   const handleGoBack = () => {
     navigate("/scent");
   };
@@ -111,7 +109,7 @@ const ShareFavorite = () => {
           src={BackIcon}
           alt="뒤로 가기"
           onClick={handleGoBack}
-          className="absolute top-4 left-4 w-6 h-6 cursor-pointer"
+          className="absolute top-4 left-4 w-6 h-6"
         />
       )}
       <div className="flex flex-col items-center justify-center">
@@ -189,13 +187,13 @@ const ShareFavorite = () => {
         )}
 
         {/* 버튼 그룹 (로딩 중에는 비활성화) */}
-        <p className="text-10 font-pre-light text-brand mt-12">
+        <p className="text-10 font-pre-light text-brand mt-14">
           이미지 저장은 10분간 유효합니다.
         </p>
         <div className="flex gap-4 mt-1">
           <button
             onClick={handleCopyLink} // 즉시 공유 링크 복사
-            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
+            className={`border-[1px] border-brand w-[150px] h-[48px] text-16 text-brand font-pre-medium rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : "active:text-bg active:bg-brand active:border-0"}`}
             disabled={loading}
           >
             {copied ? "링크 복사 완료" : "공유 링크"}
@@ -203,7 +201,7 @@ const ShareFavorite = () => {
 
           <button
             onClick={handleDownloadCardImage} // 카드 캡처 & 다운로드 버튼으로 변경
-            className="border-[1px] border-brand w-[150px] h-[48px] text-brand text-16 font-pre-medium rounded-lg active:text-bg active:bg-brand active:border-0"
+            className={`border-[1px] border-brand w-[150px] h-[48px] text-16 text-brand font-pre-medium rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : "active:text-bg active:bg-brand active:border-0"}`}
             disabled={loading}
           >
             이미지 저장

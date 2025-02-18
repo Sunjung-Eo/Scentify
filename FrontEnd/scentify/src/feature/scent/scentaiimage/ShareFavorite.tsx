@@ -11,7 +11,6 @@ import { Combination } from "../scentmain/scenttypes";
 
 import html2canvas from "html2canvas";
 import BackIcon from "../../../assets/icons/back-arrow-btn.svg";
-import scentifylogo from "../../../assets/icons/scentify-green-logo.svg";
 
 const ShareFavorite = () => {
   const cardRef = useRef<HTMLDivElement>(null); // 캡처할 카드 영역 참조
@@ -139,18 +138,16 @@ const ShareFavorite = () => {
             ref={cardRef}
             className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
           >
-            <img
-              src={scentifylogo}
-              alt="Scentify"
-              className="mx-auto w-[40px] h-[20px] mb-1 object-contain"
-            />
+            <h2 className="text-10 text-gray text-center font-poppins-light mb-2">
+              Scentify
+            </h2>
             <img
               src={imageUrl!}
               alt="AI Generated Image"
               className="w-full h-auto rounded-lg"
               crossOrigin="anonymous"
             />
-            <h2 className="text-14 text-center font-pre-medium mt-6">
+            <h2 className="text-14 text-center font-pre-medium mt-4">
               {combination?.name || "이름 없는 조합"}
             </h2>
 

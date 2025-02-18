@@ -7,7 +7,7 @@ import { getCombinationById } from "../../../apis/control/getCombinationById";
 
 import { AutoManagerProps } from "./AutoModeType";
 
-import SettingIcon from "../../../assets/icons/setting-icon.svg";
+import SettingIcon from "../../../assets/icons/arrow-right-black.svg";
 
 export default function AutoManager({
   automationData,

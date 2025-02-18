@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Modal from "../../../components/Alert/Modal";
-import { MemberCardProps } from "../groupTypes";
+import { MemberCardProps } from "./groupTypes";
 import crownIcon from "../../../assets/icons/crown-icon.svg";
 
 const MemberCard = ({

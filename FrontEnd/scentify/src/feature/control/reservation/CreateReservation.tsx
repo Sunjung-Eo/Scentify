@@ -324,7 +324,7 @@ export default function CreateReservation({
   ]);
 
   return (
-    <div className="p-1 font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)] w-full">
+    <div className="p-1 font-pre-medium text-12 overflow-y-auto max-h-[calc(100vh-10rem)] w-full scrollbar-hidden">
       {/* 예약 이름 */}
       <div className="relative flex items-center mb-[25px] w-full">
         <label htmlFor="reservatioName" className="mr-[20px]">
@@ -384,7 +384,7 @@ export default function CreateReservation({
               ))}
             </div>
             {formErrors.day && (
-              <p className="absolute ml-[12px] text-red-500 text-10">
+              <p className="absolute ml-[6px] text-red-500 text-10">
                 {formErrors.day}
               </p>
             )}

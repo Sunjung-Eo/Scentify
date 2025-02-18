@@ -1,15 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
-import { GroupList } from "../../feature/my/components/GroupList";
+import { GroupList } from "../../feature/my/main/GroupList";
 import { Routes, Route } from "react-router-dom";
-import ManageAccount from "../../feature/my/components/ManageAccount";
-import EditNickname from "../../feature/my/components/EditNickname";
-import EditUserinfo from "../../feature/my/components/EdituUserinfo";
-import EditPassword from "../../feature/my/components/EditPassword";
-import EditProfileImg from "../../feature/my/components/EditProgileImg";
-import MyUserCard from "../../feature/my/components/MyUserCard";
-import Invite from "../../feature/invite/Invite";
-import InviteCodeInput from "../../feature/invite/InviteCodeInput";
+import ManageAccount from "../../feature/my/main/ManageAccount";
+import EditNickname from "../../feature/my/editaccount/EditNickname";
+import EditUserinfo from "../../feature/my/editaccount/EdituUserinfo";
+import EditPassword from "../../feature/my/editaccount/EditPassword";
+import EditProfileImg from "../../feature/my/editaccount/EditProgileImg";
+import MyUserCard from "../../feature/my/main/MyUserCard";
+import Invite from "../../feature/my/invite/Invite";
+import InviteCodeInput from "../../feature/my/invite/InviteCodeInput";
 import manageaccountIcon from "../../assets/icons/manageaccount.svg";
 import managegroupsIcon from "../../assets/icons/managegroups.svg";
 

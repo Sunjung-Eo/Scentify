@@ -1,4 +1,4 @@
-import { GroupInfoResponse } from "../../feature/my/groupTypes";
+import { GroupInfoResponse } from "../../feature/my/editaccount/groupTypes";
 
 // 기기별 그룹 정보 조회 호출 API
 export const getGroupByDeviceId = async (

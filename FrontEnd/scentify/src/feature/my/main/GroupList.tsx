@@ -2,7 +2,7 @@ import {
   GroupInfoResponse,
   DeleteMemberRequest,
   DeleteGroupRequest,
-} from "../groupTypes";
+} from "./groupTypes";
 import { useState, useEffect, useMemo } from "react"; //useMemo: 객체 사용시 불필요한 렌더링 막기 위함
 import MemberCard from "./MemberCard";
 import { useUserStore } from "../../../stores/useUserStore"; //유저상태관리(사용자 기기정보)
@@ -181,7 +181,7 @@ export const GroupList = () => {
           </div>
         )}
         {/* 멤버 리스트 */}
-        <div className="h-full overflow-y-auto pb-[60px] max-h-[calc(100vh-180px)] sm:max-h-[calc(100vh-150px)]">
+        <div className="h-full overflow-y-auto pb-[60px] max-h-[calc(100vh-180px)] sm:max-h-[calc(100vh-150px)] scrollbar-hidden">
           {!error && (
             <div className="flex flex-col">
               {deviceList.length === 0 ? (

@@ -1,4 +1,4 @@
-import { CreateInviteCodeResponse } from "../../feature/invite/invitetypes";
+import { CreateInviteCodeResponse } from "../../feature/my/invite/invitetypes";
 
 /**
  * 초대 코드를 생성하는 함수

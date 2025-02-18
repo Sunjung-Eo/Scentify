@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import Modal from "./modal";
-import scentImages from "./scentImages";
-import { ScentCard } from "./scenttypes";
+import Modal from './modal';
+import scentImages from './scentImages';
+import { ScentCard } from './scenttypes';
 
 const ScentCarousel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,7 +20,7 @@ const ScentCarousel = () => {
 
   return (
     <div>
-      <div className="overflow-x-scroll scrollbar-hide whitespace-nowrap">
+      <div className="overflow-x-scroll scrollbar-hide whitespace-nowrap scrollbar-hidden">
         <div className="flex gap-[10px]">
           {scentImages.map((scent) => (
             <img

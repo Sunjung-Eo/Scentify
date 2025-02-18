@@ -120,7 +120,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       >
         {/* 아이디 */}
         <div className="flex flex-wrap items-center gap-2 w-full">
-          <label htmlFor="id" className=" shrink-0">
+          <label htmlFor="id" className="flex text-12 shrink-0">
             아이디
           </label>
           <input
@@ -218,7 +218,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             name="birthMonth"
             value={formData.birthMonth}
             onChange={handleChange}
-            className={`${inputStyles} w-full max-w-[80px]`}
+            className={`${inputStyles} w-full min-w-[72px]`}
           >
             <option value="">월</option>
             {Array.from({ length: 12 }, (_, i) => (
@@ -244,7 +244,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
 
         {/* 성별 선택 */}
         <div className="flex items-center gap-2">
-          <p className="">성별</p>
+          <p className="flex text-12 shrink-0">성별</p>
           {[
             { label: '남성', value: '0' },
             { label: '여성', value: '1' },

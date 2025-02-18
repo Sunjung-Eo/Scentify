@@ -1,4 +1,4 @@
-import { DeleteMemberRequest } from "../../feature/my/groupTypes";
+import { DeleteMemberRequest } from "../../feature/my/editaccount/groupTypes";
 
 export const deleteGroupMember = async (
   requestData: DeleteMemberRequest,

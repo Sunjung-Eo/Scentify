@@ -1,10 +1,10 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import Logo from "../assets/icons/scentify-green-logo.svg?react";
-import FinishButton from "../components/Button/Button";
-import BackBtn from "../assets/icons/back-arrow-btn.svg?react";
-import AddBtn from "../assets/icons/add-btn.svg?react";
-import { useControlStore } from "../stores/useControlStore";
-import NextButton from "../components/Button/NextButton";
+import { useNavigate, useLocation } from 'react-router-dom';
+import Logo from '../assets/icons/scentify-green-logo.svg?react';
+import FinishButton from '../components/Button/Button';
+import BackBtn from '../assets/icons/back-arrow-btn.svg?react';
+import AddBtn from '../assets/icons/add-btn.svg?react';
+import { useControlStore } from '../stores/useControlStore';
+import NextButton from '../components/Button/NextButton';
 
 interface HeaderProps {
   showBack: boolean;
@@ -34,14 +34,14 @@ const Header = ({
 
   // 뒤로가기 핸들러:
   const handleBackClick = () => {
-    if (location.pathname === "home/managedevice") {
-      navigate("/home");
-    } else if (location.pathname === "/user/regist/social") {
-      navigate("/login");
+    if (location.pathname === 'home/managedevice') {
+      navigate('/home');
+    } else if (location.pathname === '/user/regist/social') {
+      navigate('/login');
     } else if (window.history.length > 1) {
       navigate(-1); // 기본적으로 이전 페이지로 이동
     } else {
-      navigate("/auth/login"); // 만약 이전 페이지가 없으면 로그인 페이지로 이동
+      navigate('/auth/login'); // 만약 이전 페이지가 없으면 로그인 페이지로 이동
     }
   };
 
@@ -55,18 +55,16 @@ const Header = ({
 
   // 취소 버튼 핸들러 추가
   const handleCancelClick = () => {
-    navigate("/home", { replace: true });
+    navigate('/home', { replace: true });
   };
 
   // 다음 버튼 핸들러:
   // 다음 버튼 핸들러:
   const handleNextClick = () => {
-    console.log("🛑 Next 버튼 클릭됨!");
-
     if (completeHandler) {
-      completeHandler(); // 🚀 `handleSubmit` 실행
+      completeHandler(); // `handleSubmit` 실행
     } else {
-      navigate("/home/edit/capsule", { state: location.state });
+      navigate('/home/edit/capsule', { state: location.state });
     }
   };
 

@@ -209,8 +209,6 @@ const DeviceSlide: React.FC<DeviceSlideProps> = ({ data }) => {
     }
   };
 
-  console.log('1. schedules', schedules);
-
   // 이전 기기로 변경
   const handlePrev = () => {
     if (currentIndex > 0) {

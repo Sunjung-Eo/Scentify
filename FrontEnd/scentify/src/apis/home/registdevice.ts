@@ -17,7 +17,6 @@ export const registDevice = async (
       body: JSON.stringify({ serial: serial, ipAddress: ipAddress }),
     });
 
-    console.log('deviceData : ', serial, ipAddress);
     if (!response.ok) {
       throw response; // 오류 발생 시 response 객체 자체를 throw
     }

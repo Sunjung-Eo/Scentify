@@ -49,9 +49,6 @@ const HomeMain = () => {
   useEffect(() => {
     if (!data || !data.user) return;
 
-    console.log('업데이트 전 User:', useUserStore.getState());
-    console.log('업데이트 전 Devices:', useMainDeviceStore.getState());
-
     setUser({
       nickname: data.user.nickname,
       imgNum: data.user.imgNum ?? 0,
@@ -66,8 +63,8 @@ const HomeMain = () => {
     setFavorites(data.favorites);
 
     setTimeout(() => {
-      console.log('✅ 업데이트 후 User:', useUserStore.getState());
-      console.log('✅ 업데이트 후 Devices:', useMainDeviceStore.getState());
+      // console.log('✅ 업데이트 후 User:', useUserStore.getState());
+      //console.log('✅ 업데이트 후 Devices:', useMainDeviceStore.getState());
     }, 100);
   }, [data]); //  `setUser`, `setDevices`는 상태 변경을 트리거하는 함수라서 의존성 배열에서 제거해도 됨
 
@@ -88,8 +85,6 @@ const HomeMain = () => {
     autoSchedules: data?.autoSchedules ?? [],
     customSchedules: data?.customSchedules ?? [],
   };
-
-  console.log('🔥 exampleData:', exampleData);
 
   return (
     <div className="flex flex-col h-full">

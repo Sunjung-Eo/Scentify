@@ -26,15 +26,6 @@ export const registCapsule = async (
       }),
     });
 
-    console.log('📡 registCapsule 요청 데이터:', {
-      id: id,
-      name: name,
-      slot1: slot1,
-      slot2: slot2,
-      slot3: slot3,
-      slot4: slot4,
-    });
-
     // ✅ 응답 상태 코드 체크 (본문이 없는 경우 대비)
     if (response.status === 200) {
       console.log('캡슐 등록 성공');

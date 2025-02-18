@@ -16,7 +16,6 @@ function RegistConnecting() {
       if (isRegistered.current) return; // 이미 실행되었으면 return
       isRegistered.current = true; // 실행되었음을 표시
 
-      console.log('디바이스 등록 요청 몇번?');
       try {
         const response = await registDevice(serial, ipAddress, accessToken);
         console.log('디바이스 등록 성공, ID:', response.id);

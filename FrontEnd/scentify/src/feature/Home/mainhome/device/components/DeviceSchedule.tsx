@@ -56,9 +56,6 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
     }) as CustomScheduleWithStatus;
   }
 
-  // console.log('🐛🐛🐛 closestCustomSchedule: ', closestCustomSchedule);
-  // console.log('🐛🐛🐛 activeAutoSchedules: ', activeAutoSchedules);
-
   // 타임 포맷
   const formatTime = (timeString: string) => {
     if (!timeString) return '';
@@ -134,7 +131,6 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
       schedules: [],
     };
   };
-  console.log('🔥🔥🔥 temperature: ', temperature);
 
   const currentSchedule = scheduleInfo();
 

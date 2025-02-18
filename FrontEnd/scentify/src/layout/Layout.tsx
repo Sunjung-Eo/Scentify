@@ -10,7 +10,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  console.log('Current Path:', location.pathname); // 디버깅용
 
   const showHeaderPaths = ['/home', '/scent', '/control', '/my', '/user'];
   const showHeader = showHeaderPaths.some((path) =>

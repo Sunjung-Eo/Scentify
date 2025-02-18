@@ -98,11 +98,11 @@ const DeviceCard = () => {
         const newMainDeviceId = updatedHomeInfo?.user?.mainDeviceId ?? null;
         setCurrentMainDeviceId(newMainDeviceId);
       } catch (error) {
-        console.error('❌ 데이터 업데이트 실패:', error);
+        console.error('데이터 업데이트 실패:', error);
       }
     },
     onError: (error: any) => {
-      console.error('❌ 디바이스 삭제 실패:', error);
+      console.error('디바이스 삭제 실패:', error);
       if (error.status === 401) {
         alert('관리자가 아니므로 기기를 삭제할 수 없습니다.');
       } else {
@@ -140,8 +140,6 @@ const DeviceCard = () => {
       alert('대표기기 설정에 실패했습니다.');
     },
   });
-
-  console.log('devices.length', devices.length);
 
   if (isLoading) {
     return <p className="text-brand">기기 정보를 불러오는 중...</p>;
@@ -194,7 +192,7 @@ const DeviceCard = () => {
               </div>
 
               {/* 장착된 향 표시 */}
-              <div className="text-pre-regular text-[10px] text-bg">
+              <div className="font-pre-light text-[10px] text-bg">
                 <p>
                   {[device.slot1, device.slot2, device.slot3, device.slot4]
                     .map((slot) => fragranceMap[slot])

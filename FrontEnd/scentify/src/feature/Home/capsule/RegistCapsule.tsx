@@ -36,8 +36,6 @@ function RegistCapsule() {
 
   // API 호출
   const handleSubmit = useCallback(async () => {
-    console.log('현재 캡슐 데이터:', capsuleDataRef.current);
-
     if (!id) {
       setMessage({ type: 'error', text: '기기 정보가 없습니다.' });
       return;

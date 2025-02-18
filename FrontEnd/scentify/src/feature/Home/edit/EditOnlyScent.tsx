@@ -25,9 +25,6 @@ function EditOnlyScent() {
   const [roomType, setRoomType] = useState<'small' | 'large' | null>(null); // ✅ 공간 크기
   const [totalEnergy, setTotalEnergy] = useState(3);
 
-  console.log('🔥 defaultCombination:', defaultCombination);
-  console.log('🔥 accessToken:', accessToken);
-
   useEffect(() => {
     if (deviceId) {
       localStorage.setItem('deviceId', deviceId); // ✅ `deviceId` 유지
@@ -43,9 +40,9 @@ function EditOnlyScent() {
     const fetchCombinationData = async () => {
       try {
         setLoading(true);
-        console.log('🚀 기본 조합 데이터 요청 시작:', defaultCombination);
+
         const data = await getCombinationById(defaultCombination, accessToken);
-        console.log('✅ 기본 조합 데이터 수신 완료:', data);
+        // console.log('기본향 데이터 요청:', data);
 
         if (!data) {
           throw new Error('조합 데이터를 찾을 수 없습니다.');
@@ -64,7 +61,7 @@ function EditOnlyScent() {
         setRoomType(detectedRoomType);
         setTotalEnergy(detectedRoomType === 'large' ? 6 : 3);
       } catch (error) {
-        console.error('🚨 조합 데이터를 불러오는데 실패:', error);
+        console.error('기본향 불러오는데 실패:', error);
         setMessage({
           type: 'error',
           text: '조합 데이터를 불러오는데 실패했습니다.',
@@ -112,7 +109,7 @@ function EditOnlyScent() {
         slot4: combinationData.choice4Count || 0,
       });
     }
-  }, [combinationData]); // ✅ `useEffect`에서 `scentCnt` 업데이트
+  }, [combinationData]); // `useEffect`에서 `scentCnt` 업데이트
 
   const handleComplete = useCallback(async () => {
     try {
@@ -130,8 +127,8 @@ function EditOnlyScent() {
         choice4Count: scentCnt.slot4,
       };
 
-      console.log('🔥 updatedCombination', updatedCombination);
       await editDefaultScent(deviceId, updatedCombination);
+      console.log('🍀기본향 수정 성공 id:', updatedCombination);
 
       setTimeout(() => {
         navigate('/home');

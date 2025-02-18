@@ -54,7 +54,7 @@ export default function HomeScentSetting({
   const handleScentChange = useCallback(
     (slot: keyof typeof scentCnt, value: number) => {
       if (!setScentCnt) {
-        console.error('🚨 setScentCnt가 존재하지 않음!');
+        console.error('setScentCnt가 존재하지 않음!');
         return;
       }
 
@@ -68,13 +68,12 @@ export default function HomeScentSetting({
         value;
 
       if (newTotalUsage > totalEnergy) {
-        console.warn('🚨 사용량이 totalEnergy를 초과할 수 없음!');
+        console.warn('사용량이 totalEnergy를 초과할 수 없음!');
         return;
       }
 
       setScentCnt((prev) => {
         const updated = { ...prev, [slot]: value };
-        console.log('🛠 즉시 상태 업데이트:', updated);
         return updated;
       });
     },

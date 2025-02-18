@@ -127,7 +127,7 @@ const ReadShareFavorite = () => {
               </h2>
 
               {/* 향기 정보 */}
-              <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
+              <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-4 flex-wrap-nowrap">
                 {[1, 2, 3, 4].map((num) => {
                   // choice 값 가져오기
                   const scentChoice =

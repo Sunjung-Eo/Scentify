@@ -142,7 +142,7 @@ const ShareFavorite = () => {
             <img
               src={scentifylogo}
               alt="Scentify"
-              className="mx-auto w-8 h-auto mb-2"
+              className="mx-auto w-[40px] h-[20px] mb-1 object-contain"
             />
             <img
               src={imageUrl!}
@@ -155,7 +155,7 @@ const ShareFavorite = () => {
             </h2>
 
             {/* 향기 정보 */}
-            <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
+            <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-4 flex-wrap-nowrap">
               {[1, 2, 3, 4].map((num) => {
                 const scentName = getScentName(
                   combination?.[`choice${num}` as keyof Combination]
@@ -187,10 +187,10 @@ const ShareFavorite = () => {
         )}
 
         {/* 버튼 그룹 (로딩 중에는 비활성화) */}
-        <p className="text-10 font-pre-light text-brand mt-14">
+        <p className="text-10 font-pre-light text-brand mt-12">
           이미지 저장은 10분간 유효합니다.
         </p>
-        <div className="flex gap-4 mt-1">
+        <div className="flex gap-4 mt-4">
           <button
             onClick={handleCopyLink} // 즉시 공유 링크 복사
             className={`border-[1px] border-brand w-[150px] h-[48px] text-16 text-brand font-pre-medium rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : "active:text-bg active:bg-brand active:border-0"}`}

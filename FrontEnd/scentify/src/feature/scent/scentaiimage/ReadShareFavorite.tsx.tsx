@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { readShareFavorite } from "../../apis/scent/readShareFavorite"; // API 호출 함수 가져오기
+import { readShareFavorite } from "../../../apis/scent/readShareFavorite"; // API 호출 함수 가져오기
 
-import { Combination } from "../../feature/scent/scentmain/scenttypes";
-import { getScentName, getColor } from "../../utils/control/scentUtils";
-import Spinner from "../../components/Loading/Spinner";
-import Header from "../../layout/Header";
+import { Combination } from "../../../feature/scent/scentmain/scenttypes";
+import { getScentName, getColor } from "../../../utils/control/scentUtils";
+import Spinner from "../../../components/Loading/Spinner";
+import Header from "../../../layout/Header";
 
 import html2canvas from "html2canvas";
-import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
+import scentifylogo from "../../../assets/icons/scentify-green-logo.svg";
 
 const ReadShareFavorite = () => {
   const navigate = useNavigate();

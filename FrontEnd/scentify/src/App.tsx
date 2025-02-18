@@ -30,7 +30,7 @@ import SocialLoginCallback from "./feature/user/social/SocialLoginCallback.tsx";
 {
   /* 🔹🔹 이미지생성 공유 링크로 들어가는 페이지🔹🔹 */
 }
-import ReadShareFavorite from "./feature/scent/ReadShareFavorite.tsx.tsx";
+import ReadShareFavorite from "./feature/scent/scentaiimage/ReadShareFavorite.tsx";
 
 // 실제 뷰포트 높이를 기준으로 CSS 변수 설정
 const setScreenSize = () => {

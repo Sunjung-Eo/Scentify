@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ScentMain from "../../feature/scent/scentmain/ScentMain";
-import ShareFavorite from "../../feature/scent/ShareFavorite";
+import ShareFavorite from "../../feature/scent/scentaiimage/ShareFavorite";
 const Scent = () => {
   return (
     <Routes>

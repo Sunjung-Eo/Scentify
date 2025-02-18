@@ -1,17 +1,17 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useAuthStore } from "../../stores/useAuthStore";
+import { useAuthStore } from "../../../stores/useAuthStore";
 
-import { shareFavoriteCombination } from "../../apis/scent/shareFavoriteCombination";
+import { shareFavoriteCombination } from "../../../apis/scent/shareFavoriteCombination";
 
-import Spinner from "../../components/Loading/Spinner";
-import { getScentName, getColor } from "../../utils/control/scentUtils";
-import { Combination } from "./scentmain/scenttypes";
+import Spinner from "../../../components/Loading/Spinner";
+import { getScentName, getColor } from "../../../utils/control/scentUtils";
+import { Combination } from "../scentmain/scenttypes";
 
 import html2canvas from "html2canvas";
-import BackIcon from "../../assets/icons/back-arrow-btn.svg";
-import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
+import BackIcon from "../../../assets/icons/back-arrow-btn.svg";
+import scentifylogo from "../../../assets/icons/scentify-green-logo.svg";
 
 const ShareFavorite = () => {
   const cardRef = useRef<HTMLDivElement>(null); // 캡처할 카드 영역 참조

@@ -1,5 +1,5 @@
-import { createInviteCode } from "../../apis/invite/createInviteCode";
-import { useAuthStore } from "../../stores/useAuthStore";
+import { createInviteCode } from "../../../apis/invite/createInviteCode";
+import { useAuthStore } from "../../../stores/useAuthStore";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 

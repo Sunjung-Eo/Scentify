@@ -41,8 +41,7 @@ public class CombinationService {
 		return combinationRepository.updateCombination(combination);
 	}
 
-	public void updateImgUrl(Integer combinationId, String imageName) {
-		// TODO Auto-generated method stub
-		
+	public boolean updateImgUrl(int combinationId, String imgUrl) {
+		return combinationRepository.updateImgeUrl(combinationId, imgUrl);
 	}
 }

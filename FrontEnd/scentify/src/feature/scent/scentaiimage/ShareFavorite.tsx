@@ -142,7 +142,7 @@ const ShareFavorite = () => {
             <img
               src={scentifylogo}
               alt="Scentify"
-              className="mx-auto max-w-7 h-auto mb-2"
+              className="mx-auto w-8 h-auto mb-2"
             />
             <img
               src={imageUrl!}

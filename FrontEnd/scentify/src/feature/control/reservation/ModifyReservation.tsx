@@ -394,7 +394,7 @@ export default function ModifyReservation({
               ))}
             </div>
             {formErrors.day && (
-              <p className="absolute ml-[5px] text-red-500 text-10">
+              <p className="absolute ml-[12px] text-red-500 text-10">
                 {formErrors.day}
               </p>
             )}

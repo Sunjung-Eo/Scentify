@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useControlStore } from '../../../stores/useControlStore';
-import { useAuthStore } from '../../../stores/useAuthStore';
+import { useControlStore } from "../../../stores/useControlStore";
+import { useAuthStore } from "../../../stores/useAuthStore";
 
-import { createCustomSchedule } from '../../../apis/control/createCustomSchedule';
-import { getCombinationById } from '../../../apis/control/getCombinationById';
+import { createCustomSchedule } from "../../../apis/control/createCustomSchedule";
+import { getCombinationById } from "../../../apis/control/getCombinationById";
 
-import DeviceSelect from '../../../components/Control/DeviceSelect';
-import ScentSetting from '../../../components/Control/ScentSetting';
-import SprayIntervalSelector from '../../../components/Control/SprayIntervalSelector';
-import { DAYS_BIT, convertTo24Hour } from '../../../utils/control/timeUtils';
-import { AlertScheduleModal } from '../../../components/Alert/AlertSchedule';
+import DeviceSelect from "../../../components/Control/DeviceSelect";
+import ScentSetting from "../../../components/Control/ScentSetting";
+import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import { DAYS_BIT, convertTo24Hour } from "../../../utils/control/timeUtils";
+import { AlertScheduleModal } from "../../../components/Alert/AlertSchedule";
 
-import { DeviceSelectProps } from '../../../components/Control/DeviceSelect';
-import { ReservationData } from './ReservationType';
+import { DeviceSelectProps } from "../../../components/Control/DeviceSelect";
+import { ReservationData } from "./ReservationType";
 
 export default function CreateReservation({
   devices,
@@ -41,15 +41,15 @@ export default function CreateReservation({
     mutationFn: (data: ReservationData) =>
       createCustomSchedule(data, accessToken),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reservations'] });
-      navigate('/control', { state: { reservationCreated: true } });
+      queryClient.invalidateQueries({ queryKey: ["reservations"] });
+      navigate("/control", { state: { reservationCreated: true } });
     },
     // 403 반환 시 모달창 띄우기
     onError: (error) => {
-      if (error.message === '403') {
+      if (error.message === "403") {
         setIsModalOpen(true);
       } else {
-        console.error('예약 생성 실패:', error);
+        console.error("예약 생성 실패:", error);
       }
     },
   });
@@ -58,7 +58,7 @@ export default function CreateReservation({
   const { setCompleteHandler } = useControlStore();
 
   // 예약 이름
-  const [reservationName, setReservationName] = useState<string>('');
+  const [reservationName, setReservationName] = useState<string>("");
 
   // 요일 설정
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -87,15 +87,15 @@ export default function CreateReservation({
   };
 
   // 시간 설정
-  const [startHour, setStartHour] = useState('10');
-  const [startMinute, setStartMinute] = useState('00');
-  const [startPeriod, setStartPeriod] = useState<'AM' | 'PM'>('AM');
-  const [endHour, setEndHour] = useState('10');
-  const [endMinute, setEndMinute] = useState('00');
-  const [endPeriod, setEndPeriod] = useState<'AM' | 'PM'>('AM');
+  const [startHour, setStartHour] = useState("10");
+  const [startMinute, setStartMinute] = useState("00");
+  const [startPeriod, setStartPeriod] = useState<"AM" | "PM">("AM");
+  const [endHour, setEndHour] = useState("10");
+  const [endMinute, setEndMinute] = useState("00");
+  const [endPeriod, setEndPeriod] = useState<"AM" | "PM">("AM");
 
   // 분사주기 드롭박스 초기값
-  const [spraySelectedTime, setSpraySelectedTime] = useState('15분');
+  const [spraySelectedTime, setSpraySelectedTime] = useState("15분");
   const handleSelectTime = (time: string) => {
     setSpraySelectedTime(time);
   };
@@ -148,7 +148,7 @@ export default function CreateReservation({
             },
           });
         } catch (error) {
-          console.error('기본향 조합 데이터 가져오기 실패:', error);
+          console.error("기본향 조합 데이터 가져오기 실패:", error);
         }
       }
     };
@@ -157,7 +157,7 @@ export default function CreateReservation({
   }, [defaultScentId, accessToken]);
 
   // 향 설정
-  const [scentName, setScentName] = useState<string>('');
+  const [scentName, setScentName] = useState<string>("");
   const [scents, setScents] = useState({
     scent1: 0,
     scent2: 0,
@@ -187,32 +187,32 @@ export default function CreateReservation({
 
   // 폼 유효성 검사
   const [formErrors, setFormErrors] = useState({
-    reservationName: '',
-    reservationNameLength: '',
-    noonTime: '',
-    time: '',
-    scentName: '',
-    scentNameLength: '',
-    scents: '',
-    day: '',
+    reservationName: "",
+    reservationNameLength: "",
+    noonTime: "",
+    time: "",
+    scentName: "",
+    scentNameLength: "",
+    scents: "",
+    day: "",
   });
   // 완료 버튼 누를 시 유효성 검사
   const handleComplete = () => {
     const errors = {
-      reservationName: '',
-      reservationNameLength: '',
-      noonTime: '',
-      time: '',
-      scentName: '',
-      scentNameLength: '',
-      scents: '',
-      day: '',
+      reservationName: "",
+      reservationNameLength: "",
+      noonTime: "",
+      time: "",
+      scentName: "",
+      scentNameLength: "",
+      scents: "",
+      day: "",
     };
     let isValid = true;
 
     // 시간 유효성검사를 위한 변환
     const parseTimeToNumber = (time: string): number => {
-      const [hour, minute] = time.split(':').map(Number);
+      const [hour, minute] = time.split(":").map(Number);
       return hour * 100 + minute;
     };
     const start24 = convertTo24Hour(
@@ -230,31 +230,31 @@ export default function CreateReservation({
 
     // 유효성 검사 메세지
     if (!reservationName.trim()) {
-      errors.reservationName = '예약 이름을 입력해주세요.';
+      errors.reservationName = "예약 이름을 입력해주세요.";
       isValid = false;
     } else if (reservationName.length > 30) {
-      errors.reservationNameLength = '예약 이름은 30자 이내로 입력해주세요.';
+      errors.reservationNameLength = "예약 이름은 30자 이내로 입력해주세요.";
       isValid = false;
     }
 
     if (getDaysBitMask(selectedDays) === 0) {
-      errors.day = '요일을 선택해주세요.';
+      errors.day = "요일을 선택해주세요.";
       isValid = false;
     }
 
     if (start24Number >= 100 && end24Number < 100) {
-      errors.noonTime = '자정 이전 시간을 선택해주세요.';
+      errors.noonTime = "자정 이전 시간을 선택해주세요.";
       isValid = false;
     } else if (end24Number < start24Number) {
-      errors.time = '종료 시간을 시작 시간 이후로 선택해주세요.';
+      errors.time = "종료 시간을 시작 시간 이후로 선택해주세요.";
       isValid = false;
     }
 
     if (!scentName.trim()) {
-      errors.scentName = '향 이름을 입력해주세요.';
+      errors.scentName = "향 이름을 입력해주세요.";
       isValid = false;
     } else if (scentName.length > 15) {
-      errors.scentNameLength = '향 이름은 15자 이내로 입력해주세요.';
+      errors.scentNameLength = "향 이름은 15자 이내로 입력해주세요.";
       isValid = false;
     }
 
@@ -263,7 +263,7 @@ export default function CreateReservation({
       0
     );
     if (totalUsage !== totalEnergy) {
-      errors.scents = '향을 전부 선택해주세요.';
+      errors.scents = "향을 전부 선택해주세요.";
       isValid = false;
     }
 
@@ -294,7 +294,7 @@ export default function CreateReservation({
         startPeriod
       ),
       endTime: convertTo24Hour(Number(endHour), Number(endMinute), endPeriod),
-      interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, '')),
+      interval: parseInt(spraySelectedTime.replace(/[^0-9]/g, "")),
       modeOn: modeOn,
     };
 
@@ -328,7 +328,7 @@ export default function CreateReservation({
       {/* 예약 이름 */}
       <div className="relative flex items-center mb-[25px] w-full">
         <label htmlFor="reservatioName" className="mr-[20px]">
-          {'예약 이름'}
+          {"예약 이름"}
         </label>
         <input
           type="text"
@@ -371,11 +371,11 @@ export default function CreateReservation({
           </label>
           <div className="relative">
             <div className="flex font-pre-light text-10 items-center justify-center">
-              {['월', '화', '수', '목', '금', '토', '일'].map((day) => (
+              {["월", "화", "수", "목", "금", "토", "일"].map((day) => (
                 <button
                   key={day}
                   className={`mr-[8.5px] w-7 h-7 text-black rounded-full ${
-                    selectedDays.includes(day) ? 'bg-brand text-white' : ''
+                    selectedDays.includes(day) ? "bg-brand text-white" : ""
                   }`}
                   onClick={() => handleDaySelect(day)}
                 >
@@ -384,7 +384,7 @@ export default function CreateReservation({
               ))}
             </div>
             {formErrors.day && (
-              <p className="absolute ml-[12px] text-red-500 text-10">
+              <p className="absolute ml-[6px] text-red-500 text-10">
                 {formErrors.day}
               </p>
             )}
@@ -394,11 +394,11 @@ export default function CreateReservation({
           <p className="m-2 font-pre-light text-12 text-gray">on / off</p>
           <div onClick={modeOnToggle}>
             <div
-              className={`relative w-[50px] h-[25px] rounded-full cursor-pointer bg-brand ${modeOn ? '' : 'bg-lightgray'}`}
+              className={`relative w-[50px] h-[25px] rounded-full cursor-pointer bg-brand ${modeOn ? "" : "bg-lightgray"}`}
             >
               <div
                 className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${
-                  modeOn ? 'translate-x-full' : 'translate-x-0'
+                  modeOn ? "translate-x-full" : "translate-x-0"
                 }`}
               ></div>
             </div>
@@ -421,8 +421,8 @@ export default function CreateReservation({
               onChange={(e) => setStartHour(e.target.value)}
             >
               {Array.from({ length: 12 }, (_, i) => (
-                <option key={i} value={String(i + 1).padStart(2, '0')}>
-                  {String(i + 1).padStart(2, '0')}
+                <option key={i} value={String(i + 1).padStart(2, "0")}>
+                  {String(i + 1).padStart(2, "0")}
                 </option>
               ))}
             </select>
@@ -432,25 +432,25 @@ export default function CreateReservation({
               onChange={(e) => setStartMinute(e.target.value)}
             >
               {Array.from({ length: 60 }, (_, i) => (
-                <option key={i} value={String(i).padStart(2, '0')}>
-                  {String(i).padStart(2, '0')}
+                <option key={i} value={String(i).padStart(2, "0")}>
+                  {String(i).padStart(2, "0")}
                 </option>
               ))}
             </select>
             <div className="flex w-[89px] h-[30px] p-[3px] items-center justify-center bg-white border-[0.5px] border-brand font-pre-light text-10 rounded-lg">
               <div
                 className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
-                  startPeriod === 'AM' ? 'bg-brand text-bg' : 'text-brand'
+                  startPeriod === "AM" ? "bg-brand text-bg" : "text-brand"
                 }`}
-                onClick={() => setStartPeriod('AM')}
+                onClick={() => setStartPeriod("AM")}
               >
                 AM
               </div>
               <div
                 className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
-                  startPeriod === 'PM' ? 'bg-brand text-bg' : 'text-brand'
+                  startPeriod === "PM" ? "bg-brand text-bg" : "text-brand"
                 }`}
-                onClick={() => setStartPeriod('PM')}
+                onClick={() => setStartPeriod("PM")}
               >
                 PM
               </div>
@@ -466,8 +466,8 @@ export default function CreateReservation({
               onChange={(e) => setEndHour(e.target.value)}
             >
               {Array.from({ length: 12 }, (_, i) => (
-                <option key={i} value={String(i + 1).padStart(2, '0')}>
-                  {String(i + 1).padStart(2, '0')}
+                <option key={i} value={String(i + 1).padStart(2, "0")}>
+                  {String(i + 1).padStart(2, "0")}
                 </option>
               ))}
             </select>
@@ -477,25 +477,25 @@ export default function CreateReservation({
               onChange={(e) => setEndMinute(e.target.value)}
             >
               {Array.from({ length: 60 }, (_, i) => (
-                <option key={i} value={String(i).padStart(2, '0')}>
-                  {String(i).padStart(2, '0')}
+                <option key={i} value={String(i).padStart(2, "0")}>
+                  {String(i).padStart(2, "0")}
                 </option>
               ))}
             </select>
             <div className="flex w-[89px] h-[30px] p-[3px] items-center justify-center bg-white border-[0.5px] border-brand font-pre-light text-10 rounded-lg">
               <div
                 className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
-                  endPeriod === 'AM' ? 'bg-brand text-bg' : 'text-brand'
+                  endPeriod === "AM" ? "bg-brand text-bg" : "text-brand"
                 }`}
-                onClick={() => setEndPeriod('AM')}
+                onClick={() => setEndPeriod("AM")}
               >
                 AM
               </div>
               <div
                 className={`flex-1 flex h-full items-center justify-center rounded-md text-center transition-all ${
-                  endPeriod === 'PM' ? 'bg-brand text-bg' : 'text-brand'
+                  endPeriod === "PM" ? "bg-brand text-bg" : "text-brand"
                 }`}
-                onClick={() => setEndPeriod('PM')}
+                onClick={() => setEndPeriod("PM")}
               >
                 PM
               </div>
@@ -528,7 +528,7 @@ export default function CreateReservation({
       <div className="relative flex flex-col w-full">
         <div className="flex items-center">
           <label htmlFor="scentName" className="m-0">
-            {'향 설정'}
+            {"향 설정"}
           </label>
           <input
             type="text"

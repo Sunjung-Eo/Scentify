@@ -37,9 +37,6 @@ export default function ModifyReservation({
   const handleModalOpen = () => {
     setIsModalOpen(false);
   };
-  useEffect(() => {
-    console.log("isModalOpen:", isModalOpen); // 상태 변경 로그
-  }, [isModalOpen]);
 
   // 예약 수정 - mutation
   const updateMutation = useMutation({

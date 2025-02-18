@@ -205,6 +205,8 @@ public class FavoriteController {
 		        
 		        // s3에 업로드된 이미지 이름을 넣어줌
 		        String imageName = imageNames.get(0);
+		        combinationService.updateImgUrl(combinationId, imageName);
+		        
 		        String shareUrl = "https://my-scentify.shop/favorite/share/read?combinationId=" + combinationId + "&imageName=" + imageName;
 		        shareCombination.setShareUrl(shareUrl);
 		        

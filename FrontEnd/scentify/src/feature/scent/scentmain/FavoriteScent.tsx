@@ -35,7 +35,7 @@ const FavoriteScent = ({
   };
 
   return (
-    <div className="flex flex-col w-full pb-[20px] justify-between items-start border-b-0.2 border-lightgray">
+    <div className="flex flex-col w-full pt-[14px] pb-[14px] justify-between items-start border-b-0.2 border-lightgray">
       <div className="flex w-full mb-[4px] justify-between">
         <h3 className="text-16 text-brand font-pre-medium mb-1">
           {combination.name || "이름 없는 조합"}

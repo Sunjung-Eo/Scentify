@@ -18,7 +18,7 @@ const FavoritesList = ({ favorites, onToggleLike }: FavoritesListProps) => {
   }
 
   return (
-    <div className="flex flex-col w-full mb-[20px] py-5 px-[10px]">
+    <div className="flex flex-col w-full mb-[20px] px-[10px]">
       {favorites.map((favorite: any) => (
         <FavoriteScent
           key={favorite.id}

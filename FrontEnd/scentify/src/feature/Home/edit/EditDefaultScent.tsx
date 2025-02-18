@@ -70,18 +70,6 @@ function EditDefaultScent() {
     const roomTypeValue = roomType === 'small' ? 0 : 1;
 
     try {
-      console.log(
-        '🍀 캡슐 정보 수정',
-        'id: ',
-        deviceId,
-        ' name:',
-        capsuleData.name,
-        ' 슬롯정보',
-        capsuleData.slot1,
-        capsuleData.slot2,
-        capsuleData.slot3,
-        capsuleData.slot4
-      );
       // 1. 캡슐 정보 수정
       await editCapsule(
         deviceId,
@@ -104,10 +92,9 @@ function EditDefaultScent() {
         choice4Count: Number(scentCnt.slot4) || 0,
       };
 
-      console.log('🍀 combination', combination);
       // 2. 기본향 설정 수정
       await editCapsuleAndDefaultScent(deviceId, roomTypeValue, combination);
-      console.log('🍀 combination', combination);
+      console.log('🍀 캡슐-기본향 combination', combination);
       setTimeout(() => {
         navigate('/home');
       }, 1000);

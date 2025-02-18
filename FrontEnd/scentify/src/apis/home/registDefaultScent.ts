@@ -36,22 +36,6 @@ export const registDefaultScent = async (
       }),
     });
 
-    console.log('등록 요청 데이터:', {
-      id,
-      combination: {
-        name,
-        choice1: slot1,
-        choice1Count: slot1Count,
-        choice2: slot2,
-        choice2Count: slot2Count,
-        choice3: slot3,
-        choice3Count: slot3Count,
-        choice4: slot4,
-        choice4Count: slot4Count,
-      },
-      roomType,
-    });
-
     if (!response.ok) {
       throw new Error('캡슐 등록 실패');
     }

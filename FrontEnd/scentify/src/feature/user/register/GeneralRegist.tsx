@@ -28,7 +28,7 @@ const GeneralRegist = () => {
       />
       <main className="content flex flex-col w-full min-h-screen mx-auto">
         <div className="flex flex-col items-center justify-between h-full">
-          <div className="p-2 font-pre-bold text-20">일반 회원가입</div>
+          <div className="pt-4 pb-5 font-pre-bold text-20">일반 회원가입</div>
           <div className="flex-1 overflow-y-auto w-full">
             <RegistForm onRegist={handleRegistrationComplete} />
           </div>

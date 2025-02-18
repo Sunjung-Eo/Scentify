@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../assets/icons/scentify-green-logo.svg?react';
 import FinishButton from '../components/Button/Button';
@@ -62,10 +61,8 @@ const Header = ({
   // 다음 버튼 핸들러:
   // 다음 버튼 핸들러:
   const handleNextClick = () => {
-    console.log('🛑 Next 버튼 클릭됨!');
-
     if (completeHandler) {
-      completeHandler(); // 🚀 `handleSubmit` 실행
+      completeHandler(); // `handleSubmit` 실행
     } else {
       navigate('/home/edit/capsule', { state: location.state });
     }

@@ -22,7 +22,6 @@ export const editCapsuleAndDefaultScent = async (
       combination,
     };
 
-    console.log('🍀🍀🍀🍀🍀 requestBody', requestBody);
     const response = await fetch('/v1/device/set/change', {
       method: 'POST',
       headers: {
@@ -33,7 +32,6 @@ export const editCapsuleAndDefaultScent = async (
     });
     // ✅ 응답 상태 코드 체크 (본문이 없는 경우 대비)
     if (response.status === 200) {
-      console.log('기본향 수정 성공');
       return { success: true }; // 빈 응답 대비
     } else {
       const errorText = await response.text(); // 오류 메시지 읽기

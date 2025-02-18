@@ -42,7 +42,6 @@ function EditCapsule() {
     retry: false, // 실패시 재시도 안함
   });
 
-  console.log('🔥🔥🔥 deviceData', deviceData);
   // 디바이스 데이터 변경 시 `formData` 업데이트 (이전 값과 다를 때만 실행)
   useEffect(() => {
     if (!deviceData) return;

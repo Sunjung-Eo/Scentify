@@ -1,22 +1,25 @@
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Combination } from "./scentmain/scenttypes";
-import { getScentName, getColor } from "../../utils/control/scentUtils";
-import { useEffect, useState } from "react";
-import { shareFavoriteCombination } from "../../apis/scent/shareFavoriteCombination";
+
 import { useAuthStore } from "../../stores/useAuthStore";
+
+import { shareFavoriteCombination } from "../../apis/scent/shareFavoriteCombination";
+
 import Spinner from "../../components/Loading/Spinner";
-import BackIcon from "../../assets/icons/back-arrow-btn.svg";
-import { useRef } from "react";
+import { getScentName, getColor } from "../../utils/control/scentUtils";
+import { Combination } from "./scentmain/scenttypes";
+
 import html2canvas from "html2canvas";
+import BackIcon from "../../assets/icons/back-arrow-btn.svg";
 import scentifylogo from "../../assets/icons/scentify-green-logo.svg";
 
 const ShareFavorite = () => {
   const cardRef = useRef<HTMLDivElement>(null); // 캡처할 카드 영역 참조
 
-  // 이전 페이지에서 전달된 데이터 가져오기
-  const location = useLocation();
   const navigate = useNavigate();
-  const { combination } = location.state || {}; // `FavoriteScent.tsx`에서 전달된 조합 정보
+  // FavoriteScent에서 전달된 데이터 가져오기
+  const location = useLocation();
+  const { combination } = location.state || {};
   const { accessToken } = useAuthStore();
   // 상태 변수 정의
   const [imageUrl, setImageUrl] = useState<string | null>(null); // 생성된 이미지 URL 저장
@@ -31,7 +34,7 @@ const ShareFavorite = () => {
   //API 호출하여 imageUrl, shareUrl 가져오기
   useEffect(() => {
     if (hasFetched.current) return; // 이미 요청했으면 실행 안 함
-    hasFetched.current = true; // 첫 실행 이후 다시 실행 방지
+    hasFetched.current = true;
 
     setIsMounted(true); // 마운트 여부 상태 true 설정
 
@@ -93,8 +96,6 @@ const ShareFavorite = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      console.log("카드 이미지 다운로드 성공");
     } catch (error) {}
   };
 
@@ -105,7 +106,6 @@ const ShareFavorite = () => {
 
   return (
     <div className="mt-4">
-      {/* 뒤로 가기 버튼 (로딩 중에는 숨김) */}
       {!loading && (
         <img
           src={BackIcon}
@@ -136,7 +136,7 @@ const ShareFavorite = () => {
             </p>
           </div>
         ) : (
-          // 이미지가 로딩 완료되면 정상적으로 표시
+          // 로딩 완료되면 이미지 정상적으로 표시
           <div
             ref={cardRef}
             className="w-[280px] h-[400px] bg-component p-4 rounded-xl"

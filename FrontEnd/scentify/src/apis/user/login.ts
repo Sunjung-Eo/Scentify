@@ -27,7 +27,6 @@ export const loginUser = async (
     }
 
     const accessToken = authHeader.split(' ')[1];
-    console.log('Access Token:', accessToken);
     return { accessToken };
   } catch (error) {
     console.error('로그인 요청 중 오류 발생:', error);

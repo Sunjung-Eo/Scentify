@@ -37,4 +37,8 @@ public interface CombinationRepository {
 	@Update("UPDATE combination SET choice1 = #{combination.choice1}, choice1_count = #{combination.choice1Count}, choice2 = #{combination.choice2}, choice2_count = #{combination.choice2Count}, "
 			+ "choice3 = #{combination.choice3}, choice3_count = #{combination.choice3Count}, choice4 = #{combination.choice4}, choice4_count = #{combination.choice4Count} WHERE id = #{combination.id}")
 	boolean updateCombination(@Param("combination") CombinationDto combination);
+	
+	// id로 이미지 정보 업데이트
+	@Update("UPDATE combination SET img_url = #{imgUrl} WHERE id = #{combinationId}")
+	boolean updateImgeUrl(int combinationId, String imgUrl);
 }

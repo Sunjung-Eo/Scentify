@@ -153,7 +153,8 @@ public class CustomScheduleController {
 					
 					if (!mode && (scheduleDay & currentBit) > 0 && (now.isAfter(beforeStartTime) || now.equals(beforeStartTime)) && now.isBefore(beforeEndTime)) {
 				        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-				    }
+				    }					
+					continue;
 				}
 						
 				if ((scheduleDay & day) > 0) {

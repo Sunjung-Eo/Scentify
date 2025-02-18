@@ -11,20 +11,25 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: inherit !important;
   -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
 }
-
-@font-face {
-  font-family: 'Pretendard-Bold';
-  src: url('../assets//fonts/Pretendard-Bold.woff') format('woff');
+.poppins-light {
+  font-family: "Poppins", serif;
+  font-weight: 300;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: 'Pretendard-Medium';
-  src: url('../assets/fonts/Pretendard-Medium.woff') format('woff');
+  font-family: "Pretendard-Bold";
+  src: url("../assets//fonts/Pretendard-Bold.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Pretendard-Light';
-  src: url('../assets/fonts/Pretendard-Light.woff') format('woff');
+  font-family: "Pretendard-Medium";
+  src: url("../assets/fonts/Pretendard-Medium.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Pretendard-Light";
+  src: url("../assets/fonts/Pretendard-Light.woff") format("woff");
 }
 
 /* 모바일에서 실제 높이를 계산한 값 적용 */

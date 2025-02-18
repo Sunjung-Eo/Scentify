@@ -24,7 +24,7 @@ public interface CombinationRepository {
 	boolean createAutoCombination(int combinationId, String name, int choice, int count);
 	
 	// id로 조합 정보 반환
-	@Select("SELECT id, name, choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count " 
+	@Select("SELECT id, name, choice1, choice1_count, choice2, choice2_count, choice3, choice3_count, choice4, choice4_count, img_url " 
 		    + "FROM combination WHERE id = #{combinationId}")
 	CombinationDto getCombinationById(int combinationId);
 	

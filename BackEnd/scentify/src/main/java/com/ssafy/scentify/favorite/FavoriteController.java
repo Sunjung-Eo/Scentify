@@ -162,38 +162,54 @@ public class FavoriteController {
 	        	return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	        }
 	        
-	        // open ai 키를 활용하여 이미지 생성
-	        ImageGenerationResponse imageResponse = aiService.makeImages(combination);
+	        // 이미지를 이미 생성한 적이 있는 조합이라면 해당 이미지를 반환
+	        if (combination.getImgUrl() != null) {
+	        	ShareCombination shareCombination = new ShareCombination();
+	        	shareCombination.setCombination(combination);
+	           
+	        	String imageUrl = s3Service.generatePresignedUrl(combination.getImgUrl(), 10);
+	        	shareCombination.setS3Url(imageUrl);
+	           
+	        	String shareUrl = "https://my-scentify.shop/favorite/share/read?combinationId=" + combinationId + "&imageName=" + combination.getImgUrl();
+	 	       	shareCombination.setShareUrl(shareUrl);
+	 	       
+	 	       	return ResponseEntity.ok(shareCombination);
 	        
-	        // s3 버킷에 업로드 후 링크 반환
-	        List<String> s3Urls = new ArrayList();
-	        List<String> imageNames = new ArrayList();
+	        } else {
 	        
-	        for (ImageData imageData : imageResponse.getData()) {
-	            try {
-	                Map<String, String> s3Info = s3Service.downloadAndUploadImage(imageData.getUrl());
-	                s3Urls.add(s3Info.get("s3Url"));
-	                imageNames.add(s3Info.get("imageName"));
-	                
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-	            }
+		        // open ai 키를 활용하여 이미지 생성
+		        ImageGenerationResponse imageResponse = aiService.makeImages(combination);
+		        
+		        // s3 버킷에 업로드 후 링크 반환
+		        List<String> s3Urls = new ArrayList();
+		        List<String> imageNames = new ArrayList();
+		        
+		        for (ImageData imageData : imageResponse.getData()) {
+		            try {
+		                Map<String, String> s3Info = s3Service.downloadAndUploadImage(imageData.getUrl());
+		                s3Urls.add(s3Info.get("s3Url"));
+		                imageNames.add(s3Info.get("imageName"));
+		                
+		            } catch (Exception e) {
+		                e.printStackTrace();
+		                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		            }
+		        }
+		        
+		        ShareCombination shareCombination = new ShareCombination();
+		        shareCombination.setCombination(combination);
+		        
+		        // s3 url을 넣어줌
+		        String s3Url = s3Urls.get(0);
+		        shareCombination.setS3Url(s3Url);
+		        
+		        // s3에 업로드된 이미지 이름을 넣어줌
+		        String imageName = imageNames.get(0);
+		        String shareUrl = "https://my-scentify.shop/favorite/share/read?combinationId=" + combinationId + "&imageName=" + imageName;
+		        shareCombination.setShareUrl(shareUrl);
+		        
+		        return ResponseEntity.ok(shareCombination);
 	        }
-	        
-	        ShareCombination shareCombination = new ShareCombination();
-	        shareCombination.setCombination(combination);
-	        
-	        // s3 url을 넣어줌
-	        String s3Url = s3Urls.get(0);
-	        shareCombination.setS3Url(s3Url);
-	        
-	        // s3에 업로드된 이미지 이름을 넣어줌
-	        String imageName = imageNames.get(0);
-	        String shareUrl = "https://my-scentify.shop/favorite/share/read?combinationId=" + combinationId + "&imageName=" + imageName;
-	        shareCombination.setShareUrl(shareUrl);
-	        
-	        return ResponseEntity.ok(shareCombination);
 	        
        } catch (Exception e) {
 			 // 예기치 않은 에러 처리

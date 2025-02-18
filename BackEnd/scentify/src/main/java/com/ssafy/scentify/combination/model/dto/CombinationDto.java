@@ -23,6 +23,8 @@ public class CombinationDto {
     private Integer choice4; // NULL 허용
     @Setter
     private Integer choice4Count;
+    @Setter
+    private String imgUrl;
     
     public void setName(String name) {
         if ((name != null && name.isBlank()) || (name != null && name.length() > 15)) {

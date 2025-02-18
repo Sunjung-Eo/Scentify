@@ -168,7 +168,7 @@ const RegistFormSocial = ({
           name="birthMonth"
           value={formData.birthMonth}
           onChange={handleChange}
-          className={`${inputStyles} w-full min-w-[72px]`}
+          className={`${inputStyles} w-full min-w-[80px]`}
         >
           <option value="">월</option>
           {Array.from({ length: 12 }, (_, i) => (

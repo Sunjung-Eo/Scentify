@@ -67,7 +67,7 @@ const ShareFavorite = () => {
     if (!shareUrl) return;
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 5000);
   };
 
   // 카드 영역을 캡처하여 이미지 다운로드

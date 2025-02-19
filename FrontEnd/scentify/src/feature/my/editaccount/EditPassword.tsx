@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { validatePassword as verifyCurrentPassword } from "../../../apis/user/editaccount/validatepassword"; // 현재 비밀번호 검증 API
+import { validatePassword as verifyCurrentPassword } from "../../../apis/user/editaccount/validatepassword";
 import { updateUserPassword } from "../../../apis/user/editaccount/updatepassword";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { validatePassword as validateNewPassword } from "../../../utils/validation";
@@ -121,6 +121,7 @@ function EditPassword() {
                   type="password"
                   value={currentPassword}
                   onChange={handleInputChange(setCurrentPassword)}
+                  placeholder="비밀번호"
                   className="flex-1 w-full h-[34px] text-12 font-pre-light rounded-lg bg-component mr-4 px-4 focus:outline-none focus:ring-2 focus:ring-brand"
                 />
                 <button
@@ -156,6 +157,7 @@ function EditPassword() {
                 type="password"
                 value={newPassword}
                 onChange={handleNewPasswordChange} // 유효성 검사 적용
+                placeholder="8~20자, 영문자, 숫자, 특수문자 조합"
                 className="flex-1 w-full h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
@@ -180,6 +182,7 @@ function EditPassword() {
                 type="password"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
+                placeholder="새 비밀번호 확인"
                 className="flex-1 w-fulls h-[34px] text-12 font-pre-light rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>

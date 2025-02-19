@@ -3,7 +3,8 @@ function SpaceDescription() {
     <div className="flex justify-center">
       <div className="text-[10px] font-pre-light">
         <h2 className="text-lightgray mb-1">잠깐! 공간 크기는요..</h2>
-        <div className="px-4 py-2 bg-white w-[320px] h-[99px] rounded-lg">
+        {/* 공간 크기 설명 */}
+        <div className="px-4 py-2 bg-white w-[300px] h-[100px] rounded-lg">
           <div className="mb-3">
             <h3 className="text-gray mb-1">소형 공간: 10평 이하</h3>
             <p className="text-gray">

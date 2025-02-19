@@ -7,6 +7,7 @@ import { editDefaultScent } from '../../../apis/home/editDefaultScent';
 import { getCombinationById } from '../../../apis/control/getCombinationById';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
 import { useAuthStore } from '../../../stores/useAuthStore';
+import Alert from '../../../components/Alert/Alert';
 
 interface Message {
   type: 'error' | 'success';
@@ -24,6 +25,12 @@ function EditOnlyScent() {
   const [loading, setLoading] = useState(true); // ✅ 로딩 상태 추가
   const [roomType, setRoomType] = useState<'small' | 'large' | null>(null); // ✅ 공간 크기
   const [totalEnergy, setTotalEnergy] = useState(3);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    message: '',
+    onConfirm: () => {},
+    showButtons: true,
+  });
 
   useEffect(() => {
     if (deviceId) {
@@ -112,6 +119,21 @@ function EditOnlyScent() {
   }, [combinationData]); // `useEffect`에서 `scentCnt` 업데이트
 
   const handleComplete = useCallback(async () => {
+    // 향 설정 검증
+    const totalUsage = Object.values(scentCnt).reduce(
+      (acc, curr) => acc + curr,
+      0
+    );
+    if (totalUsage === 0) {
+      setAlertConfig({
+        message: '향을 하나 이상 설정해주세요.',
+        onConfirm: () => setShowAlert(false),
+        showButtons: true,
+      });
+      setShowAlert(true);
+      return;
+    }
+
     try {
       if (!deviceId || !combinationData) return;
 
@@ -130,12 +152,23 @@ function EditOnlyScent() {
       await editDefaultScent(deviceId, updatedCombination);
       console.log('🍀기본향 수정 성공 id:', updatedCombination);
 
-      setTimeout(() => {
-        navigate('/home');
-      }, 1000);
+      setAlertConfig({
+        message: '기본향 설정이 완료되었습니다.',
+        onConfirm: () => {
+          setShowAlert(false);
+          navigate('/home');
+        },
+        showButtons: true,
+      });
+      setShowAlert(true);
     } catch (error) {
       console.error('수정 실패:', error);
-      setMessage({ type: 'error', text: '수정 중 오류가 발생했습니다.' });
+      setAlertConfig({
+        message: '수정 중 오류가 발생했습니다.',
+        onConfirm: () => setShowAlert(false),
+        showButtons: true,
+      });
+      setShowAlert(true);
     }
   }, [
     deviceId,
@@ -164,20 +197,32 @@ function EditOnlyScent() {
   }
 
   return (
-    <div className="content px-4 flex flex-col items-center">
-      <NoSpaceTab
-        setRoomType={setRoomType}
-        roomType={roomType}
-        scentCnt={scentCnt}
-        setScentCnt={setScentCnt}
-        scentNames={scentNames}
-        totalEnergy={totalEnergy}
-      />
+    <>
+      <div className="px-4 flex flex-col items-center w-full">
+        <NoSpaceTab
+          setRoomType={setRoomType}
+          roomType={roomType}
+          scentCnt={scentCnt}
+          setScentCnt={setScentCnt}
+          scentNames={scentNames}
+          totalEnergy={totalEnergy}
+        />
 
-      <div className="mt-4">
-        <SpaceDescription />
+        <div className="mt-4 w-full">
+          <SpaceDescription />
+        </div>
       </div>
-    </div>
+      {showAlert && (
+        <Alert
+          message={alertConfig.message}
+          onClose={() => setShowAlert(false)}
+          onConfirm={alertConfig.onConfirm}
+          showButtons={alertConfig.showButtons}
+          confirmText="확인"
+          cancelText=""
+        />
+      )}
+    </>
   );
 }
 

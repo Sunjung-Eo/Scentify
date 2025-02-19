@@ -63,10 +63,12 @@ const Layout = ({ children }: LayoutProps) => {
 
   const showDeviceManage = location.pathname === "/home";
   const showAdd =
-    location.pathname.startsWith("/home/managedevice") ||
-    location.pathname.startsWith("/control");
-  const nextDeviceEdit = location.pathname.startsWith("/home/edit/capsule");
-  const showCancel = location.pathname.startsWith("/home/edit/capsule");
+    location.pathname.startsWith('/home/managedevice') ||
+    location.pathname.startsWith('/control');
+  const nextDeviceEdit = location.pathname.startsWith('/home/edit/capsule');
+  const showCancel =
+    location.pathname.startsWith('/home/edit/capsule') ||
+    location.pathname.startsWith('/home/edit/defaultscent');
 
   // 로고 대신 title 출력
   const getHeaderTitle = (pathname: string) => {

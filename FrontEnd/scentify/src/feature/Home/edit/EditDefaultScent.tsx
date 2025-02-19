@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { editCapsuleAndDefaultScent } from '../../../apis/home/editCapsuleAndDefaultScent';
 import { editCapsule } from '../../../apis/home/editCapsule';
 import { fragranceMap } from '../capsule/utils/fragranceMap';
+import Alert from '../../../components/Alert/Alert';
 
 interface FormData {
   roomType: 'small' | 'large' | null;
@@ -35,6 +36,12 @@ function EditDefaultScent() {
     location.state || {};
   const { setCompleteHandler } = useControlStore();
   const [message, setMessage] = useState<Message | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    message: '',
+    onConfirm: () => {},
+    showButtons: true,
+  });
 
   const slot1 = capsuleData?.slot1;
   const slot2 = capsuleData?.slot2;
@@ -67,6 +74,31 @@ function EditDefaultScent() {
   });
 
   const handleComplete = useCallback(async () => {
+    if (!roomType) {
+      setAlertConfig({
+        message: '공간 크기를 선택해주세요.',
+        onConfirm: () => setShowAlert(false),
+        showButtons: true,
+      });
+      setShowAlert(true);
+      return;
+    }
+
+    // 향 설정 검증
+    const totalUsage = Object.values(scentCnt).reduce(
+      (acc, curr) => acc + curr,
+      0
+    );
+    if (totalUsage === 0) {
+      setAlertConfig({
+        message: '향을 하나 이상 설정해주세요.',
+        onConfirm: () => setShowAlert(false),
+        showButtons: true,
+      });
+      setShowAlert(true);
+      return;
+    }
+
     const roomTypeValue = roomType === 'small' ? 0 : 1;
 
     try {
@@ -95,12 +127,24 @@ function EditDefaultScent() {
       // 2. 기본향 설정 수정
       await editCapsuleAndDefaultScent(deviceId, roomTypeValue, combination);
       console.log('🍀 캡슐-기본향 combination', combination);
-      setTimeout(() => {
-        navigate('/home');
-      }, 1000);
+
+      setAlertConfig({
+        message: '기본향 설정이 완료되었습니다.',
+        onConfirm: () => {
+          setShowAlert(false);
+          navigate('/home');
+        },
+        showButtons: true,
+      });
+      setShowAlert(true);
     } catch (error) {
       console.error('수정 실패:', error);
-      setMessage({ type: 'error', text: '수정 중 오류가 발생했습니다.' });
+      setAlertConfig({
+        message: '수정 중 오류가 발생했습니다.',
+        onConfirm: () => setShowAlert(false),
+        showButtons: true,
+      });
+      setShowAlert(true);
     }
   }, [
     deviceId,
@@ -126,24 +170,38 @@ function EditDefaultScent() {
   }, [deviceId, handleComplete]);
 
   return (
-    <div className="flex flex-col items-center pt-5">
-      <SpaceTab
-        setRoomType={setRoomType}
-        roomType={roomType}
-        scentCnt={scentCnt}
-        setScentCnt={setScentCnt}
-        scentNames={scentNames}
-      />
+    <>
+      <div className="flex flex-col items-center pt-5">
+        <SpaceTab
+          setRoomType={setRoomType}
+          roomType={roomType}
+          scentCnt={scentCnt}
+          setScentCnt={setScentCnt}
+          scentNames={scentNames}
+        />
 
-      {!roomType && (
-        <p className="text-red-500 text-12 font-pre-light self-start">
-          공간 크기를 먼저 선택해주세요.
-        </p>
-      )}
-      <div className="mt-4">
-        <SpaceDescription />
+        <div className="w-[300px] ">
+          {!roomType && (
+            <p className="text-red-500 text-12 font-pre-light self-start">
+              공간 크기를 먼저 선택해주세요.
+            </p>
+          )}
+        </div>
+        <div className="mt-4">
+          <SpaceDescription />
+        </div>
       </div>
-    </div>
+      {showAlert && (
+        <Alert
+          message={alertConfig.message}
+          onClose={() => setShowAlert(false)}
+          onConfirm={alertConfig.onConfirm}
+          showButtons={alertConfig.showButtons}
+          confirmText="확인"
+          cancelText=""
+        />
+      )}
+    </>
   );
 }
 

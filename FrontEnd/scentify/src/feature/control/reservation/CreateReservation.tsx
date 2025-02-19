@@ -365,7 +365,7 @@ export default function CreateReservation({
 
       {/* 요일 설정 */}
       <div className="w-full">
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <label htmlFor="weekdaySelect" className="mr-[20px]">
             요일 설정
           </label>
@@ -407,7 +407,7 @@ export default function CreateReservation({
       </div>
 
       {/* 시간 설정 */}
-      <div className="relative flex">
+      <div className="relative flex whitespace-nowrap">
         <label className="mt-[7px]" htmlFor="timeSelect">
           시간 설정
         </label>

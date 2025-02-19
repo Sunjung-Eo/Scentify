@@ -93,6 +93,7 @@ const ResetPassword = () => {
               type="password"
               value={newPassword}
               onChange={handleInputChange(setNewPassword)}
+              placeholder="8~20자, 영문자, 숫자, 특수문자 조합"
               className="flex-1 w-full border w-[235px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
@@ -109,6 +110,7 @@ const ResetPassword = () => {
               type="password"
               value={confirmPassword}
               onChange={handleInputChange(setConfirmPassword)}
+              placeholder="새 비밀번호 확인"
               className="flex-1 w-full border w-[235px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
@@ -116,10 +118,10 @@ const ResetPassword = () => {
             <p className="mt-3 text-red-500 text-12 font-pre-light">{error}</p>
           )}
         </div>
-        <div className="mt-auto">
+        <div className="mt-auto mb-[-10px]">
           <button
             type="submit"
-            className="w-full h-[48px] mb-[20px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-component active:bg-brand active:border-0"
+            className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-bg active:bg-brand active:border-0"
           >
             저장
           </button>

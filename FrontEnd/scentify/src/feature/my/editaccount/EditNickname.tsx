@@ -4,6 +4,7 @@ import { updateUserNickname } from "../../../apis/user/editaccount/editnickname"
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useUserStore } from "../../../stores/useUserStore";
 import Alert from "../../../components/Alert/AlertMy";
+import { validateNickname } from "../../../utils/validation";
 
 function EditNickname() {
   const [nickname, setNickname] = useState("");
@@ -14,16 +15,24 @@ function EditNickname() {
   const accessToken = authStore.accessToken;
   const [showAlert, setShowAlert] = useState<boolean>(false);
 
-  // 닉네임 변경 핸들러
+  // 닉네임 입력 변경 핸들러
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setNickname(e.target.value);
-    setError("");
-  }
+    const newNickname = e.target.value;
+    setNickname(newNickname);
 
+    // 닉네임 유효성 검사 실행
+    const validationMessage = validateNickname(newNickname);
+    if (validationMessage) {
+      setError(validationMessage);
+    } else {
+      setError("");
+    }
+  }
   // 저장 버튼 클릭 핸들러 (API 호출)
   async function handleSave() {
-    if (!nickname.trim()) {
-      setError("닉네임을 입력해주세요.");
+    const validationMessage = validateNickname(nickname);
+    if (validationMessage) {
+      setError(validationMessage);
       return;
     }
 
@@ -56,6 +65,7 @@ function EditNickname() {
               type="text"
               value={nickname}
               onChange={handleInputChange}
+              placeholder="10자 이하, 완성된 한글, 영문, 숫자만 입력"
               className="w-full h-[34px] text-12 font-pre-light rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>

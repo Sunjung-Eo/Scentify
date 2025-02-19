@@ -1,14 +1,3 @@
-// 카드와 모달 이미지 데이터
-// import lemonCard from "../../../assets/images/scentcard/lemoncard.png";
-// import orangeblossomCard from "../../../assets/images/scentcard/orangeblossomcard.png";
-// import sandalwoodCard from "../../../assets/images/scentcard/sanderwoodcard.png";
-// import eucalyptusCard from "../../../assets/images/scentcard/eucalyptuscard.png";
-// import cedarwoodCard from "../../../assets/images/scentcard/cedarwoodcard.png";
-// import lavendarCard from "../../../assets/images/scentcard/laverdarcard.png";
-// import peppermintCard from "../../../assets/images/scentcard/peppermintcard.png";
-// import whitemuskCard from "../../../assets/images/scentcard/whitemuskcard.png";
-// import chamomileCard from "../../../assets/images/scentcard/chamomilecard.png";
-
 import lemonModal from "../../../assets/images/scentmodal/lemonC.png";
 import orangeblossomModal from "../../../assets/images/scentmodal/orangeC.png";
 import sandalwoodModal from "../../../assets/images/scentmodal/sanderwoodC.png";
@@ -22,7 +11,6 @@ import chamomileModal from "../../../assets/images/scentmodal/chamomileC.png";
 const scentImages = [
   {
     id: 1,
-    // cardImage: lemonModal,
     modalImage: lemonModal,
     alt: "Lemon",
     description: `레몬 향은 상쾌한 시트러스 향으로 공간에 활기를 더합니다. 상큼한 향이 기분 전환과 에너지 충전에 효과적입니다.`,
@@ -34,7 +22,6 @@ const scentImages = [
   },
   {
     id: 2,
-    // cardImage: orangeblossomCard,
     modalImage: orangeblossomModal,
     alt: "Orange Blossom",
     description: `오렌지 블라썸 향은 달콤하고 신선한 플로럴 시트러스 향으로, 공간에 생기를 더합니다.
@@ -47,7 +34,6 @@ const scentImages = [
   },
   {
     id: 3,
-    // cardImage: sandalwoodCard,
     modalImage: sandalwoodModal,
     alt: "Sandalwood",
     description: `샌달우드 향은 따뜻하고 고급스러운 나무 향으로, 시간이 지날수록 깊이감이 더해집니다.
@@ -60,7 +46,6 @@ const scentImages = [
   },
   {
     id: 4,
-    // cardImage: eucalyptusCard,
     modalImage: eucalyptusModal,
     alt: "Eucalyptus",
     description: `유칼립투스 향은 신선하고 상쾌한 허브 향으로, 공간을 청량하고 깨끗하게 만듭니다.
@@ -73,7 +58,6 @@ const scentImages = [
   },
   {
     id: 5,
-    // cardImage: cedarwoodCard,
     modalImage: cedarwoodModal,
     alt: "Cedarwood",
     description: `시더우드 향은 깊고 진한 우디 향으로 공간에 안정감과 고급스러움을 제공합니다.
@@ -86,7 +70,6 @@ const scentImages = [
   },
   {
     id: 6,
-    // cardImage: lavendarCard,
     modalImage: lavendarModal,
     alt: "Lavender",
     description: `라벤더 향은 부드럽고 편안한 허브 향으로 스트레스를 완화시켜줍니다.
@@ -99,7 +82,6 @@ const scentImages = [
   },
   {
     id: 7,
-    // cardImage: peppermintCard,
     modalImage: peppermintModal,
     alt: "Peppermint",
     description: `페퍼민트 향은 청량한 민트와 허브가 어우러진 상쾌한 향입니다.
@@ -112,7 +94,6 @@ const scentImages = [
   },
   {
     id: 8,
-    // cardImage: whitemuskCard,
     modalImage: whitemuskModal,
     alt: "White Musk",
     description: `화이트 머스크 향은 부드러운 파우더리 향으로 포근하고 따뜻한 분위기를 더합니다.
@@ -125,7 +106,6 @@ const scentImages = [
   },
   {
     id: 9,
-    // cardImage: chamomileCard,
     modalImage: chamomileModal,
     alt: "Chamomile",
     description: `카모마일 향은 달콤하고 부드러운 허브 향으로, 마음을 차분하게 하고 편안한 휴식을 제공합니다.

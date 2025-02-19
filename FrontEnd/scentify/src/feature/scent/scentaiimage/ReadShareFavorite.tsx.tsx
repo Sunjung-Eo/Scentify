@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { readShareFavorite } from "../../../apis/scent/readShareFavorite"; // API 호출 함수 가져오기
+import { readShareFavorite } from "../../../apis/scent/readShareFavorite";
 
 import { Combination } from "../../../feature/scent/scentmain/scenttypes";
 import { getScentName, getColor } from "../../../utils/control/scentUtils";

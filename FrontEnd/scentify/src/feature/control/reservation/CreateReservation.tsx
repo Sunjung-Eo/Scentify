@@ -535,7 +535,7 @@ export default function CreateReservation({
             id="scentName"
             value={scentName}
             onChange={(e) => setScentName(e.target.value)}
-            className="flex-1 w-full h-[34px] ml-[25px] pl-2 bg-component rounded-lg"
+            className="flex-1 w-full h-[34px] ml-[30px] pl-2 bg-component rounded-lg"
           />
           {formErrors.scentName && (
             <p className="absolute mt-[48px] ml-[70px] text-red-500 text-10">

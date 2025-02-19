@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useMainDeviceStore } from "../../stores/useDeviceStore";
@@ -22,6 +22,7 @@ import ModifyReservation from "../../feature/control/reservation/ModifyReservati
 import DeviceSelect from "../../components/Control/DeviceSelect";
 import Modal from "../../components/Alert/Modal";
 import ProtectedRoute from "../../components/Control/ProtectedRoute";
+import { AlertControl } from "../../components/Alert/AlertControl";
 
 import { Mode, DeviceInfo } from "../../feature/control/main/ControlType";
 import { DeviceSelectItem } from "../../components/Control/DeviceSelect";
@@ -31,6 +32,9 @@ import RemoteIcon from "../../assets/icons/remote-icon.svg";
 import AlarmIcon from "../../assets/icons/alarm-icon.svg";
 
 const Control = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // 인증토큰
   const authStore = useAuthStore();
   const accessToken = authStore.accessToken;
@@ -171,6 +175,22 @@ const Control = () => {
     setModalOpen(false);
   };
 
+  // 기기 없을 시 예약하기 버튼 알람창
+  const [alertOpen, setAlertOpen] = useState(false);
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+  useEffect(() => {
+    if (location.state?.showAlert) {
+      setAlertOpen(true);
+      // 뒤로가기 재표시 방지
+      navigate(location.pathname, {
+        replace: true,
+        state: {},
+      });
+    }
+  }, [location.state]);
+
   // 탭 전환
   const [activeTab, setActiveTab] = useState<boolean>(false); // 현재 활성화 된 탭(기본값: 0 예약)
   const handleTabChange = (tab: boolean) => {
@@ -191,45 +211,21 @@ const Control = () => {
           index
           element={
             <div className="flex flex-col w-full">
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full">
                 <div className="flex flex-col">
-                  <div className="flex mb-[16px] items-center gap-1">
+                  <div className="flex mb-[10px] items-center gap-1">
                     <img src={RemoteIcon} alt="리모컨 이미지" />
                     <h2 className="font-pre-medium text-16">모드 변경 버튼</h2>
                   </div>
-                  <div className="flex items-center">
-                    <div>
-                      <ModeToggle
-                        currentMode={mode}
-                        onModeChange={handleModeChange}
-                      />
-                    </div>
-                    <div className="ml-[20px] text-center pre-light text-10 text-sub">
-                      {isLoading ? (
-                        ""
-                      ) : deviceIds.length === 0 ? (
-                        <div className="flex items-center">
-                          <div className="w-[4px] h-[4px] mr-[4px] bg-brand rounded-full"></div>
-                          기기를 먼저 등록해주세요.
-                        </div>
-                      ) : mode === null ? (
-                        ""
-                      ) : mode ? (
-                        <div className="flex items-center">
-                          <div className="w-[4px] h-[4px] mr-[4px] bg-brand rounded-full"></div>
-                          현재 자동화 모드입니다.
-                        </div>
-                      ) : (
-                        <div className="flex items-center">
-                          <div className="w-[4px] h-[4px] mr-[4px] bg-brand rounded-full"></div>
-                          현재 예약 모드입니다.
-                        </div>
-                      )}
-                    </div>
+                  <div>
+                    <ModeToggle
+                      currentMode={mode}
+                      onModeChange={handleModeChange}
+                    />
                   </div>
                 </div>
               </div>
-              <div className={"mt-[40px] font-pre-medium text-16"}>
+              <div className={"mt-[32px] font-pre-medium text-16"}>
                 <div className="relative">
                   <div className="flex justify-between">
                     <div className="flex items-start gap-1">
@@ -287,6 +283,15 @@ const Control = () => {
                   onConfirm={handleConfirm}
                   onCancel={handleCancel}
                 />
+              )}
+              {alertOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[9999]">
+                  <AlertControl
+                    message={"기기를 먼저 등록해주세요."}
+                    showButtons={true}
+                    onConfirm={handleCloseAlert}
+                  />
+                </div>
               )}
             </div>
           }

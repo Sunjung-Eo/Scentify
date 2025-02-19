@@ -146,7 +146,7 @@ export const GroupList = () => {
   return (
     <>
       <div className="relative">
-        <div className="flex flex-row items-center justify-between mt-[10px]">
+        <div className="flex flex-row items-center justify-between mt-[10px] mb-[12px]">
           <div className="font-pre-light text-14 text-gray whitespace-nowrap">
             멤버 목록
           </div>
@@ -181,7 +181,7 @@ export const GroupList = () => {
           </div>
         )}
         {/* 멤버 리스트 */}
-        <div className="h-full overflow-y-auto pb-[60px] max-h-[calc(100vh-180px)] sm:max-h-[calc(100vh-150px)] scrollbar-hidden">
+        <div className="overflow-y-auto max-h-[calc(100vh-450px)]">
           {!error && (
             <div className="flex flex-col">
               {deviceList.length === 0 ? (
@@ -220,21 +220,8 @@ export const GroupList = () => {
         </div>
       </div>
 
-      {/* 초대코드 입력 & 그룹 삭제 버튼 */}
-      <div className="absolute bottom-[20px] w-full flex flex-row items-center justify-between">
-        {/* 초대코드입력 버튼 */}
-        <Link to="/my/invitecodeinput">
-          <span className="text-12 font-pre-light flex items-center">
-            초대코드 입력
-            <img
-              src={rigtarrowIcon}
-              alt="초대 코드 입력"
-              className="w-4 h-4 ml-1"
-            />
-          </span>
-        </Link>
-
-        {/* 그룹 삭제 버튼 클릭 시 모달 띄움 */}
+      {/* 그룹 삭제 버튼 */}
+      <div className="absolute bottom-[40px] w-full flex justify-end">
         {userId === adminId && members.length > 0 && (
           <button
             className="w-[83px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"

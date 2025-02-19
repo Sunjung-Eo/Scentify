@@ -36,7 +36,7 @@ const My = () => {
             <div className="flex flex-col h-full w-full">
               {/* 계정 관리 */}
 
-              <div className="flex flex-col h-full mt-4 w-full">
+              <div className="flex flex-col h-full mt-[6px] w-full">
                 <div className="flex flex-col">
                   <div className="flex flex-row justify-between items-center text-center">
                     <div className="flex items-center font-pre-medium text-16">
@@ -59,7 +59,7 @@ const My = () => {
                   </div>
                 </div>
                 {/** 그룹 관리 */}
-                <div className="relative flex flex-col h-full mt-10">
+                <div className="relative flex flex-col h-full mt-8">
                   <div className="flex items-center font-pre-medium text-16">
                     <img
                       src={managegroupsIcon}

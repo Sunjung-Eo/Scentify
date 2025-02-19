@@ -1,14 +1,14 @@
-interface AlertDeleteScheduleProps {
+interface AlertControlProps {
   message: string;
   showButtons?: boolean;
   onConfirm?: () => void;
 }
-// 예약 삭제 시 이미 실행 중인 예약인 경우 띄우는 알람창
-export const AlertDeleteSchedule = ({
+// 확인 알람창
+export const AlertControl = ({
   message,
   showButtons = true,
   onConfirm,
-}: AlertDeleteScheduleProps) => {
+}: AlertControlProps) => {
   return (
     <div
       className="flex flex-col max-w-[260px] w-full h-[300px] p-6 font-pre-light rounded-2xl border-black/10 bg-white shadow-[20px_20px_20px_rgba(0,0,0,0.08)]"

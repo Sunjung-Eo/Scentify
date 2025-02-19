@@ -1,25 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useAuthStore } from '../../../stores/useAuthStore';
-import { useFavoriteStore } from '../../../stores/useFavoriteStore';
+import { useAuthStore } from "../../../stores/useAuthStore";
+import { useFavoriteStore } from "../../../stores/useFavoriteStore";
 
-import { deleteCustomSchedule } from '../../../apis/control/deleteCustomSchedule';
-import { getCombinationById } from '../../../apis/control/getCombinationById';
-import { getAllFavorite } from '../../../apis/scent/getAllFavorite';
-import { createFavorite } from '../../../apis/scent/createFavorite';
-import { deleteAllFavorite } from '../../../apis/scent/deleteFavorite';
+import { deleteCustomSchedule } from "../../../apis/control/deleteCustomSchedule";
+import { getCombinationById } from "../../../apis/control/getCombinationById";
+import { getAllFavorite } from "../../../apis/scent/getAllFavorite";
+import { createFavorite } from "../../../apis/scent/createFavorite";
+import { deleteAllFavorite } from "../../../apis/scent/deleteFavorite";
 
-import { AlertDeleteSchedule } from '../../../components/Alert/AlertDeleteSchedule';
-import Modal from '../../../components/Alert/Modal';
-import { mapIntToFragrance } from '../../../utils/fragranceUtils';
-import { DAYS_BIT, convertTo12Hour } from '../../../utils/control/timeUtils';
+import { AlertControl } from "../../../components/Alert/AlertControl";
+import Modal from "../../../components/Alert/Modal";
+import { mapIntToFragrance } from "../../../utils/fragranceUtils";
+import { DAYS_BIT, convertTo12Hour } from "../../../utils/control/timeUtils";
 
-import { ReservationManagerProps } from './ReservationType';
+import { ReservationManagerProps } from "./ReservationType";
 
-import ModifyIcon from '../../../assets/icons/modify-icon.svg';
-import HeartButton from '../../../components/Button/HeartButton';
+import ModifyIcon from "../../../assets/icons/modify-icon.svg";
+import HeartButton from "../../../components/Button/HeartButton";
 
 export default function ReservationManager({
   reservationData,
@@ -45,32 +45,32 @@ export default function ReservationManager({
   const deleteMutation = useMutation({
     mutationFn: (scheduleId: number) => {
       if (selectedDevice === null) {
-        throw new Error('선택된 기기가 없습니다.');
+        throw new Error("선택된 기기가 없습니다.");
       }
       return deleteCustomSchedule(scheduleId, selectedDevice, accessToken);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reservations'] });
+      queryClient.invalidateQueries({ queryKey: ["reservations"] });
       setModalOpen(false);
       setReservationDelete(null);
     },
     onError: (error) => {
       // 403에러의 경우 추가 알림창
-      if (error.message === '403') {
+      if (error.message === "403") {
         setIsDeleteAlterOpen(true);
         setModalOpen(false);
         setReservationDelete(null);
       } else {
-        console.error('예약 삭제 실패:', error);
+        console.error("예약 삭제 실패:", error);
       }
     },
   });
   // 삭제 버튼 핸들러
   const [modalOpen, setModalOpen] = useState(false); // 모달 표시 여부
-  const [modalMessage, setModalMessage] = useState(''); // 모달 메시지
+  const [modalMessage, setModalMessage] = useState(""); // 모달 메시지
   const handleDeleteClick = (scheduleId: number) => {
     setReservationDelete(scheduleId);
-    setModalMessage('예약을 삭제하시겠습니까?');
+    setModalMessage("예약을 삭제하시겠습니까?");
     setModalOpen(true);
   };
   // 삭제 모달창
@@ -114,7 +114,7 @@ export default function ReservationManager({
         );
         setCombinations(combinationMap);
       } catch (error) {
-        console.error('조합 데이터 패칭 실패:', error);
+        console.error("조합 데이터 패칭 실패:", error);
       }
     };
 
@@ -132,11 +132,11 @@ export default function ReservationManager({
 
   // 찜 세부 정보 query
   const { data: fetchedFavoritesData, isLoading } = useQuery({
-    queryKey: ['favoritesData'],
+    queryKey: ["favoritesData"],
     queryFn: () => getAllFavorite(accessToken),
     enabled: !!accessToken,
     staleTime: 0,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
   });
 
   // 언마운트 시 ref 사용
@@ -159,18 +159,18 @@ export default function ReservationManager({
     mutationFn: (ids: number[]) =>
       createFavorite({ combinationIds: ids }, accessToken),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
+      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
     },
   });
   // 찜 삭제 mutation
   const deleteFavoriteMutation = useMutation({
     mutationFn: (ids: number[]) => deleteAllFavorite(ids, accessToken),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favoritesData'] });
+      queryClient.invalidateQueries({ queryKey: ["favoritesData"] });
     },
   });
 
-  // 언마운트 시 동작작
+  // 언마운트 시 동작
   useEffect(() => {
     return () => {
       const updateFavorites = async () => {
@@ -192,17 +192,17 @@ export default function ReservationManager({
           // API 요청이 완료된 후 store 업데이트
           setFavorites([...currentFavoritesRef.current]);
         } catch (error) {
-          console.error('Favorite 업데이트 실패:', error);
+          console.error("Favorite 업데이트 실패:", error);
         }
       };
 
       updateFavorites();
       // query 즉시 업데이트
-      queryClient.setQueryData(['favoritesData'], (old: any) => ({
+      queryClient.setQueryData(["favoritesData"], (old: any) => ({
         ...old,
         favorites: currentFavoritesRef.current,
       }));
-      queryClient.invalidateQueries({ queryKey: ['homeInfo'] });
+      queryClient.invalidateQueries({ queryKey: ["homeInfo"] });
     };
   }, []);
 
@@ -242,8 +242,8 @@ export default function ReservationManager({
                 ]
                   .filter(({ count }) => count > 0)
                   .map(({ choice }) => mapIntToFragrance(choice))
-                  .join(', ')
-              : '';
+                  .join(", ")
+              : "";
             return (
               <div
                 key={schedule.id}
@@ -254,7 +254,7 @@ export default function ReservationManager({
                   <div className="flex justify-between">
                     <div className="flex flex-col font-pre-light text-sub text-12">
                       <div className="mt-[10px]">
-                        <div>{selectedDays.join(', ')}</div>
+                        <div>{selectedDays.join(", ")}</div>
                         <div>
                           {startPeriod} {startTime} ~ {endPeriod} {endTime}
                         </div>
@@ -284,7 +284,7 @@ export default function ReservationManager({
                     />
                     <button
                       onClick={() =>
-                        navigate('/control/reservation/modify', {
+                        navigate("/control/reservation/modify", {
                           state: { schedule },
                         })
                       }
@@ -294,7 +294,7 @@ export default function ReservationManager({
                   </div>
                   <div>
                     <div className="text-brand text-right">
-                      {schedule.modeOn ? 'on' : 'off'}
+                      {schedule.modeOn ? "on" : "off"}
                     </div>
                   </div>
                   <button
@@ -325,7 +325,7 @@ export default function ReservationManager({
       )}
       {isDeleteAlterOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <AlertDeleteSchedule
+          <AlertControl
             message="현재 예약이 종료된 후 삭제해주세요."
             showButtons={true}
             onConfirm={handleDeleteAlter}

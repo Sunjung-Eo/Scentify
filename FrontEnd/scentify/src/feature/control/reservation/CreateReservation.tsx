@@ -365,7 +365,7 @@ export default function CreateReservation({
 
       {/* 요일 설정 */}
       <div className="w-full">
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <label htmlFor="weekdaySelect" className="mr-[20px]">
             요일 설정
           </label>
@@ -407,7 +407,7 @@ export default function CreateReservation({
       </div>
 
       {/* 시간 설정 */}
-      <div className="relative flex">
+      <div className="relative flex whitespace-nowrap">
         <label className="mt-[7px]" htmlFor="timeSelect">
           시간 설정
         </label>
@@ -535,7 +535,7 @@ export default function CreateReservation({
             id="scentName"
             value={scentName}
             onChange={(e) => setScentName(e.target.value)}
-            className="flex-1 w-full h-[34px] ml-[25px] pl-2 bg-component rounded-lg"
+            className="flex-1 w-full h-[34px] ml-[30px] pl-2 bg-component rounded-lg"
           />
           {formErrors.scentName && (
             <p className="absolute mt-[48px] ml-[70px] text-red-500 text-10">

@@ -77,7 +77,7 @@ const ScentMain = () => {
   return (
     <div className="pt-[16px]">
       {/* 브랜드 향기 카드 캐러셀 */}
-      <div className="mb-[60px]">
+      <div className="mb-[40px]">
         <h2 className="text-12 text-sub font-pre-light mb-2">
           각 카드를 눌러 브랜드 향을 알아보세요.
         </h2>

@@ -7,11 +7,10 @@ import { useState, useEffect, useMemo } from "react"; //useMemo: 객체 사용�
 import MemberCard from "./MemberCard";
 import { useUserStore } from "../../../stores/useUserStore"; //유저상태관리(사용자 기기정보)
 import { useAuthStore } from "../../../stores/useAuthStore";
-import { getGroupByDeviceId } from "../../../apis/group/getGroupByDeviceId"; // 그룹 정보 조회 API
-import { deleteGroupMember } from "../../../apis/group/deleteGroupMember"; // 개별 멤버 삭제 API
-import { deleteGroup } from "../../../apis/group/deleteGroup"; // 그룹 삭제 API
-import { Link, useNavigate } from "react-router-dom";
-import rigtarrowIcon from "../../../assets/icons/rightarrow-icon.svg";
+import { getGroupByDeviceId } from "../../../apis/group/getGroupByDeviceId";
+import { deleteGroupMember } from "../../../apis/group/deleteGroupMember";
+import { deleteGroup } from "../../../apis/group/deleteGroup";
+import { useNavigate } from "react-router-dom";
 import Modal from "../../../components/Alert/Modal";
 import MyDeviceSelect from "./MyDeviceSelect";
 
@@ -25,13 +24,13 @@ export const GroupList = () => {
   const mainDeviceId = useUserStore((state) => state.mainDeviceId);
   const userId = useUserStore((state) => state.id);
 
-  // 기기 리스트 (옵션)
+  // 기기 리스트
   const deviceList = useMemo(
     () =>
       Object.entries(memoizedDeviceIdsAndNames).map(([id, name]) => ({
         deviceId: Number(id),
         name,
-        isRepresentative: Number(id) === mainDeviceId, // 메인 기기 여부
+        isRepresentative: Number(id) === mainDeviceId,
       })),
     [memoizedDeviceIdsAndNames, mainDeviceId]
   );
@@ -56,7 +55,6 @@ export const GroupList = () => {
     const fetchGroupData = async () => {
       if (selectedDeviceId === null) return;
       try {
-        // API 요청: 선택한 기기의 그룹 정보 가져오기
         const response: GroupInfoResponse = await getGroupByDeviceId(
           selectedDeviceId,
           accessToken
@@ -110,7 +108,7 @@ export const GroupList = () => {
         setMembers(formattedMembers.filter((member) => member.id !== userId));
       } catch (err: any) {
         setError(err.message);
-        setMembers([]); // 오류 시 멤버 상태 초기화
+        setMembers([]);
       }
     };
 

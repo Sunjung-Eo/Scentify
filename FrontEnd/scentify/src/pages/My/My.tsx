@@ -54,7 +54,7 @@ const My = () => {
                       로그아웃
                     </button>
                   </div>
-                  <div className="mt-3">
+                  <div className="mt-[10px]">
                     <MyUserCard />
                   </div>
                 </div>

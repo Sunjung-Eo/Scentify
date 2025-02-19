@@ -67,7 +67,6 @@ const ManageAccount = () => {
       return;
     }
 
-    // 비밀번호 확인 성공 -> 회원 탈퇴 진행
     const deleteResult = await deleteUserAccount(accessToken);
 
     if (deleteResult.success) {

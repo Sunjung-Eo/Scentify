@@ -93,7 +93,13 @@ export default function HomeScentSetting({
                 {Array.from({ length: totalEnergy }).map((_, i) => (
                   <button
                     key={i}
-                    className={`w-full h-[26px] rounded-lg ${
+                    className={`w-full h-[26px] ${
+                      i === 0
+                        ? "rounded-l-lg"
+                        : i === totalEnergy - 1
+                          ? "rounded-r-lg"
+                          : ""
+                    } ${
                       i < scentCnt[slot as keyof typeof scentCnt]
                         ? "bg-brand"
                         : "bg-component"

@@ -36,6 +36,11 @@ const ManageAccount = () => {
     navigate("/my/editpassword");
   };
 
+  // 초대코드 입력 페이지로 이동
+  const handleInviteCodeInputPage = () => {
+    navigate("/my/invitecodeinput");
+  };
+
   // 탈퇴 버튼 클릭 핸들러
   const handleAccountDeletion = () => {
     setIsModalOpen(true);
@@ -68,7 +73,7 @@ const ManageAccount = () => {
     if (deleteResult.success) {
       alert("회원 탈퇴가 완료되었습니다.");
       closeModal();
-      // 로그아웃 후 홈 화면으로 이동
+      // 로그아웃 후 홈 화면 이동
       navigate("/");
     } else {
       setError(deleteResult.message || "회원 탈퇴에 실패했습니다.");
@@ -76,7 +81,7 @@ const ManageAccount = () => {
   };
 
   return (
-    <div className="flex flex-col relative h-full mt-4">
+    <div className="flex flex-col relative h-full mt-[30px]">
       {/* 프로필 정보 */}
       <div className="flex items-center mb-8">
         <img
@@ -121,10 +126,17 @@ const ManageAccount = () => {
           <p className="text-16 font-pre-medium">비밀번호 변경</p>
           <img src={arrowIcon} alt="arrowIcon" className="mr-2" />
         </div>
+        {/* 초대코드 입력 박스  */}
+        <div
+          onClick={handleInviteCodeInputPage}
+          className="w-full h-[70px] flex justify-between items-center border-b-0.2 border-lightgray"
+        >
+          <p className="text-16 font-pre-medium">초대코드 입력</p>
+          <img src={arrowIcon} alt="arrowIcon" className="mr-2" />
+        </div>
       </div>
-
       {/* 탈퇴하기 버튼 */}
-      <div className="absolute bottom-[20px] w-full mt-8 flex justify-end">
+      <div className="absolute bottom-[40px] w-full flex justify-end">
         <button
           onClick={handleAccountDeletion}
           className="w-[65px] h-[30px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-bg active:bg-brand active:border-0"

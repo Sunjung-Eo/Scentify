@@ -45,6 +45,7 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname.startsWith("/my/invite") ||
     location.pathname.startsWith("/my/invitecodeinput") ||
     location.pathname.startsWith("/user/reset-password") ||
+    location.pathname.startsWith("/home/edit/capsule/defaultscent") ||
     location.pathname.startsWith("/user/find-password");
 
   const showFinish =
@@ -86,7 +87,7 @@ const Layout = ({ children }: LayoutProps) => {
     if (location.pathname === "/control") {
       navigate("/control/reservation/create");
     } else if (location.pathname === "/home/managedevice") {
-      navigate("/home/registdevice1");
+      navigate("/home/registdevice2");
     }
   };
 
@@ -95,7 +96,7 @@ const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className="app ">
+    <div className="app">
       {showHeader && (
         <Header
           showBack={showBack}

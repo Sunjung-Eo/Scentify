@@ -80,13 +80,13 @@ const Capsule = ({ name, onSubmit, initialData }: CapsuleProps) => {
   }, [name, slot1, slot2, slot3, slot4, onSubmit]);
 
   const selectStyles =
-    'w-[200px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:border-2 focus:border-brand';
+    'flex-1 min-w-[120px] p-2 text-[12px] border border-gray-300 rounded bg-white focus:outline-none focus:border-2 focus:border-brand';
 
   return (
     <>
-      <div className="text-pre-regular font-pre-light text-12">
-        <div className="flex items-center justify-between mb-4">
-          <label className="mr-4 text-gray">캡슐 슬롯 1</label>
+      <div className="text-pre-regular font-pre-light text-12 w-full px-4">
+        <div className="flex items-center gap-4 mb-4">
+          <label className="text-gray">캡슐 슬롯 1</label>
           <select
             value={slot1}
             onChange={(e) => setSlot1(e.target.value)}

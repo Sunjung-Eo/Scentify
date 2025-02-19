@@ -9,7 +9,6 @@ import Spinner from "../../../components/Loading/Spinner";
 import Header from "../../../layout/Header";
 
 import html2canvas from "html2canvas";
-import scentifylogo from "../../../assets/icons/scentify-green-logo.svg";
 
 const ReadShareFavorite = () => {
   const navigate = useNavigate();
@@ -108,11 +107,9 @@ const ReadShareFavorite = () => {
               ref={cardRef}
               className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
             >
-              <img
-                src={scentifylogo}
-                alt="Scentify"
-                className="mx-auto max-w-7 h-auto mb-2"
-              />
+              <h2 className="text-10 text-gray text-center font-poppins-light mb-2">
+                Scentify
+              </h2>
               {imageUrl ? (
                 <img
                   src={imageUrl}
@@ -125,12 +122,12 @@ const ReadShareFavorite = () => {
                   이미지를 불러올 수 없습니다.
                 </p>
               )}
-              <h2 className="text-14 text-center font-pre-medium mt-6">
+              <h2 className="text-14 text-center font-pre-medium mt-4">
                 {combination?.name || "이름 없는 조합"}
               </h2>
 
               {/* 향기 정보 */}
-              <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-6 flex-wrap-nowrap">
+              <div className="text-10 text-sub font-pre-light flex justify-center gap-1 mt-4 flex-wrap-nowrap">
                 {[1, 2, 3, 4].map((num) => {
                   // choice 값 가져오기
                   const scentChoice =
@@ -170,10 +167,10 @@ const ReadShareFavorite = () => {
           )}
 
           {/*버튼 그룹*/}
-          <p className="text-10 font-pre-light text-brand mt-14">
+          <p className="text-10 font-pre-light text-brand mt-12">
             이미지 저장은 10분간 유효합니다.
           </p>
-          <div className="flex gap-4 mt-1">
+          <div className="flex gap-4 mt-4">
             {!loading && (
               <button
                 onClick={handleDownloadCardImage}

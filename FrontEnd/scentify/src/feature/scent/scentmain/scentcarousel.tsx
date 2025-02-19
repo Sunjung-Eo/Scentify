@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import Modal from "./modal";
-import scentImages from "./scentImages";
-import { ScentCard } from "./scenttypes";
+import Modal from './modal';
+import scentImages from './scentImages';
+import { ScentCard } from './scenttypes';
 
 const ScentCarousel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +34,7 @@ const ScentCarousel = () => {
             >
               {/* 향 이름을 중앙에 표시 */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/15 rounded-2xl">
-                <p className="text-white text-[7px] font-pre-regulars">
+                <p className="text-white text-[7px] font-poppins-thin">
                   {scent.alt}
                 </p>
               </div>

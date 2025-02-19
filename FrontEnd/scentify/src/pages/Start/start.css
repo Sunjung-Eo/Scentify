@@ -23,18 +23,17 @@ body {
 }
 
 .start-container {
-  max-width: 360px;
+  max-width: 440px;
   width: 100%;
   height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
   margin: 0 auto;
-  background-image: url("../../assets/images/start-page.png");
+  background-image: url('../../assets/images/start-page.png');
   background-size: cover; /* 이미지를 화면에 꽉 차게 조정 */
   background-position: center; /* 중앙 정렬 */
   background-repeat: no-repeat; /* 이미지 반복 없음 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
   position: relative;
   min-height: 600px;
 }

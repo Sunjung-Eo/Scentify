@@ -96,15 +96,17 @@ function RegistCapsule() {
         <Capsule name={name} onSubmit={handleCapsuleData} />
 
         {/* 메시지 표시 */}
-        {message && (
-          <p
-            className={`mt-4 text-12 font-pre-light self-start ${
-              message.type === 'error' ? 'text-red-500' : 'text-green-500'
-            }`}
-          >
-            {message.text}
-          </p>
-        )}
+        <div className="flex text-12 w-full px-4">
+          {message && (
+            <p
+              className={`mt-2 text-12 font-pre-light ${
+                message.type === 'error' ? 'text-red-500' : 'text-[#626D42]'
+              }`}
+            >
+              {message.text}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

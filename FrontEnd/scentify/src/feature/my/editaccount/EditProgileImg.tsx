@@ -15,7 +15,6 @@ function EditProfileImg() {
     userStore.imgNum
   );
   const [error, setError] = useState<string>("");
-  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   // 프로필 이미지 선택 시 실행되는 함수
   const handleImageSelect = (index: number) => {

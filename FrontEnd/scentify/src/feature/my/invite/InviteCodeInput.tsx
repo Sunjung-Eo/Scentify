@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { joinGroupByCode } from "../../../apis/invite/joinGroupByCode";
 import { useAuthStore } from "../../../stores/useAuthStore";
-import Alert from "../../../components/Alert/Alert";
+import Alert from "../../../components/Alert/AlertMy";
 
 const InviteCodeInput = () => {
   const [inviteCode, setInviteCode] = useState("");

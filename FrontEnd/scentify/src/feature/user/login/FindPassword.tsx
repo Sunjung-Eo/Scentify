@@ -66,7 +66,6 @@ const FindPassword = () => {
   };
 
   // 인증 코드 확인 함수
-  // 사용자가 입력한 인증 코드가 올바른지 API 통해 확인
   const handleVerifyCode = async () => {
     if (!formData.verificationCode.trim()) {
       setErrors((prev) => ({
@@ -94,7 +93,6 @@ const FindPassword = () => {
   };
 
   // 폼 제출 핸들러: 사용자가 "비밀번호 재설정" 버튼을 눌렀을 때 호출
-  // 모든 필드의 유효성을 검사하고, 이메일 인증과 인증 코드 확인이 완료되었으면
   // 페이지 이동하며 아이디 정보 전달
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -130,7 +128,7 @@ const FindPassword = () => {
         </h1>
         {/* 아이디 입력 필드 */}
         <div className="flex items-center gap-2 w-full">
-          <label htmlFor="id" className="w-[80px] text-left">
+          <label htmlFor="id" className="text-left mr-8">
             아이디
           </label>
           <input
@@ -139,6 +137,7 @@ const FindPassword = () => {
             name="id"
             value={formData.id}
             onChange={handleChange}
+            placeholder="아이디"
             className={inputStyles}
           />
           <button
@@ -150,7 +149,7 @@ const FindPassword = () => {
         {errors.id && <p className="text-[12px] text-red-500">{errors.id}</p>}
         {/* 이메일 입력 필드 */}
         <div className="flex items-center gap-2 w-full">
-          <label htmlFor="email" className="w-[80px] text-left">
+          <label htmlFor="email" className="text-left mr-8">
             이메일
           </label>
           <input
@@ -159,6 +158,7 @@ const FindPassword = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
+            placeholder="이메일"
             className={inputStyles}
           />
           <button
@@ -174,7 +174,7 @@ const FindPassword = () => {
         )}
         {/* 인증번호 입력 필드 */}
         <div className="flex items-center gap-2 w-full">
-          <label htmlFor="verificationCode" className="w-[80px] text-left">
+          <label htmlFor="verificationCode" className="text-left mr-5">
             인증 번호
           </label>
           <input
@@ -183,11 +183,12 @@ const FindPassword = () => {
             name="verificationCode"
             value={formData.verificationCode}
             onChange={handleChange}
+            placeholder="인증번호"
             className={inputStyles}
           />
           <button
             type="button"
-            className="ml-auto w-[80px] h-[34px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-component active:bg-brand active:border-0"
+            className="ml-auto w-[80px] h-[34px] text-12 font-pre-light rounded-lg border-[0.7px] border-gray active:text-bg active:bg-brand active:border-0"
             onClick={handleVerifyCode}
           >
             확인
@@ -197,10 +198,10 @@ const FindPassword = () => {
           <p className="text-[12px] text-red-500">{errors.verificationCode}</p>
         )}
         {/* 비밀번호 재설정 버튼 */}
-        <div className="mt-auto">
+        <div className="mt-auto mb-[-10px]">
           <button
             type="submit"
-            className="w-full h-[48px] mb-[20px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-component active:bg-brand active:border-0"
+            className="w-full h-[48px] rounded-lg text-brand text-16 font-pre-medium border-[1px] border-brand active:text-bg active:bg-brand active:border-0"
           >
             비밀번호 재설정
           </button>

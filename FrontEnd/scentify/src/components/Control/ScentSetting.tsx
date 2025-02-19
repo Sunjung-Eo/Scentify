@@ -75,6 +75,7 @@ export default function ScentSetting({
                   <p className="font-pre-light text-10 mr-2 whitespace-nowrap w-[63px] overflow-hidden text-ellipsis">
                     {scentName}
                   </p>
+                  {/* 향 게이지 버튼 */}
                   <div className="flex gap-1 w-[210px]">
                     {Array.from({ length: totalEnergy }).map((_, i) => (
                       <button

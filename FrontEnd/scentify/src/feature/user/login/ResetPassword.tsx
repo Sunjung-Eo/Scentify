@@ -93,6 +93,7 @@ const ResetPassword = () => {
               type="password"
               value={newPassword}
               onChange={handleInputChange(setNewPassword)}
+              placeholder="8~20자, 영문자, 숫자, 특수문자 조합"
               className="flex-1 w-full border w-[235px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
@@ -109,6 +110,7 @@ const ResetPassword = () => {
               type="password"
               value={confirmPassword}
               onChange={handleInputChange(setConfirmPassword)}
+              placeholder="새 비밀번호 확인"
               className="flex-1 w-full border w-[235px] h-[34px] rounded-lg bg-component px-3 focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>

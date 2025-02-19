@@ -128,7 +128,7 @@ const FindPassword = () => {
         </h1>
         {/* 아이디 입력 필드 */}
         <div className="flex items-center gap-2 w-full">
-          <label htmlFor="id" className="w-[80px] text-left">
+          <label htmlFor="id" className="text-left mr-8">
             아이디
           </label>
           <input
@@ -137,6 +137,7 @@ const FindPassword = () => {
             name="id"
             value={formData.id}
             onChange={handleChange}
+            placeholder="아이디"
             className={inputStyles}
           />
           <button
@@ -148,7 +149,7 @@ const FindPassword = () => {
         {errors.id && <p className="text-[12px] text-red-500">{errors.id}</p>}
         {/* 이메일 입력 필드 */}
         <div className="flex items-center gap-2 w-full">
-          <label htmlFor="email" className="w-[80px] text-left">
+          <label htmlFor="email" className="text-left mr-8">
             이메일
           </label>
           <input
@@ -157,6 +158,7 @@ const FindPassword = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
+            placeholder="이메일"
             className={inputStyles}
           />
           <button
@@ -172,7 +174,7 @@ const FindPassword = () => {
         )}
         {/* 인증번호 입력 필드 */}
         <div className="flex items-center gap-2 w-full">
-          <label htmlFor="verificationCode" className="w-[80px] text-left">
+          <label htmlFor="verificationCode" className="text-left mr-5">
             인증 번호
           </label>
           <input
@@ -181,6 +183,7 @@ const FindPassword = () => {
             name="verificationCode"
             value={formData.verificationCode}
             onChange={handleChange}
+            placeholder="인증번호"
             className={inputStyles}
           />
           <button

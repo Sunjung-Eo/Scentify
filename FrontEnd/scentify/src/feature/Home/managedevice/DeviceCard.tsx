@@ -153,11 +153,11 @@ const DeviceCard = () => {
   // devices가 있을 때
   // device는 devices 랑 데이터 같음 [{...}, {...}, {...}]
   return (
-    <div className="cards space-y-4">
+    <div className="cards w-full space-y-4">
       {sortedDevices.map((device: any, index: number) => (
         <div
           key={device.id || index}
-          className="font-pre-medium relative mt-4 flex justify-end transition-all duration-700 ease-in-out"
+          className="font-pre-medium flex justify-center transition-all duration-700 ease-in-out"
           style={{
             transform: `translateY(${device.id === currentMainDeviceId ? '0' : '0'}px)`,
             opacity:
@@ -167,18 +167,18 @@ const DeviceCard = () => {
           }}
         >
           <div
-            className={`card relative flex h-[120px] w-[290px] flex-col rounded-3xl bg-brand p-4 shadow-md transition-all duration-500 ${
+            className={`relative flex h-[110px] w-full flex-col justify-center rounded-3xl bg-brand p-4 shadow-md transition-all duration-500 ${
               device.id === currentMainDeviceId ? 'ring-2 ring-brand' : ''
             }`}
           >
             <img
               src={deviceImg}
               alt="Device Icon"
-              className="absolute -left-8 bottom-0 w-30 h-30"
+              className="absolute -left-2 bottom-0 w-30 h-30"
             />
 
             {/* 텍스트 내용 */}
-            <div className="ml-20 flex flex-col gap-1">
+            <div className="ml-24 flex flex-col gap-1">
               {/* 디바이스 이름 + 왕관 아이콘 */}
               <div className="text-pre-bold text-sm flex items-center gap-1 text-white">
                 {device.name}

@@ -77,7 +77,7 @@ const Header = ({
       ) : showCancel ? (
         <button
           onClick={handleCancelClick}
-          className="font-pre-light text-14 tracking-[-1px] text-black"
+          className="border-0.2 h-[30px] w-[65px] border-[#AFB1B6] text-center font-[Pretendard] text-[12px] font-light text-black rounded-lg hover:bg-brand hover:text-white transition-colors"
         >
           취소
         </button>
@@ -98,7 +98,7 @@ const Header = ({
         <NextButton onClick={handleNextClick} />
       ) : showDeviceManage ? (
         <button
-          className="font-pre-light text-14 tracking-[-1px] text-black"
+          className="font-pre-light text-12 tracking-[-1px] text-black px-2 py-1 border-[0.2px] border-gray-300 rounded-lg"
           onClick={onDeviceManageClick}
         >
           기기 관리/추가

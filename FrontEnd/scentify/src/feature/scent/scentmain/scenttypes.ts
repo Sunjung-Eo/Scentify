@@ -5,7 +5,7 @@ export interface combinationIds {
 // 각 향기의 카드 데이터 타입
 export interface ScentCard {
   id: number; // 고유 ID
-  cardImage: string; // 카드에 표시될 이미지 경로
+  // cardImage: string; // 카드에 표시될 이미지 경로
   modalImage: string; // 모달에 표시될 이미지 경로
   alt: string; // 이미지 대체 텍스트
   description: string; // 모달 설명

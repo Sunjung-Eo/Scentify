@@ -107,7 +107,7 @@ const ReadShareFavorite = () => {
               ref={cardRef}
               className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
             >
-              <h2 className="text-10 text-gray text-center font-poppins-light mb-2">
+              <h2 className="text-12 text-gray text-center font-poppins-thin mb-2">
                 Scentify
               </h2>
               {imageUrl ? (
@@ -167,10 +167,10 @@ const ReadShareFavorite = () => {
           )}
 
           {/*버튼 그룹*/}
-          <p className="text-10 font-pre-light text-brand mt-12">
+          <p className="text-10 font-pre-light text-brand absolute bottom-[114px]">
             이미지 저장은 10분간 유효합니다.
           </p>
-          <div className="flex gap-4 mt-4">
+          <div className="flex gap-4 absolute bottom-[50px]">
             {!loading && (
               <button
                 onClick={handleDownloadCardImage}

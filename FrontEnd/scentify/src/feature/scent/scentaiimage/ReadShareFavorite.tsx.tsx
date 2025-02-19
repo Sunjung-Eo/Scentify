@@ -107,7 +107,7 @@ const ReadShareFavorite = () => {
               ref={cardRef}
               className="w-[280px] h-[400px] bg-component p-4 rounded-xl"
             >
-              <h2 className="text-10 text-gray text-center font-poppins-light mb-2">
+              <h2 className="text-12 text-gray text-center font-poppins-thin mb-2">
                 Scentify
               </h2>
               {imageUrl ? (

@@ -11,11 +11,6 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: inherit !important;
   -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
 }
-.poppins-light {
-  font-family: "Poppins", serif;
-  font-weight: 300;
-  font-style: normal;
-}
 
 @font-face {
   font-family: "Pretendard-Bold";

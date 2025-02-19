@@ -31,8 +31,12 @@ export default function ScentSetting({
   const totalUsage = Object.values(scents).reduce((acc, curr) => acc + curr, 0);
   const availableEnergy = totalEnergy - totalUsage;
   // 향 설정값 변경
-  const handleScentChange = (scentKey: string, value: number) => {
-    const newScents = { ...scents, [scentKey]: value };
+  const handleScentChange = (scentKey: keyof typeof scents, value: number) => {
+    const currentValue = scents[scentKey];
+    const newScents = {
+      ...scents,
+      [scentKey]: currentValue === value ? 0 : value,
+    };
     const newTotalUsage = Object.values(newScents).reduce(
       (acc, curr) => acc + curr,
       0
@@ -46,8 +50,8 @@ export default function ScentSetting({
 
   return (
     <div className="flex justify-center">
-      <div className="flex flex-col w-[215px] h-[206px] p-2">
-        <p className="mt-1 font-pre-light text-10 text-gray text-right">
+      <div className="flex flex-col w-full h-[206px] ml-[50px] mr-[50px] p-2">
+        <p className="mt-1 mb-1 font-pre-light text-10 text-gray text-right">
           전체 {availableEnergy}/{totalEnergy}
         </p>
         <div className="space-y-3">
@@ -71,27 +75,23 @@ export default function ScentSetting({
                   <p className="font-pre-light text-10 mr-2 whitespace-nowrap w-[63px] overflow-hidden text-ellipsis">
                     {scentName}
                   </p>
-
-                  <div className="relative flex-1 w-[150px] h-[30px]">
-                    <div className="absolute h-full bg-component rounded-lg w-full" />
-                    <div
-                      className="absolute h-full bg-sub rounded-lg transition-all duration-200"
-                      style={{
-                        width: `${(scents[scentKey] / totalEnergy) * 100}%`,
-                        zIndex: 10,
-                      }}
-                    />
-                    <input
-                      type="range"
-                      value={scents[scentKey]}
-                      min="0"
-                      max={totalEnergy}
-                      step="1"
-                      className="absolute w-full h-full opacity-0 cursor-pointer z-20"
-                      onChange={(e) =>
-                        handleScentChange(scentKey, Number(e.target.value))
-                      }
-                    />
+                  {/* 향 게이지 버튼 */}
+                  <div className="flex gap-1 w-[210px]">
+                    {Array.from({ length: totalEnergy }).map((_, i) => (
+                      <button
+                        key={i}
+                        className={`w-full h-[26px] ${
+                          i === 0
+                            ? "rounded-l-lg"
+                            : i === totalEnergy - 1
+                              ? "rounded-r-lg"
+                              : ""
+                        } ${
+                          i < scents[scentKey] ? "bg-brand" : "bg-component"
+                        }`}
+                        onClick={() => handleScentChange(scentKey, i + 1)}
+                      />
+                    ))}
                   </div>
                 </div>
               );

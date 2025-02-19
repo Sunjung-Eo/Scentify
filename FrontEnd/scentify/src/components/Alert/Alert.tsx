@@ -14,8 +14,8 @@ const Alert = ({
   showButtons = true,
   onConfirm = onClose,
   onCancel = onClose,
-  confirmText = "확인",
-  cancelText = "취소",
+  confirmText = '확인',
+  cancelText = '취소',
 }: AlertProps) => {
   return (
     <div
@@ -26,23 +26,25 @@ const Alert = ({
         className="flex flex-col max-w-[320px] w-full p-6 rounded-2xl border-black/10 bg-white shadow-[20px_20px_20px_rgba(0,0,0,0.08)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-12 text-gray-700 mb-4">{message}</p>
-        {showButtons && (
-          <div className="flex justify-end gap-2">
+        <p className="text-12 text-gray-700 mb-4 text-center">{message}</p>
+        <div className="flex justify-center gap-2">
+          {cancelText && (
             <button
               className="w-[60px] py-2 rounded-lg bg-gray-300 text-white text-12 hover:opacity-90"
               onClick={onCancel}
             >
               {cancelText}
             </button>
+          )}
+          {confirmText && (
             <button
               className="w-[60px] py-2 rounded-lg bg-[#2D3319] text-white text-12 hover:opacity-90"
               onClick={onConfirm}
             >
               {confirmText}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

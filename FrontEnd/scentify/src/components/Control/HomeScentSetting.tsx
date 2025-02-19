@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { useEffect, useRef } from 'react';
+import React, { useCallback } from "react";
+import { useEffect, useRef } from "react";
 interface HomeScentSettingProps {
   scentCnt: {
     slot1: number;
@@ -47,18 +47,13 @@ export default function HomeScentSetting({
     scentCntRef.current = scentCnt;
   }, [scentCnt]);
 
-  // typeof : 객체를 타입으로
-  // keyof : 객체 형태 타입을 유니온 타입으로
-  // 즉 centsCnt 객체의 key들을 유니온 타입으로 변환
-  // "slot1" | "slot2" | "slot3" | "slot4" 이 네 개의 문자열만 허용
   const handleScentChange = useCallback(
     (slot: keyof typeof scentCnt, value: number) => {
       if (!setScentCnt) {
-        console.error('setScentCnt가 존재하지 않음!');
         return;
       }
 
-      const currentSlotValue = scentCntRef.current[slot]; // ✅ 최신 상태값 참조
+      const currentSlotValue = scentCntRef.current[slot]; // 최신 상태값 참조
       const newTotalUsage =
         Object.values(scentCntRef.current).reduce(
           (acc, curr) => acc + curr,
@@ -68,12 +63,14 @@ export default function HomeScentSetting({
         value;
 
       if (newTotalUsage > totalEnergy) {
-        console.warn('사용량이 totalEnergy를 초과할 수 없음!');
         return;
       }
 
       setScentCnt((prev) => {
-        const updated = { ...prev, [slot]: value };
+        const updated = {
+          ...prev,
+          [slot]: currentSlotValue === value ? 0 : value,
+        };
         return updated;
       });
     },
@@ -85,42 +82,33 @@ export default function HomeScentSetting({
       <p className="mt-1 font-pre-light text-12 self-start">
         전체 {availableEnergy}/{totalEnergy}
       </p>
-      <div className="flex flex-col w-[215px] h-[206px] mt-3">
+      <div className="flex flex-col w-full h-[206px] mt-3">
         <div className="space-y-3">
           {Object.keys(scentCnt).map((slot) => (
             <div key={slot} className="flex justify-between items-center">
-              <p className="font-pre-light text-12 mr-2 text-gray">
+              <p className="font-pre-light text-12 mr-2 text-gray whitespace-nowrap">
                 {scentNames[slot as keyof typeof scentNames]}
               </p>
-              <div className="relative w-[150px] h-[30px]">
-                <div
-                  className="absolute h-full bg-component rounded-lg"
-                  style={{ width: '100%' }}
-                />
-                <div
-                  className="absolute h-full bg-sub rounded-lg transition-all duration-200"
-                  style={{
-                    width: `${(scentCnt[slot as keyof typeof scentCnt] / totalEnergy) * 100}%`,
-                    zIndex: 10,
-                  }}
-                />
-                <input
-                  type="range"
-                  value={scentCnt[slot as keyof typeof scentCnt]}
-                  min="0"
-                  max={Math.min(
-                    totalEnergy,
-                    availableEnergy + scentCnt[slot as keyof typeof scentCnt]
-                  )} // ✅ 최대 사용 가능량 보장
-                  step="1"
-                  className="absolute w-full h-full opacity-0 cursor-pointer z-20"
-                  onChange={(e) =>
-                    handleScentChange(
-                      slot as keyof typeof scentCnt,
-                      Number(e.target.value)
-                    )
-                  }
-                />
+              <div className="flex gap-1 w-[210px]">
+                {Array.from({ length: totalEnergy }).map((_, i) => (
+                  <button
+                    key={i}
+                    className={`w-full h-[26px] ${
+                      i === 0
+                        ? "rounded-l-lg"
+                        : i === totalEnergy - 1
+                          ? "rounded-r-lg"
+                          : ""
+                    } ${
+                      i < scentCnt[slot as keyof typeof scentCnt]
+                        ? "bg-brand"
+                        : "bg-component"
+                    }`}
+                    onClick={() =>
+                      handleScentChange(slot as keyof typeof scentCnt, i + 1)
+                    }
+                  />
+                ))}
               </div>
             </div>
           ))}

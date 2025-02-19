@@ -13,7 +13,15 @@ export default function ProtectedRoute({
   children,
 }: ProtectedRouteProps) {
   if (!condition) {
-    return <Navigate to={redirectPath} replace />;
+    return (
+      <Navigate
+        to={redirectPath}
+        state={{
+          showAlert: true,
+        }}
+        replace
+      />
+    );
   }
   return <>{children}</>;
 }

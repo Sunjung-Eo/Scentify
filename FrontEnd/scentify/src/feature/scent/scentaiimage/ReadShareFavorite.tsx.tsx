@@ -167,10 +167,10 @@ const ReadShareFavorite = () => {
           )}
 
           {/*버튼 그룹*/}
-          <p className="text-10 font-pre-light text-brand mt-12">
+          <p className="text-10 font-pre-light text-brand absolute bottom-[114px]">
             이미지 저장은 10분간 유효합니다.
           </p>
-          <div className="flex gap-4 mt-4">
+          <div className="flex gap-4 absolute bottom-[50px]">
             {!loading && (
               <button
                 onClick={handleDownloadCardImage}

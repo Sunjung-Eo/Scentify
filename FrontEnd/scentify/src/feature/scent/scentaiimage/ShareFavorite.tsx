@@ -183,7 +183,7 @@ const ShareFavorite = () => {
         )}
 
         {/* 버튼 그룹 (로딩 중에는 비활성화) */}
-        <p className="text-10 font-pre-light text-brand mb-4">
+        <p className="text-10 font-pre-light text-brand absolute bottom-[114px]">
           이미지 저장은 10분간 유효합니다.
         </p>
         <div className="flex gap-4 absolute bottom-[50px]">

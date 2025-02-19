@@ -32,8 +32,7 @@ const GeneralRegist = () => {
           <div className="flex-1 overflow-y-auto w-full scrollbar-hidden">
             <RegistForm onRegist={handleRegistrationComplete} />
           </div>
-
-          <div className="w-full pt-4">
+          <div className=" p-5 w-full absolute bottom-6">
             <button
               type="submit"
               form="registForm"
@@ -48,7 +47,8 @@ const GeneralRegist = () => {
         <Alert
           message={alertMessage}
           onClose={() => setAlertMessage('')}
-          showButtons={false} // 모든 버튼 숨기기
+          cancelText=""
+          confirmText="" // 버튼을 숨기기 위해 빈 문자열 전달
         />
       )}
     </div>

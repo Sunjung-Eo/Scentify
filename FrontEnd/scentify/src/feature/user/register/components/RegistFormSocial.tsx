@@ -1,5 +1,8 @@
 import React, { useState, FormEvent } from 'react';
-import { validatePassword } from '../../../../utils/validation';
+import {
+  validatePassword,
+  validateNickname,
+} from '../../../../utils/validation';
 import { registKakao } from '../../../../apis/user/social/registKakao';
 import Alert from '../../../../components/Alert/Alert';
 const RegistFormSocial = ({
@@ -44,9 +47,8 @@ const RegistFormSocial = ({
     let newErrors: { [key: string]: string } = {};
 
     // 유효성 검사 적용
-    if (!formData.nickname.trim()) {
-      newErrors.nickname = '닉네임을 입력해주세요.';
-    }
+    const nicknameError = validateNickname(formData.nickname);
+    if (nicknameError) newErrors.nickname = nicknameError;
 
     const passwordError = validatePassword(formData.password);
     if (passwordError) newErrors.password = passwordError;

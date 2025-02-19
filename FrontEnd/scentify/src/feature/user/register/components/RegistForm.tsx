@@ -5,7 +5,11 @@ import {
   handleEmailVerification,
 } from '../handler/registFormHandler';
 import { registUser } from '../../../../apis/user/regist';
-import { validatePassword, validateId } from '../../../../utils/validation';
+import {
+  validatePassword,
+  validateId,
+  validateNickname,
+} from '../../../../utils/validation';
 import Alert from '../../../../components/Alert/Alert';
 
 const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
@@ -49,9 +53,8 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       newErrors.id = '아이디 중복 확인이 필요합니다.';
     }
 
-    if (!formData.nickname.trim()) {
-      newErrors.nickname = '닉네임을 입력해주세요.';
-    }
+    const nicknameError = validateNickname(formData.nickname);
+    if (nicknameError) newErrors.nickname = nicknameError;
 
     const passwordError = validatePassword(formData.password);
     if (passwordError) newErrors.password = passwordError;
@@ -129,7 +132,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             name="id"
             value={formData.id}
             onChange={handleChange}
-            placeholder="아이디"
+            placeholder="4~20자, 영문자로 시작"
             className={inputStyles}
           />
           <button
@@ -161,10 +164,15 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             name="nickname"
             value={formData.nickname}
             onChange={handleChange}
-            placeholder="닉네임"
+            placeholder="10자 이하, 완성된 한글, 영문, 숫자만 입력"
             className={inputStyles}
           />
         </div>
+        {errors.nickname && (
+          <p className="text-[12px] text-red-500 break-words whitespace-pre-line">
+            {errors.nickname}
+          </p>
+        )}
 
         {/* 비밀번호 */}
         <div className="flex items-center gap-2">
@@ -174,7 +182,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             type="password"
             name="password"
             onChange={handleChange}
-            placeholder="비밀번호"
+            placeholder="8~20자, 영문자, 숫자, 특수문자 조합"
             className={inputStyles}
           />
         </div>
@@ -331,7 +339,12 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
       </form>
 
       {alertMessage && (
-        <Alert message={alertMessage} onClose={() => setAlertMessage('')} />
+        <Alert
+          message={alertMessage}
+          onClose={() => setAlertMessage('')}
+          cancelText=""
+          confirmText="확인"
+        />
       )}
     </>
   );

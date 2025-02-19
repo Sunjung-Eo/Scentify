@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { validatePassword } from '../../../../utils/validation';
 import { registKakao } from '../../../../apis/user/social/registKakao';
-
+import Alert from '../../../../components/Alert/Alert';
 const RegistFormSocial = ({
   onRegist,
   email: initialEmail,
@@ -76,8 +76,6 @@ const RegistFormSocial = ({
       birth: birthDate,
     };
 
-    console.log('📡 회원가입 API 요청:', userData);
-
     try {
       // 카카오 회원가입 API 호출
       await registKakao(userData);
@@ -95,133 +93,148 @@ const RegistFormSocial = ({
     'h-9 px-4 rounded-lg border-0.5 focus:outline-none focus:ring-2 focus:ring-brand';
 
   return (
-    <form
-      id="registFormSocial"
-      onSubmit={handleSubmit}
-      noValidate
-      className="flex w-full flex-col p-2 gap-3 font-pre-light text-12 overflow-y-auto"
-    >
-      {/* 닉네임 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="nickname">닉네임</label>
-        <input
-          id="nickname"
-          type="text"
-          name="nickname"
-          value={formData.nickname}
-          onChange={handleChange}
-          placeholder="닉네임"
-          className={inputStyles}
-        />
-      </div>
-
-      {/* 비밀번호 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="password">비밀번호</label>
-        <input
-          id="password"
-          type="password"
-          name="password"
-          onChange={handleChange}
-          placeholder="비밀번호"
-          className={inputStyles}
-        />
-      </div>
-      {errors.password && (
-        <p className="text-[12px] text-red-500 break-words whitespace-pre-line">
-          {errors.password}
-        </p>
-      )}
-
-      {/* 비밀번호 확인 */}
-      <div className="flex items-center gap-2 ">
-        <label htmlFor="confirmPassword">비밀번호 확인</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          placeholder="비밀번호 확인"
-          className={inputStyles}
-        />
-      </div>
-      {errors.confirmPassword && (
-        <p className="text-[12px] text-red-500">{errors.confirmPassword}</p>
-      )}
-
-      {/* 생년월일 */}
-      <fieldset id="birth" className="flex items-center gap-2 w-full">
-        <label className="flex text-12 shrink-0">생년월일</label>
-
-        <input
-          type="text"
-          name="birthYear"
-          value={formData.birthYear}
-          placeholder="년(4자)"
-          maxLength={4}
-          onChange={handleChange}
-          className="border w-full h-9 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-        />
-        <select
-          id="birthMonth"
-          name="birthMonth"
-          value={formData.birthMonth}
-          onChange={handleChange}
-          className={`${inputStyles} w-full min-w-[80px]`}
-        >
-          <option value="">월</option>
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-              {i + 1}월
-            </option>
-          ))}
-        </select>
-        <input
-          id="birthDay"
-          type="text"
-          name="birthDay"
-          value={formData.birthDay}
-          placeholder="일"
-          maxLength={2}
-          onChange={handleChange}
-          className="border h-9 w-full max-w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
-        />
-      </fieldset>
-      {errors.birth && (
-        <p className="text-[12px] text-red-500">{errors.birth}</p>
-      )}
-
-      {/* 성별 선택 */}
-      <div className="flex items-center gap-2">
-        <p className="flex text-12 shrink-0">성별</p>
-        {[
-          { label: '남성', value: '0' },
-          { label: '여성', value: '1' },
-          { label: '선택하지 않음', value: '2' },
-        ].map((gender) => (
-          <button
-            key={gender.value}
-            type="button"
-            onClick={() =>
-              setFormData((prev) => ({ ...prev, gender: gender.value }))
-            }
-            className={`h-9 rounded-lg px-4 border-brand border-0.5 ${
-              formData.gender === gender.value ? 'bg-sub text-white' : 'bg-bg'
-            }`}
-          >
-            {gender.label}
-          </button>
-        ))}
-      </div>
-
-      {/* 이메일 폼을 `initialEmail`이 있을 때만 렌더링 */}
-      {initialEmail.trim() == '' ? null : (
-        <div className="flex items-center gap-2">
-          <p className="text-gray-600">이메일: {initialEmail}</p>
+    <>
+      <form
+        id="registFormSocial"
+        onSubmit={handleSubmit}
+        noValidate
+        className="flex w-full flex-col p-2 gap-3 font-pre-light text-12 overflow-y-auto"
+      >
+        {/* 닉네임 */}
+        <div className="flex items-center gap-2 ">
+          <label htmlFor="nickname">닉네임</label>
+          <input
+            id="nickname"
+            type="text"
+            name="nickname"
+            value={formData.nickname}
+            onChange={handleChange}
+            placeholder="닉네임"
+            className={inputStyles}
+          />
         </div>
+        {errors.nickname && (
+          <p className="text-[12px] text-red-500 break-words whitespace-pre-line">
+            {errors.nickname}
+          </p>
+        )}
+
+        {/* 비밀번호 */}
+        <div className="flex items-center gap-2 ">
+          <label htmlFor="password">비밀번호</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            onChange={handleChange}
+            placeholder="비밀번호"
+            className={inputStyles}
+          />
+        </div>
+        {errors.password && (
+          <p className="text-[12px] text-red-500 break-words whitespace-pre-line">
+            {errors.password}
+          </p>
+        )}
+
+        {/* 비밀번호 확인 */}
+        <div className="flex items-center gap-2 ">
+          <label htmlFor="confirmPassword">비밀번호 확인</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="비밀번호 확인"
+            className={inputStyles}
+          />
+        </div>
+        {errors.confirmPassword && (
+          <p className="text-[12px] text-red-500">{errors.confirmPassword}</p>
+        )}
+
+        {/* 생년월일 */}
+        <fieldset id="birth" className="flex items-center gap-2 w-full">
+          <label className="flex text-12 shrink-0">생년월일</label>
+
+          <input
+            type="text"
+            name="birthYear"
+            value={formData.birthYear}
+            placeholder="년(4자)"
+            maxLength={4}
+            onChange={handleChange}
+            className="border w-full h-9 rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+          />
+          <select
+            id="birthMonth"
+            name="birthMonth"
+            value={formData.birthMonth}
+            onChange={handleChange}
+            className={`${inputStyles} w-full min-w-[80px]`}
+          >
+            <option value="">월</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                {i + 1}월
+              </option>
+            ))}
+          </select>
+          <input
+            id="birthDay"
+            type="text"
+            name="birthDay"
+            value={formData.birthDay}
+            placeholder="일"
+            maxLength={2}
+            onChange={handleChange}
+            className="border h-9 w-full max-w-[80px] rounded-lg bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
+          />
+        </fieldset>
+        {errors.birth && (
+          <p className="text-[12px] text-red-500">{errors.birth}</p>
+        )}
+
+        {/* 성별 선택 */}
+        <div className="flex items-center gap-2">
+          <p className="flex text-12 shrink-0">성별</p>
+          {[
+            { label: '남성', value: '0' },
+            { label: '여성', value: '1' },
+            { label: '선택하지 않음', value: '2' },
+          ].map((gender) => (
+            <button
+              key={gender.value}
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, gender: gender.value }))
+              }
+              className={`h-9 rounded-lg px-4 border-brand border-0.5 ${
+                formData.gender === gender.value ? 'bg-sub text-white' : 'bg-bg'
+              }`}
+            >
+              {gender.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 이메일 폼을 `initialEmail`이 있을 때만 렌더링 */}
+        {initialEmail.trim() == '' ? null : (
+          <div className="flex items-center gap-2">
+            <p className="text-gray-600">이메일: {initialEmail}</p>
+          </div>
+        )}
+      </form>
+      {alertMessage && (
+        <Alert
+          message={alertMessage}
+          onClose={() => setAlertMessage('')}
+          cancelText=""
+          confirmText="확인"
+        />
       )}
-    </form>
+    </>
   );
 };
 

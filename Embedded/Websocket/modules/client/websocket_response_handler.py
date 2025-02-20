@@ -1,6 +1,6 @@
 import json
 import asyncio
-from datetime import datetime, time
+from datetime import datetime
 from mqtt_client import *
 
 class WebSocketResponseHandler:
@@ -43,6 +43,9 @@ class WebSocketResponseHandler:
                 "/topic/Schedule/Change/" : self.handler_schedule_change,
                 "/topic/Schedule/Delete/" : self.handler_schedule_delete,
                 "/topic/Schedule/Add/" : self.handler_schedule_add,
+
+                # 연결 관리
+                "/Connection/Close" : self.handler_websocket_disconnect,
                 
                 # 디폴트
                 "default": self.default_hanlder
@@ -224,6 +227,14 @@ class WebSocketResponseHandler:
 
             await asyncio.sleep(10)
         self.schedule_running = False
+
+    async def handler_websocket_disconnect(self):
+        await self.mqtt_client.publish(
+            f"{self.mqtt_client.device_id_list[0]}/Websocket/Disconnect",
+            "0"
+        )
+        if self.print_log:
+            print("Handling Websocket Disconnect")
             
 
     async def default_hanlder(self):

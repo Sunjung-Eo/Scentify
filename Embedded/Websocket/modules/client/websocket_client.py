@@ -15,6 +15,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from stomp import *
 from utils import*
 
+from datetime import datetime, timedelta
+
 class DeviceIDDataDTO(BaseModel):
     id: int
 
@@ -77,10 +79,12 @@ class WebSocketClient:
             self.message_queue = work_queue
             self.websocket_response_hanlder = response_handler
             self.device_id = None
-            self.temp_hum_period = 15
+            self.temp_hum_interval = 15
             self.is_initial_connection = True
             self.disconnected = False
             self.disconnection_event = asyncio.Event()
+
+            self.is_debug = True
 
     # 연결 테스트 코드
     async def connection(self, ):
@@ -107,33 +111,33 @@ class WebSocketClient:
 
                     # websocket response handler 키 업데이트 (맨 뒤에 id 추가)
                     if self.is_initial_connection:
-                        original_key = {}
+                        original_dict = {}
                         for key, value in self.websocket_response_hanlder.items():
-                            if key == "default":
-                                original_key[key] = value
+                            if "topic" not in key:
+                                original_dict[key] = value
                                 continue
-                            original_key[f'{key}{self.device_id}'] = value
+                            original_dict[f'{key}{self.device_id}'] = value
                         self.websocket_response_hanlder = {}
-                        self.websocket_response_hanlder = original_key
+                        self.websocket_response_hanlder = original_dict
                         self.is_initial_connection=False
                     
                     # await self.init_request()
 
                     receive_task = asyncio.create_task(self.receive_messages())
                     send_task = asyncio.create_task(self.send_message())
-                    # send_temp_hum_task = asyncio.create_task(self.send_temp_hum())
+                    send_temp_hum_task = asyncio.create_task(self.send_temp_hum())
                     
-                    # await asyncio.gather(receive_task, send_task, send_temp_hum_task)
-                    await asyncio.gather(receive_task, send_task)
+                    await asyncio.gather(receive_task, send_task, send_temp_hum_task)
+                    # await asyncio.gather(receive_task, send_task)
 
                     print("Before Disconnect")
 
-                    self.disconnect()
+                    await self.disconnect()
 
                     # 서버에서 disconnection 했을 때, reconnect
                     await asyncio.sleep(10)
                     print("Reconnection....")
-                    await self.connection()
+                    # await self.connection()
 
             except websockets.exceptions.ConnectionClosed:
                 self.websocket = None
@@ -153,7 +157,8 @@ class WebSocketClient:
 
     async def send_request(self, topic, msg):
         send_frame = stomper.send(topic, msg, content_type='application/json')       
-        print(send_frame)
+        if self.is_debug:
+            print(send_frame)
         await self.websocket.send(send_frame)
 
     async def get_capsule_info(self):
@@ -200,9 +205,12 @@ class WebSocketClient:
 
     async def subcribe_websocket(self):
         for (idx, topic) in enumerate(self.subscribe_list):
-            # 첫 연결 때에는 capsule 정보 요청 하지 않기.
+            # Websocket Topic이 아니면 그대로 진행
+            if "topic" not in topic:
+                continue
             subscribe_frame = get_subscribe_frame(idx + 1, topic + f"{self.device_id}")
-            print(subscribe_frame)
+            if self.is_debug:
+                print(subscribe_frame)
             await self.websocket.send(subscribe_frame)
 
     async def receive_messages(self):
@@ -212,7 +220,8 @@ class WebSocketClient:
                 header = {}
                 while True:
                     res = await self.websocket.recv()
-                    print("RESEPONSE", res)
+                    if self.is_debug:
+                        print("RESEPONSE", res)
                     header, message = parse_stomp_message(res)
                     if len(message) <= 1:
                         continue
@@ -238,8 +247,26 @@ class WebSocketClient:
                 self.websocket = None
 
     async def send_temp_hum(self):
+        alarm = None
         while self.websocket is not None and not self.disconnection_event.is_set():
             try:
+                await asyncio.sleep(2)
+
+                # 현재 시각 불러오기
+                now = datetime.now().strftime("%H:%M:%S")
+                now_time = datetime.strptime(now, "%H:%M:%S").time()
+
+                if alarm is not None:
+                    if self.is_debug:
+                        print("알람 체크")
+                        print(f"현재 시각 : {now_time}")
+                        print(f"알람 시각 : {alarm}")
+                        print()
+                    # 인터벌이 지난 경우
+                    if alarm <= now_time:
+                        alarm = None
+                    continue
+
                 temp, hum = get_temp_and_hum()
                 data = {
                     "type" : "DeviceStatus/Sensor/TempHum",
@@ -248,9 +275,13 @@ class WebSocketClient:
                 }
 
                 await self.message_queue.put(data)
-                await asyncio.sleep(60 * self.temp_hum_period)
-            except:
+                alarm_datetime = datetime.combine(datetime.today(), now_time)
+                alarm = (alarm_datetime + timedelta(seconds=60 * self.temp_hum_interval)).time()
+                
+
+            except Exception as e:
                 print("Error : Cannot Send Temperature Humandity Data")
+                print(e)
 
     async def send_message(self):
         while self.websocket is not None and not self.disconnection_event.is_set():
@@ -282,17 +313,32 @@ class WebSocketClient:
         merge_dict.update(dict_token)
         return merge_dict
     
-    def disconnect(self):
+    async def disconnect(self):
         self.disconnection_event = asyncio.Event()
         self.device_id = None
         self.websocket = None
-        self.disconnected = True
+        self.is_initial_connection = True
         while not self.message_queue.empty():
             try:
                 self.message_queue.get_nowait()  
                 self.message_queue.task_done()   
             except asyncio.QueueEmpty:
                 break  
+
+        # 핸들러 초기화
+        original_handler = {}
+        for key, value in self.websocket_response_hanlder.items():
+            if "topic" not in key:
+                original_handler[key] = value
+                continue
+            original_key = key.rsplit("/", 1)[0]
+            print(original_key)
+            original_handler[f"{original_key}/"] = value
+        self.websocket_response_hanlder = {}
+        self.websocket_response_hanlder = original_handler
+
+        handler = self.websocket_response_hanlder.get("/Connection/Close", self.websocket_response_hanlder.get("default"))
+        await handler()
 
 
 # if __name__ == '__main__':

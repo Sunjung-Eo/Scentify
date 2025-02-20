@@ -82,7 +82,7 @@ body {
   /* max-width: 360px; */
   /* height: calc(var(--vh, 1vh) * 100); */
   width: 100%;
-  max-width: 440px; /* 최대 너비 360px로 고정 */
+  max-width: 420px; /* 최대 너비 360px로 고정 */
   height: 100vh;
   margin: 0 auto;
   background-color: #fafafa;
@@ -99,7 +99,7 @@ body {
 .header,
 .footer {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   height: 60px;
   background-color: #fafafa;
   display: flex;
@@ -127,7 +127,7 @@ body {
   padding-left: 20px;
   padding-right: 20px;
   width: 100%;
-  max-width: 440px; /*360*/
+  max-width: 420px; /*360*/
   /* height: calc(var(--vh, 1vh) * 100 - 120px); */
   /* overflow: hidden;  */
   box-sizing: border-box; /* 패딩 및 보더를 포함한 크기 계산 */

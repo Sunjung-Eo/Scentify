@@ -1,5 +1,8 @@
-import React, { useCallback } from "react";
-import { useEffect, useRef } from "react";
+import React, { useCallback, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import InfoIcon from '../../assets/icons/info-icon.svg';
+import ScentGuideModal from '../../feature/Home/defaultscent/ScentGuideModal';
+
 interface HomeScentSettingProps {
   scentCnt: {
     slot1: number;
@@ -30,6 +33,7 @@ export default function HomeScentSetting({
   setScentCnt,
   totalEnergy, // 3, 6
 }: HomeScentSettingProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   if (!scentCnt || !scentNames) {
     return null;
   }
@@ -79,9 +83,15 @@ export default function HomeScentSetting({
 
   return (
     <div className="flex flex-col items-center">
-      <p className="mt-1 font-pre-light text-12 self-start">
-        전체 {availableEnergy}/{totalEnergy}
-      </p>
+      <div className="flex flex-row justify-between w-full">
+        <p className="mt-1 font-pre-light text-12 self-start">
+          전체 {availableEnergy}/{totalEnergy}
+        </p>
+        {/* 향 설명 모달 */}
+        <button onClick={() => setIsModalOpen(true)} className="ml-1">
+          <img src={InfoIcon} alt="info" className="w-[22px] h-[22px]" />
+        </button>
+      </div>
       <div className="flex flex-col w-full h-[206px] mt-3">
         <div className="space-y-3">
           {Object.keys(scentCnt).map((slot) => (
@@ -95,14 +105,14 @@ export default function HomeScentSetting({
                     key={i}
                     className={`w-full h-[26px] ${
                       i === 0
-                        ? "rounded-l-lg"
+                        ? 'rounded-l-lg'
                         : i === totalEnergy - 1
-                          ? "rounded-r-lg"
-                          : ""
+                          ? 'rounded-r-lg'
+                          : ''
                     } ${
                       i < scentCnt[slot as keyof typeof scentCnt]
-                        ? "bg-brand"
-                        : "bg-component"
+                        ? 'bg-brand'
+                        : 'bg-component'
                     }`}
                     onClick={() =>
                       handleScentChange(slot as keyof typeof scentCnt, i + 1)
@@ -114,6 +124,10 @@ export default function HomeScentSetting({
           ))}
         </div>
       </div>
+      <ScentGuideModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

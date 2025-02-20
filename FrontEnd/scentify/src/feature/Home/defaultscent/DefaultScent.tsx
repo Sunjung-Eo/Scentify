@@ -104,7 +104,7 @@ function DefaultScent() {
   }, [scentCnt, setCompleteHandler, roomType]);
 
   return (
-    <div className="content px-4">
+    <div className="flex flex-col items-center pt-5 px-4">
       <SpaceTab
         setRoomType={setRoomType}
         roomType={roomType}
@@ -112,11 +112,13 @@ function DefaultScent() {
         setScentCnt={setScentCnt}
         scentNames={scentNames}
       />
-      {!roomType && (
-        <p className="text-red-500 text-12 font-pre-light self-start">
-          공간 크기를 먼저 선택해주세요.
-        </p>
-      )}
+      <div className="w-[300px] ">
+        {!roomType && (
+          <p className="text-red-500 text-12 font-pre-light self-start">
+            공간 크기를 먼저 선택해주세요.
+          </p>
+        )}
+      </div>
       <div className="mt-4">
         <SpaceDescription />
       </div>

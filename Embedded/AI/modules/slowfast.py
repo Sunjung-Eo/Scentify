@@ -18,8 +18,8 @@ class SlowFast:
         self.print_log = False
         self.required_frames_num = 65
 
-        self.th_squat = 0.8
-        self.th_pushup = 0.4
+        self.th_squat = 0.60
+        self.th_pushup = 0.37
         self.th_relax = 0.4
         self.th_situp = 0.4
 
@@ -27,7 +27,8 @@ class SlowFast:
         self.active_exercise_mode = True
 
         # Load SlowFast Model
-        self.model_path="./model/slow_fast_lr=5e-4.pth"
+        self.cur_dir = "/home/jetpack/S12P11A205/Embedded/AI/modules"
+        self.model_path = f"{self.cur_dir}/model/slow_fast_lr=5e-4.pth"
         self.model = create_slowfast(model_num_class=num_classes).cuda()
         self.model.blocks[6].proj = torch.nn.Linear(
             self.model.blocks[6].proj.in_features,
@@ -39,7 +40,7 @@ class SlowFast:
         print("Load SlowFast Model Module")
 
         # Get Class Name
-        with open('classnames.json', 'r') as f:
+        with open(f'{self.cur_dir}/classnames.json', 'r') as f:
             self.classnames = json.load(f)
 
         self.id_to_classname = {v: str(k).replace('"', "") for k, v in self.classnames.items()}

@@ -18,8 +18,8 @@ class SlowFast:
         self.print_log = False
         self.required_frames_num = 65
 
-        self.th_squat = 0.8
-        self.th_pushup = 0.4
+        self.th_squat = 0.60
+        self.th_pushup = 0.37
         self.th_relax = 0.4
         self.th_situp = 0.4
 

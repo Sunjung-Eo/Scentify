@@ -34,25 +34,21 @@ class SmartDiffuser:
         self.camera = Camera()
         self.yolo = SIMPLEYOLO()
         self.slowfast = SlowFast()
-        # self.camera = None
-        # self.yolo = None
-        # self.slowfast = None
 
         self.slowfast.print_log = True
 
         # HW
         # 악취 감지 센서
         self.stink_sensor = StinkSensor()
-        self.th_stink_value = 30
+        self.th_stink_value = 150
 
         # 무게 감지 센서
-        # self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
-        # self.loadcell.window_size = 100
-        # self.max_capsule_weight = 200.0
-        # self.min_capsule_weight = 20.0
-        # self.current_capsule_weight = [200.0, 200.0, 200.0, 200.0]
-        # self.account_operation = 1.0
-        # self.init_weight()
+        self.loadcell = LoadCell(pin_dt=31, pin_sck=33)
+        self.loadcell.window_size = 100
+        self.max_capsule_weight = 22.0
+        self.min_capsule_weight = 10.0
+        self.current_capsule_weight = [self.max_capsule_weight] * 4
+        self.account_operation = 0.03
 
         # 모터
         self.soleniods = [
@@ -114,6 +110,8 @@ class SmartDiffuser:
 
         self.running_state = self.mode_type.no_running
         self.min_interval = 0.3
+
+        self.init_weight()
 
 
     def is_valid_key(self,key):
@@ -255,7 +253,7 @@ class SmartDiffuser:
                 slot_idx += 1
 
         # 잔여량 계산
-        # self.update_remainder(num_operate_for_slot)
+        self.update_remainder(num_operate_for_slot)
 
         while True:
             if num_operate_for_slot[0] == 0 and num_operate_for_slot[1] == 0 and\
@@ -266,13 +264,12 @@ class SmartDiffuser:
                     continue
                 num_operate_for_slot[i] -= 1
                 self.soleniods[i].operate_on()
-            time.sleep(0.2)
+            time.sleep(0.5)
+            
             for i in range(4):
-                if num_operate_for_slot[i] == 0:
-                    continue
                 self.soleniods[i].operate_off()
 
-            time.sleep(0.5)
+            time.sleep(1)
 
         # 잔여량 표시
         await self.send_remainder()
@@ -301,8 +298,8 @@ class SmartDiffuser:
     def init_weight(self,):
         current_weight = self.loadcell.get_weight_avg()
         if current_weight < self.max_capsule_weight and current_weight > self.min_capsule_weight:
-            self.capsule_remainder[0] = (current_weight - self.min_capsule_weight) / (self.max_capsule_weight - self.min_capsule_weight) * 100 
-            self.current_capsule_weight[0] = current_weight
+            self.capsule_remainder["slot2RemainingRatio"] = (current_weight - self.min_capsule_weight) / (self.max_capsule_weight - self.min_capsule_weight) * 100 
+            self.current_capsule_weight[1] = current_weight
 
     def update_remainder(self, num_operation):
         # 현재 무게 계산하기
@@ -310,19 +307,23 @@ class SmartDiffuser:
         for idx in range(4):
             # 변화된 무게 감지
             modified_weight = self.current_capsule_weight[idx] - num_operation[idx] * self.account_operation
-            modified_weight = min(self.min_capsule_weight, modified_weight)
-            if idx == 0:
+            modified_weight = max(self.min_capsule_weight, modified_weight)
+            if idx == 1:
                 # 데이터 보장
-                if modified_weight < current_weight:
+                if modified_weight <= current_weight and current_weight <= self.current_capsule_weight[idx]:
                     modified_weight = current_weight
+
             remainder_id = ""
             for id in self.capsule_remainder:
                 if str(idx + 1) in id:
                     remainder_id = id
                     break
+            print(modified_weight, self.min_capsule_weight)
+            print(self.max_capsule_weight, self.min_capsule_weight)
+            remainder_value = round((modified_weight - self.min_capsule_weight) / (self.max_capsule_weight - self.min_capsule_weight) * 100)
+            print(remainder_id, remainder_value)
             # remainder, weight 업데이트
-            self.capsule_remainder[remainder_id] = \
-                int((modified_weight - self.min_capsule_weight) / (self.max_capsule_weight - self.min_capsule_weight) * 100)
+            self.capsule_remainder[remainder_id] = remainder_value
             self.current_capsule_weight[idx] = modified_weight
         
 

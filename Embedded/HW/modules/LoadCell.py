@@ -20,7 +20,7 @@ class LoadCell:
 
         self.initial_once_operation()
 
-        referenceUnit = 110
+        referenceUnit = 100
         print(f"[INFO] Setting the 'referenceUnit' at {referenceUnit}.")
         self.hx.setReferenceUnit(referenceUnit)
         print(f"[INFO] Finished setting the 'referenceUnit' at {referenceUnit}.")
@@ -51,7 +51,7 @@ class LoadCell:
             for _ in range(self.window_size):
                 sum += self.get_weight()
             sum /= self.window_size
-            return round(sum, 1)
+            return round(sum, 3)
         except (KeyboardInterrupt, SystemExit):
             GPIO.cleanup()
             print("[INFO] 'KeyboardInterrupt Exception' detected. Cleaning and exiting...")
@@ -61,9 +61,10 @@ class LoadCell:
         rawBytes = self.hx.getRawBytes()
         weightValue = self.hx.rawBytesToWeight(rawBytes)
         # print(f"weight (grams): {weightValue}")
-        return round(weightValue, 1)
+        return round(weightValue, 3) + 20.0
     
 if __name__ == '__main__':
     loadCell = LoadCell(pin_dt=31, pin_sck=33)
     while True:
         print(f'weight : {loadCell.get_weight_avg()} grams')
+        time.sleep(1)

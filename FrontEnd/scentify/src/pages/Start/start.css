@@ -23,7 +23,7 @@ body {
 }
 
 .start-container {
-  max-width: 440px;
+  max-width: 420px;
   width: 100%;
   height: calc(var(--vh, 1vh) * 100); /* 실제 뷰포트 높이 적용 */
   margin: 0 auto;

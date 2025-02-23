@@ -126,7 +126,7 @@ function EditDefaultScent() {
 
       // 2. 기본향 설정 수정
       await editCapsuleAndDefaultScent(deviceId, roomTypeValue, combination);
-      console.log('🍀 캡슐-기본향 combination', combination);
+      // console.log('🍀 캡슐-기본향 combination', combination);
 
       setAlertConfig({
         message: '기본향 설정이 완료되었습니다.',

@@ -38,7 +38,7 @@ const LoginForm = ({
 
     // 로그인 함수 호출
     onLogin();
-    console.log('로그인 시도', { id, password });
+    // console.log('로그인 시도', { id, password });
   };
 
   return (

@@ -18,7 +18,7 @@ function RegistConnecting() {
 
       try {
         const response = await registDevice(serial, ipAddress, accessToken);
-        console.log('디바이스 등록 성공, ID:', response.id);
+        // console.log('디바이스 등록 성공, ID:', response.id);
 
         const id = response.id;
 

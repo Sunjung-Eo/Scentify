@@ -150,7 +150,7 @@ function EditOnlyScent() {
       };
 
       await editDefaultScent(deviceId, updatedCombination);
-      console.log('🍀기본향 수정 성공 id:', updatedCombination);
+      // console.log('🍀기본향 수정 성공 id:', updatedCombination);
 
       setAlertConfig({
         message: '기본향 설정이 완료되었습니다.',

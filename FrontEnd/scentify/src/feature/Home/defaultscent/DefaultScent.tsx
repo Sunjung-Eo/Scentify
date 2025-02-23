@@ -88,7 +88,7 @@ function DefaultScent() {
         scentCnt.slot4,
         roomTypeValue
       );
-      console.log('기본향 설정 완료:', scentCnt);
+      // console.log('기본향 설정 완료:', scentCnt);
       navigate('/home');
     } catch (error) {
       console.error('기본향 설정 실패:', error);

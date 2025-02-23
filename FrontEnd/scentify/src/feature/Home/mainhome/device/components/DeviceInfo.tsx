@@ -75,7 +75,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
       <div className="flex flex-col items-center w-full my-2">
         {/* 기기 이름 + 수정 버튼 */}
         <div className="relative w-full px-5 flex items-center">
-          <p className="text-[20px] font-pre-medium text-center flex items-center justify-center w-full">
+          <p className="text-[18px] font-pre-medium text-center flex items-center justify-center w-full">
             {device?.name ?? '이름 없음'}
             {device?.id === mainDeviceId && (
               <img src={crownIcon} alt="Crown Icon" className="ml-1 h-4 w-4" />
@@ -131,7 +131,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ device, mainDeviceId }) => {
           </div>
         </div>
         {/* 기기 이미지 + 슬롯 정보 */}
-        <div className="flex flex-row justify-between items-center w-full px-8">
+        <div className="flex flex-row justify-between items-center w-full px-6">
           <div className="flex flex-row relative border-2 border-red-500">
             <img src={deviceImg} alt="deviceImg" className="w-full h-full" />
             <img

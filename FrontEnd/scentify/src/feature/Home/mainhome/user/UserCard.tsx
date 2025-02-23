@@ -163,7 +163,7 @@ const UserCard: React.FC<UserCardProps> = ({
 
   return (
     <div>
-      <div className="bg-sub rounded-3xl px-6 py-4 text-white h-[120px] flex flex-col">
+      <div className="bg-sub rounded-[24px] px-6 py-4 text-white h-[120px] flex flex-col">
         {/* 프로필이미지+닉네임 묶음 */}
         <div className="flex items-center gap-4">
           {/* 프로필 이미지 */}

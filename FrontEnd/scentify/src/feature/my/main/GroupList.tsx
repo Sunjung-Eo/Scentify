@@ -2,17 +2,17 @@ import {
   GroupInfoResponse,
   DeleteMemberRequest,
   DeleteGroupRequest,
-} from "./groupTypes";
-import { useState, useEffect, useMemo } from "react"; //useMemo: 객체 사용시 불필요한 렌더링 막기 위함
-import MemberCard from "./MemberCard";
-import { useUserStore } from "../../../stores/useUserStore"; //유저상태관리(사용자 기기정보)
-import { useAuthStore } from "../../../stores/useAuthStore";
-import { getGroupByDeviceId } from "../../../apis/group/getGroupByDeviceId";
-import { deleteGroupMember } from "../../../apis/group/deleteGroupMember";
-import { deleteGroup } from "../../../apis/group/deleteGroup";
-import { useNavigate } from "react-router-dom";
-import Modal from "../../../components/Alert/Modal";
-import MyDeviceSelect from "./MyDeviceSelect";
+} from './groupTypes';
+import { useState, useEffect, useMemo } from 'react'; //useMemo: 객체 사용시 불필요한 렌더링 막기 위함
+import MemberCard from './MemberCard';
+import { useUserStore } from '../../../stores/useUserStore'; //유저상태관리(사용자 기기정보)
+import { useAuthStore } from '../../../stores/useAuthStore';
+import { getGroupByDeviceId } from '../../../apis/group/getGroupByDeviceId';
+import { deleteGroupMember } from '../../../apis/group/deleteGroupMember';
+import { deleteGroup } from '../../../apis/group/deleteGroup';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../../../components/Alert/Modal';
+import MyDeviceSelect from './MyDeviceSelect';
 
 export const GroupList = () => {
   // 사용자가 등록한 기기 ID 목록 가져오기 (등록된 디바이스가 없을 시 빈 배열 사용)
@@ -43,10 +43,10 @@ export const GroupList = () => {
   const [members, setMembers] = useState<{ id: string; nickname: string }[]>(
     []
   );
-  const [groupId, setGroupId] = useState<string>("");
+  const [groupId, setGroupId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const { accessToken } = useAuthStore();
-  const [adminId, setAdminId] = useState<string>("");
+  const [adminId, setAdminId] = useState<string>('');
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -64,18 +64,18 @@ export const GroupList = () => {
 
         // API응답 데이터를 가져와 상태로 저장하므로 setAdminId와 setGroupId를 명시적으로 호출해야함
         // 해당 기기의 관리자 ID를 상태로 저장
-        setAdminId(group.adminId || "");
+        setAdminId(group.adminId || '');
         // 해당 기기의 그룹 ID 설정
         setGroupId(group.id.toString());
 
         // 멤버 목록을 객체 배열로 변환(각 멤버의 ID및 닉네임 저장)
         const formattedMembers = [
-          { id: group.adminId, nickname: group.adminNickname || "알 수 없음" },
+          { id: group.adminId, nickname: group.adminNickname || '알 수 없음' },
           ...(group.member1Id
             ? [
                 {
                   id: group.member1Id,
-                  nickname: group.member1Nickname || "알 수 없음",
+                  nickname: group.member1Nickname || '알 수 없음',
                 },
               ]
             : []),
@@ -83,7 +83,7 @@ export const GroupList = () => {
             ? [
                 {
                   id: group.member2Id,
-                  nickname: group.member2Nickname || "알 수 없음",
+                  nickname: group.member2Nickname || '알 수 없음',
                 },
               ]
             : []),
@@ -91,7 +91,7 @@ export const GroupList = () => {
             ? [
                 {
                   id: group.member3Id,
-                  nickname: group.member3Nickname || "알 수 없음",
+                  nickname: group.member3Nickname || '알 수 없음',
                 },
               ]
             : []),
@@ -99,7 +99,7 @@ export const GroupList = () => {
             ? [
                 {
                   id: group.member4Id,
-                  nickname: group.member4Nickname || "알 수 없음",
+                  nickname: group.member4Nickname || '알 수 없음',
                 },
               ]
             : []),
@@ -130,14 +130,14 @@ export const GroupList = () => {
       const requestData: DeleteGroupRequest = { groupId };
       await deleteGroup(requestData, accessToken);
       setMembers([]);
-      setGroupId("");
+      setGroupId('');
     } catch (error) {}
   };
 
   // 초대하기 버튼 클릭 시 페이지 이동하면서 selectedDeviceId 전달
   const handleInvite = () => {
     if (selectedDeviceId) {
-      navigate("/my/invite", { state: { deviceId: selectedDeviceId } });
+      navigate('/my/invite', { state: { deviceId: selectedDeviceId } });
     }
   };
 
@@ -150,7 +150,7 @@ export const GroupList = () => {
           </div>
           {/* 드롭다운과 초대하기 버튼 컨테이너 */}
           <div
-            className={`flex items-center ${userId === adminId ? "gap-x-4" : "justify-end w-full"}`}
+            className={`flex items-center ${userId === adminId ? 'gap-x-4' : 'justify-end w-full'}`}
           >
             {/* DeviceSelect 드롭다운 */}
             <div className="relative">
@@ -179,7 +179,7 @@ export const GroupList = () => {
           </div>
         )}
         {/* 멤버 리스트 */}
-        <div className="overflow-y-auto max-h-[calc(100vh-450px)]">
+        <div className="overflow-y-auto max-h-[calc(100vh-450px)] scrollbar-hidden">
           {!error && (
             <div className="flex flex-col">
               {deviceList.length === 0 ? (

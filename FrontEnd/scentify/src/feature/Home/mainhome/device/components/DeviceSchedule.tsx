@@ -136,7 +136,7 @@ const DeviceSchedule: React.FC<DeviceScheduleProps> = ({
 
   return (
     <>
-      <div className="flex w-full min-w-[300px] h-full mt-4 px-10">
+      <div className="flex w-full min-w-[300px] h-full mt-4 px-8">
         <div
           className="flex flex-col relative w-full h-full justify-start bg-white rounded-[12px] p-4"
           style={{

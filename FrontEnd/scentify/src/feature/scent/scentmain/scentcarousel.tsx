@@ -22,7 +22,7 @@ const ScentCarousel = () => {
     <div className="flex flex-col items-center w-full">
       {/* 캐러셀 영역 */}
       <div className="w-full overflow-x-auto whitespace-nowrap">
-        <div className="flex gap-4 w-max">
+        <div className="flex gap-3 w-max">
           {scentImages.map((scent) => (
             <div
               key={scent.id}

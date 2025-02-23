@@ -1,7 +1,7 @@
-import navigateIcon from "../../../assets/icons/navigatewhite.svg";
-import { Link } from "react-router-dom";
-import { useUserStore } from "../../../stores/useUserStore";
-import { getProfileImage } from "../../../utils/profileImageMapper";
+import navigateIcon from '../../../assets/icons/navigatewhite.svg';
+import { Link } from 'react-router-dom';
+import { useUserStore } from '../../../stores/useUserStore';
+import { getProfileImage } from '../../../utils/profileImageMapper';
 
 const MyUserCard = (): JSX.Element => {
   const user = useUserStore((state) => state);
@@ -11,7 +11,7 @@ const MyUserCard = (): JSX.Element => {
   return (
     <Link
       to="/my/manageaccount"
-      className="bg-sub rounded-3xl px-4 py-4 text-white h-[74px] flex items-center justify-between"
+      className="bg-sub rounded-[20px] px-4 py-4 text-white h-[74px] flex items-center justify-between"
     >
       <div className="flex items-center gap-3">
         <img

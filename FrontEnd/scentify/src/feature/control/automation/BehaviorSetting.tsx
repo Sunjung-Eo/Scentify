@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { useControlStore } from "../../../stores/useControlStore";
+import { useControlStore } from '../../../stores/useControlStore';
 
-import { updateBehavior } from "../../../apis/control/updateBehavior";
+import { updateBehavior } from '../../../apis/control/updateBehavior';
 
-import SprayIntervalSelector from "../../../components/Control/SprayIntervalSelector";
+import SprayIntervalSelector from '../../../components/Control/SprayIntervalSelector';
 
-import { behaviorData } from "./AutoModeType";
+import { behaviorData } from './AutoModeType';
 
 export default function BehaviorSetting() {
   const navigate = useNavigate();
@@ -23,13 +23,13 @@ export default function BehaviorSetting() {
   const updateMutation = useMutation({
     mutationFn: (data: behaviorData) => updateBehavior(data, accessToken),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["automations"] });
-      navigate("/control", {
+      queryClient.invalidateQueries({ queryKey: ['automations'] });
+      navigate('/control', {
         state: { exercise, rest, exerciseSelectedTime, restSelectedTime },
       });
     },
     onError: (error) => {
-      console.error("동작 모드 업데이트 실패:", error);
+      console.error('동작 모드 업데이트 실패:', error);
     },
   });
 
@@ -69,11 +69,11 @@ export default function BehaviorSetting() {
   const previousRestSelectedTime = scheduleRest.interval;
   // 분사주기 선택
   const handleExerciseSelectTime = (time: string | number) => {
-    const formattedTime = typeof time === "number" ? `${time}분` : time;
+    const formattedTime = typeof time === 'number' ? `${time}분` : time;
     setExerciseSelectedTime(formattedTime);
   };
   const handleRestSelectTime = (time: string | number) => {
-    const formattedTime = typeof time === "number" ? `${time}분` : time;
+    const formattedTime = typeof time === 'number' ? `${time}분` : time;
     setRestSelectedTime(formattedTime);
   };
 
@@ -85,31 +85,31 @@ export default function BehaviorSetting() {
       exerciseSchedule: {
         id: scheduleExercise.id,
         deviceId: deviceId,
-        interval: parseInt(String(exerciseSelectedTime).replace(/[^0-9]/g, "")),
+        interval: parseInt(String(exerciseSelectedTime).replace(/[^0-9]/g, '')),
         modeOn: exercise,
       },
       exerciseModeChange: exerciseModeOn,
       exerciseIntervalChange:
         previousExerciseSelectedTime ===
-        parseInt(String(exerciseSelectedTime).replace(/[^0-9]/g, ""))
+        parseInt(String(exerciseSelectedTime).replace(/[^0-9]/g, ''))
           ? false
           : true,
       restSchedule: {
         id: scheduleRest.id,
         deviceId: deviceId,
-        interval: parseInt(String(restSelectedTime).replace(/[^0-9]/g, "")),
+        interval: parseInt(String(restSelectedTime).replace(/[^0-9]/g, '')),
         modeOn: rest,
       },
       restModeChange: restModeOn,
       restIntervalChange:
         previousRestSelectedTime ===
-        parseInt(String(restSelectedTime).replace(/[^0-9]/g, ""))
+        parseInt(String(restSelectedTime).replace(/[^0-9]/g, ''))
           ? false
           : true,
     };
 
     updateMutation.mutate(behaviorData);
-    navigate("/control", {
+    navigate('/control', {
       state: { exercise, rest, exerciseSelectedTime, restSelectedTime },
     });
   };
@@ -125,22 +125,22 @@ export default function BehaviorSetting() {
   return (
     <div className="p-0 overflow-visible">
       <div className="relative">
-        <div className="flex flex-col h-[130px] p-5 bg-sub text-white rounded-xl">
+        <div className="flex flex-col h-[130px] p-5 bg-sub text-white rounded-[20px]">
           <div className="flex justify-between">
-            <h3 className="font-pre-medium text-20">운동</h3>
+            <h3 className="font-pre-medium text-20 text-bg">운동</h3>
             <div onClick={() => toggleExercise()}>
               <div
-                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${exercise ? "" : "bg-lightgray"}`}
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${exercise ? '' : 'bg-lightgray'}`}
               >
                 <div
-                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${exercise ? "translate-x-full" : "translate-x-0"}`}
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${exercise ? 'translate-x-full' : 'translate-x-0'}`}
                 ></div>
               </div>
             </div>
           </div>
           <div className="absolute top-[80px] right-[100px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
-              <p className="p-2">분사 주기</p>
+              <p className="p-2 text-component">분사 주기</p>
               <div className="absolute top-[1px] left-[59px]">
                 <SprayIntervalSelector
                   selectedTime={exerciseSelectedTime}
@@ -152,22 +152,22 @@ export default function BehaviorSetting() {
         </div>
       </div>
       <div className="relative mt-6">
-        <div className="flex flex-col h-[130px] p-5 bg-sub text-white rounded-xl">
+        <div className="flex flex-col h-[130px] p-5 bg-sub text-white rounded-[20px]">
           <div className="flex justify-between">
-            <h3 className="font-pre-medium text-20">휴식</h3>
+            <h3 className="font-pre-medium text-20 text-bg">휴식</h3>
             <div onClick={() => toggleRest()}>
               <div
-                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? "" : "bg-lightgray"}`}
+                className={`w-[50px] h-[25px] rounded-full cursor-pointer realative bg-brand ${rest ? '' : 'bg-lightgray'}`}
               >
                 <div
-                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? "translate-x-full" : "translate-x-0"}`}
+                  className={`absolute w-[25px] h-[25px] bg-white rounded-full transition-transform ${rest ? 'translate-x-full' : 'translate-x-0'}`}
                 ></div>
               </div>
             </div>
           </div>
           <div className="absolute top-[80px] right-[100px] z-40 font-pre-light text-12">
             <div className="relative flex items-center">
-              <p className="p-2">분사 주기</p>
+              <p className="p-2 text-component">분사 주기</p>
               <div className="absolute top-[1px] left-[59px]">
                 <SprayIntervalSelector
                   selectedTime={restSelectedTime}

@@ -82,8 +82,8 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
     const birthDate = `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`;
 
     const userData = {
-      id: formData.id,
-      password: formData.password,
+      id: formData.id.trim(),
+      password: formData.password.trim(),
       nickname: formData.nickname,
       email: formData.email,
       imgNum: 0, // 기본값 0
@@ -289,7 +289,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             type="button"
             className={miniBtnStyles}
             onClick={() =>
-              handleGetEmailCode(formData.email, setErrors, setShowAlert)
+              handleGetEmailCode(formData.email.trim(), setErrors, setShowAlert)
             }
           >
             인증하기
@@ -316,7 +316,7 @@ const RegistForm = ({ onRegist }: { onRegist: () => void }) => {
             className={miniBtnStyles}
             onClick={() =>
               handleEmailVerification(
-                formData.verificationCode,
+                formData.verificationCode.trim(),
                 setErrors,
                 setShowAlert
               )

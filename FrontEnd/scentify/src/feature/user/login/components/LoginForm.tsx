@@ -52,7 +52,7 @@ const LoginForm = ({
           type="id"
           value={id}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setId(e.target.value)
+            setId(e.target.value.trim())
           }
           placeholder="아이디를 입력하세요"
           className="h-[44px] w-[320px] rounded-lg border-0.2 bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
@@ -65,7 +65,7 @@ const LoginForm = ({
         <input
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value.trim())}
           placeholder="비밀번호를 입력하세요"
           className="h-[44px] w-[320px] rounded-lg border-0.5 bg-component px-4 focus:outline-none focus:ring-2 focus:ring-brand"
         />

@@ -29,57 +29,58 @@
 
 ## 📌 기획서 및 요구사항 분석
 ### 1️⃣ 기획서
-![image (1)](https://github.com/user-attachments/assets/846a408c-4c6c-4760-9522-7d569edf4277)
-![image (2)](https://github.com/user-attachments/assets/f04c7dcc-9dbf-408f-98e0-09738962819c)
-![image (3)](https://github.com/user-attachments/assets/21380bd5-abfb-4cea-b22e-2d27df21b441)
+![image (10)](https://github.com/user-attachments/assets/4dc909a0-ec60-4157-b0f5-9f3155db6c5b)
+![image (11)](https://github.com/user-attachments/assets/72016cb2-f795-4066-8b0b-260b1abd64b5)
+![image (12)](https://github.com/user-attachments/assets/d3aea265-8489-4593-8971-87d4b8253634)
 
 ---
 
 ### 2️⃣ 요구사항 분석
 ### **[기능 명세서]**
-![image (4)](https://github.com/user-attachments/assets/1851e2cc-72a9-412e-ad60-32426847a202)
-![image (5)](https://github.com/user-attachments/assets/a1d1965f-e953-462b-874a-8a1f13db543d)
+![image (13)](https://github.com/user-attachments/assets/04d0cbb2-db5d-4d5c-8949-1ae9ad4ccc67)
+![image (14)](https://github.com/user-attachments/assets/c4b99b36-16fa-48f5-b9f5-43c132b9faea)
 
 ### **[비기능 명세서]**
-![image (6)](https://github.com/user-attachments/assets/d52356f6-261d-4668-946a-8e26fe164f5d)
+![image (16)](https://github.com/user-attachments/assets/416f965a-3528-4382-a0a6-9ac3d4429203)
 
 <br>
 
 ## 📌 시퀀스 다이어그램
-![플로우차트__1_](https://github.com/user-attachments/assets/d6e8e3c5-8cc6-4f30-8c2c-85070450b356)
+![플로우차트__1_](https://github.com/user-attachments/assets/2662a2b9-ce94-4dd3-8cb3-dc134717f9f4)
 
 <br>
 
 ## 📌 아키텍처 다이어그램
-![제목을-입력해주세요_-002](https://github.com/user-attachments/assets/e833c675-56ea-4d7b-acc1-89ee5c910ace)
+![제목을-입력해주세요_-002](https://github.com/user-attachments/assets/c7e7ee84-1073-4864-91d7-d5f000d411fd)
 
 <br>
 
 ## 📌 UI 기획
-![1__1_](https://github.com/user-attachments/assets/54dc5489-4fdc-46a9-a728-880f22935e4d)
-![2__1_](https://github.com/user-attachments/assets/96e529e6-be8e-4d61-b5d4-d64784f670a4)
-![3__1_](https://github.com/user-attachments/assets/e2f2e5c7-9da2-4445-900f-53851185f1b7)
+![1__1_](https://github.com/user-attachments/assets/107aae5b-2b4d-45d2-a897-47e3c35f1b85)
+![2__1_](https://github.com/user-attachments/assets/524fcdaf-0d69-4dc0-8608-79615fdbfdc3)
+![3__1_](https://github.com/user-attachments/assets/ead73f06-4739-4e82-8de3-8e65329ce86d)
 
 <br>
 
 ## 📌 ERD 다이어그램
-![Untitled](https://github.com/user-attachments/assets/74f8565b-043f-4f04-b41f-e228676e3296)
+![Untitled](https://github.com/user-attachments/assets/1dbe39b4-51d5-4e1b-9102-f98971c9e89b)
 
 <br>
 
 ## 📌 API 명세서
 ### 1️⃣ [BE] API 명세서
-![image (9)](https://github.com/user-attachments/assets/b7c975d3-887f-46ab-884d-532bc3a3758e)
-![image (8)](https://github.com/user-attachments/assets/046ec2f0-48de-4d3b-9a7d-3f231860edf1)
-![image (7)](https://github.com/user-attachments/assets/577767fd-dd0c-4c68-96c3-513dd4c0d9a8)
-![image (6)](https://github.com/user-attachments/assets/bbf54193-a5c9-40cf-b6b3-d897b70684f7)
-![image (5)](https://github.com/user-attachments/assets/bbf56a49-4e15-4941-b07d-afb6d9ee5c38)
-![image (4)](https://github.com/user-attachments/assets/4b07dca8-1c7d-4b78-9ed9-d7c6bd2c13cd)
-![image (3)](https://github.com/user-attachments/assets/a733325d-6a4a-46ac-bcd7-96e1d6611f16)
-![image (2)](https://github.com/user-attachments/assets/08700478-bd77-47e1-9a57-0df4d2a6b67f)
-![image (1)](https://github.com/user-attachments/assets/3ed194bd-5138-41b7-9e97-a8206319d571)
+![image (9)](https://github.com/user-attachments/assets/e3a8f084-827d-4122-97d2-18d5e28a986c)
+![image (8)](https://github.com/user-attachments/assets/6e2e30fd-5d9d-42a8-92e9-11273bb15a29)
+![image (7)](https://github.com/user-attachments/assets/b813dae4-8a7a-46ce-a35c-9a88d17f683c)
+![image (6)](https://github.com/user-attachments/assets/34d24c84-b261-4eee-80e1-bf0e9a091ca2)
+![image (5)](https://github.com/user-attachments/assets/b8cad275-95cc-4e9b-be0a-f5211e8426cd)
+![image (4)](https://github.com/user-attachments/assets/54b16e6c-29a7-40d4-9a8d-0d97689b6d74)
+![image (3)](https://github.com/user-attachments/assets/53b6e6c6-5ee0-4fed-9e46-0197ccb2d1e1)
+![image (2)](https://github.com/user-attachments/assets/edc3b1ee-33e9-43a3-97b9-1a19bf2ccf73)
+![image (1)](https://github.com/user-attachments/assets/544ebc67-405b-4f77-8a30-53d3d52bfef0)
 
 ### 2️⃣ [EM] API 명세서
-![image (14)](https://github.com/user-attachments/assets/19bb7c41-7389-48d7-b530-584cd1e6fd30)
-![image (15)](https://github.com/user-attachments/assets/ec4103fa-c32f-4ad1-9336-dce048327a10)
-![image (16)](https://github.com/user-attachments/assets/28420fcf-6e67-46ee-b165-310fcf246ce9)
+![image (17)](https://github.com/user-attachments/assets/f6aa74c6-0aa4-4f0b-88b5-84db88420441)
+![image (18)](https://github.com/user-attachments/assets/453e091e-db69-4849-a0f0-8d19fc9f96a9)
+![image (19)](https://github.com/user-attachments/assets/6b2cc4b3-4568-4107-95f9-b2c0387cd1ac)
+

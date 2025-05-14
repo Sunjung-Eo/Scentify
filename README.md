@@ -22,68 +22,64 @@
 
 - **master** : Scentify 프로젝트 관련 README.md가 작성되어 있습니다.
     - **FE/ Develop** : FrontEnd 개발 브랜치 입니다.
-        - 프로젝트 위치 : S12P11A205/ FrontEnd
     - **BE/ Develop** : BackEnd 개발 브랜치 입니다.
-        - 프로젝트 위치 : S12P11A205/ BackEnd
     - **EM / Develop** : Embedded 개발 브랜치 입니다.
-        - 프로젝트 위치 : S12P11A205/ Embedded
 
 <br>
 
 ## 📌 기획서 및 요구사항 분석
 ### 1️⃣ 기획서
-![image](/uploads/6c83953a8e0fc12d0d145f7576724bc4/image.png){width=434 height=162}
-![image](/uploads/661ca29ea486c53180be1e4e48ca9276/image.png){width=434 height=162}
-![image](/uploads/e7e18582a2f99835c172c14f1284b7e7/image.png){width=434 height=162}
+![image (1)](https://github.com/user-attachments/assets/846a408c-4c6c-4760-9522-7d569edf4277)
+![image (2)](https://github.com/user-attachments/assets/f04c7dcc-9dbf-408f-98e0-09738962819c)
+![image (3)](https://github.com/user-attachments/assets/21380bd5-abfb-4cea-b22e-2d27df21b441)
 
 ---
 
 ### 2️⃣ 요구사항 분석
 ### **[기능 명세서]**
-![image](/uploads/706bddf2796238e110e9fa15bdf2f22b/image.png){width=434 height=513}
-![image](/uploads/6583f0713f3e4133c8c43b71d55e08b8/image.png){width=434 height=440}
+![image (4)](https://github.com/user-attachments/assets/1851e2cc-72a9-412e-ad60-32426847a202)
+![image (5)](https://github.com/user-attachments/assets/a1d1965f-e953-462b-874a-8a1f13db543d)
 
 ### **[비기능 명세서]**
-![image](/uploads/1d4daef782b7037dc4d44817a698de3f/image.png){width=434 height=449}
+![image (6)](https://github.com/user-attachments/assets/d52356f6-261d-4668-946a-8e26fe164f5d)
 
 <br>
 
 ## 📌 시퀀스 다이어그램
-![플로우차트__1_](/uploads/3b851b6ce0faef01896a6dfe439e99f0/플로우차트__1_.png)
+![플로우차트__1_](https://github.com/user-attachments/assets/d6e8e3c5-8cc6-4f30-8c2c-85070450b356)
 
 <br>
 
 ## 📌 아키텍처 다이어그램
-![제목을-입력해주세요_-002](/uploads/77893ad96877a18c95373934d64eb897/제목을-입력해주세요_-002.png){width=1440 height=810}
+![제목을-입력해주세요_-002](https://github.com/user-attachments/assets/e833c675-56ea-4d7b-acc1-89ee5c910ace)
 
 <br>
 
 ## 📌 UI 기획
-![1__1_](/uploads/9e62a0fdb450fdd06c0943cc12b2662b/1__1_.png)
-![2__1_](/uploads/e29f79ab3518faab66d5e7b66c0ba148/2__1_.png)
-![3__1_](/uploads/f932b93a63f39811609a3ea44cd901f5/3__1_.png)
+![1__1_](https://github.com/user-attachments/assets/54dc5489-4fdc-46a9-a728-880f22935e4d)
+![2__1_](https://github.com/user-attachments/assets/96e529e6-be8e-4d61-b5d4-d64784f670a4)
+![3__1_](https://github.com/user-attachments/assets/e2f2e5c7-9da2-4445-900f-53851185f1b7)
 
 <br>
 
 ## 📌 ERD 다이어그램
-![Untitled](/uploads/6969039fd2a703988aaabf8f21dac0ec/Untitled.png)
+![Untitled](https://github.com/user-attachments/assets/74f8565b-043f-4f04-b41f-e228676e3296)
 
 <br>
 
 ## 📌 API 명세서
 ### 1️⃣ [BE] API 명세서
-![image](/uploads/55f0a4241db1e1e68b27249bf1380626/image.png){width=871 height=516}
-![image](/uploads/9e8285c8c12bd44908c172cc899e5b29/image.png){width=871 height=461}
-![image](/uploads/afa29cc78f5b4d2309a22e24f365746e/image.png){width=871 height=504}
-![image](/uploads/9e87ca1ec81f7841f5fe248ea7e36e0d/image.png){width=871 height=473}
-![image](/uploads/aba6ed9ed7fbf69a96947d8ddd10cc77/image.png){width=871 height=409}
-![image](/uploads/105ceebbb5038f1effef40638fb3253d/image.png){width=871 height=518}
-![image](/uploads/d7f7bab0ce1abaa9cf23b70c24f99906/image.png){width=871 height=517}
-![image](/uploads/f5e0d2a4e7d6639cd93a33b7bb519736/image.png){width=871 height=387}
-![image](/uploads/b966e56b277b55a7d635fff204e2cf74/image.png){width=871 height=500}
-![image](/uploads/d65367e2033991d5d4e72242b049e265/image.png){width=871 height=51}
+![image (9)](https://github.com/user-attachments/assets/b7c975d3-887f-46ab-884d-532bc3a3758e)
+![image (8)](https://github.com/user-attachments/assets/046ec2f0-48de-4d3b-9a7d-3f231860edf1)
+![image (7)](https://github.com/user-attachments/assets/577767fd-dd0c-4c68-96c3-513dd4c0d9a8)
+![image (6)](https://github.com/user-attachments/assets/bbf54193-a5c9-40cf-b6b3-d897b70684f7)
+![image (5)](https://github.com/user-attachments/assets/bbf56a49-4e15-4941-b07d-afb6d9ee5c38)
+![image (4)](https://github.com/user-attachments/assets/4b07dca8-1c7d-4b78-9ed9-d7c6bd2c13cd)
+![image (3)](https://github.com/user-attachments/assets/a733325d-6a4a-46ac-bcd7-96e1d6611f16)
+![image (2)](https://github.com/user-attachments/assets/08700478-bd77-47e1-9a57-0df4d2a6b67f)
+![image (1)](https://github.com/user-attachments/assets/3ed194bd-5138-41b7-9e97-a8206319d571)
 
 ### 2️⃣ [EM] API 명세서
-![image](/uploads/e0379c5597eef0e6a6f388f9ba7d312e/image.png){width=871 height=496}
-![image](/uploads/98f19db8cbff61d0fb2b758dd7e3ea64/image.png){width=871 height=444}
-![image](/uploads/6d63f3b437c153b553121de808f229eb/image.png){width=871 height=244}
+![image (14)](https://github.com/user-attachments/assets/19bb7c41-7389-48d7-b530-584cd1e6fd30)
+![image (15)](https://github.com/user-attachments/assets/ec4103fa-c32f-4ad1-9336-dce048327a10)
+![image (16)](https://github.com/user-attachments/assets/28420fcf-6e67-46ee-b165-310fcf246ce9)
